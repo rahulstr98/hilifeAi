@@ -33,6 +33,7 @@ exports.addManualKeywordsPreparation = catchAsyncErrors(async (req, res, next) =
         // Parse stringified objects if necessary
         console.log(req.body.headings, req.body.addedby, "req.body.headings")
         let addedby = [];
+        let headings = [];
         if (req.body.addedby) {
             addedby = JSON.parse(req.body.addedby); // because we sent as string from frontend
         }
@@ -104,6 +105,7 @@ exports.updateManualKeywordsPreparation = catchAsyncErrors(async (req, res, next
 
         // Parse stringified objects if necessary
         let updatedby = [];
+        let headings = [];
         if (req.body.updatedby) {
             updatedby = JSON.parse(req.body.updatedby); // parse if sent as string
         }
@@ -121,7 +123,7 @@ exports.updateManualKeywordsPreparation = catchAsyncErrors(async (req, res, next
             previewdocument: req.body.previewdocument,
             headings: headings,
             numberingstyle: req.body.numberingstyle,
-            file : req.body.oldfile ? JSON.parse(req.body.oldfile) : ""
+            file: req.body.oldfile ? JSON.parse(req.body.oldfile) : ""
         };
         // console.log(req.body.deletefileName,req.file)
         // If file was uploaded, add file details
