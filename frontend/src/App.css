@@ -1,0 +1,1207 @@
+@font-face {
+  font-family: "Sunflower";
+  src: url("../src/images/font/Sunflower.otf") format("truetype");
+  font-weight: 200 !important;
+}
+
+@font-face {
+  font-family: "JostMedium";
+  src: url("../src/images/font/Jost-Medium.ttf") format("truetype");
+  font-weight: 200 !important;
+}
+
+@font-face {
+  font-family: "ZohoPuviBold";
+  src: url("../src/images/font/Zoho\ Puvi\ Bold.otf") format("truetype");
+  font-weight: 200 !important;
+}
+
+.ag-root-wrapper {
+  user-select: text;
+}
+
+.ag-cell {
+  user-select: text;
+}
+
+.toolbar {
+  position: relative;
+  /* default */
+  background: white;
+}
+
+.toolbar.sticky {
+  position: sticky;
+  top: 60px;
+  z-index: 10;
+  /* enough to sit above editor, but below dropdowns */
+}
+
+
+
+
+/*----------------------------- React Qull Editor Styles Start------------------------ */
+
+/* === Font Classes === */
+.ql-font-arial {
+  font-family: Arial, sans-serif;
+}
+
+.ql-font-arial-black {
+  font-family: "Arial Black", Gadget, sans-serif;
+}
+
+.ql-font-algerian {
+  font-family: Algerian, serif;
+}
+
+.ql-font-calibri {
+  font-family: Calibri, sans-serif;
+}
+
+.ql-font-cambria {
+  font-family: Cambria, serif;
+}
+
+.ql-font-candara {
+  font-family: Candara, sans-serif;
+}
+
+.ql-font-comic-sans-ms {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+.ql-font-consolas {
+  font-family: Consolas, monospace;
+}
+
+.ql-font-courier-new {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.ql-font-georgia {
+  font-family: Georgia, serif;
+}
+
+.ql-font-palatino {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.ql-font-segoe-ui {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ql-font-tahoma {
+  font-family: Tahoma, Geneva, sans-serif;
+}
+
+.ql-font-times-new-roman {
+  font-family: "Times New Roman", Times, serif;
+}
+
+.ql-font-trebuchet-ms {
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+.ql-font-verdana {
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+/* === Quill Picker Labels === */
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"] {
+  font-family: Arial, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial-black"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial-black"] {
+  font-family: "Arial Black", Gadget, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="algerian"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="algerian"] {
+  font-family: Algerian, serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="calibri"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="calibri"] {
+  font-family: Calibri, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="cambria"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="cambria"] {
+  font-family: Cambria, serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="candara"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="candara"] {
+  font-family: Candara, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="comic-sans-ms"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="comic-sans-ms"] {
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="consolas"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="consolas"] {
+  font-family: Consolas, monospace;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="courier-new"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="courier-new"] {
+  font-family: "Courier New", Courier, monospace;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="georgia"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="georgia"] {
+  font-family: Georgia, serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="palatino"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="palatino"] {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="segoe-ui"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="segoe-ui"] {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="tahoma"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="tahoma"] {
+  font-family: Tahoma, Geneva, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="times-new-roman"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="times-new-roman"] {
+  font-family: "Times New Roman", Times, serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="trebuchet-ms"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="trebuchet-ms"] {
+  font-family: "Trebuchet MS", Helvetica, sans-serif;
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="verdana"],
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="verdana"] {
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+
+.ql-toolbar .ql-undo::before {
+  content: "↺";
+}
+
+.ql-toolbar .ql-redo::before {
+  content: "↻";
+}
+
+.ql-editor p {
+  margin-bottom: 10px;
+  /* paragraph spacing */
+}
+
+.ql-snow .ql-picker.ql-lineheight .ql-picker-label::before,
+.ql-snow .ql-picker.ql-lineheight .ql-picker-item::before {
+  content: attr(data-value);
+}
+
+.ql-editor [style*="letter-spacing"] {
+  display: inline-block;
+}
+
+
+.ql-editor [style*="margin-bottom"] {
+  display: block;
+}
+
+.ql-editor table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ql-editor table td,
+.ql-editor table th {
+  border: 1px solid #ccc;
+  padding: 8px;
+}
+
+.ql-editor img {
+  display: block;
+  margin: auto;
+  /* For center by default */
+  max-width: 100%;
+}
+
+.ql-editor table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.ql-editor th,
+.ql-editor td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+
+
+
+.ql-editor .page-break {
+  page-break-before: always;
+  break-before: page;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+
+
+/* Center content */
+.ql-editor .align-center {
+  text-align: center;
+}
+
+/* Flex layout for RESEAL | RSIGNATURE at opposite ends */
+.ql-editor .justify-space-between,
+.ql-editor .justify-ends {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Optional: Force spans inline inside the layout */
+.ql-editor .justify-space-between span,
+.ql-editor .justify-ends span {
+  display: inline-block;
+}
+
+
+
+
+
+
+.ql-align-right img {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.ql-align-left img {
+  display: block;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.ql-align-center img {
+  display: block;
+  margin: 0 auto;
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="10px"]::before {
+  content: "10px";
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before {
+  content: "12px";
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before {
+  content: "14px";
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before {
+  content: "16px";
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before {
+  content: "18px";
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before {
+  content: "24px";
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before {
+  content: "32px";
+}
+
+
+.ql-editor ol[type="A"] {
+  list-style-type: upper-alpha;
+}
+
+.ql-editor ol[type="a"] {
+  list-style-type: lower-alpha;
+}
+
+.ql-editor ol[type="i"] {
+  list-style-type: lower-roman;
+}
+
+.ql-editor ol[type="I"] {
+  list-style-type: upper-roman;
+}
+
+
+.ql-editor ul {
+  list-style: none;
+  padding-left: 1.5em;
+}
+
+.ql-editor ul li::before {
+  display: inline-block;
+  width: 1em;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.ql-editor ul li[data-bullet="check"]::before {
+  content: "✔";
+  font-size: 14px;
+  color: rgb(17, 17, 17);
+}
+
+.ql-editor ul li[data-bullet="arrow"]::before {
+  content: "➤";
+  font-size: 14px;
+  color: rgb(17, 17, 17);
+}
+
+.ql-editor ul li[data-bullet="diamond"]::before {
+  content: "◆";
+  font-size: 14px;
+  color: rgb(17, 17, 17);
+}
+
+.ql-editor ul li[data-bullet="square"]::before {
+  content: "■";
+  font-size: 14px;
+  color: rgb(17, 17, 17);
+}
+
+/* Margins like MS Word */
+.margin-normal .ql-editor {
+  padding: 96px;
+}
+
+.margin-narrow .ql-editor {
+  padding: 48px;
+}
+
+.margin-moderate .ql-editor {
+  padding: 96px 72px;
+}
+
+.margin-wide .ql-editor {
+  padding: 96px 192px;
+}
+
+.margin-mirrored .ql-editor {
+  padding: 96px 120px 96px 96px;
+  /* Top, Right, Bottom, Left */
+}
+
+.margin-office2003 .ql-editor {
+  padding: 96px 120px;
+}
+
+
+
+.ql-editor.ql-pagesize-letter {
+  width: 215.9mm;
+  min-height: 279.4mm;
+}
+
+.ql-editor.ql-pagesize-legal {
+  width: 215.9mm;
+  min-height: 355.6mm;
+}
+
+.ql-editor.ql-pagesize-statement {
+  width: 139.7mm;
+  min-height: 215.9mm;
+}
+
+.ql-editor.ql-pagesize-executive {
+  width: 184.1mm;
+  min-height: 266.7mm;
+}
+
+.ql-editor.ql-pagesize-tabloid {
+  width: 279.4mm;
+  min-height: 431.8mm;
+}
+
+.ql-editor.ql-pagesize-b4 {
+  width: 257mm;
+  min-height: 364mm;
+}
+
+.ql-editor.ql-pagesize-b5 {
+  width: 182mm;
+  min-height: 257mm;
+}
+
+/* Already existing ones */
+.ql-editor.ql-pagesize-a5 {
+  width: 148mm;
+  min-height: 210mm;
+}
+
+.ql-editor.ql-pagesize-a4 {
+  width: 210mm;
+  min-height: 297mm;
+}
+
+.ql-editor.ql-pagesize-a3 {
+  width: 297mm;
+  min-height: 420mm;
+}
+
+.ql-editor.ql-pagesize-a2 {
+  width: 420mm;
+  min-height: 594mm;
+}
+
+/* Shared styles */
+.ql-editor[class*="ql-pagesize-"] {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20mm;
+  background: white;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+  overflow-wrap: break-word;
+  overflow: hidden;
+}
+
+
+
+/*----------------------------- React Qull Editor Styles End------------------------ */
+
+/* .page {
+  width: 794px;
+  min-height: 1123px;
+  margin: 20px auto;
+  padding: 40px;
+  background: white;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+  position: relative;
+  page-break-after: always;
+}
+
+.page-number {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+  font-size: 12px;
+  color: #999;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 20mm 20mm; 
+  }
+
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 100%;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+  }
+
+  header, footer {
+    display: none;
+  }
+}
+
+.print-content {
+  padding: 0;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+} */
+
+
+
+/* And so on... */
+
+/* .ag-theme-quartz .ag-paging-panel .ag-page-size,
+.ag-theme-quartz .ag-paging-panel .ag-page-size>.ag-select {
+  display: none !important;
+}
+
+.ag-theme-quartz .ag-paging-panel .ag-page-size,
+.ag-theme-quartz .ag-paging-panel .ag-page-size-wrapper {
+  display: none !important;
+}
+
+.ag-select:not(.ag-cell-editor, .ag-label-align-top) {
+  display: none !important;
+} */
+
+.ag-paging-panel>.ag-paging-page-size .ag-wrapper {
+  display: none !important;
+}
+
+.ag-paging-panel>.ag-paging-page-size .ag-label {
+  display: none !important;
+}
+
+/* .ag-paging-panel {
+  align-items: center !important;
+  display: flex !important;
+  justify-content: space-between !important;
+} */
+.roleback-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 1);
+  padding: 5px;
+  border-radius: 3px;
+  font-weight: bold;
+  pointer-events: none;
+  color: #000;
+}
+
+/* Add styles for the roleback row to look disabled */
+.roleback-row {
+  background-color: #f5c6cb !important;
+  position: relative;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+@font-face {
+  font-family: "ZohoPuviRegular";
+  src: url("../src/images/font/Zoho\ Puvi\ Regular.otf") format("truetype");
+  font-weight: 200 !important;
+}
+
+@font-face {
+  font-family: "ZohoPuviSemibold";
+  src: url("../src/images/font/Zoho\ Puvi\ Semibold.otf") format("truetype");
+  font-weight: 200 !important;
+}
+
+@font-face {
+  font-family: "FiraSans";
+  src: url("../src/images/font/FiraSans-Medium.ttf");
+}
+
+@font-face {
+  font-family: "FiraSansRegular";
+  src: url("../src/images/font/FiraSans-Regular.ttf");
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Anton&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Anton&family=Kanit:wght@200&family=Work+Sans:ital,wght@0,400;1,300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Anton&family=DM+Serif+Display&family=Kanit:wght@200&family=Work+Sans:ital,wght@0,400;1,300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Anton&family=DM+Serif+Display&family=Josefin+Slab:ital@1&family=Kanit:wght@200&family=Work+Sans:ital,wght@0,400;1,300&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  /* background: #f8f8f8; */
+  background: #dee6fb54;
+}
+
+header {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  color: WHITE;
+  background: #1976d2;
+  /* padding: 0px 10px; */
+}
+
+@media (max-width: 470px) {
+  header {
+    padding: 0px;
+  }
+}
+
+.download-table-xls-button {
+  text-decoration: none;
+  border: 0px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #444;
+}
+
+.nav-area {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+
+  height: auto;
+  min-height: 50px;
+  line-height: normal;
+}
+
+.nav-areanew {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  margin: 0 auto;
+
+  /* height: auto; */
+  /* min-height: 50px;   */
+  /* line-height: normal;  */
+}
+
+.nav-arearight {
+  display: flex;
+  /* gap: 16px; */
+  /* flex-direction: row-reverse !important;  */
+  align-items: center;
+  margin-top: 2px;
+  flex-wrap: wrap;
+  max-width: 100%;
+  margin-left: auto;
+}
+
+.nav-arealeft {
+  background-color: black;
+  border-radius: 50%;
+}
+
+.logo {
+  text-decoration: none;
+  font-size: 25px;
+  color: inherit;
+  margin-right: 20px;
+}
+
+.menus {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  /* border: 1px solid red; */
+}
+
+.menu-items {
+  position: relative;
+  /* font-size: 11.5px; */
+  font-size: 11.5px;
+  color: black;
+}
+
+/* .menu-nav {
+  border: 1px solid yellow;
+} */
+
+.menu-items a {
+  display: block;
+  font-size: inherit;
+  color: inherit;
+  text-decoration: none;
+  word-break: break-all;
+  white-space: pre-line;
+}
+
+.menu-button {
+  font-size: 0.5rem;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Medium screens */
+@media (max-width: 992px) {
+  .menu-button {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 768px) {
+  .menu-button {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 576px) {
+  .menu-button {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+  }
+}
+
+.dropdown.show button {
+  display: flex;
+  align-items: center;
+  color: black;
+  font-size: inherit;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+
+button span {
+  margin-left: 3px;
+}
+
+.menu-items>a,
+.menu-items button {
+  text-align: left;
+  /* padding: 0.7rem 1rem; */
+  padding: 0.5rem 0.25rem;
+}
+
+.menu-items button {
+  background-color: transparent;
+  border: none;
+  display: flex;
+  color: white;
+  font-size: 12.5px;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+}
+
+.menu-items a:hover,
+.menu-items button:hover {
+  background-color: transparent;
+  /* background-color: #1976d254; */
+}
+
+.arrow::after {
+  content: "";
+  display: inline-block;
+  margin-left: 0.28em;
+  vertical-align: 0.09em;
+  border-top: 0.42em solid;
+  border-right: 0.32em solid transparent;
+  border-left: 0.32em solid transparent;
+}
+
+/* .dropdown {
+  position: absolute;
+  right: 0;
+  left: 0;
+  box-shadow: 0 10px 15px -3px rgba(46, 41, 51, 0.08),
+    0 4px 6px -2px rgba(71, 63, 79, 0.16);
+  font-size: 0.875rem;
+  z-index: 9999; */
+/* min-width: 17rem; */
+/* min-width: 12rem;
+  padding: 0.5rem 0;
+  list-style: none;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  display: none;
+  padding-left: 5px;
+} */
+
+/* .dropdown.show {
+  display: block;
+} */
+
+/* .dropdown .dropdown-submenu {
+  position: absolute;
+  left: 100%; */
+/*right:100%;
+  left: auto;*/
+/* top: -7px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+} */
+
+/* .dropdown .dropdown-rightmenu {
+  position: absolute;
+  right: 100%;
+  left: auto;
+  top: 7px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+} */
+
+/* .dropdown .dropdown-straightmenu {
+  position: absolute; */
+/*background-color: #2196f3;*/
+/* right: 100%;
+  left: auto;
+  top: 7px;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+} */
+
+/* submenu shows on right side new style */
+.dropdown {
+  position: absolute;
+  min-width: 12rem;
+  padding: 0.5rem 0;
+  list-style: none;
+  background-color: #fff;
+  border-radius: 0.5rem;
+  display: none;
+  z-index: 9999;
+  padding: 5px;
+  box-shadow: 0 10px 15px -3px rgba(46, 41, 51, 0.08),
+    0 4px 6px -2px rgba(71, 63, 79, 0.16);
+  font-size: 0.875rem;
+}
+
+.dropdown.show {
+  display: block;
+}
+
+/* Default submenu styling */
+.dropdown-submenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+/* Adjust position when `left` state is true */
+.dropdown-rightmenu {
+  left: auto;
+  right: 100%;
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+}
+
+/* Smooth transition for submenu */
+.dropdown,
+.dropdown-rightmenu {
+  transition: left 0.2s ease, right 0.2s ease;
+}
+
+/* content */
+
+.content {
+  max-width: 1600px;
+  margin: 0 auto;
+  /* margin-top: 100px; */
+  padding: 3px 20px;
+}
+
+.content h2 {
+  margin-bottom: 1rem;
+}
+
+.content a {
+  color: #cc3852;
+  margin-right: 10px;
+}
+
+/* //TASKLIKST */
+
+.text {
+  white-space: nowrap;
+  /* Prevent text from wrapping */
+  overflow: hidden;
+  /* Hide overflowing text */
+  text-overflow: ellipsis;
+  /* Show ellipsis (...) for truncated text */
+}
+
+/* closckinout */
+.total-hours-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 117px;
+  height: 110px;
+  border-radius: 50%;
+  /* background: linear-gradient(45deg,#1976d2,rgb(255, 255, 255) ); */
+  background: linear-gradient(135deg, #3f51b5, #1775ce, #2196f3);
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.3);
+  padding: 20px;
+}
+
+.total-hours-text {
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.total-hours-value {
+  margin-top: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* CLOCKINOUT HOME PAGE */
+.snackbar-container {
+  position: fixed;
+  top: 50px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.snackbar {
+  background-color: #333;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  margin-top: 10px;
+  max-width: 300px;
+}
+
+.snackbar.show {
+  animation: slide-in 0.5s forwards;
+}
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.glow-button {
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  font-size: 12px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+}
+
+.glow-button::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background-color: rgba(0, 120, 255, 0.3);
+  /* Blueish color */
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.glow-button:hover::before {
+  opacity: 1;
+}
+
+.glow-button:focus::before {
+  opacity: 1;
+  animation: glow-animation 1.5s ease-in-out infinite;
+}
+
+@keyframes glow-animation {
+  0% {
+    box-shadow: 0 0 5px rgba(0, 120, 255, 0.8);
+    /* Blueish glow */
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(0, 120, 255, 0.8);
+    /* Blueish glow */
+  }
+
+  100% {
+    box-shadow: 0 0 5px rgba(0, 120, 255, 0.8);
+    /* Blueish glow */
+  }
+}
+
+.cardcntleft {
+  max-width: 450px !important;
+  font-family: "Work Sans", sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 300 !important;
+  text-align: left !important;
+  letter-spacing: 0.5px !important;
+  line-height: 1.5 !important;
+  color: #a74d10 !important;
+  height: 200px !important;
+}
+
+@media only screen and (max-width: 600px) and (min-width: 340px) {
+  .cardcntleft {
+    font-family: "Work Sans", sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 300 !important;
+    text-align: left !important;
+    letter-spacing: 0.5px !important;
+    line-height: 1.5 !important;
+    color: #775c43 !important;
+  }
+}
+
+/*new items addeed for navigation bar*/
+
+.dropdown.left-position {
+  right: auto;
+  left: 0;
+}
+
+.success {
+  color: #44b267;
+}
+
+.fail {
+  color: #e81c4e;
+}
+
+/* //AG GRID */
+.ag-root-wrapper {
+  user-select: text;
+}
+
+.ag-cell {
+  user-select: text;
+}
+
+.header-wrap {
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: normal;
+}
+
+.ag-cell-focus {
+  outline: none !important;
+  /* Remove the default outline */
+  border: none !important;
+  /* Remove any border */
+}
+
+.odd-aggrid-row {
+  background-color: #ffffff !important;
+}
+
+.even-aggrid-row {
+  background-color: #f5f5f5 !important;
+}
+
+.ag-center-cols-container {
+  min-width: 100% !important;
+}
+
+.ag-floating-bottom-container {
+  min-width: 100% !important;
+}
+
+.ag-theme-quartz .custom-footer-row .ag-cell {
+  background-color: #f5f5f5;
+  /* Your desired background color */
+  font-weight: bold;
+  /* Make the text bold */
+}
+
+.ag-theme-quartz .custom-footer-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+  min-width: 100%;
+  /* Ensure it spans the full row height */
+}
+
+.ag-theme-quartz .custom-footer-row .ag-cell {
+  flex: 1;
+  /* Ensure cells span the full width of the row */
+}
+
+.custom-dropdown-item {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.expired {
+  color: red;
+  /* Style for expired items */
+}
+
+.active {
+  color: green;
+  /* Style for active items */
+}
+
+/* .ag-body {
+  width: 100% !important;
+}
+
+.ag-floating-bottom {
+  width: 100% !important;
+} */
+
+.custom-timepicker-bulkmanual {
+  width: 100%;
+}
+
+.custom-timepicker-bulkmanual .ant-picker {
+  width: 100%;
+  /* Ensures the picker component itself is full width */
+}
+
+.custom-timepicker-bulkmanual .ant-picker-input {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.custom-timepicker-bulkmanual .ant-picker-suffix {
+  width: 100%;
+  position: absolute;
+  /* Ensures the icon stays at the far right */
+  /* right: 12px; */
+  display: flex;
+  justify-content: end;
+  pointer-events: none;
+  /* Makes sure the icon doesn't interfere with user input */
+}
+
+.success {
+  /* color: #44b267; */
+  background-color: yellow;
+}
+
+.fail {
+  background-color: #e81c4e;
+}
