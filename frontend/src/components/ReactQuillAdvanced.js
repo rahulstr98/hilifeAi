@@ -712,6 +712,53 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
       quill.setSelection(range.index + 1);
     }
   };
+
+
+//   useEffect(() => {
+//   const quill = quillRef.current?.getEditor();
+//   if (!quill) return;
+
+//   const attachResizeHandlers = (img) => {
+//     img.addEventListener("mouseup", () => {
+//       const style = window.getComputedStyle(img);
+//       const width = style.width;
+//       const height = style.height;
+
+//       // Store resized size inline so it persists
+//       img.setAttribute("width", width);
+//       img.setAttribute("height", height);
+//       img.style.width = width;
+//       img.style.height = height;
+//     });
+//   };
+
+//   // Attach to existing images
+//   quill.root.querySelectorAll("img").forEach((img) => attachResizeHandlers(img));
+
+//   // 🧠 Watch for new images being added dynamically
+//   const observer = new MutationObserver((mutationsList) => {
+//     for (const mutation of mutationsList) {
+//       if (mutation.type === "childList") {
+//         mutation.addedNodes.forEach((node) => {
+//           if (node.tagName === "IMG") attachResizeHandlers(node);
+//           // handle if new <p> or <div> with <img> inside is added
+//           if (node.querySelectorAll) {
+//             node.querySelectorAll("img").forEach((img) => attachResizeHandlers(img));
+//           }
+//         });
+//       }
+//     }
+//   });
+
+//   observer.observe(quill.root, {
+//     childList: true,
+//     subtree: true,
+//   });
+
+//   // Cleanup on unmount
+//   return () => observer.disconnect();
+// }, []);
+
   return (
     <>
       <br />

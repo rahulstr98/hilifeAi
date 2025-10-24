@@ -93,7 +93,12 @@ const keywordData = [
   { id: 58, keyword: "$YEARMONTH_DEPARTMENT$", instruction: "It denotes department value for Employee Document on a chosen date." },
   { id: 59, keyword: "$YEARMONTH_DESIGNATION$", instruction: "It denotes designation value for Employee Document on a chosen date." },
   { id: 60, keyword: "$DOJ_DEPARTMENT$", instruction: "It denotes department value for Employee Document at Date of Joining." },
-  { id: 61, keyword: "$DOJ_DESIGNATION$", instruction: "It denotes designation value for Employee Document at Date of Joining." },
+  { id: 61, keyword: "$NOTICEPERIOD_DAYS$", instruction: "It denotes notice period of an user for Employee Document at Date of Joining." },
+  { id: 62, keyword: "$PROBATION_PERIOD$", instruction: "It denotes notice period of their respective designation for Employee Document at Date of Joining." },
+  { id: 63, keyword: "$USER_NOTICE_PERIOD_APPLIED$", instruction: "It denotes user's applied notice period for Employee Document at Date of Joining." },
+  { id: 64, keyword: "$USER_NOTICE_PERIOD_REQUEST$", instruction: "It denotes request date of user's notice period for Employee Document at Date of Joining." },
+  { id: 64, keyword: "$USER_NOTICE_PERIOD_ENDDATE$", instruction: "It denotes endDate of user's notice period for Employee Document at Date of Joining." },
+  { id: 65, keyword: "$USER_NOTICE_PERIOD_STATUS$", instruction: "It denotes status of user's notice period for Employee Document at Date of Joining." },
 ];
 
 

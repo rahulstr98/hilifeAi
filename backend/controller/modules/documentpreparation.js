@@ -57,19 +57,25 @@ exports.getDepartmentDesignationBasedOnDate = catchAsyncErrors(async (req, res, 
 
     const documentPreparation = await User.findOne(
       { companyname: usernames },
-      { department: 1, designation: 1, departmentlog: 1, designationlog: 1 }
+      { department: 1, empcode: 1, designation: 1, departmentlog: 1, designationlog: 1 }
     ).lean();
+
 
     if (!documentPreparation) {
       return res.status(404).json({ message: "User not found" });
     }
 
+
+
     // Convert date to comparable format
     const targetDate = new Date(date);
 
     // Extract logs
-    const { department, designation, departmentlog, designationlog } = documentPreparation;
-
+    const { department, designation, departmentlog, designationlog, empcode } = documentPreparation;
+    const userDesignation = await Designation.findOne({ name: designation });
+    const userNoticePeriod = await Noticeperiodapply.findOne({ empname: usernames, empcode: empcode },
+      { noticedate: 1, empname: 1, approvenoticereq: 1, requestdate: 1, status: 1, requestdate: 1 })
+    // console.log(userDesignation, userNoticePeriod, "userDesignation")
     // --- 1. DOJ values ---
     const dojdepartment = departmentlog?.[0]?.department || null;
     const dojdesignation = designationlog?.[0]?.designation || null;
@@ -113,11 +119,17 @@ exports.getDepartmentDesignationBasedOnDate = catchAsyncErrors(async (req, res, 
       presentdesignation: presentdesignation ?? "",
       datedepartment: datedepartment ?? "",
       datedesignation: datedesignation ?? "",
+      noticeperiodDays: userDesignation ? `${userDesignation?.noticeperiodto} - ${userDesignation?.noticeperiodfrom}` : "",
+      probationPeriod: (userDesignation && userDesignation?.isprobation) ? `${userDesignation?.probationto} - ${userDesignation?.probationfrom}` : "",
+      userNoticeperiodApplied: (userNoticePeriod && userNoticePeriod?.noticedate) ? moment(userNoticePeriod?.noticedate).format("DD-MM-YYYY") : "",
+      userNoticeperiodRequest: (userNoticePeriod && userNoticePeriod?.requestdate) ? moment(userNoticePeriod?.requestdate).format("DD-MM-YYYY") : "",
+      userNoticeperiodEnd: (userNoticePeriod && userNoticePeriod?.approvenoticereq) ? moment(userNoticePeriod?.approvenoticereq).format("DD-MM-YYYY") : "",
+      noticePeriodStatus: (userNoticePeriod && userNoticePeriod?.status) ? userNoticePeriod?.status : "",
       usernames: usernames ?? ""
     };
 
 
-    console.log(result);
+    // console.log(result);
     // res.json(result);
     finalresult = result
 
