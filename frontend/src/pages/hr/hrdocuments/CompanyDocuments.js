@@ -1085,7 +1085,7 @@ function CompanyDocuments() {
         const constAuotId = await fetchAllRaisedTickets();
         if (companyName?.qrInfo?.length > 0) {
             setQrCodeInfoDetails(companyName?.qrInfo?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-                .replaceAll('$C:DATE$', date)}`))
+                .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', "")}`))
         }
         let prefixLength = Number(constAuotId[constAuotId?.length - 1]) + 1;
         let prefixString = String(prefixLength);
@@ -1137,26 +1137,39 @@ function CompanyDocuments() {
                 }`;
             // if (manualKeywordOptions?.length > 0) {
             async function replaceKeywordsWithBase64() {
-                for (const data of manualKeywordOptions || []) {
+                // Prepare promises for all keyword replacements
+                const promises = (manualKeywordOptions || []).map(async (data) => {
                     let replacement = "";
-
 
                     if (data?.description) {
                         replacement += `<div>${data.description}</div>`;
                     }
+
                     if (data?.previewdocument) {
                         replacement += `${data.previewdocument}`;
                     }
+
                     if (data?.file?.filename) {
                         const fileUrl = `${BASE_URL}/ManualDocumentPreparation/${data?.file?.filename}`;
-                        const base64 = await convertFileUrlToBase64(fileUrl);
-
-                        if (base64) {
-                            replacement += `<img src="${base64}" alt="${data.keyword}" style="max-width:250px; max-height:250px;" />`;
+                        try {
+                            const base64 = await convertFileUrlToBase64(fileUrl);
+                            if (base64) {
+                                replacement += `<img src="${base64}" alt="ImageFromManual" style="max-width:250px; max-height:250px;" />`;
+                            }
+                        } catch (err) {
+                            console.error("Error converting file:", fileUrl, err);
                         }
                     }
 
-                    texted = texted.replaceAll(data?.keyword, replacement);
+                    return { keyword: data.keyword, replacement };
+                });
+
+                // Wait for all replacements to complete in parallel
+                const results = await Promise.all(promises);
+
+                // Apply all replacements
+                for (const { keyword, replacement } of results) {
+                    texted = texted.replaceAll(keyword, replacement);
                 }
             }
             await replaceKeywordsWithBase64();
@@ -1204,6 +1217,7 @@ function CompanyDocuments() {
                 )
                 .replaceAll("$C:TIME$", new Date(NewDatetime).toLocaleTimeString())
                 .replaceAll("$C:DATE$", date);
+            console.log(findMethod, "findMethod");
             setChecking(findMethod)
             setLoadingGeneratingDatas(false)
         }
@@ -1654,7 +1668,7 @@ function CompanyDocuments() {
     };
 
     const handlePreviewDocumentManual = () => {
-
+        console.log(checking, checking.match(regex)?.filter(data => !["$SIGNATURE$", "$FSIGNATURE$", "$RSEAL$"]?.includes(data)), "shshb")
         if (headerOptions === "Please Select Print Options") {
             setButtonLoadingPreview(false);
             setPopupContentMalert("Please Select Print Options!");
@@ -3330,7 +3344,7 @@ function CompanyDocuments() {
                 setDataTableId(e?.id);
                 const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
                 setQrCodeInfoDetails(qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-                    .replaceAll('$C:DATE$', date)}`))
+                    .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', "")}`))
             }
 
         } catch (err) {

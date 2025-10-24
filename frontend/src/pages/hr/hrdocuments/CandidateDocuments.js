@@ -1768,31 +1768,31 @@ function CandidateDocuments() {
             setLoadingPreviewData(true);
             handleClickCloseLetterHead();
             setHeaderOptionsButton(true)
-            downloadPdfTesdtCheckTrue(index).then((isMultiPage) => {
-                if (isMultiPage && templateCreationValue?.pagemode === "Single Page") {
-                    setButtonLoading(false)
-                    setLoadingPrintData(false)
-                    setHeaderOptionsButton(false);
-                    setPopupContentMalert(`This Template has  page mode of ${templateCreationValue?.pagemode} but provided is
+            downloadPdfTesdtCheckTrue(index)
+                .then((isMultiPage) => {
+                    if (isMultiPage && templateCreationValue?.pagemode === "Single Page") {
+                        setButtonLoading(false)
+                        setLoadingPrintData(false)
+                        setHeaderOptionsButton(false);
+                        setPopupContentMalert(`This Template has  page mode of ${templateCreationValue?.pagemode} but provided is
                 ${templateCreationValue?.pagemode === "Single Page" ? "more than expected" : "not sufficient"}  to print documents`);
-                    setPopupSeverityMalert("info");
-                    handleClickOpenPopupMalert();
-                }
-                else {
-                    setLoadingPreviewData(true)
-                    setPreviewManual(false)
-                    setButtonLoadingPreview(true);
-                    // Create a new div element to hold the Quill content
-                    const pdfElement = document.createElement("div");
-                    pdfElement.innerHTML = checkingArray[index]?.data.replaceAll('--- Page Break ---', `<p class="page-break-label" data-page-break="true"></p>`);
-                    document.body.appendChild(pdfElement);
-                    console.log(pdfElement, checkingArray[index]?.fileimagename, "pdfElement")
-                    const pdfElementHead = document.createElement("div");
-                    pdfElementHead.innerHTML = checkingArray[index]?.header;
+                        setPopupSeverityMalert("info");
+                        handleClickOpenPopupMalert();
+                    }
+                    else {
+                        setLoadingPreviewData(true)
+                        setPreviewManual(false)
+                        setButtonLoadingPreview(true);
+                        // Create a new div element to hold the Quill content
+                        const pdfElement = document.createElement('div');
+                        // console.log(checkingArray[index]?.data, "checkingArray[index]?.data")
+                        pdfElement.innerHTML = checkingArray[index]?.data.replaceAll('--- Page Break ---', `<p class="page-break-label" data-page-break="true"></p>`);
+                        const pdfElementHead = document.createElement('div');
+                        pdfElementHead.innerHTML = checkingArray[index]?.header;
 
-                    // Add custom styles to the PDF content
-                    const styleElement = document.createElement("style");
-                    styleElement.textContent = `
+                        // Add custom styles to the PDF content
+                        const styleElement = document.createElement("style");
+                        styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -1805,157 +1805,181 @@ function CandidateDocuments() {
                 .ql-align-left { text-align: left; }
                 .ql-align-center { text-align: center; }
                 .ql-align-justify { text-align: justify; }
-                .page-break-label {
+                                  .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
               `;
 
-                    pdfElement.appendChild(styleElement);
+                        pdfElement.appendChild(styleElement);
 
-                    // Create a watermark element
-                    const watermarkElement = document.createElement("div");
-                    watermarkElement.style.position = "absolute";
-                    watermarkElement.style.left = "0";
-                    watermarkElement.style.top = "0";
-                    watermarkElement.style.width = "100%";
-                    watermarkElement.style.height = "100%";
-                    watermarkElement.style.display = "flex";
-                    watermarkElement.style.alignItems = "center";
-                    watermarkElement.style.justifyContent = "center";
-                    watermarkElement.style.opacity = "0.09";
-                    watermarkElement.style.pointerEvents = "none";
+                        // Create a watermark element
+                        const watermarkElement = document.createElement("div");
+                        watermarkElement.style.position = "absolute";
+                        watermarkElement.style.left = "0";
+                        watermarkElement.style.top = "0";
+                        watermarkElement.style.width = "100%";
+                        watermarkElement.style.height = "100%";
+                        watermarkElement.style.display = "flex";
+                        watermarkElement.style.alignItems = "center";
+                        watermarkElement.style.justifyContent = "center";
+                        watermarkElement.style.opacity = "0.09";
+                        watermarkElement.style.pointerEvents = "none";
 
-                    const watermarkImage = document.createElement("img");
-                    watermarkImage.src = checkingArray[index]?.watermark;
-                    watermarkImage.style.width = "75%";
-                    watermarkImage.style.height = "50%";
-                    watermarkImage.style.objectFit = "contain";
+                        const watermarkImage = document.createElement("img");
+                        watermarkImage.src = checkingArray[index]?.watermark;
+                        watermarkImage.style.width = "75%";
+                        watermarkImage.style.height = "50%";
+                        watermarkImage.style.objectFit = "contain";
 
-                    watermarkElement.appendChild(watermarkImage);
+                        watermarkElement.appendChild(watermarkImage);
 
-                    const addPageNumbersAndHeadersFooters = (doc, watermarkImage, qrCodeImage) => {
-                        const totalPages = doc.internal.getNumberOfPages();
-                        const margin = 15; // Adjust as needed
-                        const footerHeight = 15; // Adjust as needed
-                        for (let i = 1; i <= totalPages; i++) {
-                            doc.setPage(i);
-                            const pageWidth = doc.internal.pageSize.getWidth();
+                        const addPageNumbersAndHeadersFooters = (doc, watermarkImage, qrCodeImage) => {
+                            const totalPages = doc.internal.getNumberOfPages();
+                            // console.log(totalPages)
+                            const margin = 15; // Adjust as needed
+                            const footerHeight = 15; // Adjust as needed
+                            const tempDiv = document.createElement('div');
+                            tempDiv.style.position = 'absolute';
+                            tempDiv.style.visibility = 'hidden';
+                            tempDiv.innerHTML = pdfElement;
+                            document.body.appendChild(tempDiv);
+                            const rect = tempDiv.getBoundingClientRect();
+                            const reservedSealHeight = 45;
+                            const actualContentHeight = rect.height * (25.4 / 96);
                             const pageHeight = doc.internal.pageSize.getHeight();
+                            // Total usable height for content
+                            const usableContentHeight = pageHeight - footerHeight - margin - reservedSealHeight;
+                            const contentEndY = Math.min(actualContentHeight, usableContentHeight);
 
-                            doc.setFontSize(12);
-                            if (checkingArray[index]?.header !== "") {
-                                const headerImgWidth = pageWidth * 0.95;
-                                const headerImgHeight = pageHeight * 0.09;
-                                const headerX = 5;
-                                const headerY = 3.5;
-                                doc.addImage(checkingArray[index]?.header, 'JPEG', headerX, headerY, headerImgWidth, headerImgHeight, '', 'FAST', 0.1);
-                            }
+                            for (let i = 1; i <= totalPages; i++) {
+                                doc.setPage(i);
+                                const pageWidth = doc.internal.pageSize.getWidth();
+                                const pageHeight = doc.internal.pageSize.getHeight();
 
-                            if (checkingArray[index]?.header !== "") {
-                                const imgWidth = pageWidth * 0.50;
-                                const imgHeight = pageHeight * 0.25;
-                                const x = (pageWidth - imgWidth) / 2;
-                                const y = (pageHeight - imgHeight) / 2 - 20;
-                                doc.setFillColor(0, 0, 0, 0.1);
-                                doc.addImage(watermarkImage, 'PNG', x, y, imgWidth, imgHeight, '', 'FAST', 0.01);
-                            }
-
-                            doc.setFontSize(10);
-
-                            const footerImgWidth = pageWidth * 0.95;
-                            const footerImgHeight = pageHeight * 0.067;
-                            const footerX = 5;
-                            // const footerY = (pageHeight * 1) - (checkingArray[index]?.footer === "" ? 15 : footerImgHeight - 3);
-                            const footerY = pageHeight * 1 - (checkingArray[index]?.footer === '' ? 15 : footerImgHeight - 3) - (checkingArray[index]?.footer ? 6 : -6);
-
-                            doc.addImage(checkingArray[index]?.footer, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
-
-
-                            if (checkingArray[index]?.pagenumberneed === "All Pages") {
-                                const textY = footerY - 3;
-                                doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, { align: 'center' });
-                            } else if (checkingArray[index]?.pagenumberneed === "End Page" && i === totalPages) {
-                                const textY = footerY - 3;
-                                doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
-                            }
-
-
-                            if (checkingArray[index]?.qrcodeNeed) {
-                                if (i === totalPages) {
-                                    const qrCodeWidth = 25;
-                                    const qrCodeHeight = 25;
-                                    const qrCodeX = footerX;
-                                    const qrCodeY = footerY - qrCodeHeight - 4;
-                                    doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
-
-                                    const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                                        '1. Scan to verify the authenticity of this document.',
-                                        `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                                        `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`
-                                    ];
-
-                                    // starting position
-                                    const statementX = qrCodeX + qrCodeWidth + 10;
-                                    const statementY1 = qrCodeY + 10;
-                                    const lineGap = 5; // vertical spacing between statements
-
-                                    doc.setFontSize(12);
-
-                                    statements.forEach((text, idx) => {
-                                        const y = statementY1 + (idx * lineGap);
-                                        doc.text(text, statementX, y);
-                                    });
+                                doc.setFontSize(12);
+                                if (checkingArray[index]?.header !== "") {
+                                    const headerImgWidth = pageWidth * 0.95;
+                                    const headerImgHeight = pageHeight * 0.09;
+                                    const headerX = 5;
+                                    const headerY = 3.5;
+                                    doc.addImage(checkingArray[index]?.header, 'JPEG', headerX, headerY, headerImgWidth, headerImgHeight, '', 'FAST', 0.1);
                                 }
-                            }
-                            const contentAreaHeight = pageHeight - footerHeight - margin;
-                        }
-                    };
-                    const hasHeaderImage = checkingArray[index]?.header !== ""; // assuming head is a base64 src or image URL
-                    const hasFooterImage = checkingArray[index]?.footer !== "";
 
-                    const adjustedMargin = getAdjustedMargin(selectedMargin, hasHeaderImage, hasFooterImage);
-                    const pdfDimensions = getPageDimensions(); // as before
-                    html2pdf()
-                        .from(pdfElement)
-                        .set({
-                            margin: adjustedMargin,
-                            image: { type: "jpeg", quality: 0.98 },
-                            html2canvas: { scale: 2 },
-                            jsPDF: {
-                                unit: "mm",
-                                format: pdfDimensions,
-                                orientation: pageOrientation
-                            },
-                            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-                        })
-                        .toPdf()
-                        .get('pdf')
-                        .then((pdf) => {
-                            const img = new Image();
-                            img.src = waterMarkText;
-                            img.onload = () => {
-                                const canvas = document.createElement('canvas');
-                                canvas.width = img.width;
-                                canvas.height = img.height;
-                                const ctx = canvas.getContext('2d');
-                                ctx.globalAlpha = 0.1;
-                                ctx.drawImage(img, 0, 0);
-                                const watermarkImage = canvas.toDataURL('image/png');
+                                if (checkingArray[index]?.header !== "") {
+                                    const imgWidth = pageWidth * 0.50;
+                                    const imgHeight = pageHeight * 0.25;
+                                    const x = (pageWidth - imgWidth) / 2;
+                                    const y = (pageHeight - imgHeight) / 2 - 20;
+                                    doc.setFillColor(0, 0, 0, 0.1);
+                                    doc.addImage(watermarkImage, 'PNG', x, y, imgWidth, imgHeight, '', 'FAST', 0.01);
+                                }
 
-                                const qrImg = new Image();
-                                qrImg.src = checkingArray[index]?.qrcodeNeed ? checkingArray[index]?.qrcode : ''; // QR code image URL
+                                doc.setFontSize(10);
+
+                                const footerImgWidth = pageWidth * 0.95;
+                                const footerImgHeight = pageHeight * 0.067;
+                                const footerX = 5;
+                                // const footerY = (pageHeight * 1) - (checkingArray[index]?.footer === "" ? 15 : footerImgHeight - 3);
+                                const footerY = pageHeight * 1 - (checkingArray[index]?.footer === '' ? 15 : footerImgHeight - 3) - (checkingArray[index]?.footer ? 6 : -6);
+
+                                doc.addImage(checkingArray[index]?.footer, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
+
+
+                                if (checkingArray[index]?.pagenumberneed === "All Pages") {
+                                    const textY = footerY - 3;
+                                    doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, { align: 'center' });
+                                } else if (checkingArray[index]?.pagenumberneed === "End Page" && i === totalPages) {
+                                    const textY = footerY - 3;
+                                    doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
+                                }
+
+
                                 if (checkingArray[index]?.qrcodeNeed) {
-                                    qrImg.onload = () => {
-                                        const qrCanvas = document.createElement('canvas');
-                                        qrCanvas.width = qrImg.width;
-                                        qrCanvas.height = qrImg.height;
-                                        const qrCtx = qrCanvas.getContext('2d');
-                                        qrCtx.drawImage(qrImg, 0, 0);
-                                        const qrCodeImage = qrCanvas.toDataURL('image/png');
-                                        // Add page numbers, watermark, and QR code to each page
-                                        addPageNumbersAndHeadersFooters(pdf, watermarkImage, qrCodeImage);
+                                    if (i === totalPages) {
+                                        const qrCodeWidth = 25;
+                                        const qrCodeHeight = 25;
+                                        const qrCodeX = footerX;
+                                        const qrCodeY = footerY - qrCodeHeight - 4;
+                                        doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+
+                                        const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
+                                            '1. Scan to verify the authenticity of this document.',
+                                            `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
+                                            `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`
+                                        ];
+
+                                        // starting position
+                                        const statementX = qrCodeX + qrCodeWidth + 10;
+                                        const statementY1 = qrCodeY + 10;
+                                        const lineGap = 5; // vertical spacing between statements
+
+                                        doc.setFontSize(12);
+
+                                        statements.forEach((text, idx) => {
+                                            const y = statementY1 + (idx * lineGap);
+                                            doc.text(text, statementX, y);
+                                        });
+                                    }
+                                }
+                                const contentAreaHeight = pageHeight - footerHeight - margin;
+                            }
+                        };
+                        const hasHeaderImage = checkingArray[index]?.header !== ""; // assuming head is a base64 src or image URL
+                        const hasFooterImage = checkingArray[index]?.footer !== "";
+
+                        const adjustedMargin = getAdjustedMargin(selectedMargin, hasHeaderImage, hasFooterImage);
+                        const pdfDimensions = getPageDimensions(); // as before
+                        html2pdf()
+                            .from(pdfElement)
+                            .set({
+                                margin: adjustedMargin,
+                                image: { type: "jpeg", quality: 0.98 },
+                                html2canvas: { scale: 2 },
+                                jsPDF: {
+                                    unit: "mm",
+                                    format: pdfDimensions,
+                                    orientation: pageOrientation
+                                },
+                                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+                            })
+                            .toPdf()
+                            .get('pdf')
+                            .then((pdf) => {
+                                const img = new Image();
+                                img.src = waterMarkText;
+                                img.onload = () => {
+                                    const canvas = document.createElement('canvas');
+                                    canvas.width = img.width;
+                                    canvas.height = img.height;
+                                    const ctx = canvas.getContext('2d');
+                                    ctx.globalAlpha = 0.1;
+                                    ctx.drawImage(img, 0, 0);
+                                    const watermarkImage = canvas.toDataURL('image/png');
+
+                                    const qrImg = new Image();
+                                    qrImg.src = checkingArray[index]?.qrcodeNeed ? checkingArray[index]?.qrcode : ''; // QR code image URL
+                                    if (checkingArray[index]?.qrcodeNeed) {
+                                        qrImg.onload = () => {
+                                            const qrCanvas = document.createElement('canvas');
+                                            qrCanvas.width = qrImg.width;
+                                            qrCanvas.height = qrImg.height;
+                                            const qrCtx = qrCanvas.getContext('2d');
+                                            qrCtx.drawImage(qrImg, 0, 0);
+                                            const qrCodeImage = qrCanvas.toDataURL('image/png');
+                                            // Add page numbers, watermark, and QR code to each page
+                                            addPageNumbersAndHeadersFooters(pdf, watermarkImage, qrCodeImage);
+                                            const pdfBlob = pdf.output('blob');
+                                            const pdfUrl = URL.createObjectURL(pdfBlob);
+                                            const printWindow = window.open(pdfUrl); setLoadingPrintData(false)
+                                            setButtonLoading(false)
+                                            setLoadingPrintData(false);
+                                            handleCloseInfoImagePrint();
+                                        }
+                                    }
+                                    else {
+                                        addPageNumbersAndHeadersFooters(pdf, watermarkImage, "");
                                         const pdfBlob = pdf.output('blob');
                                         const pdfUrl = URL.createObjectURL(pdfBlob);
                                         const printWindow = window.open(pdfUrl);
@@ -1963,40 +1987,30 @@ function CandidateDocuments() {
                                         setButtonLoading(false)
                                         handleCloseInfoImagePrint();
                                     }
-                                }
-                                else {
-                                    addPageNumbersAndHeadersFooters(pdf, watermarkImage, "");
-                                    const pdfBlob = pdf.output('blob');
-                                    const pdfUrl = URL.createObjectURL(pdfBlob);
-                                    const printWindow = window.open(pdfUrl);
-                                    setLoadingPrintData(false)
-                                    setButtonLoading(false)
-                                    handleCloseInfoImagePrint();
-                                }
-                            };
-                        });
+                                };
+                            });
+                        setLoadingPreviewData(false)
+                    }
+                    setHeaderOptionsButton(false)
+                    setButtonLoadingPreview(false);
+                    setLoadingPreviewData(false);
+                    // setHeader("")
+                    // setfooter("")
+                    // setCheckingArray((prevArray) =>
+                    //   prevArray.map((item, ind) =>
+                    //     ind === (indexViewQuest - 1) ? {
+                    //       ...item,
+                    //       header: "",
+                    //       footer: ""
+                    //     } : item
+                    //   )
+                    // );
+                }).catch((error) => {
+                    setHeaderOptionsButton(false)
+                    setButtonLoadingPreview(false);
                     setLoadingPreviewData(false)
-                }
-                setHeaderOptionsButton(false)
-                setButtonLoadingPreview(false);
-                setLoadingPreviewData(false);
-                // setHeader("")
-                // setfooter("")
-                // setCheckingArray((prevArray) =>
-                //   prevArray.map((item, ind) =>
-                //     ind === (indexViewQuest - 1) ? {
-                //       ...item,
-                //       header: "",
-                //       footer: ""
-                //     } : item
-                //   )
-                // );
-            }).catch((error) => {
-                setHeaderOptionsButton(false)
-                setButtonLoadingPreview(false);
-                setLoadingPreviewData(false)
-                console.error('Error generating PDF:', error);
-            })
+                    console.error('Error generating PDF:', error);
+                })
         }
     };
 
@@ -2600,7 +2614,7 @@ function CandidateDocuments() {
         .ql-align-left { text-align: left; }
         .ql-align-center { text-align: center; }
         .ql-align-justify { text-align: justify; }
-        .page-break-label {
+                          .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
@@ -2633,6 +2647,19 @@ function CandidateDocuments() {
                 const totalPages = doc.internal.getNumberOfPages();
                 const margin = 15; // Adjust as needed
                 const footerHeight = 15; // Adjust as needed
+                const tempDiv = document.createElement('div');
+                tempDiv.style.position = 'absolute';
+                tempDiv.style.visibility = 'hidden';
+                tempDiv.innerHTML = pdfElement;
+                document.body.appendChild(tempDiv);
+                const rect = tempDiv.getBoundingClientRect();
+                const reservedSealHeight = 45;
+                const actualContentHeight = rect.height * (25.4 / 96);
+                const pageHeight = doc.internal.pageSize.getHeight();
+                // Total usable height for content
+                const usableContentHeight = pageHeight - footerHeight - margin - reservedSealHeight;
+                const contentEndY = Math.min(actualContentHeight, usableContentHeight);
+
                 for (let i = 1; i <= totalPages; i++) {
                     doc.setPage(i);
                     const pageWidth = doc.internal.pageSize.getWidth();
@@ -2964,7 +2991,7 @@ function CandidateDocuments() {
         let prefixLength = Number(constAuotId[lastIndex]) + (index + 1);
         if (companyName?.qrInfo?.length > 0) {
             setQrCodeInfoDetails(companyName?.qrInfo?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-                .replaceAll('$C:DATE$', date)}`))
+                .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', "")}`))
         }
         let prefixString = String(prefixLength);
         let postfixLength = prefixString.length == 1 ? `000${prefixString}` : prefixString.length == 2 ?
@@ -3066,7 +3093,7 @@ function CandidateDocuments() {
                         const base64 = await convertFileUrlToBase64(fileUrl);
 
                         if (base64) {
-                            replacement += `<img src="${base64}" alt="${data.keyword}" style="max-width:250px; max-height:250px;" />`;
+                            replacement += `<img src="${base64}" alt="ImageFromManual" style="max-width:250px; max-height:250px;" />`;
                         }
                     }
 
@@ -3757,7 +3784,7 @@ function CandidateDocuments() {
                 setDataTableId(e?.id);
                 const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
                 setQrCodeInfoDetails(qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-                    .replaceAll('$C:DATE$', date)}`))
+                    .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', "")}`))
 
             }
 
@@ -5101,29 +5128,32 @@ function CandidateDocuments() {
                             <br />
                             <Grid container spacing={2} sx={{ marginLeft: "3px" }}>
                                 <Grid item md={4} xs={12} sm={12}>
-                                    <LoadingButton loading={HeaderOptionsButton} sx={buttonStyles.buttonsubmit} autoFocus variant="contained" onClick={(e) => {
-                                        if (pagePopeOpen === "Preview") {
-                                            handlePreviewDocument(indexViewQuest - 1)
+                                    <LoadingButton loading={HeaderOptionsButton} sx={buttonStyles.buttonsubmit}
+                                        autoFocus
+                                        variant="contained"
+                                        onClick={(e) => {
+                                            if (pagePopeOpen === "Preview") {
+                                                handlePreviewDocument(indexViewQuest - 1)
+                                            }
+                                            else if (pagePopeOpen === "Print") {
+                                                handlePrintDocument(indexViewQuest - 1)
+                                            }
+                                            else if (pagePopeOpen === "Table View") {
+                                                downloadPdfTesdtTable(DataTableId)
+                                            }
+                                            else if (pagePopeOpen === "Table Print") {
+                                                downloadPdfTesdtTablePrint(DataTableId)
+                                            }
+                                            else if (pagePopeOpen === "Bulk Print") {
+                                                handleBulkPrint();
+                                            }
+                                            else if (pagePopeOpen === "Email") {
+                                                fetchEmailForUser(emailValuePage?.id, emailValuePage?.convert, emailValuePage?.fromemail, emailValuePage?.ccemail, emailValuePage?.bccemail)
+                                            }
                                         }
-                                        else if (pagePopeOpen === "Print") {
-                                            handlePrintDocument(indexViewQuest - 1)
-                                        }
-                                        else if (pagePopeOpen === "Table View") {
-                                            downloadPdfTesdtTable(DataTableId)
-                                        }
-                                        else if (pagePopeOpen === "Table Print") {
-                                            downloadPdfTesdtTablePrint(DataTableId)
-                                        }
-                                        else if (pagePopeOpen === "Bulk Print") {
-                                            handleBulkPrint();
-                                        }
-                                        else if (pagePopeOpen === "Email") {
-                                            fetchEmailForUser(emailValuePage?.id, emailValuePage?.convert, emailValuePage?.fromemail, emailValuePage?.ccemail, emailValuePage?.bccemail)
-                                        }
-                                    }
 
 
-                                    }>
+                                        }>
                                         {" "}
                                         OK{" "}
                                     </LoadingButton>

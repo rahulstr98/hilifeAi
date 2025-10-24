@@ -3799,7 +3799,7 @@ function DocumentPreparation() {
       let employee = res_emp?.data?.usersstatus;
       if (companyName?.qrInfo?.length > 0) {
         setQrCodeInfoDetails(companyName?.qrInfo?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-          .replaceAll('$C:DATE$', date).replaceAll('$DOJ', employee ? employee?.doj : "")}`))
+          .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', employee ? employee?.doj : "")}`))
       }
       let attendanceDetails = "";
       if (AttendanceNeed) {
@@ -3882,7 +3882,7 @@ function DocumentPreparation() {
             const base64 = await convertFileUrlToBase64(fileUrl);
 
             if (base64) {
-              replacement += `<img src="${base64}" alt="${data.keyword}" style="max-width:250px; max-height:250px;" />`;
+              replacement += `<img src="${base64}" alt="ImageFromManual" style="max-width:250px; max-height:250px;" />`;
             }
           }
 
@@ -4222,7 +4222,7 @@ function DocumentPreparation() {
   };
 
   const downloadPdfTesdt = (index) => {
-    if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson) {
+    if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
       setPopupContentMalert('This Employee is not eligibile to receieve any kind of documents!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -4590,7 +4590,7 @@ function DocumentPreparation() {
   };
 
   const downloadPdfTesdtManual = () => {
-    if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson) {
+    if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
       setPopupContentMalert('This Employee is not eligibile to receieve any kind of documents!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -4996,7 +4996,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Please Select With Letter Head!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson) {
+    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
       setButtonLoadingPreview(false);
       setPopupContentMalert('This Employee is not eligible to receive any kind of documents!');
       setPopupSeverityMalert('info');
@@ -5471,7 +5471,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Please Select With Letter Head!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson) {
+    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
       setButtonLoadingPreview(false);
       setPopupContentMalert('This Employee is not eligible to receive any kind of documents!');
       setPopupSeverityMalert('info');
@@ -7774,7 +7774,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Document Todo is Empty!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson) {
+    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
       setPopupContentMalert('This Employee is not eligibile to receieve any kind of documents!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -7916,7 +7916,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Document is Empty!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson) {
+    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
       setPopupContentMalert('This Employee is not eligibile to receieve any kind of documents!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -8857,7 +8857,7 @@ function DocumentPreparation() {
         setDataTableId(e?.id);
         const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
         setQrCodeInfoDetails(qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-          .replaceAll('$C:DATE$', date).replaceAll('$DOJ', e ? e?.doj : "")}`))
+          .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', e ? e?.doj : "")}`))
       }
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -11728,7 +11728,11 @@ function DocumentPreparation() {
                       <Typography>
                         With Letter Head <b style={{ color: 'red' }}>*</b>
                       </Typography>
-                      <MultiSelect maxMenuHeight={300} options={WithHeaderOptions} value={selectedHeadOpt} onChange={handleHeadChange} valueRenderer={customValueRenderHeadFrom} />
+                      <MultiSelect
+                       maxMenuHeight={300} 
+                       options={WithHeaderOptions}
+                        value={selectedHeadOpt} 
+                        onChange={handleHeadChange} valueRenderer={customValueRenderHeadFrom} />
                     </FormControl>
                   </Grid>
                 )}
