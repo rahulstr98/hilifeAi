@@ -9,6 +9,10 @@ const documentPreparationSchema = new Schema({
     type: String,
     required: false,
   },
+  employeedoj: {
+    type: String,
+    required: false,
+  },
   manualdate: {
     type: String,
     required: false,

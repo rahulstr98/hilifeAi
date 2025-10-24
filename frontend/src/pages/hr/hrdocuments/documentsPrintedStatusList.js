@@ -1153,6 +1153,7 @@ function DocumentsPrintedStatusList() {
         documentneed: item.documentneed,
         updatedby: item.updatedby,
         approvedfilename: item.approvedfilename,
+        employeedoj: item.employeedoj,
       })) : [];
       setTemplateCreationArrayCreate(answer)
       setFilterLoader(false)
@@ -1373,7 +1374,7 @@ function DocumentsPrintedStatusList() {
           res?.data?.templatecontrolpanel?.templatecontrolpanellog[res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1] : "";
         setPersonId(ans);
         handleClickOpenLetterHeader(pagename);
-        setDataTableId(e?.id);
+        setDataTableId(e);
       }
 
     } catch (err) {
@@ -1477,7 +1478,7 @@ function DocumentsPrintedStatusList() {
     else {
       setHeaderOptionsButton(true)
       // Create a new div element to hold the Quill content
-      let response = await axios.get(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e}`, {
+      let response = await axios.get(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e?.id}`, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
@@ -1497,10 +1498,10 @@ function DocumentsPrintedStatusList() {
           const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
           console.log(qrInfoDetails, 'qrInfoDetails')
           qrCodeInfoDetails = qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-            .replaceAll('$C:DATE$', date)}`)
+            .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', e ? e?.employeedoj : "")}`)
         }
       }
-      await getUpdatePrintingStatus(e, response.data.sdocumentPreparation?.updatedby)
+      await getUpdatePrintingStatus(e?.id, response.data.sdocumentPreparation?.updatedby)
       const pdfElement = document.createElement("div");
       pdfElement.innerHTML = response.data.sdocumentPreparation.document?.replaceAll('--- Page Break ---', `<p class="page-break-label" data-page-break="true"></p>`);;
 
@@ -1849,12 +1850,12 @@ function DocumentsPrintedStatusList() {
     else {
       setHeaderOptionsButton(true)
       // Create a new div element to hold the Quill content
-      let response = await axios.get(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e}`, {
+      let response = await axios.get(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e?.id}`, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-            let qrCodeInfoDetails = [];
+      let qrCodeInfoDetails = [];
       if (response.data.sdocumentPreparation) {
         let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
           headers: {
@@ -1872,7 +1873,7 @@ function DocumentsPrintedStatusList() {
             .replaceAll('$C:DATE$', date)}`)
         }
       }
-      await getUpdatePrintingStatus(e, response.data.sdocumentPreparation?.updatedby)
+      await getUpdatePrintingStatus(e?.id, response.data.sdocumentPreparation?.updatedby)
       const pdfElement = document.createElement("div");
       pdfElement.innerHTML = response.data.sdocumentPreparation.document?.replaceAll('--- Page Break ---', `<p class="page-break-label" data-page-break="true"></p>`);
       let headerDisp = pagename === "Employee" ? response?.data?.sdocumentPreparation?.head : head;
@@ -2207,24 +2208,24 @@ function DocumentsPrintedStatusList() {
         Authorization: `Bearer ${auth.APIToken}`,
       },
     });
-          let qrCodeInfoDetails = [];
-      if (response.data.sdocumentPreparation) {
-        let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
-          headers: {
-            Authorization: `Bearer ${auth.APIToken}`,
-          },
-          company: response.data.sdocumentPreparation?.company,
-          branch: response.data.sdocumentPreparation?.branch,
-        });
-        if (res?.data?.templatecontrolpanel) {
-          const ans = res?.data?.templatecontrolpanel ?
-            res?.data?.templatecontrolpanel?.templatecontrolpanellog[res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1] : "";
-          const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
-          console.log(qrInfoDetails, 'qrInfoDetails')
-          qrCodeInfoDetails = qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-            .replaceAll('$C:DATE$', date)}`)
-        }
+    let qrCodeInfoDetails = [];
+    if (response.data.sdocumentPreparation) {
+      let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        company: response.data.sdocumentPreparation?.company,
+        branch: response.data.sdocumentPreparation?.branch,
+      });
+      if (res?.data?.templatecontrolpanel) {
+        const ans = res?.data?.templatecontrolpanel ?
+          res?.data?.templatecontrolpanel?.templatecontrolpanellog[res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1] : "";
+        const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
+        console.log(qrInfoDetails, 'qrInfoDetails')
+        qrCodeInfoDetails = qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
+          .replaceAll('$C:DATE$', date)}`)
       }
+    }
     if (pagename !== "Employee") {
       handleClickCloseLetterHead();
     }
@@ -2747,7 +2748,7 @@ function DocumentsPrintedStatusList() {
                 onClick={() => {
                   console.log(params?.data?.approval, "2339")
                   params?.data?.approval === "approved" ? getViewFile(params?.data?.approvedfilename, params?.data) :
-                    downloadPdfTesdtTable(params?.data?.id, "Employee");
+                    downloadPdfTesdtTable(params?.data, "Employee",);
                 }}
                 sx={userStyle.buttonview}
               >
@@ -2782,7 +2783,7 @@ function DocumentsPrintedStatusList() {
                 onClick={() => {
                   params?.data?.approval === "approved" ?
                     downloadFile(params?.data?.approvedfilename, params?.data) :
-                    downloadPdfPrintTable(params?.data?.id, "Employee")
+                    downloadPdfPrintTable(params?.data, "Employee")
                 }}
               >
                 Print
@@ -2916,6 +2917,7 @@ function DocumentsPrintedStatusList() {
       documentneed: item.documentneed,
       updatedby: item.updatedby,
       approvedfilename: item.approvedfilename,
+      employeedoj: item.employeedoj,
     };
   });
 

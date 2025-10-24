@@ -36,7 +36,7 @@ const upload = multer({ storage: storage });
 exports.getAllDocumentPreparation = catchAsyncErrors(async (req, res, next) => {
   let documentPreparation;
   try {
-    documentPreparation = await DocumentPreparation.find({}, { date: 1, printingstatus: 1, pagesize: 1, printoptions: 1, pageheight: 1, pagewidth: 1, template: 1, templateno: 1, documentname: 1, referenceno: 1, employeemode: 1, department: 1, company: 1, issuingauthority: 1, branch: 1, unit: 1, team: 1, person: 1, proption: 1, tempcode: 1, sign: 1, sealing: 1, email: 1, frommailemail: 1, mail: 1, addedby: 1, issuedpersondetails: 1, updatedby: 1, createdAt: 1, }).lean();
+    documentPreparation = await DocumentPreparation.find({}, { date: 1, printingstatus: 1, pagesize: 1, printoptions: 1, pageheight: 1, pagewidth: 1, template: 1, templateno: 1, documentname: 1, referenceno: 1, employeemode: 1, department: 1, company: 1, employeedoj:1,employeedoj:1, issuingauthority: 1, branch: 1, unit: 1, team: 1, person: 1, proption: 1, tempcode: 1, sign: 1, sealing: 1, email: 1, frommailemail: 1, mail: 1, addedby: 1, issuedpersondetails: 1, updatedby: 1, createdAt: 1, }).lean();
   } catch (err) {
     return next(new ErrorHandler("Records not found!", 404));
   }
@@ -879,6 +879,7 @@ exports.getHierarchyApprovalEmployeesTemplate = catchAsyncErrors(async (req, res
         approvalenddate: 1,
         department: 1,
         company: 1,
+        employeedoj:1,
         issuingauthority: 1,
         branch: 1,
         unit: 1,
@@ -1085,6 +1086,7 @@ exports.getHierarchyApprovalEmployeesTemplate = catchAsyncErrors(async (req, res
         approvalenddate: 1,
         department: 1,
         company: 1,
+        employeedoj:1,
         issuingauthority: 1,
         branch: 1,
         unit: 1,
@@ -1216,6 +1218,7 @@ exports.getApprovalEmployeesDocumentsPreparations = catchAsyncErrors(async (req,
         approvalenddate: 1,
         department: 1,
         company: 1,
+        employeedoj:1,
         issuingauthority: 1,
         branch: 1,
         unit: 1,
@@ -1355,6 +1358,7 @@ exports.getAccessibleBranchAllDocumentPreparation = catchAsyncErrors(async (req,
           approvalenddate: 1,
           department: 1,
           company: 1,
+          employeedoj:1,
           issuingauthority: 1,
           branch: 1,
           unit: 1,
@@ -1411,6 +1415,7 @@ exports.getAccessibleBranchAllDocumentPreparationOverall = catchAsyncErrors(asyn
           approveddate: 1,
           approvalenddate: 1,
           department: 1,
+          employeedoj:1,
           company: 1,
           issuingauthority: 1,
           branch: 1,
@@ -1548,6 +1553,7 @@ exports.getAllEmployeeDocumentsPreparationPrintedStatusList = catchAsyncErrors(a
             department: 1,
             username: 1,
             company: 1,
+            
           }
         }
       ];
@@ -1613,9 +1619,11 @@ exports.getAllEmployeeDocumentsPreparationPrintedStatusList = catchAsyncErrors(a
         approvalenddate: 1,
         department: 1,
         company: 1,
+        employeedoj:1,
         issuingauthority: 1,
         branch: 1,
         unit: 1,
+        employeedoj:1,
         team: 1,
         person: 1,
         tempcode: 1,

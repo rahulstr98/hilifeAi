@@ -143,12 +143,64 @@ const smallSelectStyle = {
 
 const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargin, setSelectedMargin, pageSize, setPageSize, pageOrientation, setPageOrientation }) => {
   const quillRef = useRef();
-  // console.log(agenda , "agenda")
+  console.log(agenda, "agenda")
   const [searchTerm, setSearchTerm] = useState('');
   const [replaceTerm, setReplaceTerm] = useState('');
   // const [selectedMargin, setSelectedMargin] = useState("normal");
   // const [pageSize, setPageSize] = useState("A4");
   // const [pageOrientation, setPageOrientation] = useState("portrait");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imageWidth, setImageWidth] = useState(200); // default width
+  const [imageHeight, setImageHeight] = useState(200); // default height
+
+  const handleSelectImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setSelectedImage(reader.result);
+      reader.readAsDataURL(file);
+      setIsModalOpen(true);
+    }
+  };
+
+  // Insert image into Quill with styles
+  const handleInsertImage = () => {
+    if (!selectedImage) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = imageWidth;   // desired width
+    canvas.height = imageHeight; // desired height
+
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    img.onload = () => {
+      // Draw the image scaled to the canvas
+      ctx.drawImage(img, 0, 0, imageWidth, imageHeight);
+
+      // Convert canvas to base64
+      const resizedDataUrl = canvas.toDataURL('image/png');
+
+      // Insert into Quill
+      const quill = quillRef.current?.getEditor();
+      if (!quill) return;
+
+      const range = quill.getSelection(true);
+      quill.insertEmbed(range.index, 'image', resizedDataUrl, 'user');
+      quill.setSelection(range.index + 1, 0);
+
+      setIsModalOpen(false);
+      setSelectedImage(null);
+    };
+
+    img.src = selectedImage;
+  };
+
+
+
+
   const [editorFocused, setEditorFocused] = useState(false);
   const jsPDFPageDimensions = {
     A2: [420, 594],
@@ -207,6 +259,10 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     { label: 'Mirrored', value: 'mirrored', tooltip: 'Top: 2.54 cm, Bottom: 2.54 cm, Inside: 3.18 cm, Outside: 2.54 cm' },
     { label: 'Office 2003', value: 'office2003', tooltip: 'Top: 2.54 cm, Bottom: 2.54 cm, Left/Right: 3.18 cm' },
   ];
+
+
+
+
 
   const handleCopy = () => {
     if (disabled) return;
@@ -714,50 +770,31 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
   };
 
 
-//   useEffect(() => {
-//   const quill = quillRef.current?.getEditor();
-//   if (!quill) return;
+  // useEffect(() => {
+  //   const quill = quillRef.current?.getEditor();
+  //   if (!quill) return;
 
-//   const attachResizeHandlers = (img) => {
-//     img.addEventListener("mouseup", () => {
-//       const style = window.getComputedStyle(img);
-//       const width = style.width;
-//       const height = style.height;
+  //   const editorEl = quill.root;
 
-//       // Store resized size inline so it persists
-//       img.setAttribute("width", width);
-//       img.setAttribute("height", height);
-//       img.style.width = width;
-//       img.style.height = height;
-//     });
-//   };
+  //   // 🧩 Whenever any change happens in editor
+  //   const handleEditorChange = () => {
+  //     const imgs = editorEl.querySelectorAll("img");
+  //     imgs.forEach((img) => {
+  //       if (img.width || img.height) {
+  //         img.setAttribute("style", `width: ${img.width}px; height: ${img.height}px;`);
+  //       }
+  //     });
+  //     setAgenda(editorEl.innerHTML);
+  //   };
 
-//   // Attach to existing images
-//   quill.root.querySelectorAll("img").forEach((img) => attachResizeHandlers(img));
+  //   // Listen for any text changes — includes resizing side-effects
+  //   quill.on("text-change", handleEditorChange);
 
-//   // 🧠 Watch for new images being added dynamically
-//   const observer = new MutationObserver((mutationsList) => {
-//     for (const mutation of mutationsList) {
-//       if (mutation.type === "childList") {
-//         mutation.addedNodes.forEach((node) => {
-//           if (node.tagName === "IMG") attachResizeHandlers(node);
-//           // handle if new <p> or <div> with <img> inside is added
-//           if (node.querySelectorAll) {
-//             node.querySelectorAll("img").forEach((img) => attachResizeHandlers(img));
-//           }
-//         });
-//       }
-//     }
-//   });
-
-//   observer.observe(quill.root, {
-//     childList: true,
-//     subtree: true,
-//   });
-
-//   // Cleanup on unmount
-//   return () => observer.disconnect();
-// }, []);
+  //   // Cleanup on unmount
+  //   return () => {
+  //     quill.off("text-change", handleEditorChange);
+  //   };
+  // }, []);
 
   return (
     <>
@@ -949,6 +986,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             </Button>
           </Tooltip>
         </Grid>
+
         <Grid item>
           <Tooltip title="Insert Tab Space">
             <Button
@@ -968,6 +1006,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             </Button>
           </Tooltip>
         </Grid>
+
         <Grid item>
           <Tooltip title="Insert Page Break">
             <Button
@@ -987,6 +1026,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             </Button>
           </Tooltip>
         </Grid>
+
         <Grid item>
           <FormControl size="small" sx={smallSelectStyle}>
             <InputLabel id="margin-label">Margin</InputLabel>
@@ -1001,6 +1041,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item>
           <FormControl size="small" sx={smallSelectStyle}>
             <InputLabel id="orientation-label">Orientation</InputLabel>
@@ -1010,6 +1051,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item>
           <FormControl size="small" sx={smallSelectStyle}>
             <InputLabel id="page-size-label">Page Size</InputLabel>
@@ -1080,6 +1122,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             onChange={(e) => setReplaceTerm(e.target.value)}
           />
         </Grid>
+
         <Grid item>
           <Button
             variant="contained"
@@ -1096,6 +1139,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             Replace
           </Button>
         </Grid>
+
         <Grid item>
           <Tooltip title="Print Preview">
             <Button
@@ -1113,6 +1157,106 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             </Button>
           </Tooltip>
         </Grid>
+        <Grid item>
+          <Button
+            variant="contained"
+            size="small"
+            sx={{
+              minWidth: 'auto', // remove default min width
+              padding: '2px 6px', // reduce padding
+              fontSize: '0.65rem', // smaller text
+            }}
+            onClick={() => document.getElementById("fileInput").click()}
+          >
+            Insert Image
+          </Button>
+
+          <input
+            type="file"
+            id="fileInput"
+            accept="image/*"
+            style={{ display: "none" }}
+            onChange={handleSelectImage}
+          />
+
+          {/* Modal */}
+          {isModalOpen && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "rgba(0,0,0,0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zIndex: 9999,
+              }}
+            >
+              <div
+                style={{
+                  background: "#fff",
+                  padding: "16px",
+                  borderRadius: "8px",
+                  textAlign: "center",
+                }}
+              >
+                <h3>Resize Image</h3>
+                {selectedImage && (
+                  <img
+                    src={selectedImage}
+                    style={{
+                      width: `${imageWidth}px`,
+                      height: `${imageHeight}px`,
+                      objectFit: "contain",
+                      border: "1px solid #ccc",
+                      marginBottom: "8px",
+                    }}
+                  />
+                )}
+                <div>
+                  <label>
+                    Width:
+                    <input
+                      type="number"
+                      value={imageWidth}
+                      onChange={(e) => setImageWidth(e.target.value)}
+                    />
+                  </label>
+                </div>
+                <div>
+                  <label>
+                    Height:
+                    <input
+                      type="number"
+                      value={imageHeight}
+                      onChange={(e) => setImageHeight(e.target.value)}
+                    />
+                  </label>
+                </div>
+                <Button
+                  variant="contained"
+                  size="small"
+                  onClick={handleInsertImage}
+                  sx={{ marginRight: 1 }}
+                >
+                  Insert
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </Grid>
+
+
       </Grid>
       <div
         className={`editor-page margin-${selectedMargin}`}
@@ -1151,10 +1295,10 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               ['link', 'image', 'video'],
               ['clean'],
             ],
-            imageResize: {
-              parchment: Quill.import('parchment'),
-              modules: ['Resize', 'DisplaySize'],
-            },
+            // imageResize: {
+            //   parchment: Quill.import('parchment'),
+            //   modules: ['Resize', 'DisplaySize'],
+            // },
             history: {
               delay: 500,
               maxStack: 100,

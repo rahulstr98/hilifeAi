@@ -8857,7 +8857,7 @@ function DocumentPreparation() {
         setDataTableId(e?.id);
         const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
         setQrCodeInfoDetails(qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-          .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', e ? e?.doj : "")}`))
+          .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', e ? e?.employeedoj : "")}`))
       }
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -9840,6 +9840,7 @@ function DocumentPreparation() {
       issuingauthority: item.issuingauthority,
       daystatus: item.daystatus,
       printoptions: item.printoptions,
+      employeedoj: item.employeedoj,
     };
   });
 
