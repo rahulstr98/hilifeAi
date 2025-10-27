@@ -176,7 +176,7 @@ function EmployeeDocumentsApprovalPage() {
                     const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
                     console.log(qrInfoDetails, 'qrInfoDetails')
                     setQrCodeInfoDetails(qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-                        .replaceAll('$C:DATE$', date)}`))
+                        .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', response?.data?.users ? response?.data?.users?.doj : "")}`))
                 }
                 const usersData = response?.data?.users?.loginUserStatus?.length > 0 ? response?.data?.users?.loginUserStatus?.filter(data => data?.status === "Active") : []
                 const userESignature = userDetails?.data?.semployeesignature ? userDetails?.data?.semployeesignature?.signatureimage : ""

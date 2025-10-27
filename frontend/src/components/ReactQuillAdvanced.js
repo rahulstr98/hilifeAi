@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ReactQuill from 'react-quill';
 import ImageResize from 'quill-image-resize-module-react';
 import html2pdf from 'html2pdf.js';
@@ -23,6 +23,11 @@ import {
 import InsertPageBreakIcon from '@mui/icons-material/InsertPageBreak';
 // Setup Quill extensions
 import Quill from 'quill';
+import Cropper from "react-easy-crop";
+// import ImageInsertGrid from "./ImageInsertGrid";
+import { Rnd } from "react-rnd";
+
+
 const Parchment = Quill.import('parchment');
 Quill.register('modules/imageResize', ImageResize);
 
@@ -146,56 +151,65 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
   console.log(agenda, "agenda")
   const [searchTerm, setSearchTerm] = useState('');
   const [replaceTerm, setReplaceTerm] = useState('');
-  // const [selectedMargin, setSelectedMargin] = useState("normal");
-  // const [pageSize, setPageSize] = useState("A4");
-  // const [pageOrientation, setPageOrientation] = useState("portrait");
+
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [imageWidth, setImageWidth] = useState(200); // default width
-  const [imageHeight, setImageHeight] = useState(200); // default height
+  const [dragOver, setDragOver] = useState(false);
+  const [imageItem, setImageItem] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleSelectImage = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setSelectedImage(reader.result);
-      reader.readAsDataURL(file);
-      setIsModalOpen(true);
-    }
+    if (!file || !file.type.startsWith("image/")) return;
+    const preview = URL.createObjectURL(file);
+    setImageItem({ file, name: file.name, preview, width: 300, height: 200, x: 0, y: 0 });
+    e.target.value = "";
   };
 
-  // Insert image into Quill with styles
+  const handleDragOver = (e) => { e.preventDefault(); setDragOver(true); };
+  const handleDragLeave = (e) => { e.preventDefault(); setDragOver(false); };
+  const handleDrop = (e) => {
+    e.preventDefault(); setDragOver(false);
+    const file = e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith("image/")) return;
+    const preview = URL.createObjectURL(file);
+    setImageItem({ file, name: file.name, preview, width: 300, height: 200, x: 0, y: 0 });
+  };
+
+  const removeImage = () => {
+    if (imageItem?.preview) URL.revokeObjectURL(imageItem.preview);
+    setImageItem(null);
+  };
+
+  // -------------------------
+  // Insert into Quill
+  // -------------------------
   const handleInsertImage = () => {
-    if (!selectedImage) return;
+    if (!imageItem) return;
 
-    const canvas = document.createElement('canvas');
-    canvas.width = imageWidth;   // desired width
-    canvas.height = imageHeight; // desired height
+    const { width, height, preview } = imageItem;
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
 
-    const ctx = canvas.getContext('2d');
     const img = new Image();
-
+    img.crossOrigin = "anonymous";
     img.onload = () => {
-      // Draw the image scaled to the canvas
-      ctx.drawImage(img, 0, 0, imageWidth, imageHeight);
+      ctx.drawImage(img, 0, 0, width, height);
+      const dataUrl = canvas.toDataURL("image/png");
 
-      // Convert canvas to base64
-      const resizedDataUrl = canvas.toDataURL('image/png');
-
-      // Insert into Quill
-      const quill = quillRef.current?.getEditor();
-      if (!quill) return;
-
-      const range = quill.getSelection(true);
-      quill.insertEmbed(range.index, 'image', resizedDataUrl, 'user');
-      quill.setSelection(range.index + 1, 0);
+      const quill = quillRef?.current?.getEditor?.();
+      if (quill) {
+        const range = quill.getSelection(true) || { index: quill.getLength() };
+        quill.insertEmbed(range.index, "image", dataUrl, "user");
+        quill.setSelection((range.index || 0) + 1, 0);
+      }
 
       setIsModalOpen(false);
-      setSelectedImage(null);
+      removeImage();
     };
-
-    img.src = selectedImage;
+    img.src = preview;
   };
 
 
@@ -770,32 +784,6 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
   };
 
 
-  // useEffect(() => {
-  //   const quill = quillRef.current?.getEditor();
-  //   if (!quill) return;
-
-  //   const editorEl = quill.root;
-
-  //   // 🧩 Whenever any change happens in editor
-  //   const handleEditorChange = () => {
-  //     const imgs = editorEl.querySelectorAll("img");
-  //     imgs.forEach((img) => {
-  //       if (img.width || img.height) {
-  //         img.setAttribute("style", `width: ${img.width}px; height: ${img.height}px;`);
-  //       }
-  //     });
-  //     setAgenda(editorEl.innerHTML);
-  //   };
-
-  //   // Listen for any text changes — includes resizing side-effects
-  //   quill.on("text-change", handleEditorChange);
-
-  //   // Cleanup on unmount
-  //   return () => {
-  //     quill.off("text-change", handleEditorChange);
-  //   };
-  // }, []);
-
   return (
     <>
       <br />
@@ -1141,45 +1129,23 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
         </Grid>
 
         <Grid item>
-          <Tooltip title="Print Preview">
-            <Button
-              variant="outlined"
-              size="small"
-              sx={{
-                minWidth: 'auto', // remove default min width
-                padding: '2px 6px', // reduce padding
-                fontSize: '0.65rem', // smaller text
-              }}
-              onClick={handlePrintPreview}
-              startIcon={<PrintIcon />}
-            >
-              Preview
-            </Button>
-          </Tooltip>
-        </Grid>
-        <Grid item>
           <Button
             variant="contained"
             size="small"
-            sx={{
-              minWidth: 'auto', // remove default min width
-              padding: '2px 6px', // reduce padding
-              fontSize: '0.65rem', // smaller text
-            }}
-            onClick={() => document.getElementById("fileInput").click()}
+            sx={{ minWidth: "auto", padding: "2px 6px", fontSize: "0.65rem" }}
+            onClick={() => setIsModalOpen(true)}
           >
             Insert Image
           </Button>
 
           <input
             type="file"
-            id="fileInput"
+            ref={fileInputRef}
             accept="image/*"
             style={{ display: "none" }}
             onChange={handleSelectImage}
           />
 
-          {/* Modal */}
           {isModalOpen && (
             <div
               style={{
@@ -1192,69 +1158,108 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                zIndex: 9999,
+                zIndex: 999999,
               }}
+              onClick={(e) => { if (e.target === e.currentTarget) setIsModalOpen(false); }}
             >
               <div
                 style={{
                   background: "#fff",
-                  padding: "16px",
+                  padding: "20px",
                   borderRadius: "8px",
-                  textAlign: "center",
+                  width: "75vw",       // make modal 90% of screen width
+                  maxWidth: "800px",  // max width
+                  height: "70vh",      // modal height 90% of viewport
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
                 }}
               >
-                <h3>Resize Image</h3>
-                {selectedImage && (
-                  <img
-                    src={selectedImage}
+                <h3>Upload Image</h3>
+
+                {!imageItem && (
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
                     style={{
-                      width: `${imageWidth}px`,
-                      height: `${imageHeight}px`,
-                      objectFit: "contain",
-                      border: "1px solid #ccc",
-                      marginBottom: "8px",
+                      border: dragOver ? "2px dashed #1976d2" : "2px dashed #aaa",
+                      padding: "60px 10px",
+                      borderRadius: "8px",
+                      marginBottom: "12px",
+                      background: dragOver ? "#e3f2fd" : "#fafafa",
+                      cursor: "pointer",
+                      width: "80%",
+                      textAlign: "center",
                     }}
-                  />
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    <p style={{ color: "#666" }}>Drag & drop image here, or click to browse</p>
+                  </div>
                 )}
-                <div>
-                  <label>
-                    Width:
-                    <input
-                      type="number"
-                      value={imageWidth}
-                      onChange={(e) => setImageWidth(e.target.value)}
-                    />
-                  </label>
+
+                {imageItem && (
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "80%",        // make image container fill modal
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Rnd
+                      size={{ width: imageItem.width, height: imageItem.height }}
+                      position={{ x: imageItem.x, y: imageItem.y }}
+                      onDragStop={(e, d) => setImageItem((prev) => ({ ...prev, x: d.x, y: d.y }))}
+                      onResizeStop={(e, direction, ref, delta, position) => {
+                        setImageItem({
+                          ...imageItem,
+                          width: ref.offsetWidth,
+                          height: ref.offsetHeight,
+                          ...position
+                        });
+                      }}
+                      bounds="parent"
+                      style={{ border: "1px solid #ccc", borderRadius: "6px" }}
+                    >
+                      <img
+                        src={imageItem.preview}
+                        alt={imageItem.name}
+                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                      />
+                    </Rnd>
+                  </div>
+                )}
+
+                <div style={{ marginTop: "16px" }}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    onClick={handleInsertImage}
+                    sx={{ marginRight: 1 }}
+                    disabled={!imageItem}
+                  >
+                    Insert
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => { removeImage(); setIsModalOpen(false); }}
+                  >
+                    Cancel
+                  </Button>
                 </div>
-                <div>
-                  <label>
-                    Height:
-                    <input
-                      type="number"
-                      value={imageHeight}
-                      onChange={(e) => setImageHeight(e.target.value)}
-                    />
-                  </label>
-                </div>
-                <Button
-                  variant="contained"
-                  size="small"
-                  onClick={handleInsertImage}
-                  sx={{ marginRight: 1 }}
-                >
-                  Insert
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Cancel
-                </Button>
               </div>
             </div>
           )}
+
         </Grid>
+
+
+
 
 
       </Grid>
@@ -1292,7 +1297,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               [{ script: 'sub' }, { script: 'super' }],
               [{ align: [] }],
               [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-              ['link', 'image', 'video'],
+              ['link', 'video'],
               ['clean'],
             ],
             // imageResize: {

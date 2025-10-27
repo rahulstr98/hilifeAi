@@ -206,7 +206,8 @@ function TemplateControlLog() {
     const [todoscheckSealView, settodoscheckSealView] = useState([])
     const [documentFilesSignatureView, setdocumentFilesSignatureView] = useState([])
     const [documentFilesView, setdocumentFilesVIew] = useState([]);
-
+    const [headerTodoView, setHeaderTodoView] = useState([])
+    const [footerTodoView, setFooterTodoView] = useState([])
     const [isDeletealert, setDeletealert] = useState(false);
 
     const [deleteSource, setDeleteSource] = useState("");
@@ -252,8 +253,10 @@ function TemplateControlLog() {
             });
             const lastupdatedata = res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.filter((item) => item._id === logid)
             setPurposeEdit(lastupdatedata[0]);
-            setdocumentFilesDOcumentContentHeaderView(lastupdatedata[0]?.letterheadcontentheader)
-            setdocumentFilesDOcumentContentFooterView(lastupdatedata[0]?.letterheadcontentfooter)
+            setHeaderTodoView(lastupdatedata?.letterheadcontentheader)
+            setFooterTodoView(lastupdatedata?.letterheadcontentfooter)
+            // setdocumentFilesDOcumentContentHeaderView(lastupdatedata[0]?.letterheadcontentheader)
+            // setdocumentFilesDOcumentContentFooterView(lastupdatedata[0]?.letterheadcontentfooter)
             setdocumentFilesDOcumentBodyContentView(lastupdatedata[0]?.letterheadbodycontent)
             setdocumentFilesDOcumentFrontHeaderView(lastupdatedata[0]?.idcardfrontheader)
             setdocumentFilesDOcumentFrontFooterView(lastupdatedata[0]?.idcardfrontfooter)
@@ -811,7 +814,7 @@ function TemplateControlLog() {
             </Box>
             <Box>
                 {/* View DIALOG */}
-                <Dialog open={isViewOpen} onClose={handleCloseModView} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg" sx={{marginTop:"50px"}}>
+                <Dialog open={isViewOpen} onClose={handleCloseModView} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg" sx={{ marginTop: "50px" }}>
                     <Box sx={userStyle.dialogbox}>
                         <Box sx={{ padding: '20px 50px' }}>
                             <>
@@ -832,19 +835,24 @@ function TemplateControlLog() {
                                         </FormControl>
                                     </Grid>
                                     <Grid item md={6} sm={12} xs={12}>
-                                        <Typography ><b>Document Letter Head Content Header</b> </Typography>
+                                        <Typography>
+                                            <b>Document Letter Head Content Header</b>{' '}
+                                        </Typography>
                                         <br></br>
                                         <Grid item md={12} xs={12} sm={12}>
-                                            {documentFilesDocumentContentHeaderView?.length > 0 &&
-                                                documentFilesDocumentContentHeaderView?.map((file, index) => (
+                                            {headerTodoView?.length > 0 &&
+                                                headerTodoView?.map((file, index) => (
                                                     <>
                                                         <Grid container spacing={2}>
-                                                            <Grid item md={8} sm={6} xs={6}>
-                                                                <Typography>{file.name}</Typography>
+                                                            <Grid item md={2} sm={6} xs={6}>
+                                                                <Typography>{file.headername}</Typography>
+                                                            </Grid>
+                                                            <Grid item md={6} sm={6} xs={6}>
+                                                                <Typography>{file?.headerimage[0]?.name}</Typography>
                                                             </Grid>
                                                             <Grid></Grid>
                                                             <Grid item md={1} sm={6} xs={6}>
-                                                                <VisibilityOutlinedIcon style={{ fontsize: "large", color: "#357AE8", cursor: "pointer" }} onClick={() => renderFilePreviewDocumentContentHeader(file)} />
+                                                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentHeader(file?.headerimage[0])} />
                                                             </Grid>
                                                         </Grid>
                                                     </>
@@ -852,19 +860,24 @@ function TemplateControlLog() {
                                         </Grid>
                                     </Grid>
                                     <Grid item md={6} sm={12} xs={12}>
-                                        <Typography ><b>Document Letter Head Content Footer</b> </Typography>
+                                        <Typography>
+                                            <b>Document Letter Head Content Footer</b>{' '}
+                                        </Typography>
                                         <br></br>
                                         <Grid item md={12} xs={12} sm={12}>
-                                            {documentFilesDocumentContentFooterView?.length > 0 &&
-                                                documentFilesDocumentContentFooterView?.map((file, index) => (
+                                            {footerTodoView?.length > 0 &&
+                                                footerTodoView?.map((file, index) => (
                                                     <>
                                                         <Grid container spacing={2}>
-                                                            <Grid item md={8} sm={6} xs={6}>
-                                                                <Typography>{file.name}</Typography>
+                                                            <Grid item md={2} sm={6} xs={6}>
+                                                                <Typography>{file.footername}</Typography>
+                                                            </Grid>
+                                                            <Grid item md={6} sm={6} xs={6}>
+                                                                <Typography>{file?.footerimage[0]?.name}</Typography>
                                                             </Grid>
                                                             <Grid></Grid>
                                                             <Grid item md={1} sm={6} xs={6}>
-                                                                <VisibilityOutlinedIcon style={{ fontsize: "large", color: "#357AE8", cursor: "pointer" }} onClick={() => renderFilePreviewDocumentContentHeader(file)} />
+                                                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentHeader(file?.footerimage[0])} />
                                                             </Grid>
                                                         </Grid>
                                                     </>
@@ -1200,7 +1213,7 @@ function TemplateControlLog() {
                                 </Grid>
                                 <br /> <br />  <br />
                                 <Grid container spacing={2}>
-                                    <Button sx={buttonStyles.btncancel}  variant="contained" color="primary" onClick={handleCloseModView}> Back </Button>
+                                    <Button sx={buttonStyles.btncancel} variant="contained" color="primary" onClick={handleCloseModView}> Back </Button>
                                 </Grid>
                             </>
                         </Box>

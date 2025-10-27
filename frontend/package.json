@@ -117,6 +117,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-easy-crop": "^5.5.3",
     "react-file-base64": "^1.0.3",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.47.0",

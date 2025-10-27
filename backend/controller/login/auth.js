@@ -27438,6 +27438,7 @@ exports.getIndividualUserLoginStatus = catchAsyncErrors(async (req, res, next) =
                 extratime: 1,
                 extrastatus: 1, wfhcount: 1, wfhstatus: 1,
                 extradate: 1,
+                doj:1,
                 loginUserStatus: 1
             }
         );

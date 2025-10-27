@@ -1392,7 +1392,7 @@ function DocumentsPrintedStatusList() {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert)
     }
   };
-  const extractEmailFormat = async (name, id, email, pagename) => {
+  const extractEmailFormat = async (name, employeedoj, id, email, pagename) => {
     const suser = await axios.post(SERVICE.USER_NAME_SEARCH, {
       headers: {
         Authorization: `Bearer ${auth.APIToken}`,
@@ -1414,13 +1414,13 @@ function DocumentsPrintedStatusList() {
 
     setPersonId(tempcontpanel?.data?.result[0]);
     if (pagename === "Employee") {
-      setEmailValuePage({ id, convert, fromemail, ccemail, bccemail, email, pagename })
+      setEmailValuePage({ id, convert, fromemail, ccemail, bccemail, email, pagename, employeedoj })
       handleClickOpenMailOpen();
       // await fetchEmailForUser(id, convert, fromemail, ccemail, bccemail, email, pagename)
 
     } else {
       handleClickOpenLetterHeader('Email');
-      setEmailValuePage({ id, convert, fromemail, ccemail, bccemail, email, pagename })
+      setEmailValuePage({ id, convert, fromemail, ccemail, bccemail, email, pagename, employeedoj })
     }
 
 
@@ -1429,7 +1429,7 @@ function DocumentsPrintedStatusList() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetchEmailForUser(emailValuePage?.id, emailValuePage?.convert, emailValuePage?.fromemail, emailValuePage?.ccemail, emailValuePage?.bccemail, emailValuePage?.pagename)
+    fetchEmailForUser(emailValuePage?.id, emailValuePage?.convert, emailValuePage?.fromemail, emailValuePage?.ccemail, emailValuePage?.bccemail, emailValuePage?.pagename, emailValuePage?.employeedoj)
     handleClickCloseMail();
 
   }
@@ -1870,7 +1870,7 @@ function DocumentsPrintedStatusList() {
           const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
           console.log(qrInfoDetails, 'qrInfoDetails')
           qrCodeInfoDetails = qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-            .replaceAll('$C:DATE$', date)}`)
+            .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', e ? e?.employeedoj : "")}`)
         }
       }
       await getUpdatePrintingStatus(e?.id, response.data.sdocumentPreparation?.updatedby)
@@ -2198,7 +2198,7 @@ function DocumentsPrintedStatusList() {
 
     }
   };
-  const fetchEmailForUser = async (e, emailformat, fromemail, ccemail, bccemail, pagename) => {
+  const fetchEmailForUser = async (e, emailformat, fromemail, ccemail, bccemail, pagename, employeedoj) => {
     setLoading(true);
     const NewDatetime = await getCurrentServerTime();
     setLoadingMessage('Document is preparing...');
@@ -2223,7 +2223,7 @@ function DocumentsPrintedStatusList() {
         const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
         console.log(qrInfoDetails, 'qrInfoDetails')
         qrCodeInfoDetails = qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-          .replaceAll('$C:DATE$', date)}`)
+          .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', employeedoj ? employeedoj : "")}`)
       }
     }
     if (pagename !== "Employee") {
@@ -2765,7 +2765,7 @@ function DocumentsPrintedStatusList() {
                   },
                 }}
                 onClick={() => {
-                  extractEmailFormat(params.data.person, params.data.id, params.data?.email, "Employee")
+                  extractEmailFormat(params.data.person, params.data.employeedoj, params.data.id, params.data?.email, "Employee")
                 }}
               >
                 {params?.data?.mail}
@@ -2813,7 +2813,7 @@ function DocumentsPrintedStatusList() {
                   },
                 }}
                 onClick={() => {
-                  extractEmailFormat(params.data.person, params.data.id, params.data?.email)
+                  extractEmailFormat(params.data.person, params.data.employeedoj, params.data.id, params.data?.email)
                 }}
               >
                 {params?.data?.mail}

@@ -31,6 +31,8 @@ import {
   IconButton,
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
+import CheckIcon from '@mui/icons-material/Check';
+import EditIcon from '@mui/icons-material/Edit';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Menu from '@mui/material/Menu';
 import { userStyle, colourStyles } from '../../../pageStyle';
@@ -146,40 +148,40 @@ function TempControlPanel() {
   let exportRowValues = ['company', 'branch', 'companyurl', 'companyname', 'address'];
   const accessbranch = isUserRoleAccess?.role?.includes('Manager')
     ? isAssignBranch?.map((data) => ({
+      branch: data.branch,
+      company: data.company,
+      unit: data.unit,
+      branchcode: data.branchcode,
+      unitcode: data.unitcode,
+    }))
+    : isAssignBranch
+      ?.filter((data) => {
+        let fetfinalurl = [];
+
+        if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+          fetfinalurl = data.subsubpagenameurl;
+        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+          fetfinalurl = data.subpagenameurl;
+        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+          fetfinalurl = data.mainpagenameurl;
+        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+          fetfinalurl = data.submodulenameurl;
+        } else if (data?.modulenameurl?.length !== 0) {
+          fetfinalurl = data.modulenameurl;
+        } else {
+          fetfinalurl = [];
+        }
+
+        const remove = [window.location.pathname?.substring(1), window.location.pathname];
+        return fetfinalurl?.some((item) => remove?.includes(item));
+      })
+      ?.map((data) => ({
         branch: data.branch,
         company: data.company,
         unit: data.unit,
         branchcode: data.branchcode,
         unitcode: data.unitcode,
-      }))
-    : isAssignBranch
-        ?.filter((data) => {
-          let fetfinalurl = [];
-
-          if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-            fetfinalurl = data.subsubpagenameurl;
-          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-            fetfinalurl = data.subpagenameurl;
-          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-            fetfinalurl = data.mainpagenameurl;
-          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-            fetfinalurl = data.submodulenameurl;
-          } else if (data?.modulenameurl?.length !== 0) {
-            fetfinalurl = data.modulenameurl;
-          } else {
-            fetfinalurl = [];
-          }
-
-          const remove = [window.location.pathname?.substring(1), window.location.pathname];
-          return fetfinalurl?.some((item) => remove?.includes(item));
-        })
-        ?.map((data) => ({
-          branch: data.branch,
-          company: data.company,
-          unit: data.unit,
-          branchcode: data.branchcode,
-          unitcode: data.unitcode,
-        }));
+      }));
 
   const fetchEmployeeSignatureDefault = async (employeename, page, index) => {
     try {
@@ -368,6 +370,7 @@ function TempControlPanel() {
   const qrkeywords = [
     { keyword: '$C:DATE$', instruction: 'It denotes the Current Date' },
     { keyword: '$C:TIME$', instruction: 'It denotes the Current Time' },
+    { keyword: '$DOJ$', instruction: 'It denotes the Date Of Joining of the user' },
   ];
 
   const handleMenuItemClick = (selectedOption) => {
@@ -1044,8 +1047,8 @@ function TempControlPanel() {
         fromemail: String(fromEmail),
         ccemail: ccEmailTodo,
         bccemail: bccEmailTodo,
-        letterheadcontentheader: documentFilesDocumentContentHeader,
-        letterheadcontentfooter: documentFilesDocumentContentFooter,
+        letterheadcontentheader: headerTodoCreate,
+        letterheadcontentfooter: footerTodoCreate,
         letterheadbodycontent: documentFilesDocumentBodyContent,
         companyurl: String(companyurl),
         idcardfrontheader: documentFilesDocumentFrontHeader,
@@ -1069,8 +1072,8 @@ function TempControlPanel() {
             fromemail: String(fromEmail),
             ccemail: ccEmailTodo,
             bccemail: bccEmailTodo,
-            letterheadcontentheader: documentFilesDocumentContentHeader,
-            letterheadcontentfooter: documentFilesDocumentContentFooter,
+            letterheadcontentheader: headerTodoCreate,
+            letterheadcontentfooter: footerTodoCreate,
             letterheadbodycontent: documentFilesDocumentBodyContent,
             companyurl: String(companyurl),
             toCompany: todoscheckToCompany,
@@ -1125,7 +1128,7 @@ function TempControlPanel() {
       setBtnSubmit(false);
       if (err.response.data.message.includes('The value of "offset" is out of range')) {
         setPopupContentMalert('Memory is Full!. Please delete anyone of the previous data in the log list.');
-        setPopupSeverityMalert('info');
+        setPopupSeverityMalert('warning');
         handleClickOpenPopupMalert();
       } else {
         handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -1140,119 +1143,119 @@ function TempControlPanel() {
 
     if (company === 'Please Select Company') {
       setPopupContentMalert('Please Select Company');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (branch === 'Please Select Branch') {
       setPopupContentMalert('Please Select Branch');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentContentHeader.length === 0) {
-      setPopupContentMalert('Please Upload Document Letter Head Content Header');
-      setPopupSeverityMalert('info');
+    } else if (headerTodoCreate?.length === 0) {
+      setPopupContentMalert('Please Add Header Todo');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentContentFooter.length === 0) {
-      setPopupContentMalert('Please Upload Document Letter Head Content Footer');
-      setPopupSeverityMalert('info');
+    } else if (footerTodoCreate?.length === 0) {
+      setPopupContentMalert('Please Add Footer Todo');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBodyContent.length === 0) {
       setPopupContentMalert('Please Upload Document Letter Head Body Content(Background)');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (companyurl === '') {
       setPopupContentMalert('Please Enter Company URL');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentFrontHeader.length === 0) {
       setPopupContentMalert('Please Upload ID Card Front Header');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentFrontFooter.length === 0) {
       setPopupContentMalert('Please Upload ID Card Front Footer');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBackHeader.length === 0) {
       setPopupContentMalert('Please Upload ID Card Back Header');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBackFooter.length === 0) {
       setPopupContentMalert('Please Upload ID Card Back Footer');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (companyname === '') {
       setPopupContentMalert('Please Enter Company Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (address === '') {
       setPopupContentMalert('Please Enter Address');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (todoscheckToCompany?.length < 1) {
       setPopupContentMalert('Atleast Add one To Company and To Address Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isTodoEdit.some((data) => data === true)) {
       setPopupContentMalert('Please Update The Todo And Submit in ToCompany and ToAddress Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isTodoQrInfo.some((data) => data === true)) {
       setPopupContentMalert('Please Update The Todo And Submit in Qr Info');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (todoscheckSeal.length === 0) {
       setPopupContentMalert('Please Add Seal Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (todoscheckSignature.length === 0) {
       setPopupContentMalert('Please Add Signature Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (fromEmail === undefined || fromEmail === '') {
       setPopupContentMalert('Please Enter From Email Adddress');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(fromEmail)) {
       setPopupContentMalert('Please Enter Valid From Email Adddress');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isTodoEditCCEmail.some((data) => data === true)) {
       setPopupContentMalert('Please Update The Todo And Submit in CC Email Address Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isTodoEditBCCEmail.some((data) => data === true)) {
       setPopupContentMalert('Please Update The Todo And Submit in BCC Email Address Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (emailFormat === undefined || emailFormat === '' || emailFormat === '<p><br></p>') {
       setPopupContentMalert('Please Enter Email Format');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isNameMatch) {
       setPopupContentMalert('Data already exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (sealTodoCreate || signTodoCreate) {
       setPopupContentMalert('Please Update the Todo and Submit the Data!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       handleClickOpenInfoImage();
     }
   };
-  console.log(qrInfoTodos, 'qrInfoTodos');
+  // console.log(qrInfoTodos, 'qrInfoTodos');
   // QR Info Details - Create Section
   const handleCreateQrInfo = () => {
     const idTodoExist = qrInfoTodos.some((item) => item?.details?.toLowerCase() == qrInfo?.toLowerCase());
     if (qrInfo === '' || qrInfo === undefined) {
       setPopupContentMalert('Please Enter Details');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (qrInfoTodos?.length >= 3) {
       setPopupContentMalert("Info Cant't be more than 3!");
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
       setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -1284,15 +1287,15 @@ function TempControlPanel() {
     const idTodoExist = qrInfoTodosEdit.some((item) => item?.details?.toLowerCase() == qrInfoEdit?.toLowerCase());
     if (qrInfoEdit === '' || qrInfoEdit === undefined) {
       setPopupContentMalert('Please Enter Details');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (qrInfoTodosEdit?.length >= 3) {
       setPopupContentMalert("Info Cant't be more than 3!");
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
       setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -1323,15 +1326,15 @@ function TempControlPanel() {
     const idTodoExist = todoscheckToCompany.some((item) => item?.toCompanyname?.toLowerCase() == toCompanyname?.toLowerCase());
     if (toCompanyname === '' || toCompanyname === undefined) {
       setPopupContentMalert('Please Enter To Company Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (toAddress === '' || toAddress === undefined) {
       setPopupContentMalert('Please Enter To Company Address');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
       setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -1364,15 +1367,15 @@ function TempControlPanel() {
 
     if (toCompanynameEdit === '' || toCompanynameEdit === undefined) {
       setPopupContentMalert('Please Enter To Company Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (toAddressEdit === '' || toAddressEdit === undefined) {
       setPopupContentMalert('Please Enter To Company Address');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
       setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -1408,6 +1411,10 @@ function TempControlPanel() {
     setdocumentFilesDOcumentFrontFooter([]);
     setdocumentFilesDOcumentBackHeader([]);
     setdocumentFilesDOcumentBackFooter([]);
+    setHeaderNameCreate('');
+    setHeaderTodoCreate([])
+    setFooterNameCreate('')
+    setFooterTodoCreate([])
     setdocumentFiles([]);
     setdocumentFilesVIew([]);
     setdocumentFilesSeal([]);
@@ -1487,11 +1494,11 @@ function TempControlPanel() {
       const mappedData =
         answer?.length > 0
           ? answer?.map((data) => ({
-              ...data,
-              label: data?.name,
-              value: data?.name,
-              document: data?.document,
-            }))
+            ...data,
+            label: data?.name,
+            value: data?.name,
+            document: data?.document,
+          }))
           : [];
       setOrgDocuments(mappedData);
     } catch (err) {
@@ -1516,8 +1523,10 @@ function TempControlPanel() {
       });
       const lastupdatedata = res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length > 0 ? res?.data?.stemplatecontrolpanel?.templatecontrolpanellog[res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length - 1] : [];
       setPurposeEdit(lastupdatedata);
-      setdocumentFilesDOcumentContentHeaderView(lastupdatedata?.letterheadcontentheader);
-      setdocumentFilesDOcumentContentFooterView(lastupdatedata?.letterheadcontentfooter);
+      setHeaderTodoView(lastupdatedata?.letterheadcontentheader)
+      setFooterTodoView(lastupdatedata?.letterheadcontentfooter)
+      // setdocumentFilesDOcumentContentHeaderView(lastupdatedata?.letterheadcontentheader);
+      // setdocumentFilesDOcumentContentFooterView(lastupdatedata?.letterheadcontentfooter);
       setdocumentFilesDOcumentBodyContentView(lastupdatedata?.letterheadbodycontent);
       setdocumentFilesDOcumentFrontHeaderView(lastupdatedata?.idcardfrontheader);
       setdocumentFilesDOcumentFrontFooterView(lastupdatedata?.idcardfrontfooter);
@@ -1564,6 +1573,8 @@ function TempControlPanel() {
       setTemplateControlPanelIdEdit(res?.data?.stemplatecontrolpanel);
       const lastupdatedata = res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length > 0 ? res?.data?.stemplatecontrolpanel?.templatecontrolpanellog[res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length - 1] : [];
       setTemplateControlPanelEdit(lastupdatedata);
+      setHeaderTodoEdit(lastupdatedata?.letterheadcontentheader)
+      setFooterTodoEdit(lastupdatedata?.letterheadcontentfooter)
       setCompanyEdit(lastupdatedata?.company);
       fetchBranchAllEdit(lastupdatedata?.company);
       setBranchEdit(lastupdatedata?.branch);
@@ -1571,8 +1582,8 @@ function TempControlPanel() {
       setCompanynameEdit(lastupdatedata?.companyname);
       setAddressEdit(lastupdatedata?.address);
       setdocumentFilesEdit(lastupdatedata?.documentcompany);
-      setdocumentFilesDOcumentContentHeaderEdit(lastupdatedata?.letterheadcontentheader);
-      setdocumentFilesDOcumentContentFooterEdit(lastupdatedata?.letterheadcontentfooter);
+      // setdocumentFilesDOcumentContentHeaderEdit(lastupdatedata?.letterheadcontentheader);
+      // setdocumentFilesDOcumentContentFooterEdit(lastupdatedata?.letterheadcontentfooter);
       setdocumentFilesDOcumentBodyContentEdit(lastupdatedata?.letterheadbodycontent);
       setdocumentFilesDOcumentFrontHeaderEdit(lastupdatedata?.idcardfrontheader);
       setdocumentFilesDOcumentFrontFooterEdit(lastupdatedata?.idcardfrontfooter);
@@ -1622,15 +1633,15 @@ function TempControlPanel() {
 
     if (sealtypeEditTodo === 'Please Select Seal') {
       setPopupContentMalert('Please Select Seal');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (sealnameEditTodo === '') {
       setPopupContentMalert('Please Enter Seal Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
       setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = [...todoscheckSealEdit];
@@ -1675,31 +1686,31 @@ function TempControlPanel() {
 
     if (!allBranchEditTodo && unitEditTodo === 'Please Select Unit') {
       setPopupContentMalert('Please Select Unit');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!allBranchEditTodo && teamEditTodo === 'Please Select Team') {
       setPopupContentMalert('Please Select Team');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (employeeEditTodo === 'Please Select Employee') {
       setPopupContentMalert('Please Select Employee');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSealEditTodo === 'For Seal' && (topContentEditTodo === '' || topContentEditTodo === undefined)) {
       setPopupContentMalert('Please Enter Top Content');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSealEditTodo === 'For Seal' && (bottomContentEditTodo === '' || bottomContentEditTodo === undefined)) {
       setPopupContentMalert('Please Enter Bottom Content');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (signaturenameEditTodo === '') {
       setPopupContentMalert('Please Enter Signature Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isSignatDup) {
       setPopupContentMalert('Data Already Exists');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodoscheck = [...todoscheckSignatureEdit];
@@ -1739,8 +1750,8 @@ function TempControlPanel() {
         },
         company: String(companyEdit),
         branch: String(branchEdit),
-        letterheadcontentheader: documentFilesDocumentContentHeaderEdit,
-        letterheadcontentfooter: documentFilesDocumentContentFooterEdit,
+        letterheadcontentheader: headerTodoEdit,
+        letterheadcontentfooter: footerTodoEdit,
         letterheadbodycontent: documentFilesDocumentBodyContentEdit,
         companyurl: String(companyurlEdit),
         idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
@@ -1765,8 +1776,8 @@ function TempControlPanel() {
           {
             company: String(companyEdit),
             branch: String(branchEdit),
-            letterheadcontentheader: documentFilesDocumentContentHeaderEdit,
-            letterheadcontentfooter: documentFilesDocumentContentFooterEdit,
+            letterheadcontentheader: headerTodoEdit,
+            letterheadcontentfooter: footerTodoEdit,
             letterheadbodycontent: documentFilesDocumentBodyContentEdit,
             companyurl: String(companyurlEdit),
             idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
@@ -1832,95 +1843,95 @@ function TempControlPanel() {
     const duplicate = assignedByArrayEdit?.some((item) => item.company.toLowerCase() == companyEdit.toLowerCase() && item.branch?.toLowerCase() === branchEdit?.toLowerCase());
     if (companyEdit === 'Please Select Company') {
       setPopupContentMalert('Please Select Company');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (branchEdit === 'Please Select Branch') {
       setPopupContentMalert('Please Select Branch');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentContentHeaderEdit.length === 0) {
-      setPopupContentMalert('Please Upload Document Letter Head Content Header');
-      setPopupSeverityMalert('info');
+    } else if (headerTodoEdit?.length === 0) {
+      setPopupContentMalert('Please Add Header Todo');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentContentFooterEdit.length === 0) {
-      setPopupContentMalert('Please Upload Document Letter Head Content Footer');
-      setPopupSeverityMalert('info');
+    } else if (footerTodoEdit?.length === 0) {
+      setPopupContentMalert('Please Add Footer Todo');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBodyContentEdit.length === 0) {
       setPopupContentMalert('Please Upload Document Letter Head Body Content(Background)');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentFrontHeaderEdit.length === 0) {
       setPopupContentMalert('Please Upload ID Card Front Header');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentFrontFooterEdit.length === 0) {
       setPopupContentMalert('Please Upload ID Card Front Footer');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBackHeaderEdit.length === 0) {
       setPopupContentMalert('Please Upload ID Card Back Header');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBackFooterEdit.length === 0) {
       setPopupContentMalert('Please Upload ID Card Back Footer');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (companyurlEdit === '') {
       setPopupContentMalert('Please Enter Company URL');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (companynameEdit === '') {
       setPopupContentMalert('Please Enter Company Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (addressEdit === '') {
       setPopupContentMalert('Please Enter Address');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (todoscheckToCompanyEdit?.length < 1) {
       setPopupContentMalert('Atleast Add one To Company and To Address Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isTodoToCompanyEdit?.some((data) => data === true)) {
       setPopupContentMalert('Please Update The Todo And Submit in ToCompany and ToAddress Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (todoscheckSealEdit.length === 0) {
       setPopupContentMalert('Please Add Seal Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (todoscheckSignatureEdit.length === 0) {
       setPopupContentMalert('Please Add Signature Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (fromEmailEdit === undefined || fromEmailEdit === '') {
       setPopupContentMalert('Please Enter From Email Adddress');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(fromEmailEdit)) {
       setPopupContentMalert('Please Enter Valid From Email Adddress');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isTodoEditCCEmailEdit?.some((data) => data === true)) {
       setPopupContentMalert('Please Update The Todo And Submit in CC Email Address Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isTodoEditBCCEmailEdit?.some((data) => data === true)) {
       setPopupContentMalert('Please Update The Todo And Submit in BCC Email Address Todo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (emailFormatEdit === undefined || emailFormatEdit === '' || emailFormatEdit === '<p><br></p>') {
       setPopupContentMalert('Please Enter Email Format');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (duplicate) {
       setPopupContentMalert('Data already exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (signTodo || sealTodo) {
       setPopupContentMalert('Please Update the Todo and then Update!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       handleClickOpenInfoImageEdit();
@@ -2536,7 +2547,7 @@ function TempControlPanel() {
                 sx={{ display: 'flex' }}
                 primary={<Switch sx={{ marginTop: '-5px' }} size="small" checked={columnVisibility[column.field]} onChange={() => toggleColumnVisibility(column.field)} />}
                 secondary={column.field === 'checkbox' ? 'Checkbox' : column.headerName}
-                // secondary={column.headerName }
+              // secondary={column.headerName }
               />
             </ListItem>
           ))}
@@ -2577,19 +2588,19 @@ function TempControlPanel() {
 
     if (sealtype === 'Please Select Seal') {
       setPopupContentMalert('Please Select Seal');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (sealname === '') {
       setPopupContentMalert('Please Enter Seal Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesSeal.length === 0) {
       setPopupContentMalert('Please Upload Seal Logo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
       setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -2622,15 +2633,15 @@ function TempControlPanel() {
 
     if (sealtypeTodo === 'Please Select Seal') {
       setPopupContentMalert('Please Select Seal');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (sealnameTodo === '') {
       setPopupContentMalert('Please Enter Seal Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
       setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = [...todoscheckSeal];
@@ -2649,19 +2660,19 @@ function TempControlPanel() {
 
     if (sealtypeEdit === 'Please Select Seal') {
       setPopupContentMalert('Please Select Seal');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (sealnameEdit === '') {
       setPopupContentMalert('Please Enter Seal Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (documentFilesSealEdit.length === 0) {
       setPopupContentMalert('Please Upload Seal Logo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
       setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -2691,35 +2702,35 @@ function TempControlPanel() {
 
     if (!allBranch && unit === 'Please Select Unit') {
       setPopupContentMalert('Please Select Unit');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!allBranch && team === 'Please Select Team') {
       setPopupContentMalert('Please Select Team');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (employee === 'Please Select Employee') {
       setPopupContentMalert('Please Select Employee');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSeal === 'For Seal' && (topContent === '' || topContent === undefined)) {
       setPopupContentMalert('Please Enter Top Content');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSeal === 'For Seal' && (bottomContent === '' || bottomContent === undefined)) {
       setPopupContentMalert('Please Enter Bottom Content');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (signaturename === '') {
       setPopupContentMalert('Please Enter Signature Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSeal === 'None' && documentFilesSignature.length === 0) {
       setPopupContentMalert('Please Upload Signature Logo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isSignatDup) {
       setPopupContentMalert('Data Already Exists');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -2772,31 +2783,31 @@ function TempControlPanel() {
 
     if (!allBranchTodo && unitTodo === 'Please Select Unit') {
       setPopupContentMalert('Please Select Unit');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!allBranchTodo && teamTodo === 'Please Select Team') {
       setPopupContentMalert('Please Select Team');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (employeeTodo === 'Please Select Employee') {
       setPopupContentMalert('Please Select Employee');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSealTodo === 'For Seal' && (topContentTodo === '' || topContentTodo === undefined)) {
       setPopupContentMalert('Please Enter Top Content');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSealTodo === 'For Seal' && (bottomContentTodo === '' || bottomContentTodo === undefined)) {
       setPopupContentMalert('Please Enter Bottom Content');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (signaturenameTodo === '') {
       setPopupContentMalert('Please Enter Signature Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isSignatDup) {
       setPopupContentMalert('Data Already Exists');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = [...todoscheckSignature];
@@ -2828,15 +2839,15 @@ function TempControlPanel() {
     const isCcEmailDup = ccEmailTodo.some((item) => item?.toLowerCase() == ccEmail?.toLowerCase());
     if (ccEmail === '' || ccEmail === undefined) {
       setPopupContentMalert('Please Add CC Email');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(ccEmail)) {
       setPopupContentMalert('Please Enter Valid CC Email');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isCcEmailDup) {
       setPopupContentMalert('Email Already Exists');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       setCcEmailTodo([...ccEmailTodo, ccEmail]);
@@ -2865,15 +2876,15 @@ function TempControlPanel() {
     const isBccEmailDup = bccEmailTodo.some((item) => item?.toLowerCase() == bccEmail?.toLowerCase());
     if (bccEmail === '' || bccEmail === undefined) {
       setPopupContentMalert('Please Add BCC Email');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(bccEmail)) {
       setPopupContentMalert('Please Enter Valid BCC Email');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isBccEmailDup) {
       setPopupContentMalert('Email Already Exists');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       setBccEmailTodo([...bccEmailTodo, bccEmail]);
@@ -2901,15 +2912,15 @@ function TempControlPanel() {
     const isCcEmailDup = ccEmailTodoEdit.some((item) => item?.toLowerCase() == ccEmailEdit?.toLowerCase());
     if (ccEmailEdit === '' || ccEmailEdit === undefined) {
       setPopupContentMalert('Please Add CC Email');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(ccEmailEdit)) {
       setPopupContentMalert('Please Enter Valid CC Email"');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isCcEmailDup) {
       setPopupContentMalert('Email Already Exists');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       setCcEmailTodoEdit([...ccEmailTodoEdit, ccEmailEdit]);
@@ -2939,15 +2950,15 @@ function TempControlPanel() {
 
     if (bccEmailEdit === '' || bccEmailEdit === undefined) {
       setPopupContentMalert('Please Add BCC Email');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(bccEmailEdit)) {
       setPopupContentMalert('Please Enter Valid BCC Email');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isCcEmailDup) {
       setPopupContentMalert('Email Already Exists');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       setBccEmailTodoEdit([...bccEmailTodoEdit, bccEmailEdit]);
@@ -2984,35 +2995,35 @@ function TempControlPanel() {
 
     if (!allBranchEdit && unitEdit === 'Please Select Unit') {
       setPopupContentMalert('Please Select Unit');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (!allBranchEdit && teamEdit === 'Please Select Team') {
       setPopupContentMalert('Please Select Team');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (employeeEdit === 'Please Select Employee') {
       setPopupContentMalert('Please Select Employee');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSealEdit === 'For Seal' && (topContentEdit === '' || topContentEdit === undefined)) {
       setPopupContentMalert('Please Enter Top Content');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSealEdit === 'For Seal' && (bottomContentEdit === '' || bottomContentEdit === undefined)) {
       setPopupContentMalert('Please Enter Bottom Content');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (signaturenameEdit === '') {
       setPopupContentMalert('Please Enter Signature Name');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (forSealEdit === 'None' && documentFilesSignatureEdit.length === 0) {
       setPopupContentMalert('Please Upload Signature Logo');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else if (isSignatDup) {
       setPopupContentMalert('Data Already Exists');
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -3138,6 +3149,71 @@ function TempControlPanel() {
     setdocumentFilesSignatureEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
+  const [headerNameCreate, setHeaderNameCreate] = useState("")
+  const [headerTodoCreate, setHeaderTodoCreate] = useState([])
+  const [isEditingHeaderCreate, setIsEditingHeaderCreate] = useState(false);
+  const [editIndexHeaderCreate, setEditIndexHeaderCreate] = useState(null);
+  const [footerNameCreate, setFooterNameCreate] = useState("")
+  const [footerTodoCreate, setFooterTodoCreate] = useState([])
+  const [isEditingFooterCreate, setIsEditingFooterCreate] = useState(false);
+  const [editIndexFooterCreate, setEditIndexFooterCreate] = useState(null);
+  const [headerTodoView, setHeaderTodoView] = useState([])
+  const [footerTodoView, setFooterTodoView] = useState([])
+
+  // Header Todo Create Section
+  const handleCreateTodoHeader = () => {
+    if (!headerNameCreate.trim()) {
+      setPopupContentMalert('Please enter a header name');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    if (documentFilesDocumentContentHeader?.length === 0) {
+      setPopupContentMalert('Please upload a header file');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+    if (isEditingHeaderCreate ? headerTodoCreate?.some((data, index) => editIndexHeaderCreate !== index && data?.headername === headerNameCreate.trim()) :
+      headerTodoCreate?.some(data => data?.headername === headerNameCreate.trim())) {
+      setPopupContentMalert('Please enter different header name');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    const header = {
+      headername: headerNameCreate.trim(),
+      headerimage: documentFilesDocumentContentHeader,
+    };
+
+    if (isEditingHeaderCreate) {
+      // ✏️ Update existing header
+      const updated = [...headerTodoCreate];
+      updated[editIndexHeaderCreate] = header;
+      setHeaderTodoCreate(updated);
+      setIsEditingHeaderCreate(false);
+      setEditIndexHeaderCreate(null);
+    } else {
+      // ➕ Add new header
+      setHeaderTodoCreate((prev) => [...prev, header]);
+    }
+
+    // 🧹 Reset fields
+    setHeaderNameCreate('');
+    setdocumentFilesDOcumentContentHeader([]);
+  };
+  const handleEditHeaderCreate = (index) => {
+    const selected = headerTodoCreate[index];
+    setHeaderNameCreate(selected.headername);
+    setdocumentFilesDOcumentContentHeader(selected.headerimage);
+    setIsEditingHeaderCreate(true);
+    setEditIndexHeaderCreate(index);
+  };
+  const handleDeleteHeaderCreate = (index) => {
+    setHeaderTodoCreate((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  }
   const handleResumeUploadDocumentContentheader = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
@@ -3153,17 +3229,65 @@ function TempControlPanel() {
       };
     }
   };
-  const handleResumeUploadDocumentContentheaderEdit = (event) => {
-    const resume = event.target.files;
-    if (resume.length > 0) {
-      const reader = new FileReader();
-      const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentContentHeaderEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+
+  // Footer Todo Create Section
+
+  const handleCreateTodoFooter = () => {
+    if (!footerNameCreate.trim()) {
+      setPopupContentMalert('Please enter a Footer name');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
     }
+
+    if (documentFilesDocumentContentFooter?.length === 0) {
+      setPopupContentMalert('Please upload a Footer file');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    if (isEditingFooterCreate ? footerTodoCreate?.some((data, index) => editIndexFooterCreate !== index && data?.footername === footerNameCreate.trim()) :
+      footerTodoCreate?.some(data => data?.footername === footerNameCreate.trim())) {
+      setPopupContentMalert('Please enter different footer name');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    const footer = {
+      footername: footerNameCreate.trim(),
+      footerimage: documentFilesDocumentContentFooter,
+    };
+
+    if (isEditingFooterCreate) {
+      // ✏️ Update existing header
+      const updated = [...footerTodoCreate];
+      updated[editIndexFooterCreate] = footer;
+      setFooterTodoCreate(updated);
+      setIsEditingFooterCreate(false);
+      setEditIndexFooterCreate(null);
+    } else {
+      // ➕ Add new Footer
+      setFooterTodoCreate((prev) => [...prev, footer]);
+    }
+
+    // 🧹 Reset fields
+    setFooterNameCreate('');
+    setdocumentFilesDOcumentContentFooter([]);
   };
+
+  const handleEditFooterCreate = (index) => {
+    const selected = footerTodoCreate[index];
+    setFooterNameCreate(selected.footername);
+    setdocumentFilesDOcumentContentFooter(selected.footerimage);
+    setIsEditingFooterCreate(true);
+    setEditIndexFooterCreate(index);
+  };
+
+  const handleDeleteFooterCreate = (index) => {
+    setFooterTodoCreate((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  }
 
   const handleResumeUploadDocumentContentFooter = (event) => {
     const resume = event.target.files;
@@ -3180,6 +3304,140 @@ function TempControlPanel() {
       };
     }
   };
+
+
+  const [headerNameEdit, setHeaderNameEdit] = useState("")
+  const [headerTodoEdit, setHeaderTodoEdit] = useState([])
+  const [isEditingHeaderEdit, setIsEditingHeaderEdit] = useState(false);
+  const [editIndexHeaderEdit, setEditIndexHeaderEdit] = useState(null);
+  const [footerNameEdit, setFooterNameEdit] = useState("")
+  const [footerTodoEdit, setFooterTodoEdit] = useState([])
+  const [isEditingFooterEdit, setIsEditingFooterEdit] = useState(false);
+  const [editIndexFooterEdit, setEditIndexFooterEdit] = useState(null);
+
+  // Header Todo Edit Section
+  const handleEditTodoHeader = () => {
+    if (!headerNameEdit.trim()) {
+      setPopupContentMalert('Please enter a header name');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    if (documentFilesDocumentContentHeaderEdit?.length === 0) {
+      setPopupContentMalert('Please upload a header file');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+    if (isEditingHeaderEdit ? headerTodoEdit?.some((data, index) => editIndexHeaderEdit !== index && data?.headername === headerNameEdit.trim()) :
+      headerTodoEdit?.some(data => data?.headername === headerNameEdit.trim())) {
+      setPopupContentMalert('Please enter different header name');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    const header = {
+      headername: headerNameEdit.trim(),
+      headerimage: documentFilesDocumentContentHeaderEdit,
+    };
+
+    if (isEditingHeaderEdit) {
+      // ✏️ Update existing header
+      const updated = [...headerTodoEdit];
+      updated[editIndexHeaderEdit] = header;
+      setHeaderTodoEdit(updated);
+      setIsEditingHeaderEdit(false);
+      setEditIndexHeaderEdit(null);
+    } else {
+      // ➕ Add new header
+      setHeaderTodoEdit((prev) => [...prev, header]);
+    }
+
+    // 🧹 Reset fields
+    setHeaderNameEdit('');
+    setdocumentFilesDOcumentContentHeaderEdit([]);
+  };
+  const handleEditHeaderEdit = (index) => {
+    const selected = headerTodoEdit[index];
+    setHeaderNameEdit(selected.headername);
+    setdocumentFilesDOcumentContentHeaderEdit(selected.headerimage);
+    setIsEditingHeaderEdit(true);
+    setEditIndexHeaderEdit(index);
+  };
+  const handleDeleteHeaderEdit = (index) => {
+    setHeaderTodoEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  }
+  const handleResumeUploadDocumentContentheaderEdit = (event) => {
+    const resume = event.target.files;
+    if (resume.length > 0) {
+      const reader = new FileReader();
+      const file = resume[0];
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        setdocumentFilesDOcumentContentHeaderEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
+      };
+    }
+  };
+
+
+  const handleEditTodoFooter = () => {
+    if (!footerNameEdit.trim()) {
+      setPopupContentMalert('Please enter a Footer name');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    if (documentFilesDocumentContentFooterEdit?.length === 0) {
+      setPopupContentMalert('Please upload a Footer file');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    if (isEditingFooterEdit ? footerTodoEdit?.some((data, index) => editIndexFooterEdit !== index && data?.footername === footerNameEdit.trim()) :
+      footerTodoEdit?.some(data => data?.footername === footerNameEdit.trim())) {
+      setPopupContentMalert('Please enter different footer name');
+      setPopupSeverityMalert('warning');
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    const footer = {
+      footername: footerNameEdit.trim(),
+      footerimage: documentFilesDocumentContentFooterEdit,
+    };
+
+    if (isEditingFooterEdit) {
+      // ✏️ Update existing header
+      const updated = [...footerTodoEdit];
+      updated[editIndexFooterEdit] = footer;
+      setFooterTodoEdit(updated);
+      setIsEditingFooterEdit(false);
+      setEditIndexFooterEdit(null);
+    } else {
+      // ➕ Add new Footer
+      setFooterTodoEdit((prev) => [...prev, footer]);
+    }
+
+    // 🧹 Reset fields
+    setFooterNameEdit('');
+    setdocumentFilesDOcumentContentFooterEdit([]);
+  };
+
+  const handleEditFooterEdit = (index) => {
+    const selected = footerTodoEdit[index];
+    setFooterNameEdit(selected.footername);
+    setdocumentFilesDOcumentContentFooterEdit(selected.footerimage);
+    setIsEditingFooterEdit(true);
+    setEditIndexFooterEdit(index);
+  };
+
+  const handleDeleteFooterEdit = (index) => {
+    setFooterTodoEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  }
   const handleResumeUploadDocumentContentFooterEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
@@ -3678,7 +3936,26 @@ function TempControlPanel() {
                   </Grid>
                 </Grid>
                 <br />
+                <br />
                 <Grid container spacing={2}>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>Header Name</b>
+                        <b style={{ color: 'red' }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter Header Name"
+                        value={headerNameCreate}
+                        disabled={!isEditingHeaderCreate && documentFilesDocumentContentHeader.length > 0 ? false : false}
+                        onChange={(e) => {
+                          setHeaderNameCreate(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
                       {' '}
@@ -3686,7 +3963,7 @@ function TempControlPanel() {
                       <b style={{ color: 'red' }}>*</b>
                     </InputLabel>
                     <div>
-                      <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }} onClick={handleClick}>
+                      <Button variant="contained" size="small" component="label" disabled={isEditingHeaderCreate} sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }} onClick={handleClick}>
                         Upload
                       </Button>
                       <Menu anchorEl={anchorElDoc} open={Boolean(anchorElDoc)} onClose={handleClose}>
@@ -3695,7 +3972,7 @@ function TempControlPanel() {
                       </Menu>
 
                       {option === 'local' && documentFilesDocumentContentHeader?.length === 0 && (
-                        <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button variant="contained" disabled={isEditingHeaderCreate} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
                           Upload Local
                           <input
                             type="file"
@@ -3703,6 +3980,7 @@ function TempControlPanel() {
                             accept=".png"
                             name="file"
                             hidden
+
                             onChange={(e) => {
                               handleResumeUploadDocumentContentheader(e);
                             }}
@@ -3714,6 +3992,7 @@ function TempControlPanel() {
                         <FormControl fullWidth sx={{ marginTop: '10px' }}>
                           <Selects
                             options={orgDocuments}
+                            disabled={isEditingHeaderCreate}
                             value={{ value: docBodyHeader, label: docBodyHeader }}
                             onChange={async (e) => {
                               setDocBodyHeader(e.value);
@@ -3750,6 +4029,117 @@ function TempControlPanel() {
                         ))}
                     </Grid>
                   </Grid>
+                  <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
+                    <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodoHeader}>
+                      {isEditingHeaderCreate ? <EditIcon /> : <FaPlus />}
+                    </Button>
+                  </Grid>
+
+                  <Grid item md={12} xs={12} sm={12}>
+                    {headerTodoCreate?.length > 0 && <Typography variant='h6'>{"Headers List"}</Typography>}
+                    <br />
+                    {headerTodoCreate?.length > 0 &&
+                      headerTodoCreate?.map((file, index) => (
+                        <>
+                          <Grid container spacing={1}>
+                            <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.headername}</Typography>
+                            </Grid>
+                            <Grid item md={6} sm={6} xs={6}>
+                              <Typography>{file?.headerimage[0]?.name}</Typography>
+                            </Grid>
+                            <Grid></Grid>
+                            <Grid item md={2} sm={6} xs={6}>
+                              {isEditingHeaderCreate && editIndexHeaderCreate === index ? (
+                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                  {/* ✅ Save Button */}
+                                  <Button
+                                    sx={{
+                                      color: '#4CAF50',
+                                      cursor: 'pointer',
+                                      minWidth: '30px',
+                                      p: '4px',
+                                    }}
+                                    onClick={handleCreateTodoHeader}
+                                  >
+                                    <CheckIcon />
+                                  </Button>
+
+                                  {/* ❌ Cancel Button */}
+                                  <Button
+                                    sx={{
+                                      color: '#F44336',
+                                      cursor: 'pointer',
+                                      minWidth: '30px',
+                                      p: '4px',
+                                    }}
+                                    onClick={() => {
+                                      setIsEditingHeaderCreate(false);
+                                      setEditIndexHeaderCreate(null);
+                                      setHeaderNameCreate('');
+                                      setdocumentFilesDOcumentContentHeader([]);
+                                    }}
+                                  >
+                                    <CloseIcon />
+                                  </Button>
+                                </Box>
+                              ) : (
+                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                  {/* ✏️ Edit Button */}
+                                  <Button
+                                    sx={{
+                                      color: '#357AE8',
+                                      cursor: 'pointer',
+                                      minWidth: '30px',
+                                      p: '4px',
+                                    }}
+                                    onClick={() => handleEditHeaderCreate(index)}
+                                  >
+                                    <EditIcon />
+                                  </Button>
+
+                                  {/* 🗑️ Delete Button */}
+                                  <Button
+                                    sx={{
+                                      color: '#357AE8',
+                                      cursor: 'pointer',
+                                      minWidth: '30px',
+                                      p: '4px',
+                                    }}
+                                    onClick={() => handleDeleteHeaderCreate(index)}
+                                  >
+                                    <DeleteIcon />
+                                  </Button>
+                                </Box>
+                              )}
+                            </Grid>
+
+
+                          </Grid>
+                        </>
+                      ))}
+                  </Grid>
+                </Grid>
+
+                <Grid container spacing={2}>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>Footer Name</b>
+                        <b style={{ color: 'red' }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter Footer Name"
+                        value={footerNameCreate}
+                        disabled={!isEditingFooterCreate && documentFilesDocumentContentFooter.length > 0 ? false : false}
+                        onChange={(e) => {
+                          setFooterNameCreate(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
                       {' '}
@@ -3758,7 +4148,7 @@ function TempControlPanel() {
                     </InputLabel>
                     <Box sx={{ display: 'flex', justifyContent: 'left' }}>
                       <div>
-                        <Button variant="contained" size="small" component="label" onClick={handleClick2} sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button variant="contained" disabled={isEditingFooterCreate} size="small" component="label" onClick={handleClick2} sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
                           Upload
                         </Button>
                         <Menu anchorEl={anchorElDoc2} open={Boolean(anchorElDoc2)} onClose={handleClose2}>
@@ -3767,7 +4157,7 @@ function TempControlPanel() {
                         </Menu>
 
                         {option2 === 'local' && documentFilesDocumentContentFooter?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button variant="contained" disabled={isEditingFooterCreate} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
                             Upload Local
                             <input
                               type="file"
@@ -3786,6 +4176,7 @@ function TempControlPanel() {
                           <FormControl fullWidth sx={{ marginTop: '10px' }}>
                             <Selects
                               options={orgDocuments}
+                              disabled={isEditingFooterCreate}
                               value={{ value: docBodyHeader2, label: docBodyHeader2 }}
                               onChange={async (e) => {
                                 setDocBodyHeader2(e.value);
@@ -3822,6 +4213,98 @@ function TempControlPanel() {
                         ))}
                     </Grid>
                   </Grid>
+                  <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
+                    <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodoFooter}>
+                      {isEditingFooterCreate ? <EditIcon /> : <FaPlus />}
+                    </Button>
+                  </Grid>
+
+                  <Grid item md={12} xs={12} sm={12}>
+                    {footerTodoCreate?.length > 0 && <Typography variant='h6'>{"Footers List"}</Typography>}
+                    <br />
+                    {footerTodoCreate?.length > 0 &&
+                      footerTodoCreate?.map((file, index) => (
+                        <>
+                          <Grid container spacing={1}>
+                            <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.footername}</Typography>
+                            </Grid>
+                            <Grid item md={6} sm={6} xs={6}>
+                              <Typography>{file?.footerimage[0]?.name}</Typography>
+                            </Grid>
+                            <Grid></Grid>
+                            <Grid item md={2} sm={6} xs={6}>
+                              {isEditingFooterCreate && editIndexFooterCreate === index ? (
+                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                  {/* ✅ Save Button */}
+                                  <Button
+                                    sx={{
+                                      color: '#4CAF50',
+                                      cursor: 'pointer',
+                                      minWidth: '30px',
+                                      p: '4px',
+                                    }}
+                                    onClick={handleCreateTodoFooter}
+                                  >
+                                    <CheckIcon />
+                                  </Button>
+
+                                  {/* ❌ Cancel Button */}
+                                  <Button
+                                    sx={{
+                                      color: '#F44336',
+                                      cursor: 'pointer',
+                                      minWidth: '30px',
+                                      p: '4px',
+                                    }}
+                                    onClick={() => {
+                                      setIsEditingFooterCreate(false);
+                                      setEditIndexFooterCreate(null);
+                                      setFooterNameCreate('');
+                                      setdocumentFilesDOcumentContentFooter([]);
+                                    }}
+                                  >
+                                    <CloseIcon />
+                                  </Button>
+                                </Box>
+                              ) : (
+                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                  {/* ✏️ Edit Button */}
+                                  <Button
+                                    sx={{
+                                      color: '#357AE8',
+                                      cursor: 'pointer',
+                                      minWidth: '30px',
+                                      p: '4px',
+                                    }}
+                                    onClick={() => handleEditFooterCreate(index)}
+                                  >
+                                    <EditIcon />
+                                  </Button>
+
+                                  {/* 🗑️ Delete Button */}
+                                  <Button
+                                    sx={{
+                                      color: '#357AE8',
+                                      cursor: 'pointer',
+                                      minWidth: '30px',
+                                      p: '4px',
+                                    }}
+                                    onClick={() => handleDeleteFooterCreate(index)}
+                                  >
+                                    <DeleteIcon />
+                                  </Button>
+                                </Box>
+                              )}
+                            </Grid>
+
+
+                          </Grid>
+                        </>
+                      ))}
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2}>
                   <Grid item md={4} xs={12} sm={12}>
                     <Typography>
                       <b>Document Letter Head Body Content(Background)</b>
@@ -4433,15 +4916,15 @@ function TempControlPanel() {
                                     onClick={() => {
                                       if (toCompanynameCreate === '') {
                                         setPopupContentMalert(`Please Enter To Companyname`);
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else if (toAddressCreate === '') {
                                         setPopupContentMalert(`Please Enter To Company Address`);
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else if (todoscheckToCompany.some((item, ind) => ind !== index && item?.toCompanyname?.toLowerCase() === toCompanynameCreate?.toLowerCase())) {
                                         setPopupContentMalert('Already Details Added');
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else {
                                         const updatedIsTodoEdit = [...isTodoEdit];
@@ -4607,11 +5090,11 @@ function TempControlPanel() {
                                     onClick={() => {
                                       if (qrInfoCreate === '') {
                                         setPopupContentMalert(`Please Enter Details`);
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else if (qrInfoTodos.some((item, ind) => ind !== index && item?.details?.toLowerCase() === qrInfoCreate?.toLowerCase())) {
                                         setPopupContentMalert('Already Details Added');
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else {
                                         const updatedIsTodoEdit = [...isTodoQrInfo];
@@ -4944,7 +5427,7 @@ function TempControlPanel() {
                                     setSealTodoCreate(false);
                                     setIndexSealCreate(-1);
                                   }}
-                                  // disabled={!empdigits}
+                                // disabled={!empdigits}
                                 >
                                   <CancelIcon
                                     style={{
@@ -4999,7 +5482,7 @@ function TempControlPanel() {
                                     },
                                   }}
                                   onClick={() => handleCreateSealEditTodo(index)}
-                                  // disabled={!empdigits}
+                                // disabled={!empdigits}
                                 >
                                   <FaEdit
                                     style={{
@@ -5530,7 +6013,7 @@ function TempControlPanel() {
                                     setSignTodoCreate(false);
                                     setIndexSignatureCreate(-1);
                                   }}
-                                  // disabled={!empdigits}
+                                // disabled={!empdigits}
                                 >
                                   <CancelIcon
                                     style={{
@@ -5659,7 +6142,7 @@ function TempControlPanel() {
                                     },
                                   }}
                                   onClick={() => handleCreateEditSignature(index)}
-                                  // disabled={!empdigits}
+                                // disabled={!empdigits}
                                 >
                                   <FaEdit
                                     style={{
@@ -5775,15 +6258,15 @@ function TempControlPanel() {
                                   onClick={() => {
                                     if (ccEmailCreate === '') {
                                       setPopupContentMalert(`Please Enter CC Email`);
-                                      setPopupSeverityMalert('info');
+                                      setPopupSeverityMalert('warning');
                                       handleClickOpenPopupMalert();
                                     } else if (!isValidEmail(ccEmailCreate)) {
                                       setPopupContentMalert('Please Enter Valid CC Email');
-                                      setPopupSeverityMalert('info');
+                                      setPopupSeverityMalert('warning');
                                       handleClickOpenPopupMalert();
                                     } else if (ccEmailTodo.some((item, ind) => ind !== index && item?.toLowerCase() == ccEmailCreate?.toLowerCase())) {
                                       setPopupContentMalert('Already Details Added');
-                                      setPopupSeverityMalert('info');
+                                      setPopupSeverityMalert('warning');
                                       handleClickOpenPopupMalert();
                                     } else {
                                       const updatedIsTodoEdit = [...isTodoEditCCEmail];
@@ -5923,15 +6406,15 @@ function TempControlPanel() {
                                   onClick={() => {
                                     if (bccEmailCreate === '') {
                                       setPopupContentMalert(`Please Enter BCC Email`);
-                                      setPopupSeverityMalert('info');
+                                      setPopupSeverityMalert('warning');
                                       handleClickOpenPopupMalert();
                                     } else if (!isValidEmail(bccEmailCreate)) {
                                       setPopupContentMalert('Please Enter Valid BCC Email');
-                                      setPopupSeverityMalert('info');
+                                      setPopupSeverityMalert('warning');
                                       handleClickOpenPopupMalert();
                                     } else if (bccEmailTodo.some((item, ind) => ind !== index && item?.toLowerCase() === bccEmailCreate?.toLowerCase())) {
                                       setPopupContentMalert('Already Details Added');
-                                      setPopupSeverityMalert('info');
+                                      setPopupSeverityMalert('warning');
                                       handleClickOpenPopupMalert();
                                     } else {
                                       const updatedIsTodoEdit = [...isTodoEditBCCEmail];
@@ -6083,12 +6566,12 @@ function TempControlPanel() {
           fullWidth={true}
           maxWidth="lg"
           sx={{ marginTop: '50px' }}
-          // sx={{
-          //     overflow: 'visible',
-          //     '& .MuiPaper-root': {
-          //         overflow: 'visible',
-          //     },
-          // }}
+        // sx={{
+        //     overflow: 'visible',
+        //     '& .MuiPaper-root': {
+        //         overflow: 'visible',
+        //     },
+        // }}
         >
           <Box sx={{ padding: '20px' }}>
             <>
@@ -6153,6 +6636,24 @@ function TempControlPanel() {
                   </Grid>
                   <br />
                   <Grid container spacing={2}>
+                    <Grid item md={4} xs={12} sm={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          <b>Header Name</b>
+                          <b style={{ color: 'red' }}>*</b>
+                        </Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          placeholder="Please Enter Header Name"
+                          value={headerNameEdit}
+                          disabled={!isEditingHeaderEdit && documentFilesDocumentContentHeaderEdit.length > 0 ? false : false}
+                          onChange={(e) => {
+                            setHeaderNameEdit(e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
                         {' '}
@@ -6160,7 +6661,7 @@ function TempControlPanel() {
                         <b style={{ color: 'red' }}>*</b>
                       </InputLabel>
                       <div>
-                        <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }} onClick={handleClickEdit}>
+                        <Button variant="contained" size="small" disabled={isEditingHeaderEdit} component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }} onClick={handleClickEdit}>
                           Upload
                         </Button>
                         <Menu anchorEl={anchorElDocEdit} open={Boolean(anchorElDocEdit)} onClose={handleCloseEdit}>
@@ -6169,7 +6670,7 @@ function TempControlPanel() {
                         </Menu>
 
                         {optionEdit === 'local' && documentFilesDocumentContentHeaderEdit?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button variant="contained" disabled={isEditingHeaderEdit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
                             Upload Local
                             <input
                               type="file"
@@ -6188,6 +6689,7 @@ function TempControlPanel() {
                           <FormControl fullWidth sx={{ marginTop: '10px' }}>
                             <Selects
                               options={orgDocuments}
+                              disabled={isEditingHeaderEdit}
                               value={{ value: docBodyHeaderEdit, label: docBodyHeaderEdit }}
                               onChange={async (e) => {
                                 setDocBodyHeaderEdit(e.value);
@@ -6224,6 +6726,120 @@ function TempControlPanel() {
                           ))}
                       </Grid>
                     </Grid>
+                    <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
+                      <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleEditTodoHeader}>
+                        {isEditingHeaderEdit ? <EditIcon /> : <FaPlus />}
+                      </Button>
+                    </Grid>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {headerTodoEdit?.length > 0 && <Typography variant='h6'>{"Headers List"}</Typography>}
+                      <br />
+                      {headerTodoEdit?.length > 0 &&
+                        headerTodoEdit?.map((file, index) => (
+                          <>
+                            <Grid container spacing={1}>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file?.headername}</Typography>
+                              </Grid>
+                              <Grid item md={6} sm={6} xs={6}>
+                                <Typography>{file?.headerimage[0]?.name}</Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                                {isEditingHeaderEdit && editIndexHeaderEdit === index ? (
+                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                    {/* ✅ Save Button */}
+                                    <Button
+                                      sx={{
+                                        color: '#4CAF50',
+                                        cursor: 'pointer',
+                                        minWidth: '30px',
+                                        p: '4px',
+                                      }}
+                                      onClick={handleEditTodoHeader}
+                                    >
+                                      <CheckIcon />
+                                    </Button>
+
+                                    {/* ❌ Cancel Button */}
+                                    <Button
+                                      sx={{
+                                        color: '#F44336',
+                                        cursor: 'pointer',
+                                        minWidth: '30px',
+                                        p: '4px',
+                                      }}
+                                      onClick={() => {
+                                        setIsEditingHeaderEdit(false);
+                                        setEditIndexHeaderEdit(null);
+                                        setHeaderNameEdit('');
+                                        setdocumentFilesDOcumentContentHeaderEdit([]);
+                                      }}
+                                    >
+                                      <CloseIcon />
+                                    </Button>
+                                  </Box>
+                                ) : (
+                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                    {/* ✏️ Edit Button */}
+                                    <Button
+                                      sx={{
+                                        color: '#357AE8',
+                                        cursor: 'pointer',
+                                        minWidth: '30px',
+                                        p: '4px',
+                                      }}
+                                      onClick={() => handleEditHeaderEdit(index)}
+                                    >
+                                      <EditIcon />
+                                    </Button>
+
+                                    {/* 🗑️ Delete Button */}
+                                    <Button
+                                      sx={{
+                                        color: '#357AE8',
+                                        cursor: 'pointer',
+                                        minWidth: '30px',
+                                        p: '4px',
+                                      }}
+                                      onClick={() => handleDeleteHeaderEdit(index)}
+                                    >
+                                      <DeleteIcon />
+                                    </Button>
+                                  </Box>
+                                )}
+                              </Grid>
+
+
+                            </Grid>
+                          </>
+                        ))}
+                    </Grid>
+                  </Grid>
+
+
+
+
+
+                  <Grid container spacing={2}>
+                    <Grid item md={4} xs={12} sm={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          <b>Footer Name</b>
+                          <b style={{ color: 'red' }}>*</b>
+                        </Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          placeholder="Please Enter Footer Name"
+                          value={footerNameEdit}
+                          disabled={!isEditingFooterEdit && documentFilesDocumentContentFooterEdit.length > 0 ? false : false}
+                          onChange={(e) => {
+                            setFooterNameEdit(e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
                         {' '}
@@ -6232,7 +6848,7 @@ function TempControlPanel() {
                       </InputLabel>
                       <Box sx={{ display: 'flex', justifyContent: 'left' }}>
                         <div>
-                          <Button variant="contained" size="small" component="label" onClick={handleClick2Edit} sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button variant="contained" size="small" disabled={isEditingFooterEdit} component="label" onClick={handleClick2Edit} sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
                             Upload
                           </Button>
                           <Menu anchorEl={anchorElDoc2Edit} open={Boolean(anchorElDoc2Edit)} onClose={handleClose2Edit}>
@@ -6241,7 +6857,7 @@ function TempControlPanel() {
                           </Menu>
 
                           {option2Edit === 'local' && documentFilesDocumentContentFooterEdit?.length === 0 && (
-                            <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                            <Button disabled={isEditingFooterEdit} variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
                               Upload Local
                               <input
                                 type="file"
@@ -6260,6 +6876,7 @@ function TempControlPanel() {
                             <FormControl fullWidth sx={{ marginTop: '10px' }}>
                               <Selects
                                 options={orgDocuments}
+                                disabled={isEditingFooterEdit}
                                 value={{ value: docBodyHeader2Edit, label: docBodyHeader2Edit }}
                                 onChange={async (e) => {
                                   setDocBodyHeader2Edit(e.value);
@@ -6296,6 +6913,104 @@ function TempControlPanel() {
                           ))}
                       </Grid>
                     </Grid>
+                    <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
+                      <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleEditTodoFooter}>
+                        {isEditingFooterEdit ? <EditIcon /> : <FaPlus />}
+                      </Button>
+                    </Grid>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {footerTodoEdit?.length > 0 && <Typography variant='h6'>{"Footers List"}</Typography>}
+                      <br />
+                      {footerTodoEdit?.length > 0 &&
+                        footerTodoEdit?.map((file, index) => (
+                          <>
+                            <Grid container spacing={1}>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file?.footername}</Typography>
+                              </Grid>
+                              <Grid item md={6} sm={6} xs={6}>
+                                <Typography>{file?.footerimage[0]?.name}</Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                                {isEditingFooterEdit && editIndexFooterEdit === index ? (
+                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                    {/* ✅ Save Button */}
+                                    <Button
+                                      sx={{
+                                        color: '#4CAF50',
+                                        cursor: 'pointer',
+                                        minWidth: '30px',
+                                        p: '4px',
+                                      }}
+                                      onClick={handleEditTodoFooter}
+                                    >
+                                      <CheckIcon />
+                                    </Button>
+
+                                    {/* ❌ Cancel Button */}
+                                    <Button
+                                      sx={{
+                                        color: '#F44336',
+                                        cursor: 'pointer',
+                                        minWidth: '30px',
+                                        p: '4px',
+                                      }}
+                                      onClick={() => {
+                                        setIsEditingFooterEdit(false);
+                                        setEditIndexFooterEdit(null);
+                                        setFooterNameEdit('');
+                                        setdocumentFilesDOcumentContentFooterEdit([]);
+                                      }}
+                                    >
+                                      <CloseIcon />
+                                    </Button>
+                                  </Box>
+                                ) : (
+                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                    {/* ✏️ Edit Button */}
+                                    <Button
+                                      sx={{
+                                        color: '#357AE8',
+                                        cursor: 'pointer',
+                                        minWidth: '30px',
+                                        p: '4px',
+                                      }}
+                                      onClick={() => handleEditFooterEdit(index)}
+                                    >
+                                      <EditIcon />
+                                    </Button>
+
+                                    {/* 🗑️ Delete Button */}
+                                    <Button
+                                      sx={{
+                                        color: '#357AE8',
+                                        cursor: 'pointer',
+                                        minWidth: '30px',
+                                        p: '4px',
+                                      }}
+                                      onClick={() => handleDeleteFooterEdit(index)}
+                                    >
+                                      <DeleteIcon />
+                                    </Button>
+                                  </Box>
+                                )}
+                              </Grid>
+
+
+                            </Grid>
+                          </>
+                        ))}
+                    </Grid>
+
+                  </Grid>
+
+
+
+
+
+
+                  <Grid container spacing={2}>
                     <Grid item md={4} xs={12} sm={12}>
                       <Typography>
                         <b>Document Letter Head Body Content(Background)</b>
@@ -7146,11 +7861,11 @@ function TempControlPanel() {
                                         onClick={() => {
                                           if (qrInfoCreateEdit === '') {
                                             setPopupContentMalert(`Please Enter Details`);
-                                            setPopupSeverityMalert('info');
+                                            setPopupSeverityMalert('warning');
                                             handleClickOpenPopupMalert();
                                           } else if (qrInfoTodosEdit.some((item, ind) => ind !== index && item?.details?.toLowerCase() === qrInfoCreateEdit?.toLowerCase())) {
                                             setPopupContentMalert('Already Details Added');
-                                            setPopupSeverityMalert('info');
+                                            setPopupSeverityMalert('warning');
                                             handleClickOpenPopupMalert();
                                           } else {
                                             const updatedIsTodoEdit = [...isTodoQrInfoEdit];
@@ -7484,7 +8199,7 @@ function TempControlPanel() {
                                       setSealTodo(false);
                                       setEditingIndexSeal(-1);
                                     }}
-                                    // disabled={!empdigits}
+                                  // disabled={!empdigits}
                                   >
                                     <CancelIcon
                                       style={{
@@ -7557,7 +8272,7 @@ function TempControlPanel() {
                                       },
                                     }}
                                     onClick={() => handleEditTodoSeal(index)}
-                                    // disabled={!empdigits}
+                                  // disabled={!empdigits}
                                   >
                                     <FaEdit
                                       style={{
@@ -8088,7 +8803,7 @@ function TempControlPanel() {
                                       setSignTodo(false);
                                       setEditingIndexcheck(-1);
                                     }}
-                                    // disabled={!empdigits}
+                                  // disabled={!empdigits}
                                   >
                                     <CancelIcon
                                       style={{
@@ -8220,7 +8935,7 @@ function TempControlPanel() {
                                       },
                                     }}
                                     onClick={() => handleEditTodocheck(index)}
-                                    // disabled={!empdigits}
+                                  // disabled={!empdigits}
                                   >
                                     <FaEdit
                                       style={{
@@ -8283,7 +8998,7 @@ function TempControlPanel() {
                         placeholder="Please Enter from address"
                         value={fromEmailEdit}
                         onChange={(e) => setFromEmailEdit(e.target.value)}
-                        // value={todo.signaturename}
+                      // value={todo.signaturename}
                       />
                     </FormControl>
                   </Grid>
@@ -8342,15 +9057,15 @@ function TempControlPanel() {
                                     onClick={() => {
                                       if (ccEmailCreateEdit === '') {
                                         setPopupContentMalert(`Please Enter CC Email`);
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else if (!isValidEmail(ccEmailCreateEdit)) {
                                         setPopupContentMalert('Please Enter Valid CC Email');
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else if (ccEmailTodoEdit.some((item, ind) => ind !== index && item?.toLowerCase() === ccEmailCreateEdit?.toLowerCase())) {
                                         setPopupContentMalert('Already Details Added');
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else {
                                         const updatedIsTodoEdit = [...isTodoEditCCEmailEdit];
@@ -8490,15 +9205,15 @@ function TempControlPanel() {
                                     onClick={() => {
                                       if (bccEmailCreateEdit === '') {
                                         setPopupContentMalert(`Please Enter BCC Email`);
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else if (!isValidEmail(bccEmailCreateEdit)) {
                                         setPopupContentMalert('Please Enter Valid BCC Email');
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else if (bccEmailTodoEdit.some((item, ind) => ind !== index && item?.toLowerCase() === bccEmailCreateEdit?.toLowerCase())) {
                                         setPopupContentMalert('Already Details Added');
-                                        setPopupSeverityMalert('info');
+                                        setPopupSeverityMalert('warning');
                                         handleClickOpenPopupMalert();
                                       } else {
                                         const updatedIsTodoEdit = [...isTodoEditBCCEmailEdit];
@@ -8888,16 +9603,19 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {documentFilesDocumentContentHeaderView?.length > 0 &&
-                    documentFilesDocumentContentHeaderView?.map((file, index) => (
+                  {headerTodoView?.length > 0 &&
+                    headerTodoView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
-                          <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{file.name}</Typography>
+                          <Grid item md={2} sm={6} xs={6}>
+                            <Typography>{file.headername}</Typography>
+                          </Grid>
+                          <Grid item md={6} sm={6} xs={6}>
+                            <Typography>{file?.headerimage[0]?.name}</Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentHeader(file)} />
+                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentHeader(file?.headerimage[0])} />
                           </Grid>
                         </Grid>
                       </>
@@ -8910,16 +9628,19 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {documentFilesDocumentContentFooterView?.length > 0 &&
-                    documentFilesDocumentContentFooterView?.map((file, index) => (
+                  {footerTodoView?.length > 0 &&
+                    footerTodoView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
-                          <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{file.name}</Typography>
+                          <Grid item md={2} sm={6} xs={6}>
+                            <Typography>{file.footername}</Typography>
+                          </Grid>
+                          <Grid item md={6} sm={6} xs={6}>
+                            <Typography>{file?.footerimage[0]?.name}</Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentFooter(file)} />
+                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentFooter(file?.footerimage[0])} />
                           </Grid>
                         </Grid>
                       </>

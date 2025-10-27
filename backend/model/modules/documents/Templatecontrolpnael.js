@@ -43,36 +43,54 @@ const templatecontrolpanelSchema = new Schema({
     },
     letterheadcontentheader: [
         {
-            preview: {
+            headername: {
                 type: String,
                 required: false
             },
-            name: {
-                type: String,
-                required: false
-            },
-            remark: {
-                type: String,
-                required: false
-            }
+            headerimage: [
+                {
+                    preview: {
+                        type: String,
+                        required: false
+                    },
+                    name: {
+                        type: String,
+                        required: false
+                    },
+                    remark: {
+                        type: String,
+                        required: false
+                    }
 
+                }
+
+            ]
         }
     ],
     letterheadcontentfooter: [
         {
-            preview: {
+            footername: {
                 type: String,
                 required: false
             },
-            name: {
-                type: String,
-                required: false
-            },
-            remark: {
-                type: String,
-                required: false
-            }
+            footerimage: [
+                {
+                    preview: {
+                        type: String,
+                        required: false
+                    },
+                    name: {
+                        type: String,
+                        required: false
+                    },
+                    remark: {
+                        type: String,
+                        required: false
+                    }
 
+                }
+
+            ]
         }
     ],
     qrInfo: [
@@ -344,36 +362,54 @@ const templatecontrolpanelSchema = new Schema({
         ],
         letterheadcontentheader: [
             {
-                preview: {
+                headername: {
                     type: String,
                     required: false
                 },
-                name: {
-                    type: String,
-                    required: false
-                },
-                remark: {
-                    type: String,
-                    required: false
-                }
+                headerimage: [
+                    {
+                        preview: {
+                            type: String,
+                            required: false
+                        },
+                        name: {
+                            type: String,
+                            required: false
+                        },
+                        remark: {
+                            type: String,
+                            required: false
+                        }
 
+                    }
+
+                ]
             }
         ],
         letterheadcontentfooter: [
             {
-                preview: {
+                footername: {
                     type: String,
                     required: false
                 },
-                name: {
-                    type: String,
-                    required: false
-                },
-                remark: {
-                    type: String,
-                    required: false
-                }
+                footerimage: [
+                    {
+                        preview: {
+                            type: String,
+                            required: false
+                        },
+                        name: {
+                            type: String,
+                            required: false
+                        },
+                        remark: {
+                            type: String,
+                            required: false
+                        }
 
+                    }
+
+                ]
             }
         ],
         letterheadbodycontent: [
