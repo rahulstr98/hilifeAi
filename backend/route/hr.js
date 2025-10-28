@@ -1,7 +1,7 @@
 const express = require("express");
 const hrmoduleRoute = express.Router();
 const upload = require("../middleware/ManualKeyWordPreparation");
-
+const uploadTemplate = require("../middleware/multerTemplateControlPanel");
 // connect Department controller
 const { getAllAddlDepartmentLimit, getAllDepartmentDetails, addDepartmentDetails, updateDepartmentDetails, getSingleDepartmentDetails, deleteDepartmentDetails, getOverallDepartmentDetails } = require("../controller/modules/department");
 
@@ -239,9 +239,9 @@ hrmoduleRoute.route("/accessibletemplatecontrolpanel").post(getAaccessibleBranch
 hrmoduleRoute.route("/filtertemplatecontrolpanel").post(getAllFilterTemplatecontrolpanelModel);
 hrmoduleRoute.route("/duplicatetemplatecontrolpanel").get(getAllDuplicateTemplatecontrolpanel);
 hrmoduleRoute.route("/tempcontrolepaneluserfind").post(getAllUserDetailsDocuments);
-hrmoduleRoute.route("/templatecontrolpanel/new").post(createTemplatecontrolpanelModel);
+hrmoduleRoute.route("/templatecontrolpanel/new").post(uploadTemplate, createTemplatecontrolpanelModel);
 hrmoduleRoute.route("/templatecontrolpanelsingle/:parentId/:itemId").delete(deleteSingleObject);
-hrmoduleRoute.route("/templatecontrolpanel/:id").put(updateTemplatecontrolpanelModel).get(getSingleTemplatecontrolpanelModel).delete(deleteTemplatecontrolpanelModel);;
+hrmoduleRoute.route("/templatecontrolpanel/:id").put(uploadTemplate , updateTemplatecontrolpanelModel).get(getSingleTemplatecontrolpanelModel).delete(deleteTemplatecontrolpanelModel);;
 
 
 // connect Designation month set controller

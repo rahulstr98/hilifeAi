@@ -1321,6 +1321,10 @@ app.use('/taskUserPanel', express.static(path.join(__dirname, 'taskUserPanel')))
 app.use('/raiseTicketMaster', express.static(path.join(__dirname, 'raiseTicketMaster')));
 app.use('/uploadsDocuments', express.static(path.join(__dirname, 'uploadsDocuments')));
 app.use('/candidateDocuments', express.static(path.join(__dirname, 'candidateDocuments')));
+app.use(
+  "/templatecontrolpanel",
+  express.static(path.join(__dirname, "templatecontrolpanel"))
+);
 app.use('/BiometricUnregisteredUsers', express.static(path.join(__dirname, 'BiometricUnregisteredUsers')));
 app.use('/ManualDocumentPreparation', express.static(path.join(__dirname, 'ManualDocumentPreparation')));
 app.use("/api/organizationdocumentfiles", express.static(path.join(__dirname, "organizationdocumentModule")));

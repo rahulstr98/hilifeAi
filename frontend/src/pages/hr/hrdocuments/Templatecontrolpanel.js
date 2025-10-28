@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext } from "react";
 import {
   Box,
   Typography,
@@ -29,70 +29,76 @@ import {
   Checkbox,
   TextField,
   IconButton,
-} from '@mui/material';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckIcon from '@mui/icons-material/Check';
-import EditIcon from '@mui/icons-material/Edit';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import Menu from '@mui/material/Menu';
-import { userStyle, colourStyles } from '../../../pageStyle';
-import { ExportXL, ExportCSV } from '../../../components/Export';
-import { StyledTableRow, StyledTableCell } from '../../../components/Table';
-import { handleApiError } from '../../../components/Errorhandling';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import axios from 'axios';
-import { BASE_URL } from '../../../services/Authservice';
-import { SERVICE } from '../../../services/Baseservice';
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import { useReactToPrint } from 'react-to-print';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import moment from 'moment-timezone';
-import ReactQuill from 'react-quill';
-import { FaFileCsv, FaFileExcel, FaPrint, FaFilePdf } from 'react-icons/fa';
-import 'react-quill/dist/quill.snow.css';
-import { UserRoleAccessContext, AuthContext } from '../../../context/Appcontext';
-import Headtitle from '../../../components/Headtitle';
-import StyledDataGrid from '../../../components/TableStyle';
-import { ThreeDots } from 'react-loader-spinner';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import { saveAs } from 'file-saver';
-import Switch from '@mui/material/Switch';
-import CloseIcon from '@mui/icons-material/Close';
-import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import html2canvas from 'html2canvas';
-import ImageIcon from '@mui/icons-material/Image';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Selects from 'react-select';
-import { FaExpand, FaTrash, FaPlus, FaEdit } from 'react-icons/fa';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Link } from 'react-router-dom';
-import { LoadingButton } from '@mui/lab';
-import PageHeading from '../../../components/PageHeading';
-import AlertDialog from '../../../components/Alert';
-import { DeleteConfirmation, PleaseSelectRow } from '../../../components/DeleteConfirmation.js';
-import ExportData from '../../../components/ExportData';
-import InfoPopup from '../../../components/InfoPopup.js';
-import MessageAlert from '../../../components/MessageAlert';
-import { AiOutlineClose } from 'react-icons/ai';
-import { MdOutlineDone } from 'react-icons/md';
-import { getCurrentServerTime } from '../../../components/getCurrentServerTime';
-import ReactQuillAdvanced from '../../../components/ReactQuillAdvanced.js';
+} from "@mui/material";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckIcon from "@mui/icons-material/Check";
+import EditIcon from "@mui/icons-material/Edit";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import Menu from "@mui/material/Menu";
+import { userStyle, colourStyles } from "../../../pageStyle";
+import { ExportXL, ExportCSV } from "../../../components/Export";
+import { StyledTableRow, StyledTableCell } from "../../../components/Table";
+import { handleApiError } from "../../../components/Errorhandling";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import axios from "axios";
+import { BASE_URL } from "../../../services/Authservice";
+import { SERVICE } from "../../../services/Baseservice";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import { useReactToPrint } from "react-to-print";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import moment from "moment-timezone";
+import ReactQuill from "react-quill";
+import { FaFileCsv, FaFileExcel, FaPrint, FaFilePdf } from "react-icons/fa";
+import "react-quill/dist/quill.snow.css";
+import {
+  UserRoleAccessContext,
+  AuthContext,
+} from "../../../context/Appcontext";
+import Headtitle from "../../../components/Headtitle";
+import StyledDataGrid from "../../../components/TableStyle";
+import { ThreeDots } from "react-loader-spinner";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import { saveAs } from "file-saver";
+import Switch from "@mui/material/Switch";
+import CloseIcon from "@mui/icons-material/Close";
+import ContentPasteIcon from "@mui/icons-material/ContentPaste";
+import html2canvas from "html2canvas";
+import ImageIcon from "@mui/icons-material/Image";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Selects from "react-select";
+import { FaExpand, FaTrash, FaPlus, FaEdit } from "react-icons/fa";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Link } from "react-router-dom";
+import { LoadingButton } from "@mui/lab";
+import PageHeading from "../../../components/PageHeading";
+import AlertDialog from "../../../components/Alert";
+import {
+  DeleteConfirmation,
+  PleaseSelectRow,
+} from "../../../components/DeleteConfirmation.js";
+import ExportData from "../../../components/ExportData";
+import InfoPopup from "../../../components/InfoPopup.js";
+import MessageAlert from "../../../components/MessageAlert";
+import { AiOutlineClose } from "react-icons/ai";
+import { MdOutlineDone } from "react-icons/md";
+import { getCurrentServerTime } from "../../../components/getCurrentServerTime";
+import ReactQuillAdvanced from "../../../components/ReactQuillAdvanced.js";
 
 function TempControlPanel() {
-  const [selectedMargin, setSelectedMargin] = useState('normal');
-  const [pageSizeQuill, setPageSizeQuill] = useState('A4');
-  const [pageOrientation, setPageOrientation] = useState('portrait');
-  const [selectedMarginEdit, setSelectedMarginEdit] = useState('normal');
-  const [pageSizeQuillEdit, setPageSizeQuillEdit] = useState('A4');
-  const [pageOrientationEdit, setPageOrientationEdit] = useState('portrait');
+  const [selectedMargin, setSelectedMargin] = useState("normal");
+  const [pageSizeQuill, setPageSizeQuill] = useState("A4");
+  const [pageOrientation, setPageOrientation] = useState("portrait");
+  const [selectedMarginEdit, setSelectedMarginEdit] = useState("normal");
+  const [pageSizeQuillEdit, setPageSizeQuillEdit] = useState("A4");
+  const [pageOrientationEdit, setPageOrientationEdit] = useState("portrait");
 
   const [serverTime, setServerTime] = useState(new Date());
   useEffect(() => {
@@ -102,17 +108,26 @@ function TempControlPanel() {
         const time = await getCurrentServerTime();
         setServerTime(time);
       } catch (error) {
-        console.error('Failed to fetch server time:', error);
+        console.error("Failed to fetch server time:", error);
       }
     };
 
     fetchTime();
   }, []);
 
-  const { isUserRoleCompare, isUserRoleAccess, isAssignBranch, allUsersData, allTeam, pageName, setPageName, buttonStyles } = useContext(UserRoleAccessContext);
+  const {
+    isUserRoleCompare,
+    isUserRoleAccess,
+    isAssignBranch,
+    allUsersData,
+    allTeam,
+    pageName,
+    setPageName,
+    buttonStyles,
+  } = useContext(UserRoleAccessContext);
   const [openPopupMalert, setOpenPopupMalert] = useState(false);
-  const [popupContentMalert, setPopupContentMalert] = useState('');
-  const [popupSeverityMalert, setPopupSeverityMalert] = useState('');
+  const [popupContentMalert, setPopupContentMalert] = useState("");
+  const [popupSeverityMalert, setPopupSeverityMalert] = useState("");
   const handleClickOpenPopupMalert = () => {
     //   setSubmitLoader(false);
     setOpenPopupMalert(true);
@@ -121,15 +136,20 @@ function TempControlPanel() {
     setOpenPopupMalert(false);
   };
   const [editingIndexcheck, setEditingIndexcheck] = useState(-1);
-  const [editingIndexcheckToCompany, setEditingIndexcheckToCompany] = useState(-1);
-  const [editingIndexcheckToCompanyEdit, setEditingIndexcheckToCompanyEdit] = useState(-1);
+  const [editingIndexcheckToCompany, setEditingIndexcheckToCompany] =
+    useState(-1);
+  const [editingIndexcheckToCompanyEdit, setEditingIndexcheckToCompanyEdit] =
+    useState(-1);
   const [editingIndexcheckCCemail, setEditingIndexcheckCCemail] = useState(-1);
-  const [editingIndexcheckCCemailEdit, setEditingIndexcheckCCemailEdit] = useState(-1);
-  const [editingIndexcheckBCCemail, setEditingIndexcheckBCCemail] = useState(-1);
-  const [editingIndexcheckBCCemailEdit, setEditingIndexcheckBCCemailEdit] = useState(-1);
+  const [editingIndexcheckCCemailEdit, setEditingIndexcheckCCemailEdit] =
+    useState(-1);
+  const [editingIndexcheckBCCemail, setEditingIndexcheckBCCemail] =
+    useState(-1);
+  const [editingIndexcheckBCCemailEdit, setEditingIndexcheckBCCemailEdit] =
+    useState(-1);
   const [openPopup, setOpenPopup] = useState(false);
-  const [popupContent, setPopupContent] = useState('');
-  const [popupSeverity, setPopupSeverity] = useState('');
+  const [popupContent, setPopupContent] = useState("");
+  const [popupSeverity, setPopupSeverity] = useState("");
   const handleClickOpenPopup = () => {
     setOpenPopup(true);
   };
@@ -144,69 +164,114 @@ function TempControlPanel() {
   const handleCloseKeywordPopup = () => {
     setIsOpenKeyword(false);
   };
-  let exportColumnNames = ['Company', 'Branch', 'Company URL', 'Company Name', 'Address'];
-  let exportRowValues = ['company', 'branch', 'companyurl', 'companyname', 'address'];
-  const accessbranch = isUserRoleAccess?.role?.includes('Manager')
+  let exportColumnNames = [
+    "Company",
+    "Branch",
+    "Company URL",
+    "Company Name",
+    "Address",
+  ];
+  let exportRowValues = [
+    "company",
+    "branch",
+    "companyurl",
+    "companyname",
+    "address",
+  ];
+  const accessbranch = isUserRoleAccess?.role?.includes("Manager")
     ? isAssignBranch?.map((data) => ({
-      branch: data.branch,
-      company: data.company,
-      unit: data.unit,
-      branchcode: data.branchcode,
-      unitcode: data.unitcode,
-    }))
-    : isAssignBranch
-      ?.filter((data) => {
-        let fetfinalurl = [];
-
-        if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.subsubpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.subpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.mainpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.submodulenameurl;
-        } else if (data?.modulenameurl?.length !== 0) {
-          fetfinalurl = data.modulenameurl;
-        } else {
-          fetfinalurl = [];
-        }
-
-        const remove = [window.location.pathname?.substring(1), window.location.pathname];
-        return fetfinalurl?.some((item) => remove?.includes(item));
-      })
-      ?.map((data) => ({
         branch: data.branch,
         company: data.company,
         unit: data.unit,
         branchcode: data.branchcode,
         unitcode: data.unitcode,
-      }));
+      }))
+    : isAssignBranch
+        ?.filter((data) => {
+          let fetfinalurl = [];
+
+          if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.subsubpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.subpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.mainpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.submodulenameurl;
+          } else if (data?.modulenameurl?.length !== 0) {
+            fetfinalurl = data.modulenameurl;
+          } else {
+            fetfinalurl = [];
+          }
+
+          const remove = [
+            window.location.pathname?.substring(1),
+            window.location.pathname,
+          ];
+          return fetfinalurl?.some((item) => remove?.includes(item));
+        })
+        ?.map((data) => ({
+          branch: data.branch,
+          company: data.company,
+          unit: data.unit,
+          branchcode: data.branchcode,
+          unitcode: data.unitcode,
+        }));
 
   const fetchEmployeeSignatureDefault = async (employeename, page, index) => {
     try {
-      const userDetails = await axios.post(`${SERVICE.USER_ESIGNATURE_FILTER}`, {
-        companyname: employeename,
-      });
+      const userDetails = await axios.post(
+        `${SERVICE.USER_ESIGNATURE_FILTER}`,
+        {
+          companyname: employeename,
+        }
+      );
 
-      const userESignature = userDetails?.data?.semployeesignature ? userDetails?.data?.semployeesignature?.signatureimage : '';
-      console.log(userDetails, 'userESignature');
+      const userESignature = userDetails?.data?.semployeesignature
+        ? userDetails?.data?.semployeesignature?.signatureimage
+        : "";
+      console.log(userDetails, "userESignature");
       function getFileTypeFromBase64(base64String) {
         const match = base64String.match(/^data:(.+);base64,/);
         if (match) {
           const mimeType = match[1];
-          return mimeType.split('/')[1]; // returns 'png', 'jpeg', 'pdf', etc.
+          return mimeType.split("/")[1]; // returns 'png', 'jpeg', 'pdf', etc.
         }
         return null;
       }
 
-      if (page === 'create') {
+      if (page === "create") {
         if (userESignature) {
-          setdocumentFilesSignature([{ name: `${employeename}.${getFileTypeFromBase64(userESignature)}`, preview: userESignature }]);
+          setdocumentFilesSignature({
+            name: `${employeename}.${getFileTypeFromBase64(userESignature)}`,
+            preview: userESignature,
+          });
         } else {
-          setdocumentFilesSignature([]);
+          setdocumentFilesSignature("");
         }
-      } else if (page === 'createtodo') {
+      } else if (page === "createtodo") {
         if (userESignature) {
           const fileType = getFileTypeFromBase64(userESignature); // returns "png", "jpeg", etc.
           todoscheckSignature[index].document = [
@@ -216,13 +281,18 @@ function TempControlPanel() {
             },
           ];
         }
-      } else if (page === 'edit') {
+      } else if (page === "edit") {
         if (userESignature) {
-          setdocumentFilesSignatureEdit([{ name: `${employeename}.${getFileTypeFromBase64(userESignature)}`, preview: userESignature }]);
+          setdocumentFilesSignatureEdit([
+            {
+              name: `${employeename}.${getFileTypeFromBase64(userESignature)}`,
+              preview: userESignature,
+            },
+          ]);
         } else {
           setdocumentFilesSignatureEdit([]);
         }
-      } else if (page === 'edittodo') {
+      } else if (page === "edittodo") {
         if (userESignature) {
           const fileType = getFileTypeFromBase64(userESignature); // returns "png", "jpeg", etc.
           todoscheckSignatureEdit[index].document = [
@@ -234,7 +304,12 @@ function TempControlPanel() {
         }
       }
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   const getapi = async () => {
@@ -246,7 +321,7 @@ function TempControlPanel() {
         },
         empcode: String(isUserRoleAccess?.empcode),
         companyname: String(isUserRoleAccess?.companyname),
-        pagename: String('Human Resource/HR Documents/Template Control Panel'),
+        pagename: String("Human Resource/HR Documents/Template Control Panel"),
         commonid: String(isUserRoleAccess?._id),
         date: String(new Date(serverTime)),
         addedby: [
@@ -256,7 +331,12 @@ function TempControlPanel() {
         ],
       });
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   useEffect(() => {
@@ -265,37 +345,45 @@ function TempControlPanel() {
 
   const [btnSubmit, setBtnSubmit] = useState(false);
   const [btnSubmitEdit, setBtnSubmitEdit] = useState(false);
-  const [toCompanyname, setToCompanyname] = useState('');
-  const [toAddress, setToAddress] = useState('');
+  const [toCompanyname, setToCompanyname] = useState("");
+  const [toAddress, setToAddress] = useState("");
 
-  const [qrInfo, setQrInfo] = useState('');
-  const [qrInfoCreate, setQrInfoCreate] = useState('');
+  const [qrInfo, setQrInfo] = useState("");
+  const [qrInfoCreate, setQrInfoCreate] = useState("");
   const [qrInfoTodos, setQrInfoTodos] = useState([]);
   const [qrIndexCheck, setQrIndexcheck] = useState(-1);
-  const [isTodoQrInfo, setIsTodoQrInfo] = useState(Array(qrInfoTodos?.length).fill(false));
+  const [isTodoQrInfo, setIsTodoQrInfo] = useState(
+    Array(qrInfoTodos?.length).fill(false)
+  );
 
-  const [qrInfoEdit, setQrInfoEdit] = useState('');
-  const [qrInfoCreateEdit, setQrInfoCreateEdit] = useState('');
+  const [qrInfoEdit, setQrInfoEdit] = useState("");
+  const [qrInfoCreateEdit, setQrInfoCreateEdit] = useState("");
   const [qrInfoTodosEdit, setQrInfoTodosEdit] = useState([]);
   const [qrIndexCheckEdit, setQrIndexcheckEdit] = useState(-1);
-  const [isTodoQrInfoEdit, setIsTodoQrInfoEdit] = useState(Array(qrInfoTodosEdit?.length).fill(false));
+  const [isTodoQrInfoEdit, setIsTodoQrInfoEdit] = useState(
+    Array(qrInfoTodosEdit?.length).fill(false)
+  );
 
-  const [toCompanynameCreate, setToCompanynameCreate] = useState('');
-  const [toCompanynameCreateEdit, setToCompanynameCreateEdit] = useState('');
-  const [toAddressCreate, setToAddressCreate] = useState('');
-  const [toAddressCreateEdit, setToAddressCreateEdit] = useState('');
+  const [toCompanynameCreate, setToCompanynameCreate] = useState("");
+  const [toCompanynameCreateEdit, setToCompanynameCreateEdit] = useState("");
+  const [toAddressCreate, setToAddressCreate] = useState("");
+  const [toAddressCreateEdit, setToAddressCreateEdit] = useState("");
   const [todoscheckToCompany, setTodoscheckToCompany] = useState([]);
-  const [toCompanynameEdit, setToCompanynameEdit] = useState('');
-  const [toAddressEdit, setToAddressEdit] = useState('');
+  const [toCompanynameEdit, setToCompanynameEdit] = useState("");
+  const [toAddressEdit, setToAddressEdit] = useState("");
   const [todoscheckToCompanyEdit, setTodoscheckToCompanyEdit] = useState([]);
 
-  const [isTodoEdit, setIsTodoEdit] = useState(Array(todoscheckToCompany?.length).fill(false));
-  const [isTodoToCompanyEdit, setIsTodoToCompanyEdit] = useState(Array(todoscheckToCompanyEdit?.length).fill(false));
+  const [isTodoEdit, setIsTodoEdit] = useState(
+    Array(todoscheckToCompany?.length).fill(false)
+  );
+  const [isTodoToCompanyEdit, setIsTodoToCompanyEdit] = useState(
+    Array(todoscheckToCompanyEdit?.length).fill(false)
+  );
 
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isPdfFilterOpen, setIsPdfFilterOpen] = useState(false);
-  const [fileFormat, setFormat] = useState('');
-  const [purpose, setPurpose] = useState({ purposename: '' });
+  const [fileFormat, setFormat] = useState("");
+  const [purpose, setPurpose] = useState({ purposename: "" });
   const [isClearOpenalert, setClearOpenalert] = useState(false);
   const [isAddOpenalert, setAddOpenalert] = useState(false);
   const [isDeletealert, setDeletealert] = useState(false);
@@ -304,40 +392,96 @@ function TempControlPanel() {
   const [assignedByArray, setAssignebyArray] = useState([]);
   const [assignedByArrayEdit, setAssignedbyArrayEdit] = useState([]);
   const [isActive, setIsActive] = useState(false);
-  const [purposeEdit, setPurposeEdit] = useState({ purposename: '' });
+  const [purposeEdit, setPurposeEdit] = useState({ purposename: "" });
   const [sources, setAssignedby] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [allSourceedit, setAllSourceedit] = useState([]);
-  const [docBodyHeader, setDocBodyHeader] = useState('Please Select Document');
-  const [docBodyHeader2, setDocBodyHeader2] = useState('Please Select Document');
-  const [docBodyHeader3, setDocBodyHeader3] = useState('Please Select Document');
-  const [docBodyHeader4, setDocBodyHeader4] = useState('Please Select Document');
-  const [docBodyHeader5, setDocBodyHeader5] = useState('Please Select Document');
-  const [docBodyHeader6, setDocBodyHeader6] = useState('Please Select Document');
-  const [docBodyHeader7, setDocBodyHeader7] = useState('Please Select Document');
-  const [docBodyHeader8, setDocBodyHeader8] = useState('Please Select Document');
-  const [docBodyHeader9, setDocBodyHeader9] = useState('Please Select Document');
-  const [docBodyHeader10, setDocBodyHeader10] = useState('Please Select Document');
-  const [documentFilesDocumentContentHeader, setdocumentFilesDOcumentContentHeader] = useState([]);
-  const [documentFilesDocumentContentFooter, setdocumentFilesDOcumentContentFooter] = useState([]);
-  const [documentFilesDocumentBodyContent, setdocumentFilesDOcumentBodyContent] = useState([]);
-  const [documentFilesDocumentFrontHeader, setdocumentFilesDOcumentFrontHeader] = useState([]);
-  const [documentFilesDocumentFrontFooter, setdocumentFilesDOcumentFrontFooter] = useState([]);
-  const [documentFilesDocumentBackHeader, setdocumentFilesDOcumentBackHeader] = useState([]);
-  const [documentFilesDocumentBackFooter, setdocumentFilesDOcumentBackFooter] = useState([]);
-  const [documentFilesDocumentContentHeaderView, setdocumentFilesDOcumentContentHeaderView] = useState([]);
-  const [documentFilesDocumentContentFooterView, setdocumentFilesDOcumentContentFooterView] = useState([]);
-  const [documentFilesDocumentBodyContentView, setdocumentFilesDOcumentBodyContentView] = useState([]);
-  const [documentFilesDocumentFrontHeaderView, setdocumentFilesDOcumentFrontHeaderView] = useState([]);
-  const [documentFilesDocumentFrontFooterView, setdocumentFilesDOcumentFrontFooterView] = useState([]);
-  const [documentFilesDocumentBackHeaderView, setdocumentFilesDOcumentBackHeaderView] = useState([]);
-  const [documentFilesDocumentBackFooterView, setdocumentFilesDOcumentBackFooterView] = useState([]);
-  const [documentFiles, setdocumentFiles] = useState([]);
+  const [docBodyHeader, setDocBodyHeader] = useState("Please Select Document");
+  const [docBodyHeader2, setDocBodyHeader2] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader3, setDocBodyHeader3] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader4, setDocBodyHeader4] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader5, setDocBodyHeader5] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader6, setDocBodyHeader6] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader7, setDocBodyHeader7] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader8, setDocBodyHeader8] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader9, setDocBodyHeader9] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader10, setDocBodyHeader10] = useState(
+    "Please Select Document"
+  );
+  const [
+    documentFilesDocumentContentHeader,
+    setdocumentFilesDOcumentContentHeader,
+  ] = useState("");
+  const [
+    documentFilesDocumentContentFooter,
+    setdocumentFilesDOcumentContentFooter,
+  ] = useState("");
+  const [
+    documentFilesDocumentBodyContent,
+    setdocumentFilesDOcumentBodyContent,
+  ] = useState("");
+  const [
+    documentFilesDocumentFrontHeader,
+    setdocumentFilesDOcumentFrontHeader,
+  ] = useState("");
+  const [
+    documentFilesDocumentFrontFooter,
+    setdocumentFilesDOcumentFrontFooter,
+  ] = useState("");
+  const [documentFilesDocumentBackHeader, setdocumentFilesDOcumentBackHeader] =
+    useState("");
+  const [documentFilesDocumentBackFooter, setdocumentFilesDOcumentBackFooter] =
+    useState("");
+  const [
+    documentFilesDocumentContentHeaderView,
+    setdocumentFilesDOcumentContentHeaderView,
+  ] = useState([]);
+  const [
+    documentFilesDocumentContentFooterView,
+    setdocumentFilesDOcumentContentFooterView,
+  ] = useState([]);
+  const [
+    documentFilesDocumentBodyContentView,
+    setdocumentFilesDOcumentBodyContentView,
+  ] = useState([]);
+  const [
+    documentFilesDocumentFrontHeaderView,
+    setdocumentFilesDOcumentFrontHeaderView,
+  ] = useState([]);
+  const [
+    documentFilesDocumentFrontFooterView,
+    setdocumentFilesDOcumentFrontFooterView,
+  ] = useState([]);
+  const [
+    documentFilesDocumentBackHeaderView,
+    setdocumentFilesDOcumentBackHeaderView,
+  ] = useState([]);
+  const [
+    documentFilesDocumentBackFooterView,
+    setdocumentFilesDOcumentBackFooterView,
+  ] = useState([]);
+  const [documentFiles, setdocumentFiles] = useState("");
   const [documentFilesView, setdocumentFilesVIew] = useState([]);
-  const [documentFilesSeal, setdocumentFilesSeal] = useState([]);
-  const [documentFilesSignature, setdocumentFilesSignature] = useState([]);
+  const [documentFilesSeal, setdocumentFilesSeal] = useState("");
+  const [documentFilesSignature, setdocumentFilesSignature] = useState("");
 
-  const [companyname, setCompanyname] = useState('');
+  const [companyname, setCompanyname] = useState("");
   const [anchorElDoc, setAnchorElDoc] = useState(null);
   const [anchorElDoc2, setAnchorElDoc2] = useState(null);
   const [anchorElDoc3, setAnchorElDoc3] = useState(null);
@@ -348,16 +492,16 @@ function TempControlPanel() {
   const [anchorElDoc8, setAnchorElDoc8] = useState(null);
   const [anchorElDoc9, setAnchorElDoc9] = useState(null);
   const [anchorElDoc10, setAnchorElDoc10] = useState(null);
-  const [option, setOption] = useState('');
-  const [option2, setOption2] = useState('');
-  const [option3, setOption3] = useState('');
-  const [option4, setOption4] = useState('');
-  const [option5, setOption5] = useState('');
-  const [option6, setOption6] = useState('');
-  const [option7, setOption7] = useState('');
-  const [option8, setOption8] = useState('');
-  const [option9, setOption9] = useState('');
-  const [option10, setOption10] = useState('');
+  const [option, setOption] = useState("");
+  const [option2, setOption2] = useState("");
+  const [option3, setOption3] = useState("");
+  const [option4, setOption4] = useState("");
+  const [option5, setOption5] = useState("");
+  const [option6, setOption6] = useState("");
+  const [option7, setOption7] = useState("");
+  const [option8, setOption8] = useState("");
+  const [option9, setOption9] = useState("");
+  const [option10, setOption10] = useState("");
 
   // 1St Option
   const handleClick = (event) => {
@@ -368,16 +512,19 @@ function TempControlPanel() {
   };
 
   const qrkeywords = [
-    { keyword: '$C:DATE$', instruction: 'It denotes the Current Date' },
-    { keyword: '$C:TIME$', instruction: 'It denotes the Current Time' },
-    { keyword: '$DOJ$', instruction: 'It denotes the Date Of Joining of the user' },
+    { keyword: "$C:DATE$", instruction: "It denotes the Current Date" },
+    { keyword: "$C:TIME$", instruction: "It denotes the Current Time" },
+    {
+      keyword: "$DOJ$",
+      instruction: "It denotes the Date Of Joining of the user",
+    },
   ];
 
   const handleMenuItemClick = (selectedOption) => {
     setOption(selectedOption);
     handleClose();
-    setDocBodyHeader('Please Select Document');
-    setdocumentFilesDOcumentContentHeader([]);
+    setDocBodyHeader("Please Select Document");
+    setdocumentFilesDOcumentContentHeader("");
   };
 
   // 2nd
@@ -391,8 +538,8 @@ function TempControlPanel() {
   const handleMenuItemClick2 = (selectedOption) => {
     setOption2(selectedOption);
     handleClose2();
-    setDocBodyHeader2('Please Select Document');
-    setdocumentFilesDOcumentContentFooter([]);
+    setDocBodyHeader2("Please Select Document");
+    setdocumentFilesDOcumentContentFooter("");
   };
 
   // 3rd
@@ -406,8 +553,8 @@ function TempControlPanel() {
   const handleMenuItemClick3 = (selectedOption) => {
     setOption3(selectedOption);
     handleClose3();
-    setDocBodyHeader3('Please Select Document');
-    setdocumentFilesDOcumentBodyContent([]);
+    setDocBodyHeader3("Please Select Document");
+    setdocumentFilesDOcumentBodyContent("");
   };
 
   //4th
@@ -421,8 +568,8 @@ function TempControlPanel() {
   const handleMenuItemClick4 = (selectedOption) => {
     setOption4(selectedOption);
     handleClose4();
-    setDocBodyHeader4('Please Select Document');
-    setdocumentFilesDOcumentFrontHeader([]);
+    setDocBodyHeader4("Please Select Document");
+    setdocumentFilesDOcumentFrontHeader("");
   };
 
   //5th
@@ -436,8 +583,8 @@ function TempControlPanel() {
   const handleMenuItemClick5 = (selectedOption) => {
     setOption5(selectedOption);
     handleClose5();
-    setDocBodyHeader5('Please Select Document');
-    setdocumentFilesDOcumentFrontFooter([]);
+    setDocBodyHeader5("Please Select Document");
+    setdocumentFilesDOcumentFrontFooter("");
   };
 
   //6th
@@ -451,8 +598,8 @@ function TempControlPanel() {
   const handleMenuItemClick6 = (selectedOption) => {
     setOption6(selectedOption);
     handleClose6();
-    setDocBodyHeader6('Please Select Document');
-    setdocumentFilesDOcumentBackHeader([]);
+    setDocBodyHeader6("Please Select Document");
+    setdocumentFilesDOcumentBackHeader("");
   };
   // 2nd
   const handleClick7 = (event) => {
@@ -465,8 +612,8 @@ function TempControlPanel() {
   const handleMenuItemClick7 = (selectedOption) => {
     setOption7(selectedOption);
     handleClose7();
-    setDocBodyHeader7('Please Select Document');
-    setdocumentFilesDOcumentBackFooter([]);
+    setDocBodyHeader7("Please Select Document");
+    setdocumentFilesDOcumentBackFooter("");
   };
   // 2nd
   const handleClick8 = (event) => {
@@ -479,8 +626,8 @@ function TempControlPanel() {
   const handleMenuItemClick8 = (selectedOption) => {
     setOption8(selectedOption);
     handleClose8();
-    setDocBodyHeader8('Please Select Document');
-    setdocumentFiles([]);
+    setDocBodyHeader8("Please Select Document");
+    setdocumentFiles("");
   };
 
   const handleClick9 = (event) => {
@@ -493,8 +640,8 @@ function TempControlPanel() {
   const handleMenuItemClick9 = (selectedOption) => {
     setOption9(selectedOption);
     handleClose9();
-    setDocBodyHeader9('Please Select Document');
-    setdocumentFilesSeal([]);
+    setDocBodyHeader9("Please Select Document");
+    setdocumentFilesSeal("");
   };
 
   const handleClick10 = (event) => {
@@ -507,64 +654,72 @@ function TempControlPanel() {
   const handleMenuItemClick10 = (selectedOption) => {
     setOption10(selectedOption);
     handleClose10();
-    setDocBodyHeader10('Please Select Document');
-    setdocumentFilesSignature([]);
+    setDocBodyHeader10("Please Select Document");
+    setdocumentFilesSignature("");
   };
 
-  const [fromEmail, setFromEmail] = useState('');
-  const [ccEmail, setCcEmail] = useState('');
-  const [ccEmailCreate, setCcEmailCreate] = useState('');
-  const [bccEmailCreate, setBccEmailCreate] = useState('');
+  const [fromEmail, setFromEmail] = useState("");
+  const [ccEmail, setCcEmail] = useState("");
+  const [ccEmailCreate, setCcEmailCreate] = useState("");
+  const [bccEmailCreate, setBccEmailCreate] = useState("");
   const [ccEmailTodo, setCcEmailTodo] = useState([]);
-  const [isTodoEditCCEmail, setIsTodoEditCCEmail] = useState(Array(ccEmailTodo.length).fill(false));
+  const [isTodoEditCCEmail, setIsTodoEditCCEmail] = useState(
+    Array(ccEmailTodo.length).fill(false)
+  );
 
   const [bccEmailTodo, setBccEmailTodo] = useState([]);
-  const [isTodoEditBCCEmail, setIsTodoEditBCCEmail] = useState(Array(bccEmailTodo.length).fill(false));
+  const [isTodoEditBCCEmail, setIsTodoEditBCCEmail] = useState(
+    Array(bccEmailTodo.length).fill(false)
+  );
   const [bccEmailTodoEdit, setBccEmailTodoEdit] = useState([]);
-  const [bccEmailCreateEdit, setBccEmailCreateEdit] = useState('');
-  const [isTodoEditBCCEmailEdit, setIsTodoEditBCCEmailEdit] = useState(Array(bccEmailTodoEdit.length).fill(false));
+  const [bccEmailCreateEdit, setBccEmailCreateEdit] = useState("");
+  const [isTodoEditBCCEmailEdit, setIsTodoEditBCCEmailEdit] = useState(
+    Array(bccEmailTodoEdit.length).fill(false)
+  );
   const [ccEmailTodoEdit, setCcEmailTodoEdit] = useState([]);
-  const [isTodoEditCCEmailEdit, setIsTodoEditCCEmailEdit] = useState(Array(ccEmailTodoEdit.length).fill(false));
-  const [bccEmail, setBccEmail] = useState('');
+  const [isTodoEditCCEmailEdit, setIsTodoEditCCEmailEdit] = useState(
+    Array(ccEmailTodoEdit.length).fill(false)
+  );
+  const [bccEmail, setBccEmail] = useState("");
 
-  const [fromEmailEdit, setFromEmailEdit] = useState('');
-  const [ccEmailEdit, setCcEmailEdit] = useState('');
-  const [ccEmailCreateEdit, setCcEmailCreateEdit] = useState('');
-  const [bccEmailEdit, setBccEmailEdit] = useState('');
+  const [fromEmailEdit, setFromEmailEdit] = useState("");
+  const [ccEmailEdit, setCcEmailEdit] = useState("");
+  const [ccEmailCreateEdit, setCcEmailCreateEdit] = useState("");
+  const [bccEmailEdit, setBccEmailEdit] = useState("");
   const [allBranch, setAllBranch] = useState(false);
   const [allBranchEdit, setAllBranchEdit] = useState(false);
   const [allBranchEditTodo, setAllBranchEditTodo] = useState(false);
-  const [address, setAddress] = useState('');
-  const [sealtype, setSealtype] = useState('Please Select Seal');
-  const [sealname, setSealname] = useState('');
-  const [sealtypeTodo, setSealtypeTodo] = useState('Please Select Seal');
-  const [sealnameTodo, setSealnameTodo] = useState('');
-  const [companyurl, setCompanyUrl] = useState('');
-  const [company, setCompany] = useState('Please Select Company');
-  const [branch, setBranch] = useState('Please Select Branch');
-  const [unit, setUnit] = useState('Please Select Unit');
-  const [team, setTeam] = useState('Please Select Team');
-  const [employee, setEmployee] = useState('Please Select Employee');
-  const [forSeal, setForSeal] = useState('None');
-  const [topContent, setTopContent] = useState('');
+  const [address, setAddress] = useState("");
+  const [sealtype, setSealtype] = useState("Please Select Seal");
+  const [sealname, setSealname] = useState("");
+  const [sealtypeTodo, setSealtypeTodo] = useState("Please Select Seal");
+  const [sealnameTodo, setSealnameTodo] = useState("");
+  const [companyurl, setCompanyUrl] = useState("");
+  const [company, setCompany] = useState("Please Select Company");
+  const [branch, setBranch] = useState("Please Select Branch");
+  const [unit, setUnit] = useState("Please Select Unit");
+  const [team, setTeam] = useState("Please Select Team");
+  const [employee, setEmployee] = useState("Please Select Employee");
+  const [forSeal, setForSeal] = useState("None");
+  const [topContent, setTopContent] = useState("");
 
-  const [unitTodo, setUnitTodo] = useState('Please Select Unit');
+  const [unitTodo, setUnitTodo] = useState("Please Select Unit");
   const [allBranchTodo, setAllBranchTodo] = useState(false);
-  const [teamTodo, setTeamTodo] = useState('Please Select Team');
-  const [employeeTodo, setEmployeeTodo] = useState('Please Select Employee');
-  const [forSealTodo, setForSealTodo] = useState('None');
-  const [topContentTodo, setTopContentTodo] = useState('');
-  const [bottomContentTodo, setBottomContentTodo] = useState('');
+  const [teamTodo, setTeamTodo] = useState("Please Select Team");
+  const [employeeTodo, setEmployeeTodo] = useState("Please Select Employee");
+  const [forSealTodo, setForSealTodo] = useState("None");
+  const [topContentTodo, setTopContentTodo] = useState("");
+  const [bottomContentTodo, setBottomContentTodo] = useState("");
   const [employeeOptionTodo, setEmployeeOptionTodo] = useState([]);
-  const [signaturenameTodo, setSignaturenameTodo] = useState('');
+  const [signaturenameTodo, setSignaturenameTodo] = useState("");
 
-  const [emailFormat, setEmailFormat] = useState('');
-  const [emailFormatEdit, setEmailFormatEdit] = useState('');
-  const [bottomContent, setBottomContent] = useState('');
-  const [forSealEdit, setForSealEdit] = useState('None');
-  const [topContentEdit, setTopContentEdit] = useState('');
-  const [bottomContentEdit, setBottomContentEdit] = useState('');
-  const [signaturename, setSignaturename] = useState('');
+  const [emailFormat, setEmailFormat] = useState("");
+  const [emailFormatEdit, setEmailFormatEdit] = useState("");
+  const [bottomContent, setBottomContent] = useState("");
+  const [forSealEdit, setForSealEdit] = useState("None");
+  const [topContentEdit, setTopContentEdit] = useState("");
+  const [bottomContentEdit, setBottomContentEdit] = useState("");
+  const [signaturename, setSignaturename] = useState("");
   const [todoscheckSeal, setTodoscheckSeal] = useState([]);
   const [todoscheckSignature, setTodoscheckSignature] = useState([]);
   const [companyOption, setCompanyOption] = useState([]);
@@ -572,39 +727,69 @@ function TempControlPanel() {
   const [unitOption, setUnitOption] = useState([]);
   const [employeeOption, setEmployeeOption] = useState([]);
   const [orgDocuments, setOrgDocuments] = useState([]);
-  const [isUserdetails, setIsUserDetails] = useState({ bottoncnt: '', username: '', isdesignation: false, isusername: false });
+  const [isUserdetails, setIsUserDetails] = useState({
+    bottoncnt: "",
+    username: "",
+    isdesignation: false,
+    isusername: false,
+  });
 
-  const [documentFilesDocumentContentHeaderEdit, setdocumentFilesDOcumentContentHeaderEdit] = useState([]);
-  const [documentFilesDocumentContentFooterEdit, setdocumentFilesDOcumentContentFooterEdit] = useState([]);
-  const [documentFilesDocumentBodyContentEdit, setdocumentFilesDOcumentBodyContentEdit] = useState([]);
-  const [documentFilesDocumentFrontHeaderEdit, setdocumentFilesDOcumentFrontHeaderEdit] = useState([]);
-  const [documentFilesDocumentFrontFooterEdit, setdocumentFilesDOcumentFrontFooterEdit] = useState([]);
-  const [documentFilesDocumentBackHeaderEdit, setdocumentFilesDOcumentBackHeaderEdit] = useState([]);
-  const [documentFilesDocumentBackFooterEdit, setdocumentFilesDOcumentBackFooterEdit] = useState([]);
-  const [documentFilesEdit, setdocumentFilesEdit] = useState([]);
-  const [documentFilesSealEdit, setdocumentFilesSealEdit] = useState([]);
-  const [documentFilesSignatureEdit, setdocumentFilesSignatureEdit] = useState([]);
+  const [
+    documentFilesDocumentContentHeaderEdit,
+    setdocumentFilesDOcumentContentHeaderEdit,
+  ] = useState("");
+  const [
+    documentFilesDocumentContentFooterEdit,
+    setdocumentFilesDOcumentContentFooterEdit,
+  ] = useState("");
+  const [
+    documentFilesDocumentBodyContentEdit,
+    setdocumentFilesDOcumentBodyContentEdit,
+  ] = useState("");
+  const [
+    documentFilesDocumentFrontHeaderEdit,
+    setdocumentFilesDOcumentFrontHeaderEdit,
+  ] = useState("");
+  const [
+    documentFilesDocumentFrontFooterEdit,
+    setdocumentFilesDOcumentFrontFooterEdit,
+  ] = useState("");
+  const [
+    documentFilesDocumentBackHeaderEdit,
+    setdocumentFilesDOcumentBackHeaderEdit,
+  ] = useState("");
+  const [
+    documentFilesDocumentBackFooterEdit,
+    setdocumentFilesDOcumentBackFooterEdit,
+  ] = useState("");
+  const [documentFilesEdit, setdocumentFilesEdit] = useState("");
+  const [documentFilesSealEdit, setdocumentFilesSealEdit] = useState("");
+  const [documentFilesSignatureEdit, setdocumentFilesSignatureEdit] =
+    useState("");
 
-  const [companynameEdit, setCompanynameEdit] = useState('');
-  const [addressEdit, setAddressEdit] = useState('');
-  const [sealtypeEdit, setSealtypeEdit] = useState('Please Select Seal');
-  const [sealtypeEditTodo, setSealtypeEditTodo] = useState('Please Select Seal');
-  const [sealnameEdit, setSealnameEdit] = useState('');
-  const [sealnameEditTodo, setSealnameEditTodo] = useState('');
-  const [companyurlEdit, setCompanyUrlEdit] = useState('');
-  const [companyEdit, setCompanyEdit] = useState('Please Select Company');
-  const [branchEdit, setBranchEdit] = useState('Please Select Branch');
-  const [unitEdit, setUnitEdit] = useState('Please Select Unit');
-  const [unitEditTodo, setUnitEditTodo] = useState('Please Select Unit');
-  const [teamEditTodo, setTeamEditTodo] = useState('Please Select Team');
-  const [forSealEditTodo, setForSealEditTodo] = useState('None');
-  const [topContentEditTodo, setTopContentEditTodo] = useState('');
-  const [signaturenameEditTodo, setSignaturenameEditTodo] = useState('');
-  const [bottomContentEditTodo, setBottomContentEditTodo] = useState('');
-  const [employeeEditTodo, setEmployeeEditTodo] = useState('Please Select Employee');
-  const [teamEdit, setTeamEdit] = useState('Please Select Team');
-  const [employeeEdit, setEmployeeEdit] = useState('Please Select Employee');
-  const [signaturenameEdit, setSignaturenameEdit] = useState('');
+  const [companynameEdit, setCompanynameEdit] = useState("");
+  const [addressEdit, setAddressEdit] = useState("");
+  const [sealtypeEdit, setSealtypeEdit] = useState("Please Select Seal");
+  const [sealtypeEditTodo, setSealtypeEditTodo] =
+    useState("Please Select Seal");
+  const [sealnameEdit, setSealnameEdit] = useState("");
+  const [sealnameEditTodo, setSealnameEditTodo] = useState("");
+  const [companyurlEdit, setCompanyUrlEdit] = useState("");
+  const [companyEdit, setCompanyEdit] = useState("Please Select Company");
+  const [branchEdit, setBranchEdit] = useState("Please Select Branch");
+  const [unitEdit, setUnitEdit] = useState("Please Select Unit");
+  const [unitEditTodo, setUnitEditTodo] = useState("Please Select Unit");
+  const [teamEditTodo, setTeamEditTodo] = useState("Please Select Team");
+  const [forSealEditTodo, setForSealEditTodo] = useState("None");
+  const [topContentEditTodo, setTopContentEditTodo] = useState("");
+  const [signaturenameEditTodo, setSignaturenameEditTodo] = useState("");
+  const [bottomContentEditTodo, setBottomContentEditTodo] = useState("");
+  const [employeeEditTodo, setEmployeeEditTodo] = useState(
+    "Please Select Employee"
+  );
+  const [teamEdit, setTeamEdit] = useState("Please Select Team");
+  const [employeeEdit, setEmployeeEdit] = useState("Please Select Employee");
+  const [signaturenameEdit, setSignaturenameEdit] = useState("");
 
   const [todoscheckSealEdit, setTodoscheckSealEdit] = useState([]);
   const [todoscheckSignatureEdit, setTodoscheckSignatureEdit] = useState([]);
@@ -619,8 +804,8 @@ function TempControlPanel() {
   const [sourceCheck, setSourcecheck] = useState(false);
   const gridRef = useRef(null);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [searchQueryManage, setSearchQueryManage] = useState('');
-  const [copiedData, setCopiedData] = useState('');
+  const [searchQueryManage, setSearchQueryManage] = useState("");
+  const [copiedData, setCopiedData] = useState("");
   const [openviewalert, setOpenviewalert] = useState(false);
   // view model
   const handleClickOpenviewalert = () => {
@@ -636,7 +821,7 @@ function TempControlPanel() {
     if (gridRef.current) {
       html2canvas(gridRef.current).then((canvas) => {
         canvas.toBlob((blob) => {
-          saveAs(blob, 'Template Control Panel.png');
+          saveAs(blob, "Template Control Panel.png");
         });
       });
     }
@@ -681,26 +866,46 @@ function TempControlPanel() {
   const [anchorElDoc8Edit, setAnchorElDoc8Edit] = useState(null);
   const [anchorElDoc9Edit, setAnchorElDoc9Edit] = useState(null);
   const [anchorElDoc10Edit, setAnchorElDoc10Edit] = useState(null);
-  const [optionEdit, setOptionEdit] = useState('');
-  const [option2Edit, setOption2Edit] = useState('');
-  const [option3Edit, setOption3Edit] = useState('');
-  const [option4Edit, setOption4Edit] = useState('');
-  const [option5Edit, setOption5Edit] = useState('');
-  const [option6Edit, setOption6Edit] = useState('');
-  const [option7Edit, setOption7Edit] = useState('');
-  const [option8Edit, setOption8Edit] = useState('');
-  const [option9Edit, setOption9Edit] = useState('');
-  const [option10Edit, setOption10Edit] = useState('');
-  const [docBodyHeaderEdit, setDocBodyHeaderEdit] = useState('Please Select Document');
-  const [docBodyHeader2Edit, setDocBodyHeader2Edit] = useState('Please Select Document');
-  const [docBodyHeader3Edit, setDocBodyHeader3Edit] = useState('Please Select Document');
-  const [docBodyHeader4Edit, setDocBodyHeader4Edit] = useState('Please Select Document');
-  const [docBodyHeader5Edit, setDocBodyHeader5Edit] = useState('Please Select Document');
-  const [docBodyHeader6Edit, setDocBodyHeader6Edit] = useState('Please Select Document');
-  const [docBodyHeader7Edit, setDocBodyHeader7Edit] = useState('Please Select Document');
-  const [docBodyHeader8Edit, setDocBodyHeader8Edit] = useState('Please Select Document');
-  const [docBodyHeader9Edit, setDocBodyHeader9Edit] = useState('Please Select Document');
-  const [docBodyHeader10Edit, setDocBodyHeader10Edit] = useState('Please Select Document');
+  const [optionEdit, setOptionEdit] = useState("");
+  const [option2Edit, setOption2Edit] = useState("");
+  const [option3Edit, setOption3Edit] = useState("");
+  const [option4Edit, setOption4Edit] = useState("");
+  const [option5Edit, setOption5Edit] = useState("");
+  const [option6Edit, setOption6Edit] = useState("");
+  const [option7Edit, setOption7Edit] = useState("");
+  const [option8Edit, setOption8Edit] = useState("");
+  const [option9Edit, setOption9Edit] = useState("");
+  const [option10Edit, setOption10Edit] = useState("");
+  const [docBodyHeaderEdit, setDocBodyHeaderEdit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader2Edit, setDocBodyHeader2Edit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader3Edit, setDocBodyHeader3Edit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader4Edit, setDocBodyHeader4Edit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader5Edit, setDocBodyHeader5Edit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader6Edit, setDocBodyHeader6Edit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader7Edit, setDocBodyHeader7Edit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader8Edit, setDocBodyHeader8Edit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader9Edit, setDocBodyHeader9Edit] = useState(
+    "Please Select Document"
+  );
+  const [docBodyHeader10Edit, setDocBodyHeader10Edit] = useState(
+    "Please Select Document"
+  );
 
   // page refersh reload
   const handleCloseFilterMod = () => {
@@ -721,8 +926,8 @@ function TempControlPanel() {
   const handleMenuItemClickEdit = (selectedOption) => {
     setOptionEdit(selectedOption);
     handleCloseEdit();
-    setDocBodyHeaderEdit('Please Select Document');
-    setdocumentFilesDOcumentContentHeaderEdit([]);
+    setDocBodyHeaderEdit("Please Select Document");
+    setdocumentFilesDOcumentContentHeaderEdit("");
   };
 
   // 2nd
@@ -736,8 +941,8 @@ function TempControlPanel() {
   const handleMenuItemClick2Edit = (selectedOption) => {
     setOption2Edit(selectedOption);
     handleClose2Edit();
-    setDocBodyHeader2Edit('Please Select Document');
-    setdocumentFilesDOcumentContentFooterEdit([]);
+    setDocBodyHeader2Edit("Please Select Document");
+    setdocumentFilesDOcumentContentFooterEdit("");
   };
 
   // 3rd
@@ -751,8 +956,8 @@ function TempControlPanel() {
   const handleMenuItemClick3Edit = (selectedOption) => {
     setOption3Edit(selectedOption);
     handleClose3Edit();
-    setDocBodyHeader3Edit('Please Select Document');
-    setdocumentFilesDOcumentBodyContentEdit([]);
+    setDocBodyHeader3Edit("Please Select Document");
+    setdocumentFilesDOcumentBodyContentEdit("");
   };
 
   //4th
@@ -766,7 +971,7 @@ function TempControlPanel() {
   const handleMenuItemClick4Edit = (selectedOption) => {
     setOption4Edit(selectedOption);
     handleClose4Edit();
-    setDocBodyHeader4Edit('Please Select Document');
+    setDocBodyHeader4Edit("Please Select Document");
     setdocumentFilesDOcumentFrontHeaderEdit([]);
   };
 
@@ -781,8 +986,8 @@ function TempControlPanel() {
   const handleMenuItemClick5Edit = (selectedOption) => {
     setOption5Edit(selectedOption);
     handleClose5Edit();
-    setDocBodyHeader5Edit('Please Select Document');
-    setdocumentFilesDOcumentFrontFooterEdit([]);
+    setDocBodyHeader5Edit("Please Select Document");
+    setdocumentFilesDOcumentFrontFooterEdit("");
   };
 
   //6th
@@ -796,8 +1001,8 @@ function TempControlPanel() {
   const handleMenuItemClick6Edit = (selectedOption) => {
     setOption6Edit(selectedOption);
     handleClose6Edit();
-    setDocBodyHeader6Edit('Please Select Document');
-    setdocumentFilesDOcumentBackHeaderEdit([]);
+    setDocBodyHeader6Edit("Please Select Document");
+    setdocumentFilesDOcumentBackHeaderEdit("");
   };
   // 2nd
   const handleClick7Edit = (event) => {
@@ -810,8 +1015,8 @@ function TempControlPanel() {
   const handleMenuItemClick7Edit = (selectedOption) => {
     setOption7Edit(selectedOption);
     handleClose7Edit();
-    setDocBodyHeader7Edit('Please Select Document');
-    setdocumentFilesDOcumentBackFooterEdit([]);
+    setDocBodyHeader7Edit("Please Select Document");
+    setdocumentFilesDOcumentBackFooterEdit("");
   };
   // 2nd
   const handleClick8Edit = (event) => {
@@ -824,8 +1029,8 @@ function TempControlPanel() {
   const handleMenuItemClick8Edit = (selectedOption) => {
     setOption8Edit(selectedOption);
     handleClose8Edit();
-    setDocBodyHeader8Edit('Please Select Document');
-    setdocumentFilesEdit([]);
+    setDocBodyHeader8Edit("Please Select Document");
+    setdocumentFilesEdit("");
   };
 
   const handleClick9Edit = (event) => {
@@ -838,8 +1043,8 @@ function TempControlPanel() {
   const handleMenuItemClick9Edit = (selectedOption) => {
     setOption9Edit(selectedOption);
     handleClose9Edit();
-    setDocBodyHeader9Edit('Please Select Document');
-    setdocumentFilesSealEdit([]);
+    setDocBodyHeader9Edit("Please Select Document");
+    setdocumentFilesSealEdit("");
   };
 
   const handleClick10Edit = (event) => {
@@ -852,8 +1057,8 @@ function TempControlPanel() {
   const handleMenuItemClick10Edit = (selectedOption) => {
     setOption10Edit(selectedOption);
     handleClose10Edit();
-    setDocBodyHeader10Edit('Please Select Document');
-    setdocumentFilesSignatureEdit([]);
+    setDocBodyHeader10Edit("Please Select Document");
+    setdocumentFilesSignatureEdit("");
   };
 
   // Error Popup model
@@ -927,17 +1132,17 @@ function TempControlPanel() {
   };
   const handleCloseManageColumns = () => {
     setManageColumnsOpen(false);
-    setSearchQueryManage('');
+    setSearchQueryManage("");
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const id = open ? "simple-popover" : undefined;
 
   const getRowClassName = (params) => {
     if (selectedRows.includes(params.row.id)) {
-      return 'custom-id-row'; // This is the custom class for rows with item.tat === 'ago'
+      return "custom-id-row"; // This is the custom class for rows with item.tat === 'ago'
     }
-    return ''; // Return an empty string for other rows
+    return ""; // Return an empty string for other rows
   };
 
   // Show All Columns & Manage Columns
@@ -952,28 +1157,38 @@ function TempControlPanel() {
     actions: true,
   };
 
-  const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
+  const [columnVisibility, setColumnVisibility] = useState(
+    initialColumnVisibility
+  );
 
   // page refersh reload code
   const handleBeforeUnload = (event) => {
     event.preventDefault();
-    event.returnValue = ''; // This is required for Chrome support
+    event.returnValue = ""; // This is required for Chrome support
   };
 
-  const [deleteSource, setDeleteSource] = useState('');
+  const [deleteSource, setDeleteSource] = useState("");
 
   const rowData = async (id, name) => {
     setPageName(!pageName);
     try {
-      let res = await axios.get(`${SERVICE.TEMPLATECONTROLPANEL_SINGLE}/${id}`, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-      });
+      let res = await axios.get(
+        `${SERVICE.TEMPLATECONTROLPANEL_SINGLE}/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
       setDeleteSource(res?.data?.stemplatecontrolpanel);
       handleClickOpen();
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -983,21 +1198,29 @@ function TempControlPanel() {
     setPageName(!pageName);
     try {
       if (Sourcesid) {
-        await axios.delete(`${SERVICE.TEMPLATECONTROLPANEL_SINGLE}/${deleteSource?._id}`, {
-          headers: {
-            Authorization: `Bearer ${auth.APIToken}`,
-          },
-        });
+        await axios.delete(
+          `${SERVICE.TEMPLATECONTROLPANEL_SINGLE}/${deleteSource?._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${auth.APIToken}`,
+            },
+          }
+        );
         await fetchAssignedBy();
         handleCloseMod();
         setSelectedRows([]);
         setPage(1);
-        setPopupContent('Deleted Successfully');
-        setPopupSeverity('success');
+        setPopupContent("Deleted Successfully");
+        setPopupSeverity("success");
         handleClickOpenPopup();
       }
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -1019,8 +1242,8 @@ function TempControlPanel() {
       setSelectedRows([]);
       setSelectAllChecked(false);
       setPage(1);
-      setPopupContent('Deleted Successfully');
-      setPopupSeverity('success');
+      setPopupContent("Deleted Successfully");
+      setPopupSeverity("success");
       handleClickOpenPopup();
       await fetchAssignedBy();
       // setBulkDelOpenalert(true);
@@ -1028,7 +1251,12 @@ function TempControlPanel() {
       //     setBulkDelOpenalert(false);
       // }, 1000)
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -1037,82 +1265,183 @@ function TempControlPanel() {
     setBtnSubmit(true);
     setPageName(!pageName);
     try {
-      let res = await axios.post(`${SERVICE.TEMPLATECONTROLPANEL_CREATE}`, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-        company: String(company),
-        branch: String(branch),
-        emailformat: String(emailFormat),
-        fromemail: String(fromEmail),
-        ccemail: ccEmailTodo,
-        bccemail: bccEmailTodo,
-        letterheadcontentheader: headerTodoCreate,
-        letterheadcontentfooter: footerTodoCreate,
-        letterheadbodycontent: documentFilesDocumentBodyContent,
-        companyurl: String(companyurl),
-        idcardfrontheader: documentFilesDocumentFrontHeader,
-        idcardfrontfooter: documentFilesDocumentFrontFooter,
-        idcardbackheader: documentFilesDocumentBackHeader,
-        idcardbackfooter: documentFilesDocumentBackFooter,
-        companyname: String(companyname),
-        address: String(address),
-        sealtype: String(sealtype),
-        toCompany: todoscheckToCompany,
-        qrInfo: qrInfoTodos,
-        sealname: String(sealname),
-        documentcompany: documentFiles,
-        documentseal: todoscheckSeal,
-        documentsignature: todoscheckSignature,
-        templatecontrolpanellog: [
-          {
-            company: String(company),
-            branch: String(branch),
-            emailformat: String(emailFormat),
-            fromemail: String(fromEmail),
-            ccemail: ccEmailTodo,
-            bccemail: bccEmailTodo,
-            letterheadcontentheader: headerTodoCreate,
-            letterheadcontentfooter: footerTodoCreate,
-            letterheadbodycontent: documentFilesDocumentBodyContent,
-            companyurl: String(companyurl),
-            toCompany: todoscheckToCompany,
-            qrInfo: qrInfoTodos,
-            idcardfrontheader: documentFilesDocumentFrontHeader,
-            idcardfrontfooter: documentFilesDocumentFrontFooter,
-            idcardbackheader: documentFilesDocumentBackHeader,
-            idcardbackfooter: documentFilesDocumentBackFooter,
-            companyname: String(companyname),
-            address: String(address),
-            sealtype: String(sealtype),
-            sealname: String(sealname),
-            documentcompany: documentFiles,
-            documentseal: todoscheckSeal,
-            documentsignature: todoscheckSignature,
-            createdAt: String(new Date(serverTime)),
-            addedby: [
-              {
-                name: String(isUserRoleAccess.companyname),
-              },
-            ],
-          },
-        ],
-        addedby: [
-          {
-            name: String(isUserRoleAccess.companyname),
-          },
-        ],
-      });
+      const formData = new FormData();
 
+      // 🔹 Append normal fields
+      formData.append("company", company);
+      formData.append("branch", branch);
+      formData.append("emailformat", emailFormat);
+      formData.append("fromemail", fromEmail);
+      formData.append("ccemail", JSON.stringify(ccEmailTodo));
+      formData.append("bccemail", JSON.stringify(bccEmailTodo));
+      formData.append("companyurl", companyurl);
+      formData.append("companyname", companyname);
+      formData.append("address", address);
+      formData.append("sealtype", sealtype);
+      formData.append("sealname", sealname);
+      formData.append("toCompany", JSON.stringify(todoscheckToCompany));
+      formData.append("qrInfo", JSON.stringify(qrInfoTodos));
+      // ... (other normal text fields)
+
+      // 🔹 Append arrays with text + files
+      const appendTodoArray = (array, key) => {
+        if (Array.isArray(array)) {
+          array.forEach((item, index) => {
+            Object.keys(item).forEach((subKey) => {
+              // 🧩 Detect file keys dynamically based on your field name
+              const isFileField =
+                (key === "letterheadcontentheader" &&
+                  subKey === "headerimage") ||
+                (key === "letterheadcontentfooter" &&
+                  subKey === "footerimage") ||
+                ((key === "documentseal" || key === "documentsignature") &&
+                  subKey === "document");
+
+              if (isFileField && item[subKey]) {
+                // If the key holds an object with a .file property, extract it
+                const fileToSend = item[subKey]?.file || item[subKey];
+                if (fileToSend instanceof File) {
+                  formData.append(`${key}_${index}_${subKey}`, fileToSend);
+                }
+              } else {
+                // ✅ Append text
+                formData.append(
+                  `${key}_${index}_${subKey}`,
+                  item[subKey] ?? ""
+                );
+              }
+            });
+          });
+        }
+      };
+
+      // ✅ Apply for each TODO field
+      appendTodoArray(headerTodoCreate, "letterheadcontentheader");
+      appendTodoArray(footerTodoCreate, "letterheadcontentfooter");
+      appendTodoArray(todoscheckSeal, "documentseal");
+      appendTodoArray(todoscheckSignature, "documentsignature");
+
+      // 🔹 Append normal single-file fields
+      if (documentFilesDocumentBodyContent?.file)
+        formData.append(
+          "letterheadbodycontent",
+          documentFilesDocumentBodyContent.file
+        );
+      if (documentFilesDocumentFrontHeader?.file)
+        formData.append(
+          "idcardfrontheader",
+          documentFilesDocumentFrontHeader.file
+        );
+      if (documentFilesDocumentFrontFooter?.file)
+        formData.append(
+          "idcardfrontfooter",
+          documentFilesDocumentFrontFooter.file
+        );
+      if (documentFilesDocumentBackHeader?.file)
+        formData.append(
+          "idcardbackheader",
+          documentFilesDocumentBackHeader.file
+        );
+      if (documentFilesDocumentBackFooter?.file)
+        formData.append(
+          "idcardbackfooter",
+          documentFilesDocumentBackFooter.file
+        );
+
+      // let res = await axios.post(`${SERVICE.TEMPLATECONTROLPANEL_CREATE}`, {
+      //   headers: {
+      //     Authorization: `Bearer ${auth.APIToken}`,
+      //   },
+      //   company: String(company),
+      //   branch: String(branch),
+      //   emailformat: String(emailFormat),
+      //   fromemail: String(fromEmail),
+      //   ccemail: ccEmailTodo,
+      //   bccemail: bccEmailTodo,
+      //   companyurl: String(companyurl),
+      //   companyname: String(companyname),
+      //   address: String(address),
+      //   sealtype: String(sealtype),
+      //   toCompany: todoscheckToCompany,
+      //   qrInfo: qrInfoTodos,
+      //   sealname: String(sealname),
+
+      //   letterheadcontentheader: headerTodoCreate,
+      //   letterheadcontentfooter: footerTodoCreate,
+      //   documentseal: todoscheckSeal,
+      //   documentsignature: todoscheckSignature,
+
+      //   letterheadbodycontent: documentFilesDocumentBodyContent,
+      //   idcardfrontheader: documentFilesDocumentFrontHeader,
+      //   idcardfrontfooter: documentFilesDocumentFrontFooter,
+      //   idcardbackheader: documentFilesDocumentBackHeader,
+      //   idcardbackfooter: documentFilesDocumentBackFooter,
+      //   documentcompany: documentFiles,
+
+      //   // templatecontrolpanellog: [
+      //   //   {
+      //   //     company: String(company),
+      //   //     branch: String(branch),
+      //   //     emailformat: String(emailFormat),
+      //   //     fromemail: String(fromEmail),
+      //   //     ccemail: ccEmailTodo,
+      //   //     bccemail: bccEmailTodo,
+      //   //     letterheadcontentheader: headerTodoCreate,
+      //   //     letterheadcontentfooter: footerTodoCreate,
+      //   //     letterheadbodycontent: documentFilesDocumentBodyContent,
+      //   //     companyurl: String(companyurl),
+      //   //     toCompany: todoscheckToCompany,
+      //   //     qrInfo: qrInfoTodos,
+      //   //     idcardfrontheader: documentFilesDocumentFrontHeader,
+      //   //     idcardfrontfooter: documentFilesDocumentFrontFooter,
+      //   //     idcardbackheader: documentFilesDocumentBackHeader,
+      //   //     idcardbackfooter: documentFilesDocumentBackFooter,
+      //   //     companyname: String(companyname),
+      //   //     address: String(address),
+      //   //     sealtype: String(sealtype),
+      //   //     sealname: String(sealname),
+      //   //     documentcompany: documentFiles,
+      //   //     documentseal: todoscheckSeal,
+      //   //     documentsignature: todoscheckSignature,
+      //   //     createdAt: String(new Date(serverTime)),
+      //   //     addedby: [
+      //   //       {
+      //   //         name: String(isUserRoleAccess.companyname),
+      //   //       },
+      //   //     ],
+      //   //   },
+      //   // ],
+      //   addedby: [
+      //     {
+      //       name: String(isUserRoleAccess.companyname),
+      //     },
+      //   ],
+      // });
+
+      const res = await axios.post(
+        `${SERVICE.TEMPLATECONTROLPANEL_CREATE}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       await fetchAssignedBy();
       handleCloseInfoImage();
-      setPurpose({ purposename: '' });
+      setPurpose({ purposename: "" });
       // setAddOpenalert(true);
       // setTimeout(() => {
       //     setAddOpenalert(false);
       //     setIsActive(false)
       // }, 1000)
-      setIsUserDetails({ bottoncnt: '', username: '', isdesignation: false, isusername: false });
+      setIsUserDetails({
+        bottoncnt: "",
+        username: "",
+        isdesignation: false,
+        isusername: false,
+      });
 
       setBtnSubmit(false);
       setSignTodoCreate(false);
@@ -1121,17 +1450,28 @@ function TempControlPanel() {
       setIndexSignatureCreate(-1);
       setInfoOpenImage(false);
 
-      setPopupContent('Added Successfully');
-      setPopupSeverity('success');
+      setPopupContent("Added Successfully");
+      setPopupSeverity("success");
       handleClickOpenPopup();
     } catch (err) {
       setBtnSubmit(false);
-      if (err.response.data.message.includes('The value of "offset" is out of range')) {
-        setPopupContentMalert('Memory is Full!. Please delete anyone of the previous data in the log list.');
-        setPopupSeverityMalert('warning');
+      if (
+        err.response.data.message.includes(
+          'The value of "offset" is out of range'
+        )
+      ) {
+        setPopupContentMalert(
+          "Memory is Full!. Please delete anyone of the previous data in the log list."
+        );
+        setPopupSeverityMalert("warning");
         handleClickOpenPopupMalert();
       } else {
-        handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+        handleApiError(
+          err,
+          setPopupContentMalert,
+          setPopupSeverityMalert,
+          handleClickOpenPopupMalert
+        );
       }
     }
   };
@@ -1139,130 +1479,150 @@ function TempControlPanel() {
   //submit option for saving
   const handleSubmit = (e) => {
     e.preventDefault();
-    const isNameMatch = assignedByArray.some((item) => item.company.toLowerCase() == company.toLowerCase() && item.branch?.toLowerCase() === branch?.toLowerCase());
+    const isNameMatch = assignedByArray.some(
+      (item) =>
+        item.company.toLowerCase() == company.toLowerCase() &&
+        item.branch?.toLowerCase() === branch?.toLowerCase()
+    );
 
-    if (company === 'Please Select Company') {
-      setPopupContentMalert('Please Select Company');
-      setPopupSeverityMalert('warning');
+    if (company === "Please Select Company") {
+      setPopupContentMalert("Please Select Company");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (branch === 'Please Select Branch') {
-      setPopupContentMalert('Please Select Branch');
-      setPopupSeverityMalert('warning');
+    } else if (branch === "Please Select Branch") {
+      setPopupContentMalert("Please Select Branch");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (headerTodoCreate?.length === 0) {
-      setPopupContentMalert('Please Add Header Todo');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (footerTodoCreate?.length === 0) {
-      setPopupContentMalert('Please Add Footer Todo');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentBodyContent.length === 0) {
-      setPopupContentMalert('Please Upload Document Letter Head Body Content(Background)');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (companyurl === '') {
-      setPopupContentMalert('Please Enter Company URL');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentFrontHeader.length === 0) {
-      setPopupContentMalert('Please Upload ID Card Front Header');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentFrontFooter.length === 0) {
-      setPopupContentMalert('Please Upload ID Card Front Footer');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentBackHeader.length === 0) {
-      setPopupContentMalert('Please Upload ID Card Back Header');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentBackFooter.length === 0) {
-      setPopupContentMalert('Please Upload ID Card Back Footer');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (companyname === '') {
-      setPopupContentMalert('Please Enter Company Name');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (address === '') {
-      setPopupContentMalert('Please Enter Address');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (todoscheckToCompany?.length < 1) {
-      setPopupContentMalert('Atleast Add one To Company and To Address Todo');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (isTodoEdit.some((data) => data === true)) {
-      setPopupContentMalert('Please Update The Todo And Submit in ToCompany and ToAddress Todo');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (isTodoQrInfo.some((data) => data === true)) {
-      setPopupContentMalert('Please Update The Todo And Submit in Qr Info');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (todoscheckSeal.length === 0) {
-      setPopupContentMalert('Please Add Seal Todo');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (todoscheckSignature.length === 0) {
-      setPopupContentMalert('Please Add Signature Todo');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (fromEmail === undefined || fromEmail === '') {
-      setPopupContentMalert('Please Enter From Email Adddress');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (!isValidEmail(fromEmail)) {
-      setPopupContentMalert('Please Enter Valid From Email Adddress');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (isTodoEditCCEmail.some((data) => data === true)) {
-      setPopupContentMalert('Please Update The Todo And Submit in CC Email Address Todo');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (isTodoEditBCCEmail.some((data) => data === true)) {
-      setPopupContentMalert('Please Update The Todo And Submit in BCC Email Address Todo');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (emailFormat === undefined || emailFormat === '' || emailFormat === '<p><br></p>') {
-      setPopupContentMalert('Please Enter Email Format');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (isNameMatch) {
-      setPopupContentMalert('Data already exists!');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else if (sealTodoCreate || signTodoCreate) {
-      setPopupContentMalert('Please Update the Todo and Submit the Data!');
-      setPopupSeverityMalert('warning');
-      handleClickOpenPopupMalert();
-    } else {
+    }
+    // else if (headerTodoCreate?.length === 0) {
+    //   setPopupContentMalert("Please Add Header Todo");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (footerTodoCreate?.length === 0) {
+    //   setPopupContentMalert("Please Add Footer Todo");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (documentFilesDocumentBodyContent.length === 0) {
+    //   setPopupContentMalert(
+    //     "Please Upload Document Letter Head Body Content(Background)"
+    //   );
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (companyurl === "") {
+    //   setPopupContentMalert("Please Enter Company URL");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (documentFilesDocumentFrontHeader.length === 0) {
+    //   setPopupContentMalert("Please Upload ID Card Front Header");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (documentFilesDocumentFrontFooter.length === 0) {
+    //   setPopupContentMalert("Please Upload ID Card Front Footer");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (documentFilesDocumentBackHeader.length === 0) {
+    //   setPopupContentMalert("Please Upload ID Card Back Header");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (documentFilesDocumentBackFooter.length === 0) {
+    //   setPopupContentMalert("Please Upload ID Card Back Footer");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (companyname === "") {
+    //   setPopupContentMalert("Please Enter Company Name");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (address === "") {
+    //   setPopupContentMalert("Please Enter Address");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (todoscheckToCompany?.length < 1) {
+    //   setPopupContentMalert("Atleast Add one To Company and To Address Todo");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (isTodoEdit.some((data) => data === true)) {
+    //   setPopupContentMalert(
+    //     "Please Update The Todo And Submit in ToCompany and ToAddress Todo"
+    //   );
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (isTodoQrInfo.some((data) => data === true)) {
+    //   setPopupContentMalert("Please Update The Todo And Submit in Qr Info");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (todoscheckSeal.length === 0) {
+    //   setPopupContentMalert("Please Add Seal Todo");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (todoscheckSignature.length === 0) {
+    //   setPopupContentMalert("Please Add Signature Todo");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (fromEmail === undefined || fromEmail === "") {
+    //   setPopupContentMalert("Please Enter From Email Adddress");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (!isValidEmail(fromEmail)) {
+    //   setPopupContentMalert("Please Enter Valid From Email Adddress");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (isTodoEditCCEmail.some((data) => data === true)) {
+    //   setPopupContentMalert(
+    //     "Please Update The Todo And Submit in CC Email Address Todo"
+    //   );
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (isTodoEditBCCEmail.some((data) => data === true)) {
+    //   setPopupContentMalert(
+    //     "Please Update The Todo And Submit in BCC Email Address Todo"
+    //   );
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (
+    //   emailFormat === undefined ||
+    //   emailFormat === "" ||
+    //   emailFormat === "<p><br></p>"
+    // ) {
+    //   setPopupContentMalert("Please Enter Email Format");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (isNameMatch) {
+    //   setPopupContentMalert("Data already exists!");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } else if (sealTodoCreate || signTodoCreate) {
+    //   setPopupContentMalert("Please Update the Todo and Submit the Data!");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // }
+    else {
       handleClickOpenInfoImage();
     }
   };
   // console.log(qrInfoTodos, 'qrInfoTodos');
   // QR Info Details - Create Section
   const handleCreateQrInfo = () => {
-    const idTodoExist = qrInfoTodos.some((item) => item?.details?.toLowerCase() == qrInfo?.toLowerCase());
-    if (qrInfo === '' || qrInfo === undefined) {
-      setPopupContentMalert('Please Enter Details');
-      setPopupSeverityMalert('warning');
+    const idTodoExist = qrInfoTodos.some(
+      (item) => item?.details?.toLowerCase() == qrInfo?.toLowerCase()
+    );
+    if (qrInfo === "" || qrInfo === undefined) {
+      setPopupContentMalert("Please Enter Details");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (qrInfoTodos?.length >= 3) {
       setPopupContentMalert("Info Cant't be more than 3!");
-      setPopupSeverityMalert('warning');
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
-      setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
         details: qrInfo,
       };
       setQrInfoTodos([...qrInfoTodos, newTodocheck]);
-      setQrInfo('');
+      setQrInfo("");
       setQrIndexcheck(-1);
     }
   };
@@ -1284,25 +1644,27 @@ function TempControlPanel() {
 
   // QR Info Details - Edit Section
   const handleCreateQrInfoEdit = () => {
-    const idTodoExist = qrInfoTodosEdit.some((item) => item?.details?.toLowerCase() == qrInfoEdit?.toLowerCase());
-    if (qrInfoEdit === '' || qrInfoEdit === undefined) {
-      setPopupContentMalert('Please Enter Details');
-      setPopupSeverityMalert('warning');
+    const idTodoExist = qrInfoTodosEdit.some(
+      (item) => item?.details?.toLowerCase() == qrInfoEdit?.toLowerCase()
+    );
+    if (qrInfoEdit === "" || qrInfoEdit === undefined) {
+      setPopupContentMalert("Please Enter Details");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (qrInfoTodosEdit?.length >= 3) {
       setPopupContentMalert("Info Cant't be more than 3!");
-      setPopupSeverityMalert('warning');
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
-      setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
         details: qrInfoEdit,
       };
       setQrInfoTodosEdit([...qrInfoTodosEdit, newTodocheck]);
-      setQrInfoEdit('');
+      setQrInfoEdit("");
       setQrIndexcheckEdit(-1);
     }
   };
@@ -1323,18 +1685,21 @@ function TempControlPanel() {
   };
 
   const handleCreateTodoToCompany = () => {
-    const idTodoExist = todoscheckToCompany.some((item) => item?.toCompanyname?.toLowerCase() == toCompanyname?.toLowerCase());
-    if (toCompanyname === '' || toCompanyname === undefined) {
-      setPopupContentMalert('Please Enter To Company Name');
-      setPopupSeverityMalert('warning');
+    const idTodoExist = todoscheckToCompany.some(
+      (item) =>
+        item?.toCompanyname?.toLowerCase() == toCompanyname?.toLowerCase()
+    );
+    if (toCompanyname === "" || toCompanyname === undefined) {
+      setPopupContentMalert("Please Enter To Company Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (toAddress === '' || toAddress === undefined) {
-      setPopupContentMalert('Please Enter To Company Address');
-      setPopupSeverityMalert('warning');
+    } else if (toAddress === "" || toAddress === undefined) {
+      setPopupContentMalert("Please Enter To Company Address");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
-      setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -1342,8 +1707,8 @@ function TempControlPanel() {
         toAddress: toAddress,
       };
       setTodoscheckToCompany([...todoscheckToCompany, newTodocheck]);
-      setToCompanyname('');
-      setToAddress('');
+      setToCompanyname("");
+      setToAddress("");
       setEditingIndexcheck(-1);
     }
   };
@@ -1357,25 +1722,29 @@ function TempControlPanel() {
   const handleUpdateTodocheckToCompany = () => {
     const newTodoscheck = [...todoscheckToCompany];
     newTodoscheck[editingIndexcheckToCompany].toAddress = toAddressCreate;
-    newTodoscheck[editingIndexcheckToCompany].toCompanyname = toCompanynameCreate;
+    newTodoscheck[editingIndexcheckToCompany].toCompanyname =
+      toCompanynameCreate;
     setTodoscheckToCompany(newTodoscheck);
     setEditingIndexcheckToCompany(-1);
   };
 
   const handleCreateTodoToCompanyEdit = () => {
-    const idTodoExist = todoscheckToCompanyEdit.some((item) => item?.toCompanyname?.toLowerCase() == toCompanynameEdit?.toLowerCase());
+    const idTodoExist = todoscheckToCompanyEdit.some(
+      (item) =>
+        item?.toCompanyname?.toLowerCase() == toCompanynameEdit?.toLowerCase()
+    );
 
-    if (toCompanynameEdit === '' || toCompanynameEdit === undefined) {
-      setPopupContentMalert('Please Enter To Company Name');
-      setPopupSeverityMalert('warning');
+    if (toCompanynameEdit === "" || toCompanynameEdit === undefined) {
+      setPopupContentMalert("Please Enter To Company Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (toAddressEdit === '' || toAddressEdit === undefined) {
-      setPopupContentMalert('Please Enter To Company Address');
-      setPopupSeverityMalert('warning');
+    } else if (toAddressEdit === "" || toAddressEdit === undefined) {
+      setPopupContentMalert("Please Enter To Company Address");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
-      setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -1383,8 +1752,8 @@ function TempControlPanel() {
         toAddress: toAddressEdit,
       };
       setTodoscheckToCompanyEdit([...todoscheckToCompanyEdit, newTodocheck]);
-      setToCompanynameEdit('');
-      setToAddressEdit('');
+      setToCompanynameEdit("");
+      setToAddressEdit("");
       setEditingIndexcheckToCompanyEdit(-1);
     }
   };
@@ -1396,43 +1765,45 @@ function TempControlPanel() {
   };
   const handleUpdateTodocheckToCompanyEdit = () => {
     const newTodoscheck = [...todoscheckToCompanyEdit];
-    newTodoscheck[editingIndexcheckToCompanyEdit].toAddress = toAddressCreateEdit;
-    newTodoscheck[editingIndexcheckToCompanyEdit].toCompanyname = toCompanynameCreateEdit;
+    newTodoscheck[editingIndexcheckToCompanyEdit].toAddress =
+      toAddressCreateEdit;
+    newTodoscheck[editingIndexcheckToCompanyEdit].toCompanyname =
+      toCompanynameCreateEdit;
     setTodoscheckToCompanyEdit(newTodoscheck);
     setEditingIndexcheckToCompanyEdit(-1);
   };
 
   const handleClear = (e) => {
     e.preventDefault();
-    setdocumentFilesDOcumentContentHeader([]);
-    setdocumentFilesDOcumentContentFooter([]);
-    setdocumentFilesDOcumentBodyContent([]);
-    setdocumentFilesDOcumentFrontHeader([]);
-    setdocumentFilesDOcumentFrontFooter([]);
-    setdocumentFilesDOcumentBackHeader([]);
-    setdocumentFilesDOcumentBackFooter([]);
-    setHeaderNameCreate('');
-    setHeaderTodoCreate([])
-    setFooterNameCreate('')
-    setFooterTodoCreate([])
-    setdocumentFiles([]);
+    setdocumentFilesDOcumentContentHeader("");
+    setdocumentFilesDOcumentContentFooter("");
+    setdocumentFilesDOcumentBodyContent("");
+    setdocumentFilesDOcumentFrontHeader("");
+    setdocumentFilesDOcumentFrontFooter("");
+    setdocumentFilesDOcumentBackHeader("");
+    setdocumentFilesDOcumentBackFooter("");
+    setHeaderNameCreate("");
+    setHeaderTodoCreate([]);
+    setFooterNameCreate("");
+    setFooterTodoCreate([]);
+    setdocumentFiles("");
     setdocumentFilesVIew([]);
-    setdocumentFilesSeal([]);
-    setdocumentFilesSignature([]);
-    setCompanyname('');
+    setdocumentFilesSeal("");
+    setdocumentFilesSignature("");
+    setCompanyname("");
     setTodoscheckToCompany([]);
-    setToCompanyname('');
-    setAddress('');
-    setToAddress('');
-    setSealtype('Please Select Seal');
-    setSealname('');
-    setCompanyUrl('');
-    setCompany('Please Select Company');
-    setBranch('Please Select Branch');
-    setUnit('Please Select Unit');
-    setTeam('Please Select Team');
-    setEmployee('Please Select Employee');
-    setSignaturename('');
+    setToCompanyname("");
+    setAddress("");
+    setToAddress("");
+    setSealtype("Please Select Seal");
+    setSealname("");
+    setCompanyUrl("");
+    setCompany("Please Select Company");
+    setBranch("Please Select Branch");
+    setUnit("Please Select Unit");
+    setTeam("Please Select Team");
+    setEmployee("Please Select Employee");
+    setSignaturename("");
     setBranchOption([]);
     setUnitOption([]);
     setEmployeeOption([]);
@@ -1443,10 +1814,15 @@ function TempControlPanel() {
     // setClearOpenalert(true);
     setIndexSealCreate(-1);
     setIndexSignatureCreate(-1);
-    setPopupContent('Cleared Successfully');
-    setPopupSeverity('success');
+    setPopupContent("Cleared Successfully");
+    setPopupSeverity("success");
     handleClickOpenPopup();
-    setIsUserDetails({ bottoncnt: '', username: '', isdesignation: false, isusername: false });
+    setIsUserDetails({
+      bottoncnt: "",
+      username: "",
+      isdesignation: false,
+      isusername: false,
+    });
     // setTimeout(() => {
     //     setClearOpenalert(false);
     // }, 1000)
@@ -1458,7 +1834,7 @@ function TempControlPanel() {
     setIsEditOpen(true);
   };
   const handleCloseModEdit = (e, reason) => {
-    if (reason && reason === 'backdropClick') return;
+    if (reason && reason === "backdropClick") return;
     setIsEditOpen(false);
     setEditingIndexSeal(-1);
     setEditingIndexcheck(-1);
@@ -1490,19 +1866,26 @@ function TempControlPanel() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      const answer = res?.data?.document?.filter((data) => data?.document?.length > 0);
+      const answer = res?.data?.document?.filter(
+        (data) => data?.document?.length > 0
+      );
       const mappedData =
         answer?.length > 0
           ? answer?.map((data) => ({
-            ...data,
-            label: data?.name,
-            value: data?.name,
-            document: data?.document,
-          }))
+              ...data,
+              label: data?.name,
+              value: data?.name,
+              document: data?.document,
+            }))
           : [];
       setOrgDocuments(mappedData);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   useEffect(() => {
@@ -1510,7 +1893,9 @@ function TempControlPanel() {
   }, []);
 
   const [todoscheckSealView, settodoscheckSealView] = useState([]);
-  const [documentFilesSignatureView, setdocumentFilesSignatureView] = useState([]);
+  const [documentFilesSignatureView, setdocumentFilesSignatureView] = useState(
+    []
+  );
 
   // get single row to view....
   const getviewCode = async (e) => {
@@ -1521,15 +1906,27 @@ function TempControlPanel() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      const lastupdatedata = res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length > 0 ? res?.data?.stemplatecontrolpanel?.templatecontrolpanellog[res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length - 1] : [];
+      const lastupdatedata =
+        res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length > 0
+          ? res?.data?.stemplatecontrolpanel?.templatecontrolpanellog[
+              res?.data?.stemplatecontrolpanel?.templatecontrolpanellog
+                ?.length - 1
+            ]
+          : [];
       setPurposeEdit(lastupdatedata);
-      setHeaderTodoView(lastupdatedata?.letterheadcontentheader)
-      setFooterTodoView(lastupdatedata?.letterheadcontentfooter)
+      setHeaderTodoView(lastupdatedata?.letterheadcontentheader);
+      setFooterTodoView(lastupdatedata?.letterheadcontentfooter);
       // setdocumentFilesDOcumentContentHeaderView(lastupdatedata?.letterheadcontentheader);
       // setdocumentFilesDOcumentContentFooterView(lastupdatedata?.letterheadcontentfooter);
-      setdocumentFilesDOcumentBodyContentView(lastupdatedata?.letterheadbodycontent);
-      setdocumentFilesDOcumentFrontHeaderView(lastupdatedata?.idcardfrontheader);
-      setdocumentFilesDOcumentFrontFooterView(lastupdatedata?.idcardfrontfooter);
+      setdocumentFilesDOcumentBodyContentView(
+        lastupdatedata?.letterheadbodycontent
+      );
+      setdocumentFilesDOcumentFrontHeaderView(
+        lastupdatedata?.idcardfrontheader
+      );
+      setdocumentFilesDOcumentFrontFooterView(
+        lastupdatedata?.idcardfrontfooter
+      );
       setdocumentFilesDOcumentBackHeaderView(lastupdatedata?.idcardbackheader);
       setdocumentFilesDOcumentBackFooterView(lastupdatedata?.idcardbackfooter);
       settodoscheckSealView(lastupdatedata?.documentseal);
@@ -1537,7 +1934,12 @@ function TempControlPanel() {
       setdocumentFilesVIew(lastupdatedata?.documentcompany);
       handleClickOpenview();
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   // get single row to view....
@@ -1553,11 +1955,18 @@ function TempControlPanel() {
       setPurposeEdit(res?.data?.stemplatecontrolpanel);
       handleClickOpeninfo();
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
-  const [templateControlPanelIdEdit, setTemplateControlPanelIdEdit] = useState([]);
+  const [templateControlPanelIdEdit, setTemplateControlPanelIdEdit] = useState(
+    []
+  );
   const [templateControlPanelEdit, setTemplateControlPanelEdit] = useState([]);
 
   const getCodeEdit = async (e) => {
@@ -1571,10 +1980,16 @@ function TempControlPanel() {
       });
       fetchAssignedByEdit(e);
       setTemplateControlPanelIdEdit(res?.data?.stemplatecontrolpanel);
-      const lastupdatedata = res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length > 0 ? res?.data?.stemplatecontrolpanel?.templatecontrolpanellog[res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length - 1] : [];
+      const lastupdatedata =
+        res?.data?.stemplatecontrolpanel?.templatecontrolpanellog?.length > 0
+          ? res?.data?.stemplatecontrolpanel?.templatecontrolpanellog[
+              res?.data?.stemplatecontrolpanel?.templatecontrolpanellog
+                ?.length - 1
+            ]
+          : [];
       setTemplateControlPanelEdit(lastupdatedata);
-      setHeaderTodoEdit(lastupdatedata?.letterheadcontentheader)
-      setFooterTodoEdit(lastupdatedata?.letterheadcontentfooter)
+      setHeaderTodoEdit(lastupdatedata?.letterheadcontentheader);
+      setFooterTodoEdit(lastupdatedata?.letterheadcontentfooter);
       setCompanyEdit(lastupdatedata?.company);
       fetchBranchAllEdit(lastupdatedata?.company);
       setBranchEdit(lastupdatedata?.branch);
@@ -1584,9 +1999,15 @@ function TempControlPanel() {
       setdocumentFilesEdit(lastupdatedata?.documentcompany);
       // setdocumentFilesDOcumentContentHeaderEdit(lastupdatedata?.letterheadcontentheader);
       // setdocumentFilesDOcumentContentFooterEdit(lastupdatedata?.letterheadcontentfooter);
-      setdocumentFilesDOcumentBodyContentEdit(lastupdatedata?.letterheadbodycontent);
-      setdocumentFilesDOcumentFrontHeaderEdit(lastupdatedata?.idcardfrontheader);
-      setdocumentFilesDOcumentFrontFooterEdit(lastupdatedata?.idcardfrontfooter);
+      setdocumentFilesDOcumentBodyContentEdit(
+        lastupdatedata?.letterheadbodycontent
+      );
+      setdocumentFilesDOcumentFrontHeaderEdit(
+        lastupdatedata?.idcardfrontheader
+      );
+      setdocumentFilesDOcumentFrontFooterEdit(
+        lastupdatedata?.idcardfrontfooter
+      );
       setdocumentFilesDOcumentBackHeaderEdit(lastupdatedata?.idcardbackheader);
       setdocumentFilesDOcumentBackFooterEdit(lastupdatedata?.idcardbackfooter);
       setTodoscheckSealEdit(lastupdatedata?.documentseal);
@@ -1595,10 +2016,15 @@ function TempControlPanel() {
 
       const ticket = lastupdatedata || {};
 
-      setSelectedMarginEdit(ticket.marginQuill || 'normal');
-      setPageSizeQuillEdit(ticket.pagesizeQuill || 'A4');
-      setPageOrientationEdit(ticket.orientationQuill || 'portrait');
-      setIsUserDetails({ bottoncnt: '', username: '', isdesignation: false, isusername: false });
+      setSelectedMarginEdit(ticket.marginQuill || "normal");
+      setPageSizeQuillEdit(ticket.pagesizeQuill || "A4");
+      setPageOrientationEdit(ticket.orientationQuill || "portrait");
+      setIsUserDetails({
+        bottoncnt: "",
+        username: "",
+        isdesignation: false,
+        isusername: false,
+      });
 
       setTodoscheckToCompanyEdit(lastupdatedata?.toCompany);
       setQrInfoTodosEdit(lastupdatedata?.qrInfo ?? []);
@@ -1607,7 +2033,12 @@ function TempControlPanel() {
       setBccEmailTodoEdit(lastupdatedata?.bccemail);
       await fetchUnitAllEdit(lastupdatedata?.branch);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -1629,27 +2060,33 @@ function TempControlPanel() {
     setSealnameEditTodo(todoscheckSealEdit[index]?.name);
   };
   const handleUpdateTodoSeal = () => {
-    const idTodoExist = todoscheckSealEdit?.filter((data, index) => index !== editingIndexcheck)?.some((item) => item?.name?.toLowerCase() == sealnameEditTodo?.toLowerCase() && item?.seal?.toLowerCase() == sealtypeEditTodo?.toLowerCase());
+    const idTodoExist = todoscheckSealEdit
+      ?.filter((data, index) => index !== editingIndexcheck)
+      ?.some(
+        (item) =>
+          item?.name?.toLowerCase() == sealnameEditTodo?.toLowerCase() &&
+          item?.seal?.toLowerCase() == sealtypeEditTodo?.toLowerCase()
+      );
 
-    if (sealtypeEditTodo === 'Please Select Seal') {
-      setPopupContentMalert('Please Select Seal');
-      setPopupSeverityMalert('warning');
+    if (sealtypeEditTodo === "Please Select Seal") {
+      setPopupContentMalert("Please Select Seal");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (sealnameEditTodo === '') {
-      setPopupContentMalert('Please Enter Seal Name');
-      setPopupSeverityMalert('warning');
+    } else if (sealnameEditTodo === "") {
+      setPopupContentMalert("Please Enter Seal Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
-      setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = [...todoscheckSealEdit];
       newTodocheck[editingIndexSeal].seal = sealtypeEditTodo;
       newTodocheck[editingIndexSeal].name = sealnameEditTodo;
       setTodoscheckSealEdit(newTodocheck);
-      setSealtypeEditTodo('Please Select Seal');
-      setSealnameEditTodo('');
+      setSealtypeEditTodo("Please Select Seal");
+      setSealnameEditTodo("");
       setEditingIndexSeal(-1);
       setSealTodo(false);
     }
@@ -1669,7 +2106,12 @@ function TempControlPanel() {
     if (todoscheckSignatureEdit[index]?.allBranch) {
       getAllBranchUsersDataEditTodo(companyEdit);
     } else {
-      fetchEmployeeAllEditTodo(companyEdit, branchEdit, todoscheckSignatureEdit[index]?.unit, todoscheckSignatureEdit[index]?.team);
+      fetchEmployeeAllEditTodo(
+        companyEdit,
+        branchEdit,
+        todoscheckSignatureEdit[index]?.unit,
+        todoscheckSignatureEdit[index]?.team
+      );
     }
 
     setEmployeeEditTodo(todoscheckSignatureEdit[index]?.employee);
@@ -1680,37 +2122,53 @@ function TempControlPanel() {
       ?.filter((data, index) => index !== editingIndexcheck)
       .some(
         (item) =>
-          (allBranchEditTodo ? true : item.unit?.toLowerCase() == unitEditTodo?.toLowerCase() && item.team?.toLowerCase() == teamEditTodo?.toLowerCase()) && item.employee?.toLowerCase() == employeeEditTodo?.toLowerCase() && item.signaturename?.toLowerCase() == signaturenameEditTodo?.toLowerCase()
+          (allBranchEditTodo
+            ? true
+            : item.unit?.toLowerCase() == unitEditTodo?.toLowerCase() &&
+              item.team?.toLowerCase() == teamEditTodo?.toLowerCase()) &&
+          item.employee?.toLowerCase() == employeeEditTodo?.toLowerCase() &&
+          item.signaturename?.toLowerCase() ==
+            signaturenameEditTodo?.toLowerCase()
       );
-    fetchEmployeeSignatureDefault(employeeEditTodo, 'edittodo', editingIndexcheck);
+    fetchEmployeeSignatureDefault(
+      employeeEditTodo,
+      "edittodo",
+      editingIndexcheck
+    );
 
-    if (!allBranchEditTodo && unitEditTodo === 'Please Select Unit') {
-      setPopupContentMalert('Please Select Unit');
-      setPopupSeverityMalert('warning');
+    if (!allBranchEditTodo && unitEditTodo === "Please Select Unit") {
+      setPopupContentMalert("Please Select Unit");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (!allBranchEditTodo && teamEditTodo === 'Please Select Team') {
-      setPopupContentMalert('Please Select Team');
-      setPopupSeverityMalert('warning');
+    } else if (!allBranchEditTodo && teamEditTodo === "Please Select Team") {
+      setPopupContentMalert("Please Select Team");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (employeeEditTodo === 'Please Select Employee') {
-      setPopupContentMalert('Please Select Employee');
-      setPopupSeverityMalert('warning');
+    } else if (employeeEditTodo === "Please Select Employee") {
+      setPopupContentMalert("Please Select Employee");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSealEditTodo === 'For Seal' && (topContentEditTodo === '' || topContentEditTodo === undefined)) {
-      setPopupContentMalert('Please Enter Top Content');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSealEditTodo === "For Seal" &&
+      (topContentEditTodo === "" || topContentEditTodo === undefined)
+    ) {
+      setPopupContentMalert("Please Enter Top Content");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSealEditTodo === 'For Seal' && (bottomContentEditTodo === '' || bottomContentEditTodo === undefined)) {
-      setPopupContentMalert('Please Enter Bottom Content');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSealEditTodo === "For Seal" &&
+      (bottomContentEditTodo === "" || bottomContentEditTodo === undefined)
+    ) {
+      setPopupContentMalert("Please Enter Bottom Content");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (signaturenameEditTodo === '') {
-      setPopupContentMalert('Please Enter Signature Name');
-      setPopupSeverityMalert('warning');
+    } else if (signaturenameEditTodo === "") {
+      setPopupContentMalert("Please Enter Signature Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isSignatDup) {
-      setPopupContentMalert('Data Already Exists');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodoscheck = [...todoscheckSignatureEdit];
@@ -1725,14 +2183,14 @@ function TempControlPanel() {
       newTodoscheck[editingIndexcheck].allBranch = allBranchEditTodo;
 
       setTodoscheckSignatureEdit(newTodoscheck);
-      setUnitEditTodo('Please Select Unit');
-      setTeamEditTodo('Please Select Team');
-      setEmployeeEditTodo('Please Select Employee');
-      setSignaturenameEditTodo('');
-      setdocumentFilesSignatureEdit([]);
-      setForSealEditTodo('None');
-      setTopContentEditTodo('');
-      setBottomContentEditTodo('');
+      setUnitEditTodo("Please Select Unit");
+      setTeamEditTodo("Please Select Team");
+      setEmployeeEditTodo("Please Select Employee");
+      setSignaturenameEditTodo("");
+      setdocumentFilesSignatureEdit("");
+      setForSealEditTodo("None");
+      setTopContentEditTodo("");
+      setBottomContentEditTodo("");
       setEditingIndexcheck(-1);
       setSignTodo(false);
       setAllBranchEditTodo(false);
@@ -1744,75 +2202,78 @@ function TempControlPanel() {
     e.preventDefault();
     setPageName(!pageName);
     try {
-      let res = await axios.put(`${SERVICE.TEMPLATECONTROLPANEL_SINGLE}/${subprojectsid}`, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-        company: String(companyEdit),
-        branch: String(branchEdit),
-        letterheadcontentheader: headerTodoEdit,
-        letterheadcontentfooter: footerTodoEdit,
-        letterheadbodycontent: documentFilesDocumentBodyContentEdit,
-        companyurl: String(companyurlEdit),
-        idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
-        idcardfrontfooter: documentFilesDocumentFrontFooterEdit,
-        idcardbackheader: documentFilesDocumentBackHeaderEdit,
-        idcardbackfooter: documentFilesDocumentBackFooterEdit,
-        companyname: String(companynameEdit),
-        toCompany: todoscheckToCompanyEdit,
-        qrInfo: qrInfoTodosEdit,
-        address: String(addressEdit),
-        sealtype: String(sealtypeEdit),
-        sealname: String(sealnameEdit),
-        documentcompany: documentFilesEdit,
-        documentseal: todoscheckSealEdit,
-        documentsignature: todoscheckSignatureEdit,
-        emailformat: emailFormatEdit,
-        fromemail: String(fromEmailEdit),
-        ccemail: ccEmailTodoEdit,
-        bccemail: bccEmailTodoEdit,
-        templatecontrolpanellog: [
-          ...preallTemp,
-          {
-            company: String(companyEdit),
-            branch: String(branchEdit),
-            letterheadcontentheader: headerTodoEdit,
-            letterheadcontentfooter: footerTodoEdit,
-            letterheadbodycontent: documentFilesDocumentBodyContentEdit,
-            companyurl: String(companyurlEdit),
-            idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
-            idcardfrontfooter: documentFilesDocumentFrontFooterEdit,
-            idcardbackheader: documentFilesDocumentBackHeaderEdit,
-            idcardbackfooter: documentFilesDocumentBackFooterEdit,
-            companyname: String(companynameEdit),
-            toCompany: todoscheckToCompanyEdit,
-            qrInfo: qrInfoTodosEdit,
-            address: String(addressEdit),
-            sealtype: String(sealtypeEdit),
-            sealname: String(sealnameEdit),
-            documentcompany: documentFilesEdit,
-            documentseal: todoscheckSealEdit,
-            documentsignature: todoscheckSignatureEdit,
-            emailformat: emailFormatEdit,
-            fromemail: String(fromEmailEdit),
-            ccemail: ccEmailTodoEdit,
-            bccemail: bccEmailTodoEdit,
-            createdAt: String(new Date(serverTime)),
-            updatedby: [
-              ...updateby,
-              {
-                name: String(isUserRoleAccess.companyname),
-              },
-            ],
+      let res = await axios.put(
+        `${SERVICE.TEMPLATECONTROLPANEL_SINGLE}/${subprojectsid}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
           },
-        ],
-        updatedby: [
-          ...updateby,
-          {
-            name: String(isUserRoleAccess.companyname),
-          },
-        ],
-      });
+          company: String(companyEdit),
+          branch: String(branchEdit),
+          letterheadcontentheader: headerTodoEdit,
+          letterheadcontentfooter: footerTodoEdit,
+          letterheadbodycontent: documentFilesDocumentBodyContentEdit,
+          companyurl: String(companyurlEdit),
+          idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
+          idcardfrontfooter: documentFilesDocumentFrontFooterEdit,
+          idcardbackheader: documentFilesDocumentBackHeaderEdit,
+          idcardbackfooter: documentFilesDocumentBackFooterEdit,
+          companyname: String(companynameEdit),
+          toCompany: todoscheckToCompanyEdit,
+          qrInfo: qrInfoTodosEdit,
+          address: String(addressEdit),
+          sealtype: String(sealtypeEdit),
+          sealname: String(sealnameEdit),
+          documentcompany: documentFilesEdit,
+          documentseal: todoscheckSealEdit,
+          documentsignature: todoscheckSignatureEdit,
+          emailformat: emailFormatEdit,
+          fromemail: String(fromEmailEdit),
+          ccemail: ccEmailTodoEdit,
+          bccemail: bccEmailTodoEdit,
+          templatecontrolpanellog: [
+            ...preallTemp,
+            {
+              company: String(companyEdit),
+              branch: String(branchEdit),
+              letterheadcontentheader: headerTodoEdit,
+              letterheadcontentfooter: footerTodoEdit,
+              letterheadbodycontent: documentFilesDocumentBodyContentEdit,
+              companyurl: String(companyurlEdit),
+              idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
+              idcardfrontfooter: documentFilesDocumentFrontFooterEdit,
+              idcardbackheader: documentFilesDocumentBackHeaderEdit,
+              idcardbackfooter: documentFilesDocumentBackFooterEdit,
+              companyname: String(companynameEdit),
+              toCompany: todoscheckToCompanyEdit,
+              qrInfo: qrInfoTodosEdit,
+              address: String(addressEdit),
+              sealtype: String(sealtypeEdit),
+              sealname: String(sealnameEdit),
+              documentcompany: documentFilesEdit,
+              documentseal: todoscheckSealEdit,
+              documentsignature: todoscheckSignatureEdit,
+              emailformat: emailFormatEdit,
+              fromemail: String(fromEmailEdit),
+              ccemail: ccEmailTodoEdit,
+              bccemail: bccEmailTodoEdit,
+              createdAt: String(new Date(serverTime)),
+              updatedby: [
+                ...updateby,
+                {
+                  name: String(isUserRoleAccess.companyname),
+                },
+              ],
+            },
+          ],
+          updatedby: [
+            ...updateby,
+            {
+              name: String(isUserRoleAccess.companyname),
+            },
+          ],
+        }
+      );
       await fetchAssignedBy();
       fetchSourceAll();
       handleCloseModEdit();
@@ -1821,9 +2282,14 @@ function TempControlPanel() {
       // setTimeout(() => {
       //     setUpdateOpenalert(false);
       // }, 1000)
-      setIsUserDetails({ bottoncnt: '', username: '', isdesignation: false, isusername: false });
-      setPopupContent('Updated Successfully');
-      setPopupSeverity('success');
+      setIsUserDetails({
+        bottoncnt: "",
+        username: "",
+        isdesignation: false,
+        isusername: false,
+      });
+      setPopupContent("Updated Successfully");
+      setPopupSeverity("success");
       handleClickOpenPopup();
       setBtnSubmitEdit(false);
       setEditingIndexcheck(-1);
@@ -1833,105 +2299,126 @@ function TempControlPanel() {
     } catch (err) {
       setBtnSubmitEdit(false);
 
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
   const editSubmit = (e) => {
     e.preventDefault();
 
-    const duplicate = assignedByArrayEdit?.some((item) => item.company.toLowerCase() == companyEdit.toLowerCase() && item.branch?.toLowerCase() === branchEdit?.toLowerCase());
-    if (companyEdit === 'Please Select Company') {
-      setPopupContentMalert('Please Select Company');
-      setPopupSeverityMalert('warning');
+    const duplicate = assignedByArrayEdit?.some(
+      (item) =>
+        item.company.toLowerCase() == companyEdit.toLowerCase() &&
+        item.branch?.toLowerCase() === branchEdit?.toLowerCase()
+    );
+    if (companyEdit === "Please Select Company") {
+      setPopupContentMalert("Please Select Company");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (branchEdit === 'Please Select Branch') {
-      setPopupContentMalert('Please Select Branch');
-      setPopupSeverityMalert('warning');
+    } else if (branchEdit === "Please Select Branch") {
+      setPopupContentMalert("Please Select Branch");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (headerTodoEdit?.length === 0) {
-      setPopupContentMalert('Please Add Header Todo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Add Header Todo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (footerTodoEdit?.length === 0) {
-      setPopupContentMalert('Please Add Footer Todo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Add Footer Todo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBodyContentEdit.length === 0) {
-      setPopupContentMalert('Please Upload Document Letter Head Body Content(Background)');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert(
+        "Please Upload Document Letter Head Body Content(Background)"
+      );
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentFrontHeaderEdit.length === 0) {
-      setPopupContentMalert('Please Upload ID Card Front Header');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Upload ID Card Front Header");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentFrontFooterEdit.length === 0) {
-      setPopupContentMalert('Please Upload ID Card Front Footer');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Upload ID Card Front Footer");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBackHeaderEdit.length === 0) {
-      setPopupContentMalert('Please Upload ID Card Back Header');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Upload ID Card Back Header");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (documentFilesDocumentBackFooterEdit.length === 0) {
-      setPopupContentMalert('Please Upload ID Card Back Footer');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Upload ID Card Back Footer");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (companyurlEdit === '') {
-      setPopupContentMalert('Please Enter Company URL');
-      setPopupSeverityMalert('warning');
+    } else if (companyurlEdit === "") {
+      setPopupContentMalert("Please Enter Company URL");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (companynameEdit === '') {
-      setPopupContentMalert('Please Enter Company Name');
-      setPopupSeverityMalert('warning');
+    } else if (companynameEdit === "") {
+      setPopupContentMalert("Please Enter Company Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (addressEdit === '') {
-      setPopupContentMalert('Please Enter Address');
-      setPopupSeverityMalert('warning');
+    } else if (addressEdit === "") {
+      setPopupContentMalert("Please Enter Address");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (todoscheckToCompanyEdit?.length < 1) {
-      setPopupContentMalert('Atleast Add one To Company and To Address Todo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Atleast Add one To Company and To Address Todo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isTodoToCompanyEdit?.some((data) => data === true)) {
-      setPopupContentMalert('Please Update The Todo And Submit in ToCompany and ToAddress Todo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert(
+        "Please Update The Todo And Submit in ToCompany and ToAddress Todo"
+      );
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (todoscheckSealEdit.length === 0) {
-      setPopupContentMalert('Please Add Seal Todo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Add Seal Todo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (todoscheckSignatureEdit.length === 0) {
-      setPopupContentMalert('Please Add Signature Todo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Add Signature Todo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (fromEmailEdit === undefined || fromEmailEdit === '') {
-      setPopupContentMalert('Please Enter From Email Adddress');
-      setPopupSeverityMalert('warning');
+    } else if (fromEmailEdit === undefined || fromEmailEdit === "") {
+      setPopupContentMalert("Please Enter From Email Adddress");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(fromEmailEdit)) {
-      setPopupContentMalert('Please Enter Valid From Email Adddress');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Enter Valid From Email Adddress");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isTodoEditCCEmailEdit?.some((data) => data === true)) {
-      setPopupContentMalert('Please Update The Todo And Submit in CC Email Address Todo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert(
+        "Please Update The Todo And Submit in CC Email Address Todo"
+      );
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isTodoEditBCCEmailEdit?.some((data) => data === true)) {
-      setPopupContentMalert('Please Update The Todo And Submit in BCC Email Address Todo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert(
+        "Please Update The Todo And Submit in BCC Email Address Todo"
+      );
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (emailFormatEdit === undefined || emailFormatEdit === '' || emailFormatEdit === '<p><br></p>') {
-      setPopupContentMalert('Please Enter Email Format');
-      setPopupSeverityMalert('warning');
+    } else if (
+      emailFormatEdit === undefined ||
+      emailFormatEdit === "" ||
+      emailFormatEdit === "<p><br></p>"
+    ) {
+      setPopupContentMalert("Please Enter Email Format");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (duplicate) {
-      setPopupContentMalert('Data already exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data already exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (signTodo || sealTodo) {
-      setPopupContentMalert('Please Update the Todo and then Update!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Update the Todo and then Update!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       handleClickOpenInfoImageEdit();
@@ -1959,23 +2446,38 @@ function TempControlPanel() {
       setSourcecheck(true);
     } catch (err) {
       setSourcecheck(true);
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   //get all Sub vendormasters.
   const fetchAssignedByEdit = async (e) => {
     setPageName(!pageName);
     try {
-      let res_vendor = await axios.get(SERVICE.DUPLICATIONTEMPLATECONTROLPANEL, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-      });
-      const answer = res_vendor?.data?.templatecontrolpanel?.filter((data) => data?._id !== e);
+      let res_vendor = await axios.get(
+        SERVICE.DUPLICATIONTEMPLATECONTROLPANEL,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
+      const answer = res_vendor?.data?.templatecontrolpanel?.filter(
+        (data) => data?._id !== e
+      );
 
       setAssignedbyArrayEdit(answer);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -1995,20 +2497,29 @@ function TempControlPanel() {
         }
       );
 
-      setAllSourceedit(res_meet?.data?.templatecontrolpanel.filter((item) => item._id !== purposeEdit._id));
+      setAllSourceedit(
+        res_meet?.data?.templatecontrolpanel.filter(
+          (item) => item._id !== purposeEdit._id
+        )
+      );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
   // Excel
-  const fileName = 'Template Control Panel';
+  const fileName = "Template Control Panel";
   //print...
   const componentRef = useRef();
   const handleprint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: 'Template Control Panel',
-    pageStyle: 'print',
+    documentTitle: "Template Control Panel",
+    pageStyle: "print",
   });
 
   useEffect(() => {
@@ -2021,9 +2532,9 @@ function TempControlPanel() {
 
   useEffect(() => {
     const beforeUnloadHandler = (event) => handleBeforeUnload(event);
-    window.addEventListener('beforeunload', beforeUnloadHandler);
+    window.addEventListener("beforeunload", beforeUnloadHandler);
     return () => {
-      window.removeEventListener('beforeunload', beforeUnloadHandler);
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
     };
   }, []);
 
@@ -2031,7 +2542,12 @@ function TempControlPanel() {
 
   const addSerialNumber = () => {
     const itemsWithSerialNumber = sources?.map((item, index) => {
-      const recenttemp = item.templatecontrolpanellog?.length > 0 ? item.templatecontrolpanellog[item.templatecontrolpanellog?.length - 1] : item;
+      const recenttemp =
+        item.templatecontrolpanellog?.length > 0
+          ? item.templatecontrolpanellog[
+              item.templatecontrolpanellog?.length - 1
+            ]
+          : item;
       return {
         id: item._id,
         serialNumber: index + 1,
@@ -2060,7 +2576,11 @@ function TempControlPanel() {
             value: data.company,
           }))
           .filter((item, index, self) => {
-            return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+            return (
+              self.findIndex(
+                (i) => i.label === item.label && i.value === item.value
+              ) === index
+            );
           })
       );
       setCompanyOptionEdit(
@@ -2070,11 +2590,20 @@ function TempControlPanel() {
             value: data.company,
           }))
           .filter((item, index, self) => {
-            return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+            return (
+              self.findIndex(
+                (i) => i.label === item.label && i.value === item.value
+              ) === index
+            );
           })
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -2091,11 +2620,20 @@ function TempControlPanel() {
             address: data.branchaddress,
           }))
           .filter((item, index, self) => {
-            return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+            return (
+              self.findIndex(
+                (i) => i.label === item.label && i.value === item.value
+              ) === index
+            );
           })
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -2111,18 +2649,31 @@ function TempControlPanel() {
             value: data.unit,
           }))
           .filter((item, index, self) => {
-            return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+            return (
+              self.findIndex(
+                (i) => i.label === item.label && i.value === item.value
+              ) === index
+            );
           })
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
   const getAllBranchUsersData = async (company) => {
     try {
-      const branches = accessbranch?.filter((data) => data?.company === company)?.map((data) => data?.branch);
-      const usersData = allUsersData?.filter((data) => data?.company === company && branches?.includes(data?.branch));
+      const branches = accessbranch
+        ?.filter((data) => data?.company === company)
+        ?.map((data) => data?.branch);
+      const usersData = allUsersData?.filter(
+        (data) => data?.company === company && branches?.includes(data?.branch)
+      );
       setEmployeeOption(
         usersData?.map((t) => ({
           label: t.companyname,
@@ -2137,8 +2688,12 @@ function TempControlPanel() {
   };
   const getAllBranchUsersDataTodo = async (company) => {
     try {
-      const branches = accessbranch?.filter((data) => data?.company === company)?.map((data) => data?.branch);
-      const usersData = allUsersData?.filter((data) => data?.company === company && branches?.includes(data?.branch));
+      const branches = accessbranch
+        ?.filter((data) => data?.company === company)
+        ?.map((data) => data?.branch);
+      const usersData = allUsersData?.filter(
+        (data) => data?.company === company && branches?.includes(data?.branch)
+      );
       setEmployeeOptionTodo(
         usersData?.map((t) => ({
           label: t.companyname,
@@ -2154,8 +2709,12 @@ function TempControlPanel() {
 
   const getAllBranchUsersDataEdit = async (company) => {
     try {
-      const branches = accessbranch?.filter((data) => data?.company === company)?.map((data) => data?.branch);
-      const usersData = allUsersData?.filter((data) => data?.company === company && branches?.includes(data?.branch));
+      const branches = accessbranch
+        ?.filter((data) => data?.company === company)
+        ?.map((data) => data?.branch);
+      const usersData = allUsersData?.filter(
+        (data) => data?.company === company && branches?.includes(data?.branch)
+      );
       setEmployeeOptionEdit(
         usersData?.map((t) => ({
           label: t.companyname,
@@ -2170,8 +2729,12 @@ function TempControlPanel() {
   };
   const getAllBranchUsersDataEditTodo = async (company) => {
     try {
-      const branches = accessbranch?.filter((data) => data?.company === company)?.map((data) => data?.branch);
-      const usersData = allUsersData?.filter((data) => data?.company === company && branches?.includes(data?.branch));
+      const branches = accessbranch
+        ?.filter((data) => data?.company === company)
+        ?.map((data) => data?.branch);
+      const usersData = allUsersData?.filter(
+        (data) => data?.company === company && branches?.includes(data?.branch)
+      );
       setEmployeeOptionTodoEdit(
         usersData?.map((t) => ({
           label: t.companyname,
@@ -2190,7 +2753,13 @@ function TempControlPanel() {
     try {
       setEmployeeOption(
         allUsersData
-          ?.filter((t) => companyArr === t.company && branchArr === t.branch && unitArr === t.unit && teamArr === t.team)
+          ?.filter(
+            (t) =>
+              companyArr === t.company &&
+              branchArr === t.branch &&
+              unitArr === t.unit &&
+              teamArr === t.team
+          )
           ?.map((t) => ({
             label: t.companyname,
             value: t.companyname,
@@ -2199,7 +2768,12 @@ function TempControlPanel() {
           }))
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   //function to fetch Employee
@@ -2208,7 +2782,13 @@ function TempControlPanel() {
     try {
       setEmployeeOptionTodo(
         allUsersData
-          ?.filter((t) => companyArr === t.company && branchArr === t.branch && unitArr === t.unit && teamArr === t.team)
+          ?.filter(
+            (t) =>
+              companyArr === t.company &&
+              branchArr === t.branch &&
+              unitArr === t.unit &&
+              teamArr === t.team
+          )
           ?.map((t) => ({
             label: t.companyname,
             value: t.companyname,
@@ -2217,7 +2797,12 @@ function TempControlPanel() {
           }))
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   //get all branches.
@@ -2233,11 +2818,20 @@ function TempControlPanel() {
             address: data.branchaddress,
           }))
           .filter((item, index, self) => {
-            return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+            return (
+              self.findIndex(
+                (i) => i.label === item.label && i.value === item.value
+              ) === index
+            );
           })
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -2253,11 +2847,20 @@ function TempControlPanel() {
             value: data.unit,
           }))
           .filter((item, index, self) => {
-            return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+            return (
+              self.findIndex(
+                (i) => i.label === item.label && i.value === item.value
+              ) === index
+            );
           })
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -2267,7 +2870,13 @@ function TempControlPanel() {
     try {
       setEmployeeOptionEdit(
         allUsersData
-          ?.filter((t) => companyArr === t.company && branchArr === t.branch && unitArr === t.unit && teamArr === t.team)
+          ?.filter(
+            (t) =>
+              companyArr === t.company &&
+              branchArr === t.branch &&
+              unitArr === t.unit &&
+              teamArr === t.team
+          )
           ?.map((t) => ({
             label: t.companyname,
             value: t.companyname,
@@ -2276,16 +2885,32 @@ function TempControlPanel() {
           }))
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   //function to fetch Employee
-  const fetchEmployeeAllEditTodo = (companyArr, branchArr, unitArr, teamArr) => {
+  const fetchEmployeeAllEditTodo = (
+    companyArr,
+    branchArr,
+    unitArr,
+    teamArr
+  ) => {
     setPageName(!pageName);
     try {
       setEmployeeOptionTodoEdit(
         allUsersData
-          ?.filter((t) => companyArr === t.company && branchArr === t.branch && unitArr === t.unit && teamArr === t.team)
+          ?.filter(
+            (t) =>
+              companyArr === t.company &&
+              branchArr === t.branch &&
+              unitArr === t.unit &&
+              teamArr === t.team
+          )
           ?.map((t) => ({
             label: t.companyname,
             value: t.companyname,
@@ -2294,7 +2919,12 @@ function TempControlPanel() {
           }))
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -2321,20 +2951,28 @@ function TempControlPanel() {
     setSearchQuery(event.target.value);
   };
   // Split the search query into individual terms
-  const searchTerms = searchQuery.toLowerCase().split(' ');
+  const searchTerms = searchQuery.toLowerCase().split(" ");
   // Modify the filtering logic to check each term
   const filteredDatas = items?.filter((item) => {
-    return searchTerms.every((term) => Object.values(item).join(' ').toLowerCase().includes(term));
+    return searchTerms.every((term) =>
+      Object.values(item).join(" ").toLowerCase().includes(term)
+    );
   });
 
-  const filteredData = filteredDatas.slice((page - 1) * pageSize, page * pageSize);
+  const filteredData = filteredDatas.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
 
   const totalPages = Math.ceil(filteredDatas.length / pageSize);
 
   const visiblePages = Math.min(totalPages, 3);
 
   const firstVisiblePage = Math.max(1, page - 1);
-  const lastVisiblePage = Math.min(firstVisiblePage + visiblePages - 1, totalPages);
+  const lastVisiblePage = Math.min(
+    firstVisiblePage + visiblePages - 1,
+    totalPages
+  );
 
   const pageNumbers = [];
 
@@ -2355,10 +2993,10 @@ function TempControlPanel() {
 
   const columnDataTable = [
     {
-      field: 'checkbox',
-      headerName: 'Checkbox', // Default header name
+      field: "checkbox",
+      headerName: "Checkbox", // Default header name
       headerStyle: {
-        fontWeight: 'bold', // Apply the font-weight style to make the header text bold
+        fontWeight: "bold", // Apply the font-weight style to make the header text bold
         // Add any other CSS styles as needed
       },
       renderHeader: (params) => (
@@ -2386,7 +3024,9 @@ function TempControlPanel() {
           onChange={() => {
             let updatedSelectedRows;
             if (selectedRows.includes(params.row.id)) {
-              updatedSelectedRows = selectedRows.filter((selectedId) => selectedId !== params.row.id);
+              updatedSelectedRows = selectedRows.filter(
+                (selectedId) => selectedId !== params.row.id
+              );
             } else {
               updatedSelectedRows = [...selectedRows, params.row.id];
             }
@@ -2394,7 +3034,9 @@ function TempControlPanel() {
             setSelectedRows(updatedSelectedRows);
 
             // Update the "Select All" checkbox based on whether all rows are selected
-            setSelectAllChecked(updatedSelectedRows.length === filteredData.length);
+            setSelectAllChecked(
+              updatedSelectedRows.length === filteredData.length
+            );
           }}
         />
       ),
@@ -2402,34 +3044,69 @@ function TempControlPanel() {
       width: 90,
 
       hide: !columnVisibility.checkbox,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'serialNumber',
-      headerName: 'SNo',
+      field: "serialNumber",
+      headerName: "SNo",
       flex: 0,
       width: 100,
       hide: !columnVisibility.serialNumber,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
-    { field: 'company', headerName: 'Company', flex: 0, width: 150, hide: !columnVisibility.company, headerClassName: 'bold-header' },
-    { field: 'branch', headerName: 'Branch', flex: 0, width: 150, hide: !columnVisibility.branch, headerClassName: 'bold-header' },
-    { field: 'companyurl', headerName: 'Company URL', flex: 0, width: 150, hide: !columnVisibility.companyurl, headerClassName: 'bold-header' },
-    { field: 'companyname', headerName: 'Company Name', flex: 0, width: 150, hide: !columnVisibility.companyname, headerClassName: 'bold-header' },
-    { field: 'address', headerName: 'Address', flex: 0, width: 150, hide: !columnVisibility.address, headerClassName: 'bold-header' },
+    {
+      field: "company",
+      headerName: "Company",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.company,
+      headerClassName: "bold-header",
+    },
+    {
+      field: "branch",
+      headerName: "Branch",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.branch,
+      headerClassName: "bold-header",
+    },
+    {
+      field: "companyurl",
+      headerName: "Company URL",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.companyurl,
+      headerClassName: "bold-header",
+    },
+    {
+      field: "companyname",
+      headerName: "Company Name",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.companyname,
+      headerClassName: "bold-header",
+    },
+    {
+      field: "address",
+      headerName: "Address",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.address,
+      headerClassName: "bold-header",
+    },
 
     {
-      field: 'actions',
-      headerName: 'Action',
+      field: "actions",
+      headerName: "Action",
       flex: 0,
       width: 350,
-      minHeight: '40px !important',
+      minHeight: "40px !important",
       sortable: false,
       hide: !columnVisibility.actions,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
       renderCell: (params) => (
-        <Grid sx={{ display: 'flex' }}>
-          {isUserRoleCompare?.includes('etemplatecontrolpanel') && (
+        <Grid sx={{ display: "flex" }}>
+          {isUserRoleCompare?.includes("etemplatecontrolpanel") && (
             <Button
               onClick={() => {
                 getCodeEdit(params.row.id);
@@ -2438,40 +3115,49 @@ function TempControlPanel() {
               Change
             </Button>
           )}
-          {isUserRoleCompare?.includes('dtemplatecontrolpanel') && (
+          {isUserRoleCompare?.includes("dtemplatecontrolpanel") && (
             <Button
               sx={userStyle.buttondelete}
               onClick={(e) => {
                 rowData(params.row.id);
               }}
             >
-              <DeleteOutlineOutlinedIcon sx={buttonStyles.buttondelete} style={{ fontsize: 'large' }} />
+              <DeleteOutlineOutlinedIcon
+                sx={buttonStyles.buttondelete}
+                style={{ fontsize: "large" }}
+              />
             </Button>
           )}
-          {isUserRoleCompare?.includes('vtemplatecontrolpanel') && (
+          {isUserRoleCompare?.includes("vtemplatecontrolpanel") && (
             <Button
               sx={userStyle.buttonedit}
               onClick={() => {
                 getviewCode(params.row.id);
               }}
             >
-              <VisibilityOutlinedIcon sx={buttonStyles.buttonview} style={{ fontsize: 'large' }} />
+              <VisibilityOutlinedIcon
+                sx={buttonStyles.buttonview}
+                style={{ fontsize: "large" }}
+              />
             </Button>
           )}
-          {isUserRoleCompare?.includes('itemplatecontrolpanel') && (
+          {isUserRoleCompare?.includes("itemplatecontrolpanel") && (
             <Button
               sx={userStyle.buttonedit}
               onClick={() => {
                 getinfoCode(params.row.id);
               }}
             >
-              <InfoOutlinedIcon sx={buttonStyles.buttoninfo} style={{ fontsize: 'large' }} />
+              <InfoOutlinedIcon
+                sx={buttonStyles.buttoninfo}
+                style={{ fontsize: "large" }}
+              />
             </Button>
           )}
-          {isUserRoleCompare?.includes('etemplatecontrolpanel') && (
+          {isUserRoleCompare?.includes("etemplatecontrolpanel") && (
             <Link to={`/templatecontrolpanellog/${params.row.id}`}>
               <Button sx={userStyle.buttondelete}>
-                <MenuIcon style={{ fontsize: 'large' }} />
+                <MenuIcon style={{ fontsize: "large" }} />
               </Button>
             </Link>
           )}
@@ -2508,7 +3194,9 @@ function TempControlPanel() {
   };
 
   // // Function to filter columns based on search query
-  const filteredColumns = columnDataTable.filter((column) => column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase()));
+  const filteredColumns = columnDataTable.filter((column) =>
+    column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase())
+  );
 
   // Manage Columns functionality
   const toggleColumnVisibility = (field) => {
@@ -2520,13 +3208,19 @@ function TempControlPanel() {
 
   // JSX for the "Manage Columns" popover content
   const manageColumnsContent = (
-    <Box style={{ padding: '10px', minWidth: '325px', '& .MuiDialogContent-root': { padding: '10px 0' } }}>
+    <Box
+      style={{
+        padding: "10px",
+        minWidth: "325px",
+        "& .MuiDialogContent-root": { padding: "10px 0" },
+      }}
+    >
       <Typography variant="h6">Manage Columns</Typography>
       <IconButton
         aria-label="close"
         onClick={handleCloseManageColumns}
         sx={{
-          position: 'absolute',
+          position: "absolute",
           right: 8,
           top: 8,
           color: (theme) => theme.palette.grey[500],
@@ -2534,20 +3228,38 @@ function TempControlPanel() {
       >
         <CloseIcon />
       </IconButton>
-      <Box sx={{ position: 'relative', margin: '10px' }}>
-        <TextField label="Find column" variant="standard" fullWidth value={searchQueryManage} onChange={(e) => setSearchQueryManage(e.target.value)} sx={{ marginBottom: 5, position: 'absolute' }} />
+      <Box sx={{ position: "relative", margin: "10px" }}>
+        <TextField
+          label="Find column"
+          variant="standard"
+          fullWidth
+          value={searchQueryManage}
+          onChange={(e) => setSearchQueryManage(e.target.value)}
+          sx={{ marginBottom: 5, position: "absolute" }}
+        />
       </Box>
       <br />
       <br />
-      <DialogContent sx={{ minWidth: 'auto', height: '200px', position: 'relative' }}>
-        <List sx={{ overflow: 'auto', height: '100%' }}>
+      <DialogContent
+        sx={{ minWidth: "auto", height: "200px", position: "relative" }}
+      >
+        <List sx={{ overflow: "auto", height: "100%" }}>
           {filteredColumns.map((column) => (
             <ListItem key={column.field}>
               <ListItemText
-                sx={{ display: 'flex' }}
-                primary={<Switch sx={{ marginTop: '-5px' }} size="small" checked={columnVisibility[column.field]} onChange={() => toggleColumnVisibility(column.field)} />}
-                secondary={column.field === 'checkbox' ? 'Checkbox' : column.headerName}
-              // secondary={column.headerName }
+                sx={{ display: "flex" }}
+                primary={
+                  <Switch
+                    sx={{ marginTop: "-5px" }}
+                    size="small"
+                    checked={columnVisibility[column.field]}
+                    onChange={() => toggleColumnVisibility(column.field)}
+                  />
+                }
+                secondary={
+                  column.field === "checkbox" ? "Checkbox" : column.headerName
+                }
+                // secondary={column.headerName }
               />
             </ListItem>
           ))}
@@ -2556,7 +3268,11 @@ function TempControlPanel() {
       <DialogActions>
         <Grid container>
           <Grid item md={4}>
-            <Button variant="text" sx={{ textTransform: 'none' }} onClick={() => setColumnVisibility(initialColumnVisibility)}>
+            <Button
+              variant="text"
+              sx={{ textTransform: "none" }}
+              onClick={() => setColumnVisibility(initialColumnVisibility)}
+            >
               Show All
             </Button>
           </Grid>
@@ -2564,7 +3280,7 @@ function TempControlPanel() {
           <Grid item md={4}>
             <Button
               variant="text"
-              sx={{ textTransform: 'none' }}
+              sx={{ textTransform: "none" }}
               onClick={() => {
                 const newColumnVisibility = {};
                 columnDataTable.forEach((column) => {
@@ -2584,23 +3300,27 @@ function TempControlPanel() {
   const handleCreateTodocheckSeal = () => {
     // if (currentText && currentText === 0) {
 
-    const idTodoExist = todoscheckSeal.some((item) => item?.name?.toLowerCase() == sealname?.toLowerCase() && item?.seal?.toLowerCase() == sealtype?.toLowerCase());
+    const idTodoExist = todoscheckSeal.some(
+      (item) =>
+        item?.name?.toLowerCase() == sealname?.toLowerCase() &&
+        item?.seal?.toLowerCase() == sealtype?.toLowerCase()
+    );
 
-    if (sealtype === 'Please Select Seal') {
-      setPopupContentMalert('Please Select Seal');
-      setPopupSeverityMalert('warning');
+    if (sealtype === "Please Select Seal") {
+      setPopupContentMalert("Please Select Seal");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (sealname === '') {
-      setPopupContentMalert('Please Enter Seal Name');
-      setPopupSeverityMalert('warning');
+    } else if (sealname === "") {
+      setPopupContentMalert("Please Enter Seal Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (documentFilesSeal.length === 0) {
-      setPopupContentMalert('Please Upload Seal Logo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Upload Seal Logo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
-      setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -2609,9 +3329,9 @@ function TempControlPanel() {
         document: documentFilesSeal,
       };
       setTodoscheckSeal([...todoscheckSeal, newTodocheck]);
-      setSealtype('Please Select Seal');
-      setSealname('');
-      setdocumentFilesSeal([]);
+      setSealtype("Please Select Seal");
+      setSealname("");
+      setdocumentFilesSeal("");
       //   setRefImage([]);
       //   setPreviewURL(null);
       //   setCurrentText("");
@@ -2629,50 +3349,60 @@ function TempControlPanel() {
     setSealnameTodo(todoscheckSeal[index]?.name);
   };
   const handleUpdateTodoSealCreate = () => {
-    const idTodoExist = todoscheckSeal?.filter((data, index) => index !== indexSealCreate).some((item) => item?.name?.toLowerCase() == sealnameTodo?.toLowerCase() && item?.seal?.toLowerCase() == sealtypeTodo?.toLowerCase());
+    const idTodoExist = todoscheckSeal
+      ?.filter((data, index) => index !== indexSealCreate)
+      .some(
+        (item) =>
+          item?.name?.toLowerCase() == sealnameTodo?.toLowerCase() &&
+          item?.seal?.toLowerCase() == sealtypeTodo?.toLowerCase()
+      );
 
-    if (sealtypeTodo === 'Please Select Seal') {
-      setPopupContentMalert('Please Select Seal');
-      setPopupSeverityMalert('warning');
+    if (sealtypeTodo === "Please Select Seal") {
+      setPopupContentMalert("Please Select Seal");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (sealnameTodo === '') {
-      setPopupContentMalert('Please Enter Seal Name');
-      setPopupSeverityMalert('warning');
+    } else if (sealnameTodo === "") {
+      setPopupContentMalert("Please Enter Seal Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
-      setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = [...todoscheckSeal];
       newTodocheck[indexSealCreate].seal = sealtypeTodo;
       newTodocheck[indexSealCreate].name = sealnameTodo;
       setTodoscheckSeal(newTodocheck);
-      setSealtypeTodo('Please Select Seal');
-      setSealnameTodo('');
+      setSealtypeTodo("Please Select Seal");
+      setSealnameTodo("");
       setSealTodoCreate(false);
       setIndexSealCreate(-1);
     }
   };
 
   const handleCreateTodocheckSealEdit = () => {
-    const idTodoExist = todoscheckSealEdit.some((item) => item?.name?.toLowerCase() == sealnameEdit?.toLowerCase() && item?.seal?.toLowerCase() == sealtypeEdit?.toLowerCase());
+    const idTodoExist = todoscheckSealEdit.some(
+      (item) =>
+        item?.name?.toLowerCase() == sealnameEdit?.toLowerCase() &&
+        item?.seal?.toLowerCase() == sealtypeEdit?.toLowerCase()
+    );
 
-    if (sealtypeEdit === 'Please Select Seal') {
-      setPopupContentMalert('Please Select Seal');
-      setPopupSeverityMalert('warning');
+    if (sealtypeEdit === "Please Select Seal") {
+      setPopupContentMalert("Please Select Seal");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (sealnameEdit === '') {
-      setPopupContentMalert('Please Enter Seal Name');
-      setPopupSeverityMalert('warning');
+    } else if (sealnameEdit === "") {
+      setPopupContentMalert("Please Enter Seal Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (documentFilesSealEdit.length === 0) {
-      setPopupContentMalert('Please Upload Seal Logo');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Upload Seal Logo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (idTodoExist) {
-      setPopupContentMalert('Data Already Exists!');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists!");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
@@ -2681,9 +3411,9 @@ function TempControlPanel() {
         document: documentFilesSealEdit,
       };
       setTodoscheckSealEdit([...todoscheckSealEdit, newTodocheck]);
-      setSealtypeEdit('Please Select Seal');
-      setSealnameEdit('');
-      setdocumentFilesSealEdit([]);
+      setSealtypeEdit("Please Select Seal");
+      setSealnameEdit("");
+      setdocumentFilesSealEdit("");
       //   setRefImage([]);
       //   setPreviewURL(null);
       //   setCurrentText("");
@@ -2697,46 +3427,58 @@ function TempControlPanel() {
     // if (currentText && currentText === 0) {
 
     const isSignatDup = todoscheckSignature.some(
-      (item) => (allBranch ? true : item.unit?.toLowerCase() == unit?.toLowerCase() && item.team?.toLowerCase() == team?.toLowerCase()) && item.employee?.toLowerCase() == employee?.toLowerCase() && item.signaturename?.toLowerCase() == signaturename?.toLowerCase()
+      (item) =>
+        (allBranch
+          ? true
+          : item.unit?.toLowerCase() == unit?.toLowerCase() &&
+            item.team?.toLowerCase() == team?.toLowerCase()) &&
+        item.employee?.toLowerCase() == employee?.toLowerCase() &&
+        item.signaturename?.toLowerCase() == signaturename?.toLowerCase()
     );
 
-    if (!allBranch && unit === 'Please Select Unit') {
-      setPopupContentMalert('Please Select Unit');
-      setPopupSeverityMalert('warning');
+    if (!allBranch && unit === "Please Select Unit") {
+      setPopupContentMalert("Please Select Unit");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (!allBranch && team === 'Please Select Team') {
-      setPopupContentMalert('Please Select Team');
-      setPopupSeverityMalert('warning');
+    } else if (!allBranch && team === "Please Select Team") {
+      setPopupContentMalert("Please Select Team");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (employee === 'Please Select Employee') {
-      setPopupContentMalert('Please Select Employee');
-      setPopupSeverityMalert('warning');
+    } else if (employee === "Please Select Employee") {
+      setPopupContentMalert("Please Select Employee");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSeal === 'For Seal' && (topContent === '' || topContent === undefined)) {
-      setPopupContentMalert('Please Enter Top Content');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSeal === "For Seal" &&
+      (topContent === "" || topContent === undefined)
+    ) {
+      setPopupContentMalert("Please Enter Top Content");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSeal === 'For Seal' && (bottomContent === '' || bottomContent === undefined)) {
-      setPopupContentMalert('Please Enter Bottom Content');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSeal === "For Seal" &&
+      (bottomContent === "" || bottomContent === undefined)
+    ) {
+      setPopupContentMalert("Please Enter Bottom Content");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (signaturename === '') {
-      setPopupContentMalert('Please Enter Signature Name');
-      setPopupSeverityMalert('warning');
+    } else if (signaturename === "") {
+      setPopupContentMalert("Please Enter Signature Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSeal === 'None' && documentFilesSignature.length === 0) {
-      setPopupContentMalert('Please Upload Signature Logo');
-      setPopupSeverityMalert('warning');
+    } else if (forSeal === "None" && documentFilesSignature.length === 0) {
+      setPopupContentMalert("Please Upload Signature Logo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isSignatDup) {
-      setPopupContentMalert('Data Already Exists');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
         allBranch,
-        unit: allBranch ? '' : unit,
-        team: allBranch ? '' : team,
+        unit: allBranch ? "" : unit,
+        team: allBranch ? "" : team,
         employee: employee,
         signaturename: signaturename,
         document: documentFilesSignature,
@@ -2745,14 +3487,14 @@ function TempControlPanel() {
         bottomcontent: bottomContent,
       };
       setTodoscheckSignature([...todoscheckSignature, newTodocheck]);
-      setUnit('Please Select Unit');
-      setTeam('Please Select Team');
-      setEmployee('Please Select Employee');
-      setSignaturename('');
-      setForSeal('None');
-      setTopContent('');
-      setBottomContent('');
-      setdocumentFilesSignature([]);
+      setUnit("Please Select Unit");
+      setTeam("Please Select Team");
+      setEmployee("Please Select Employee");
+      setSignaturename("");
+      setForSeal("None");
+      setTopContent("");
+      setBottomContent("");
+      setdocumentFilesSignature("");
       setAllBranch(false);
     }
   };
@@ -2765,7 +3507,12 @@ function TempControlPanel() {
     if (todoscheckSignature[index]?.allBranch) {
       getAllBranchUsersDataTodo(company);
     } else {
-      fetchEmployeeAllTodo(company, branch, todoscheckSignature[index]?.unit, todoscheckSignature[index]?.team);
+      fetchEmployeeAllTodo(
+        company,
+        branch,
+        todoscheckSignature[index]?.unit,
+        todoscheckSignature[index]?.team
+      );
     }
 
     setTeamTodo(todoscheckSignature[index]?.team);
@@ -2779,56 +3526,76 @@ function TempControlPanel() {
   const handleCreateUpdateSignature = () => {
     const isSignatDup = todoscheckSignature
       ?.filter((data, index) => index !== indexSignatureCreate)
-      .some((item) => (allBranchTodo ? true : item.unit?.toLowerCase() == unitTodo?.toLowerCase() && item.team?.toLowerCase() == teamTodo?.toLowerCase()) && item.employee?.toLowerCase() == employeeTodo?.toLowerCase() && item.signaturename?.toLowerCase() == signaturenameTodo?.toLowerCase());
+      .some(
+        (item) =>
+          (allBranchTodo
+            ? true
+            : item.unit?.toLowerCase() == unitTodo?.toLowerCase() &&
+              item.team?.toLowerCase() == teamTodo?.toLowerCase()) &&
+          item.employee?.toLowerCase() == employeeTodo?.toLowerCase() &&
+          item.signaturename?.toLowerCase() == signaturenameTodo?.toLowerCase()
+      );
 
-    if (!allBranchTodo && unitTodo === 'Please Select Unit') {
-      setPopupContentMalert('Please Select Unit');
-      setPopupSeverityMalert('warning');
+    if (!allBranchTodo && unitTodo === "Please Select Unit") {
+      setPopupContentMalert("Please Select Unit");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (!allBranchTodo && teamTodo === 'Please Select Team') {
-      setPopupContentMalert('Please Select Team');
-      setPopupSeverityMalert('warning');
+    } else if (!allBranchTodo && teamTodo === "Please Select Team") {
+      setPopupContentMalert("Please Select Team");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (employeeTodo === 'Please Select Employee') {
-      setPopupContentMalert('Please Select Employee');
-      setPopupSeverityMalert('warning');
+    } else if (employeeTodo === "Please Select Employee") {
+      setPopupContentMalert("Please Select Employee");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSealTodo === 'For Seal' && (topContentTodo === '' || topContentTodo === undefined)) {
-      setPopupContentMalert('Please Enter Top Content');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSealTodo === "For Seal" &&
+      (topContentTodo === "" || topContentTodo === undefined)
+    ) {
+      setPopupContentMalert("Please Enter Top Content");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSealTodo === 'For Seal' && (bottomContentTodo === '' || bottomContentTodo === undefined)) {
-      setPopupContentMalert('Please Enter Bottom Content');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSealTodo === "For Seal" &&
+      (bottomContentTodo === "" || bottomContentTodo === undefined)
+    ) {
+      setPopupContentMalert("Please Enter Bottom Content");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (signaturenameTodo === '') {
-      setPopupContentMalert('Please Enter Signature Name');
-      setPopupSeverityMalert('warning');
+    } else if (signaturenameTodo === "") {
+      setPopupContentMalert("Please Enter Signature Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isSignatDup) {
-      setPopupContentMalert('Data Already Exists');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = [...todoscheckSignature];
       todoscheckSignature[indexSignatureCreate].unit = unitTodo;
       todoscheckSignature[indexSignatureCreate].team = teamTodo;
       todoscheckSignature[indexSignatureCreate].employee = employeeTodo;
-      todoscheckSignature[indexSignatureCreate].signaturename = signaturenameTodo;
+      todoscheckSignature[indexSignatureCreate].signaturename =
+        signaturenameTodo;
       todoscheckSignature[indexSignatureCreate].seal = forSealTodo;
       todoscheckSignature[indexSignatureCreate].topcontent = topContentTodo;
-      todoscheckSignature[indexSignatureCreate].bottomcontent = bottomContentTodo;
+      todoscheckSignature[indexSignatureCreate].bottomcontent =
+        bottomContentTodo;
       todoscheckSignature[indexSignatureCreate].allBranch = allBranchTodo;
-      fetchEmployeeSignatureDefault(employeeTodo, 'createtodo', indexSignatureCreate);
+      fetchEmployeeSignatureDefault(
+        employeeTodo,
+        "createtodo",
+        indexSignatureCreate
+      );
 
       setTodoscheckSignature(newTodocheck);
-      setUnitTodo('Please Select Unit');
-      setTeamTodo('Please Select Team');
-      setEmployeeTodo('Please Select Employee');
-      setSignaturenameTodo('');
-      setForSealTodo('None');
-      setTopContentTodo('');
-      setBottomContentTodo('');
+      setUnitTodo("Please Select Unit");
+      setTeamTodo("Please Select Team");
+      setEmployeeTodo("Please Select Employee");
+      setSignaturenameTodo("");
+      setForSealTodo("None");
+      setTopContentTodo("");
+      setBottomContentTodo("");
       setIndexSignatureCreate(-1);
       setSignTodoCreate(false);
       setAllBranchTodo(false);
@@ -2836,22 +3603,24 @@ function TempControlPanel() {
   };
 
   const handleCreateCCEmail = () => {
-    const isCcEmailDup = ccEmailTodo.some((item) => item?.toLowerCase() == ccEmail?.toLowerCase());
-    if (ccEmail === '' || ccEmail === undefined) {
-      setPopupContentMalert('Please Add CC Email');
-      setPopupSeverityMalert('warning');
+    const isCcEmailDup = ccEmailTodo.some(
+      (item) => item?.toLowerCase() == ccEmail?.toLowerCase()
+    );
+    if (ccEmail === "" || ccEmail === undefined) {
+      setPopupContentMalert("Please Add CC Email");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(ccEmail)) {
-      setPopupContentMalert('Please Enter Valid CC Email');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Enter Valid CC Email");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isCcEmailDup) {
-      setPopupContentMalert('Email Already Exists');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Email Already Exists");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       setCcEmailTodo([...ccEmailTodo, ccEmail]);
-      setCcEmail('');
+      setCcEmail("");
       setEditingIndexcheckCCemail(-1);
     }
   };
@@ -2873,22 +3642,24 @@ function TempControlPanel() {
   };
 
   const handleCreateBCCEmail = () => {
-    const isBccEmailDup = bccEmailTodo.some((item) => item?.toLowerCase() == bccEmail?.toLowerCase());
-    if (bccEmail === '' || bccEmail === undefined) {
-      setPopupContentMalert('Please Add BCC Email');
-      setPopupSeverityMalert('warning');
+    const isBccEmailDup = bccEmailTodo.some(
+      (item) => item?.toLowerCase() == bccEmail?.toLowerCase()
+    );
+    if (bccEmail === "" || bccEmail === undefined) {
+      setPopupContentMalert("Please Add BCC Email");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(bccEmail)) {
-      setPopupContentMalert('Please Enter Valid BCC Email');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Enter Valid BCC Email");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isBccEmailDup) {
-      setPopupContentMalert('Email Already Exists');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Email Already Exists");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       setBccEmailTodo([...bccEmailTodo, bccEmail]);
-      setBccEmail('');
+      setBccEmail("");
       setEditingIndexcheckBCCemail(-1);
     }
   };
@@ -2909,22 +3680,24 @@ function TempControlPanel() {
   };
 
   const handleCreateCCEmailEdit = () => {
-    const isCcEmailDup = ccEmailTodoEdit.some((item) => item?.toLowerCase() == ccEmailEdit?.toLowerCase());
-    if (ccEmailEdit === '' || ccEmailEdit === undefined) {
-      setPopupContentMalert('Please Add CC Email');
-      setPopupSeverityMalert('warning');
+    const isCcEmailDup = ccEmailTodoEdit.some(
+      (item) => item?.toLowerCase() == ccEmailEdit?.toLowerCase()
+    );
+    if (ccEmailEdit === "" || ccEmailEdit === undefined) {
+      setPopupContentMalert("Please Add CC Email");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(ccEmailEdit)) {
       setPopupContentMalert('Please Enter Valid CC Email"');
-      setPopupSeverityMalert('warning');
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isCcEmailDup) {
-      setPopupContentMalert('Email Already Exists');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Email Already Exists");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       setCcEmailTodoEdit([...ccEmailTodoEdit, ccEmailEdit]);
-      setCcEmailEdit('');
+      setCcEmailEdit("");
       setEditingIndexcheckCCemailEdit(-1);
     }
   };
@@ -2946,23 +3719,25 @@ function TempControlPanel() {
   };
 
   const handleCreateBCCEmailEdit = () => {
-    const isCcEmailDup = bccEmailTodoEdit.some((item) => item?.toLowerCase() == bccEmailEdit?.toLowerCase());
+    const isCcEmailDup = bccEmailTodoEdit.some(
+      (item) => item?.toLowerCase() == bccEmailEdit?.toLowerCase()
+    );
 
-    if (bccEmailEdit === '' || bccEmailEdit === undefined) {
-      setPopupContentMalert('Please Add BCC Email');
-      setPopupSeverityMalert('warning');
+    if (bccEmailEdit === "" || bccEmailEdit === undefined) {
+      setPopupContentMalert("Please Add BCC Email");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (!isValidEmail(bccEmailEdit)) {
-      setPopupContentMalert('Please Enter Valid BCC Email');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please Enter Valid BCC Email");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isCcEmailDup) {
-      setPopupContentMalert('Email Already Exists');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Email Already Exists");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       setBccEmailTodoEdit([...bccEmailTodoEdit, bccEmailEdit]);
-      setBccEmailEdit('');
+      setBccEmailEdit("");
       setEditingIndexcheckBCCemailEdit(-1);
     }
   };
@@ -2990,48 +3765,62 @@ function TempControlPanel() {
         // item.company?.toLowerCase() == company?.toLowerCase() &&
 
         // item.branch?.toLowerCase() == branch?.toLowerCase() &&
-        (allBranchEdit ? true : item.unit?.toLowerCase() == unitEdit?.toLowerCase() && item.team?.toLowerCase() == teamEdit?.toLowerCase()) && item.employee?.toLowerCase() == employeeEdit?.toLowerCase() && item.signaturename?.toLowerCase() == signaturenameEdit?.toLowerCase()
+        (allBranchEdit
+          ? true
+          : item.unit?.toLowerCase() == unitEdit?.toLowerCase() &&
+            item.team?.toLowerCase() == teamEdit?.toLowerCase()) &&
+        item.employee?.toLowerCase() == employeeEdit?.toLowerCase() &&
+        item.signaturename?.toLowerCase() == signaturenameEdit?.toLowerCase()
     );
 
-    if (!allBranchEdit && unitEdit === 'Please Select Unit') {
-      setPopupContentMalert('Please Select Unit');
-      setPopupSeverityMalert('warning');
+    if (!allBranchEdit && unitEdit === "Please Select Unit") {
+      setPopupContentMalert("Please Select Unit");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (!allBranchEdit && teamEdit === 'Please Select Team') {
-      setPopupContentMalert('Please Select Team');
-      setPopupSeverityMalert('warning');
+    } else if (!allBranchEdit && teamEdit === "Please Select Team") {
+      setPopupContentMalert("Please Select Team");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (employeeEdit === 'Please Select Employee') {
-      setPopupContentMalert('Please Select Employee');
-      setPopupSeverityMalert('warning');
+    } else if (employeeEdit === "Please Select Employee") {
+      setPopupContentMalert("Please Select Employee");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSealEdit === 'For Seal' && (topContentEdit === '' || topContentEdit === undefined)) {
-      setPopupContentMalert('Please Enter Top Content');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSealEdit === "For Seal" &&
+      (topContentEdit === "" || topContentEdit === undefined)
+    ) {
+      setPopupContentMalert("Please Enter Top Content");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSealEdit === 'For Seal' && (bottomContentEdit === '' || bottomContentEdit === undefined)) {
-      setPopupContentMalert('Please Enter Bottom Content');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSealEdit === "For Seal" &&
+      (bottomContentEdit === "" || bottomContentEdit === undefined)
+    ) {
+      setPopupContentMalert("Please Enter Bottom Content");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (signaturenameEdit === '') {
-      setPopupContentMalert('Please Enter Signature Name');
-      setPopupSeverityMalert('warning');
+    } else if (signaturenameEdit === "") {
+      setPopupContentMalert("Please Enter Signature Name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (forSealEdit === 'None' && documentFilesSignatureEdit.length === 0) {
-      setPopupContentMalert('Please Upload Signature Logo');
-      setPopupSeverityMalert('warning');
+    } else if (
+      forSealEdit === "None" &&
+      documentFilesSignatureEdit.length === 0
+    ) {
+      setPopupContentMalert("Please Upload Signature Logo");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (isSignatDup) {
-      setPopupContentMalert('Data Already Exists');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Data Already Exists");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = {
         // company: company,
         // branch: branch,
         allBranch: allBranchEdit,
-        unit: allBranchEdit ? '' : unitEdit,
-        team: allBranchEdit ? '' : teamEdit,
+        unit: allBranchEdit ? "" : unitEdit,
+        team: allBranchEdit ? "" : teamEdit,
         employee: employeeEdit,
         signaturename: signaturenameEdit,
         document: documentFilesSignatureEdit,
@@ -3040,14 +3829,14 @@ function TempControlPanel() {
         bottomcontent: bottomContentEdit,
       };
       setTodoscheckSignatureEdit([...todoscheckSignatureEdit, newTodocheck]);
-      setUnitEdit('Please Select Unit');
-      setTeamEdit('Please Select Team');
-      setEmployeeEdit('Please Select Employee');
-      setSignaturenameEdit('');
-      setdocumentFilesSignatureEdit([]);
-      setForSealEdit('None');
-      setTopContentEdit('');
-      setBottomContentEdit('');
+      setUnitEdit("Please Select Unit");
+      setTeamEdit("Please Select Team");
+      setEmployeeEdit("Please Select Employee");
+      setSignaturenameEdit("");
+      setdocumentFilesSignatureEdit("");
+      setForSealEdit("None");
+      setTopContentEdit("");
+      setBottomContentEdit("");
       setAllBranchEdit(false);
     }
   };
@@ -3085,100 +3874,109 @@ function TempControlPanel() {
   };
 
   const handleFileDeleteDocumentContentHeader = (index) => {
-    setdocumentFilesDOcumentContentHeader((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentContentHeader("");
   };
   const handleFileDeleteDocumentContentHeaderEdit = (index) => {
-    setdocumentFilesDOcumentContentHeaderEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentContentHeaderEdit("");
   };
   const handleFileDeleteDocumentContentFooter = (index) => {
-    setdocumentFilesDOcumentContentFooter((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentContentFooter("");
   };
   const handleFileDeleteDocumentContentFooterEdit = (index) => {
-    setdocumentFilesDOcumentContentFooterEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentContentFooterEdit("");
   };
   const handleFileDeleteDocumentBodyContent = (index) => {
-    setdocumentFilesDOcumentBodyContent((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentBodyContent("");
   };
   const handleFileDeleteDocumentBodyContentEdit = (index) => {
-    setdocumentFilesDOcumentBodyContentEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentBodyContentEdit("");
   };
   const handleFileDeleteDocumentFrontHeader = (index) => {
-    setdocumentFilesDOcumentFrontHeader((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentFrontHeader("");
   };
   const handleFileDeleteDocumentFrontHeaderEdit = (index) => {
-    setdocumentFilesDOcumentFrontHeaderEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentFrontHeaderEdit("");
   };
   const handleFileDeleteDocumentFrontFooter = (index) => {
-    setdocumentFilesDOcumentFrontFooter((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentFrontFooter("");
   };
   const handleFileDeleteDocumentFrontFooterEdit = (index) => {
-    setdocumentFilesDOcumentFrontFooterEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentFrontFooterEdit("");
   };
   const handleFileDeleteDocumentBackHeader = (index) => {
-    setdocumentFilesDOcumentBackHeader((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentBackHeader("");
   };
   const handleFileDeleteDocumentBackHeaderEdit = (index) => {
-    setdocumentFilesDOcumentBackHeaderEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentBackHeaderEdit("");
   };
   const handleFileDeleteDocumentBackFooter = (index) => {
-    setdocumentFilesDOcumentBackFooter((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentBackFooter("");
   };
   const handleFileDeleteDocumentBackFooterEdit = (index) => {
-    setdocumentFilesDOcumentBackFooterEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesDOcumentBackFooterEdit("");
   };
 
   const handleFileDelete = (index) => {
-    setdocumentFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFiles("");
   };
   const handleFileDeleteEdit = (index) => {
-    setdocumentFilesEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesEdit("");
   };
 
   const handleFileDeleteSeal = (index) => {
-    setdocumentFilesSeal((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesSeal("");
   };
   const handleFileDeleteSealEdit = (index) => {
-    setdocumentFilesSealEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesSealEdit("");
   };
 
   const handleFileDeleteSignature = (index) => {
-    setdocumentFilesSignature((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesSignature("");
   };
 
   const handleFileDeleteSignatureEdit = (index) => {
-    setdocumentFilesSignatureEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    setdocumentFilesSignatureEdit("");
   };
 
-  const [headerNameCreate, setHeaderNameCreate] = useState("")
-  const [headerTodoCreate, setHeaderTodoCreate] = useState([])
+  const [headerNameCreate, setHeaderNameCreate] = useState("");
+  const [headerTodoCreate, setHeaderTodoCreate] = useState([]);
   const [isEditingHeaderCreate, setIsEditingHeaderCreate] = useState(false);
   const [editIndexHeaderCreate, setEditIndexHeaderCreate] = useState(null);
-  const [footerNameCreate, setFooterNameCreate] = useState("")
-  const [footerTodoCreate, setFooterTodoCreate] = useState([])
+  const [footerNameCreate, setFooterNameCreate] = useState("");
+  const [footerTodoCreate, setFooterTodoCreate] = useState([]);
   const [isEditingFooterCreate, setIsEditingFooterCreate] = useState(false);
   const [editIndexFooterCreate, setEditIndexFooterCreate] = useState(null);
-  const [headerTodoView, setHeaderTodoView] = useState([])
-  const [footerTodoView, setFooterTodoView] = useState([])
+  const [headerTodoView, setHeaderTodoView] = useState([]);
+  const [footerTodoView, setFooterTodoView] = useState([]);
 
   // Header Todo Create Section
   const handleCreateTodoHeader = () => {
     if (!headerNameCreate.trim()) {
-      setPopupContentMalert('Please enter a header name');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please enter a header name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
 
-    if (documentFilesDocumentContentHeader?.length === 0) {
-      setPopupContentMalert('Please upload a header file');
-      setPopupSeverityMalert('warning');
+    if (!documentFilesDocumentContentHeader) {
+      setPopupContentMalert("Please upload a header file");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
-    if (isEditingHeaderCreate ? headerTodoCreate?.some((data, index) => editIndexHeaderCreate !== index && data?.headername === headerNameCreate.trim()) :
-      headerTodoCreate?.some(data => data?.headername === headerNameCreate.trim())) {
-      setPopupContentMalert('Please enter different header name');
-      setPopupSeverityMalert('warning');
+    if (
+      isEditingHeaderCreate
+        ? headerTodoCreate?.some(
+            (data, index) =>
+              editIndexHeaderCreate !== index &&
+              data?.headername === headerNameCreate.trim()
+          )
+        : headerTodoCreate?.some(
+            (data) => data?.headername === headerNameCreate.trim()
+          )
+    ) {
+      setPopupContentMalert("Please enter different header name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
@@ -3201,8 +3999,8 @@ function TempControlPanel() {
     }
 
     // 🧹 Reset fields
-    setHeaderNameCreate('');
-    setdocumentFilesDOcumentContentHeader([]);
+    setHeaderNameCreate("");
+    setdocumentFilesDOcumentContentHeader("");
   };
   const handleEditHeaderCreate = (index) => {
     const selected = headerTodoCreate[index];
@@ -3213,20 +4011,25 @@ function TempControlPanel() {
   };
   const handleDeleteHeaderCreate = (index) => {
     setHeaderTodoCreate((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  }
+  };
   const handleResumeUploadDocumentContentheader = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentContentHeader([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentContentHeader({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
@@ -3234,23 +4037,32 @@ function TempControlPanel() {
 
   const handleCreateTodoFooter = () => {
     if (!footerNameCreate.trim()) {
-      setPopupContentMalert('Please enter a Footer name');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please enter a Footer name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
 
-    if (documentFilesDocumentContentFooter?.length === 0) {
-      setPopupContentMalert('Please upload a Footer file');
-      setPopupSeverityMalert('warning');
+    if (!documentFilesDocumentContentFooter) {
+      setPopupContentMalert("Please upload a Footer file");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
 
-    if (isEditingFooterCreate ? footerTodoCreate?.some((data, index) => editIndexFooterCreate !== index && data?.footername === footerNameCreate.trim()) :
-      footerTodoCreate?.some(data => data?.footername === footerNameCreate.trim())) {
-      setPopupContentMalert('Please enter different footer name');
-      setPopupSeverityMalert('warning');
+    if (
+      isEditingFooterCreate
+        ? footerTodoCreate?.some(
+            (data, index) =>
+              editIndexFooterCreate !== index &&
+              data?.footername === footerNameCreate.trim()
+          )
+        : footerTodoCreate?.some(
+            (data) => data?.footername === footerNameCreate.trim()
+          )
+    ) {
+      setPopupContentMalert("Please enter different footer name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
@@ -3273,8 +4085,8 @@ function TempControlPanel() {
     }
 
     // 🧹 Reset fields
-    setFooterNameCreate('');
-    setdocumentFilesDOcumentContentFooter([]);
+    setFooterNameCreate("");
+    setdocumentFilesDOcumentContentFooter("");
   };
 
   const handleEditFooterCreate = (index) => {
@@ -3287,53 +4099,65 @@ function TempControlPanel() {
 
   const handleDeleteFooterCreate = (index) => {
     setFooterTodoCreate((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  }
+  };
 
   const handleResumeUploadDocumentContentFooter = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentContentFooter([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentContentFooter({
+        name: file.name,
+        file: file,
+        remark: "Footer Image",
+      });
+      // };
     }
   };
 
-
-  const [headerNameEdit, setHeaderNameEdit] = useState("")
-  const [headerTodoEdit, setHeaderTodoEdit] = useState([])
+  const [headerNameEdit, setHeaderNameEdit] = useState("");
+  const [headerTodoEdit, setHeaderTodoEdit] = useState([]);
   const [isEditingHeaderEdit, setIsEditingHeaderEdit] = useState(false);
   const [editIndexHeaderEdit, setEditIndexHeaderEdit] = useState(null);
-  const [footerNameEdit, setFooterNameEdit] = useState("")
-  const [footerTodoEdit, setFooterTodoEdit] = useState([])
+  const [footerNameEdit, setFooterNameEdit] = useState("");
+  const [footerTodoEdit, setFooterTodoEdit] = useState([]);
   const [isEditingFooterEdit, setIsEditingFooterEdit] = useState(false);
   const [editIndexFooterEdit, setEditIndexFooterEdit] = useState(null);
 
   // Header Todo Edit Section
   const handleEditTodoHeader = () => {
     if (!headerNameEdit.trim()) {
-      setPopupContentMalert('Please enter a header name');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please enter a header name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
 
     if (documentFilesDocumentContentHeaderEdit?.length === 0) {
-      setPopupContentMalert('Please upload a header file');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please upload a header file");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
-    if (isEditingHeaderEdit ? headerTodoEdit?.some((data, index) => editIndexHeaderEdit !== index && data?.headername === headerNameEdit.trim()) :
-      headerTodoEdit?.some(data => data?.headername === headerNameEdit.trim())) {
-      setPopupContentMalert('Please enter different header name');
-      setPopupSeverityMalert('warning');
+    if (
+      isEditingHeaderEdit
+        ? headerTodoEdit?.some(
+            (data, index) =>
+              editIndexHeaderEdit !== index &&
+              data?.headername === headerNameEdit.trim()
+          )
+        : headerTodoEdit?.some(
+            (data) => data?.headername === headerNameEdit.trim()
+          )
+    ) {
+      setPopupContentMalert("Please enter different header name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
@@ -3356,8 +4180,8 @@ function TempControlPanel() {
     }
 
     // 🧹 Reset fields
-    setHeaderNameEdit('');
-    setdocumentFilesDOcumentContentHeaderEdit([]);
+    setHeaderNameEdit("");
+    setdocumentFilesDOcumentContentHeaderEdit("");
   };
   const handleEditHeaderEdit = (index) => {
     const selected = headerTodoEdit[index];
@@ -3368,39 +4192,52 @@ function TempControlPanel() {
   };
   const handleDeleteHeaderEdit = (index) => {
     setHeaderTodoEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  }
+  };
   const handleResumeUploadDocumentContentheaderEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentContentHeaderEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentContentHeaderEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
-
   const handleEditTodoFooter = () => {
     if (!footerNameEdit.trim()) {
-      setPopupContentMalert('Please enter a Footer name');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please enter a Footer name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
 
     if (documentFilesDocumentContentFooterEdit?.length === 0) {
-      setPopupContentMalert('Please upload a Footer file');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please upload a Footer file");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
 
-    if (isEditingFooterEdit ? footerTodoEdit?.some((data, index) => editIndexFooterEdit !== index && data?.footername === footerNameEdit.trim()) :
-      footerTodoEdit?.some(data => data?.footername === footerNameEdit.trim())) {
-      setPopupContentMalert('Please enter different footer name');
-      setPopupSeverityMalert('warning');
+    if (
+      isEditingFooterEdit
+        ? footerTodoEdit?.some(
+            (data, index) =>
+              editIndexFooterEdit !== index &&
+              data?.footername === footerNameEdit.trim()
+          )
+        : footerTodoEdit?.some(
+            (data) => data?.footername === footerNameEdit.trim()
+          )
+    ) {
+      setPopupContentMalert("Please enter different footer name");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
@@ -3423,8 +4260,8 @@ function TempControlPanel() {
     }
 
     // 🧹 Reset fields
-    setFooterNameEdit('');
-    setdocumentFilesDOcumentContentFooterEdit([]);
+    setFooterNameEdit("");
+    setdocumentFilesDOcumentContentFooterEdit("");
   };
 
   const handleEditFooterEdit = (index) => {
@@ -3437,461 +4274,608 @@ function TempControlPanel() {
 
   const handleDeleteFooterEdit = (index) => {
     setFooterTodoEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  }
+  };
   const handleResumeUploadDocumentContentFooterEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentContentFooterEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentContentFooterEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
   const handleResumeUploadDocumentBodyContent = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentBodyContent([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentBodyContent({
+        name: file.name,
+        file: file,
+        remark: "Background Image",
+      });
+      // };
     }
   };
   const handleResumeUploadDocumentBodyContentEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentBodyContentEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentBodyContentEdit([
+        {
+          name: file.name,
+          file: file,
+          // preview: reader.result,
+          remark: "BAckground Image",
+        },
+      ]);
+      // };
     }
   };
 
   const handleResumeUploadDocumentFrontHeader = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentFrontHeader([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentFrontHeader({
+        name: file.name,
+        file: file,
+        remark: "Front Header",
+      });
+      // };
     }
   };
   const handleResumeUploadDocumentFrontHeaderEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentFrontHeaderEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentFrontHeaderEdit([
+        {
+          name: file.name,
+          file: file,
+          // preview: reader.result,
+          remark: "resume file",
+        },
+      ]);
+      // };
     }
   };
 
   const handleResumeUploadDocumentFrontFooter = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentFrontFooter([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentFrontFooter({
+        name: file.name,
+        file: file,
+        remark: "Front Footer",
+      });
+      // };
     }
   };
 
   const handleResumeUploadDocumentFrontFooterEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentFrontFooterEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentFrontFooterEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
   const handleResumeUploadDocumentBackHeader = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentBackHeader([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentBackHeader({
+        name: file.name,
+        file: file,
+        remark: "Back Header",
+      });
+      // };
     }
   };
   const handleResumeUploadDocumentBackHeaderEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentBackHeaderEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentBackHeaderEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
   const handleResumeUploadDocumentBackFooter = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentBackFooter([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentBackFooter({
+        name: file.name,
+        file: file,
+        remark: "resume file",
+      });
+      // };
     }
   };
   const handleResumeUploadDocumentBackFooterEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesDOcumentBackFooterEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesDOcumentBackFooterEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
   const handleResumeUpload = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFiles([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFiles({ name: file.name, file: file, remark: "Company Logo" });
+      // };
     }
   };
   const handleResumeUploadEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
   const handleResumeUploadSeal = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesSeal([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesSeal({ name: file.name, file: file, remark: "Seal" });
+      // };
     }
   };
   const handleResumeUploadSealEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesSealEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesSealEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
   const handleResumeUploadSignature = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesSignature([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesSignature({
+        name: file.name,
+        file: file,
+        remark: "Signature",
+      });
+      // };
     }
   };
   const handleResumeUploadSignatureEdit = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
-      const reader = new FileReader();
+      // const reader = new FileReader();
       const file = resume[0];
-      if (file?.type !== 'image/png') {
-        alert('Please upload a .png file');
+      if (file?.type !== "image/png") {
+        alert("Please upload a .png file");
         return;
       }
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        setdocumentFilesSignatureEdit([{ name: file.name, preview: reader.result, remark: 'resume file' }]);
-      };
+      // reader.readAsDataURL(file);
+      // reader.onload = () => {
+      setdocumentFilesSignatureEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
+      // };
     }
   };
 
   const renderFilePreviewDocumentContentHeader = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    console.log(file, "file");
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewDocumentContentHeaderEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentContentFooter = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewDocumentContentFooterEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentBodyContent = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewDocumentBodyContentEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentFrontHeader = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewDocumentFrontHeaderEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentFrontFooter = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewDocumentFrontFooterEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentBackHeader = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewDocumentBackHeaderEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentBackFooter = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewDocumentBackFooterEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
 
   const renderFilePreview = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
 
   const renderFilePreviewSeal = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
 
   const renderFilePreviewSealEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
 
   const renderFilePreviewSignature = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    window.open(url, "_blank");
   };
   const renderFilePreviewSignatureEdit = async (file) => {
-    const response = await fetch(file.preview);
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    window.open(link, '_blank');
+    if (!file) return;
+    if (file?.file) {
+      const url = URL.createObjectURL(file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
 
   const sealOptions = [
-    { label: 'Round Seal', value: 'Round Seal' },
-    { label: 'Normal Seal', value: 'Normal Seal' },
+    { label: "Round Seal", value: "Round Seal" },
+    { label: "Normal Seal", value: "Normal Seal" },
   ];
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   }
-  const getBase64FromMulterPath = async (fileUrl) => {
+  // const getFileObjectFromMulterPath  = async (fileUrl) => {
+  //   try {
+  //     const response = await fetch(fileUrl);
+  //     const blob = await response.blob();
+
+  //     return await new Promise((resolve, reject) => {
+  //       const reader = new FileReader();
+
+  //       reader.onloadend = () => {
+  //         resolve(reader.result); // base64 string
+  //       };
+
+  //       reader.onerror = (err) => {
+  //         reject(err);
+  //       };
+
+  //       reader.readAsDataURL(blob);
+  //     });
+  //   } catch (err) {
+  //     console.error("Error fetching or converting file:", err);
+  //     return null;
+  //   }
+  // };
+
+  const getFileObjectFromMulterPath = async (fileUrl, filename = "file") => {
     try {
       const response = await fetch(fileUrl);
       const blob = await response.blob();
 
-      return await new Promise((resolve, reject) => {
-        const reader = new FileReader();
+      // Convert blob to File-like object
+      const file = new File([blob], filename, { type: blob.type });
 
-        reader.onloadend = () => {
-          resolve(reader.result); // base64 string
-        };
-
-        reader.onerror = (err) => {
-          reject(err);
-        };
-
-        reader.readAsDataURL(blob);
-      });
+      return file;
     } catch (err) {
-      console.error('Error fetching or converting file:', err);
+      console.error("Error converting file path to File object:", err);
       return null;
     }
   };
 
   return (
     <Box>
-      <Headtitle title={'Template Control Panel'} />
+      <Headtitle title={"Template Control Panel"} />
       {/* ****** Header Content ****** */}
 
-      <PageHeading title="Template Control Panel" modulename="Human Resources" submodulename="HR Documents" mainpagename="Documents Setup" subpagename="Template Control Panel" subsubpagename="" />
+      <PageHeading
+        title="Template Control Panel"
+        modulename="Human Resources"
+        submodulename="HR Documents"
+        mainpagename="Documents Setup"
+        subpagename="Template Control Panel"
+        subsubpagename=""
+      />
 
-      {isUserRoleCompare?.includes('atemplatecontrolpanel') && (
+      {isUserRoleCompare?.includes("atemplatecontrolpanel") && (
         <>
           <Box sx={userStyle.dialogbox}>
             <>
               <Grid container>
-                <Typography sx={userStyle.SubHeaderText}>Add Template Control Panel</Typography>
+                <Typography sx={userStyle.SubHeaderText}>
+                  Add Template Control Panel
+                </Typography>
                 <br />
                 <br />
                 <Grid container spacing={2}>
                   <Grid item md={2} xs={12} sm={6}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Company <b style={{ color: 'red' }}>*</b>
+                        Company <b style={{ color: "red" }}>*</b>
                       </Typography>
                       <Selects
                         options={companyOption}
@@ -3903,10 +4887,10 @@ function TempControlPanel() {
                           setCompany(e.value);
                           setUnitOption([]);
                           setEmployeeOption([]);
-                          setEmployee('Please Select Employee');
-                          setTeam('Please Select Team');
-                          setUnit('Please Select Unit');
-                          setBranch('Please Select Branch');
+                          setEmployee("Please Select Employee");
+                          setTeam("Please Select Team");
+                          setUnit("Please Select Unit");
+                          setBranch("Please Select Branch");
                           setTodoscheckSignature([]);
                           setAllBranch(false);
                         }}
@@ -3916,7 +4900,7 @@ function TempControlPanel() {
                   <Grid item md={2} xs={12} sm={6}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Branch<b style={{ color: 'red' }}>*</b>
+                        Branch<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <Selects
                         options={branchOption}
@@ -3925,9 +4909,9 @@ function TempControlPanel() {
                           fetchUnitAll(e.value);
                           setBranch(e.value);
                           setAddress(e.address);
-                          setEmployee('Please Select Employee');
-                          setTeam('Please Select Team');
-                          setUnit('Please Select Unit');
+                          setEmployee("Please Select Employee");
+                          setTeam("Please Select Team");
+                          setUnit("Please Select Unit");
                           setEmployeeOption([]);
                           setTodoscheckSignature([]);
                         }}
@@ -3942,14 +4926,19 @@ function TempControlPanel() {
                     <FormControl fullWidth size="small">
                       <Typography>
                         <b>Header Name</b>
-                        <b style={{ color: 'red' }}>*</b>
+                        <b style={{ color: "red" }}>*</b>
                       </Typography>
                       <OutlinedInput
                         id="component-outlined"
                         type="text"
                         placeholder="Please Enter Header Name"
                         value={headerNameCreate}
-                        disabled={!isEditingHeaderCreate && documentFilesDocumentContentHeader.length > 0 ? false : false}
+                        disabled={
+                          !isEditingHeaderCreate &&
+                          documentFilesDocumentContentHeader?.file
+                            ? false
+                            : false
+                        }
                         onChange={(e) => {
                           setHeaderNameCreate(e.target.value);
                         }}
@@ -3958,48 +4947,89 @@ function TempControlPanel() {
                   </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
-                      {' '}
+                      {" "}
                       <b>Document Letter Head Content Header </b>
-                      <b style={{ color: 'red' }}>*</b>
+                      <b style={{ color: "red" }}>*</b>
                     </InputLabel>
                     <div>
-                      <Button variant="contained" size="small" component="label" disabled={isEditingHeaderCreate} sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }} onClick={handleClick}>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        component="label"
+                        disabled={isEditingHeaderCreate}
+                        sx={{
+                          ...buttonStyles.buttonsubmit,
+                          "@media only screen and (max-width:550px)": {
+                            marginY: "5px",
+                          },
+                        }}
+                        onClick={handleClick}
+                      >
                         Upload
                       </Button>
-                      <Menu anchorEl={anchorElDoc} open={Boolean(anchorElDoc)} onClose={handleClose}>
-                        <MenuItem onClick={() => handleMenuItemClick('local')}>Upload Local</MenuItem>
-                        <MenuItem onClick={() => handleMenuItemClick('organizational')}>Organizational Document</MenuItem>
+                      <Menu
+                        anchorEl={anchorElDoc}
+                        open={Boolean(anchorElDoc)}
+                        onClose={handleClose}
+                      >
+                        <MenuItem onClick={() => handleMenuItemClick("local")}>
+                          Upload Local
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => handleMenuItemClick("organizational")}
+                        >
+                          Organizational Document
+                        </MenuItem>
                       </Menu>
 
-                      {option === 'local' && documentFilesDocumentContentHeader?.length === 0 && (
-                        <Button variant="contained" disabled={isEditingHeaderCreate} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                          Upload Local
-                          <input
-                            type="file"
-                            id="resume"
-                            accept=".png"
-                            name="file"
-                            hidden
-
-                            onChange={(e) => {
-                              handleResumeUploadDocumentContentheader(e);
+                      {option === "local" &&
+                        !documentFilesDocumentContentHeader && (
+                          <Button
+                            variant="contained"
+                            disabled={isEditingHeaderCreate}
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
                             }}
-                          />
-                        </Button>
-                      )}
+                          >
+                            Upload Local
+                            <input
+                              type="file"
+                              id="resume"
+                              accept=".png"
+                              name="file"
+                              hidden
+                              onChange={(e) => {
+                                handleResumeUploadDocumentContentheader(e);
+                              }}
+                            />
+                          </Button>
+                        )}
 
-                      {option === 'organizational' && (
-                        <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                      {option === "organizational" && (
+                        <FormControl fullWidth sx={{ marginTop: "10px" }}>
                           <Selects
                             options={orgDocuments}
                             disabled={isEditingHeaderCreate}
-                            value={{ value: docBodyHeader, label: docBodyHeader }}
+                            value={{
+                              value: docBodyHeader,
+                              label: docBodyHeader,
+                            }}
                             onChange={async (e) => {
                               setDocBodyHeader(e.value);
                               const resume = e?.document[0];
                               const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                              const base64 = await getBase64FromMulterPath(filePath);
-                              setdocumentFilesDOcumentContentHeader([{ name: resume?.name, preview: base64 }]);
+                              const base64 = await getFileObjectFromMulterPath(
+                                filePath
+                              );
+                              setdocumentFilesDOcumentContentHeader({
+                                name: resume?.name,
+                                file: base64,
+                              });
                             }}
                           />
                         </FormControl>
@@ -4008,35 +5038,67 @@ function TempControlPanel() {
 
                     <br></br>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesDocumentContentHeader?.length > 0 &&
-                        documentFilesDocumentContentHeader?.map((file, index) => (
+                      {
+                        documentFilesDocumentContentHeader && (
+                          // documentFilesDocumentContentHeader?.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesDocumentContentHeader.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentHeader(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentHeader(
+                                      documentFilesDocumentContentHeader?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentContentHeader(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() =>
+                                    handleFileDeleteDocumentContentHeader()
+                                  }
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                   <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                    <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodoHeader}>
+                    <Button
+                      variant="contained"
+                      sx={{ minWidth: "35px" }}
+                      onClick={handleCreateTodoHeader}
+                    >
                       {isEditingHeaderCreate ? <EditIcon /> : <FaPlus />}
                     </Button>
                   </Grid>
 
                   <Grid item md={12} xs={12} sm={12}>
-                    {headerTodoCreate?.length > 0 && <Typography variant='h6'>{"Headers List"}</Typography>}
+                    {headerTodoCreate?.length > 0 && (
+                      <Typography variant="h6">{"Headers List"}</Typography>
+                    )}
                     <br />
                     {headerTodoCreate?.length > 0 &&
                       headerTodoCreate?.map((file, index) => (
@@ -4046,19 +5108,26 @@ function TempControlPanel() {
                               <Typography>{file?.headername}</Typography>
                             </Grid>
                             <Grid item md={6} sm={6} xs={6}>
-                              <Typography>{file?.headerimage[0]?.name}</Typography>
+                              <Typography>{file?.headerimage?.name}</Typography>
                             </Grid>
                             <Grid></Grid>
                             <Grid item md={2} sm={6} xs={6}>
-                              {isEditingHeaderCreate && editIndexHeaderCreate === index ? (
-                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                              {isEditingHeaderCreate &&
+                              editIndexHeaderCreate === index ? (
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "center",
+                                  }}
+                                >
                                   {/* ✅ Save Button */}
                                   <Button
                                     sx={{
-                                      color: '#4CAF50',
-                                      cursor: 'pointer',
-                                      minWidth: '30px',
-                                      p: '4px',
+                                      color: "#4CAF50",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
                                     }}
                                     onClick={handleCreateTodoHeader}
                                   >
@@ -4068,32 +5137,40 @@ function TempControlPanel() {
                                   {/* ❌ Cancel Button */}
                                   <Button
                                     sx={{
-                                      color: '#F44336',
-                                      cursor: 'pointer',
-                                      minWidth: '30px',
-                                      p: '4px',
+                                      color: "#F44336",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
                                     }}
                                     onClick={() => {
                                       setIsEditingHeaderCreate(false);
                                       setEditIndexHeaderCreate(null);
-                                      setHeaderNameCreate('');
-                                      setdocumentFilesDOcumentContentHeader([]);
+                                      setHeaderNameCreate("");
+                                      setdocumentFilesDOcumentContentHeader("");
                                     }}
                                   >
                                     <CloseIcon />
                                   </Button>
                                 </Box>
                               ) : (
-                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "center",
+                                  }}
+                                >
                                   {/* ✏️ Edit Button */}
                                   <Button
                                     sx={{
-                                      color: '#357AE8',
-                                      cursor: 'pointer',
-                                      minWidth: '30px',
-                                      p: '4px',
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
                                     }}
-                                    onClick={() => handleEditHeaderCreate(index)}
+                                    onClick={() =>
+                                      handleEditHeaderCreate(index)
+                                    }
                                   >
                                     <EditIcon />
                                   </Button>
@@ -4101,20 +5178,20 @@ function TempControlPanel() {
                                   {/* 🗑️ Delete Button */}
                                   <Button
                                     sx={{
-                                      color: '#357AE8',
-                                      cursor: 'pointer',
-                                      minWidth: '30px',
-                                      p: '4px',
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
                                     }}
-                                    onClick={() => handleDeleteHeaderCreate(index)}
+                                    onClick={() =>
+                                      handleDeleteHeaderCreate(index)
+                                    }
                                   >
                                     <DeleteIcon />
                                   </Button>
                                 </Box>
                               )}
                             </Grid>
-
-
                           </Grid>
                         </>
                       ))}
@@ -4126,14 +5203,19 @@ function TempControlPanel() {
                     <FormControl fullWidth size="small">
                       <Typography>
                         <b>Footer Name</b>
-                        <b style={{ color: 'red' }}>*</b>
+                        <b style={{ color: "red" }}>*</b>
                       </Typography>
                       <OutlinedInput
                         id="component-outlined"
                         type="text"
                         placeholder="Please Enter Footer Name"
                         value={footerNameCreate}
-                        disabled={!isEditingFooterCreate && documentFilesDocumentContentFooter.length > 0 ? false : false}
+                        disabled={
+                          !isEditingFooterCreate &&
+                          documentFilesDocumentContentFooter?.file
+                            ? false
+                            : false
+                        }
                         onChange={(e) => {
                           setFooterNameCreate(e.target.value);
                         }}
@@ -4142,48 +5224,93 @@ function TempControlPanel() {
                   </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
-                      {' '}
+                      {" "}
                       <b>Document Letter Head Content Footer</b>
-                      <b style={{ color: 'red' }}>*</b>
+                      <b style={{ color: "red" }}>*</b>
                     </InputLabel>
-                    <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                    <Box sx={{ display: "flex", justifyContent: "left" }}>
                       <div>
-                        <Button variant="contained" disabled={isEditingFooterCreate} size="small" component="label" onClick={handleClick2} sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          disabled={isEditingFooterCreate}
+                          size="small"
+                          component="label"
+                          onClick={handleClick2}
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDoc2} open={Boolean(anchorElDoc2)} onClose={handleClose2}>
-                          <MenuItem onClick={() => handleMenuItemClick2('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick2('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDoc2}
+                          open={Boolean(anchorElDoc2)}
+                          onClose={handleClose2}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick2("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick2("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
 
-                        {option2 === 'local' && documentFilesDocumentContentFooter?.length === 0 && (
-                          <Button variant="contained" disabled={isEditingFooterCreate} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                            Upload Local
-                            <input
-                              type="file"
-                              id="resume"
-                              accept=".png"
-                              name="file"
-                              hidden
-                              onChange={(e) => {
-                                handleResumeUploadDocumentContentFooter(e);
+                        {option2 === "local" &&
+                          !documentFilesDocumentContentFooter && (
+                            <Button
+                              variant="contained"
+                              disabled={isEditingFooterCreate}
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
                               }}
-                            />
-                          </Button>
-                        )}
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadDocumentContentFooter(e);
+                                }}
+                              />
+                            </Button>
+                          )}
 
-                        {option2 === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {option2 === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
                               disabled={isEditingFooterCreate}
-                              value={{ value: docBodyHeader2, label: docBodyHeader2 }}
+                              value={{
+                                value: docBodyHeader2,
+                                label: docBodyHeader2,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader2(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesDOcumentContentFooter([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesDOcumentContentFooter({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -4192,35 +5319,67 @@ function TempControlPanel() {
                     </Box>
                     <br></br>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesDocumentContentFooter?.length > 0 &&
-                        documentFilesDocumentContentFooter?.map((file, index) => (
+                      {
+                        documentFilesDocumentContentFooter && (
+                          // documentFilesDocumentContentFooter?.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesDocumentContentFooter?.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentFooter(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentFooter(
+                                      documentFilesDocumentContentFooter?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentContentFooter(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() =>
+                                    handleFileDeleteDocumentContentFooter()
+                                  }
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                   <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                    <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodoFooter}>
+                    <Button
+                      variant="contained"
+                      sx={{ minWidth: "35px" }}
+                      onClick={handleCreateTodoFooter}
+                    >
                       {isEditingFooterCreate ? <EditIcon /> : <FaPlus />}
                     </Button>
                   </Grid>
 
                   <Grid item md={12} xs={12} sm={12}>
-                    {footerTodoCreate?.length > 0 && <Typography variant='h6'>{"Footers List"}</Typography>}
+                    {footerTodoCreate?.length > 0 && (
+                      <Typography variant="h6">{"Footers List"}</Typography>
+                    )}
                     <br />
                     {footerTodoCreate?.length > 0 &&
                       footerTodoCreate?.map((file, index) => (
@@ -4230,19 +5389,26 @@ function TempControlPanel() {
                               <Typography>{file?.footername}</Typography>
                             </Grid>
                             <Grid item md={6} sm={6} xs={6}>
-                              <Typography>{file?.footerimage[0]?.name}</Typography>
+                              <Typography>{file?.footerimage?.name}</Typography>
                             </Grid>
                             <Grid></Grid>
                             <Grid item md={2} sm={6} xs={6}>
-                              {isEditingFooterCreate && editIndexFooterCreate === index ? (
-                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                              {isEditingFooterCreate &&
+                              editIndexFooterCreate === index ? (
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "center",
+                                  }}
+                                >
                                   {/* ✅ Save Button */}
                                   <Button
                                     sx={{
-                                      color: '#4CAF50',
-                                      cursor: 'pointer',
-                                      minWidth: '30px',
-                                      p: '4px',
+                                      color: "#4CAF50",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
                                     }}
                                     onClick={handleCreateTodoFooter}
                                   >
@@ -4252,32 +5418,40 @@ function TempControlPanel() {
                                   {/* ❌ Cancel Button */}
                                   <Button
                                     sx={{
-                                      color: '#F44336',
-                                      cursor: 'pointer',
-                                      minWidth: '30px',
-                                      p: '4px',
+                                      color: "#F44336",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
                                     }}
                                     onClick={() => {
                                       setIsEditingFooterCreate(false);
                                       setEditIndexFooterCreate(null);
-                                      setFooterNameCreate('');
-                                      setdocumentFilesDOcumentContentFooter([]);
+                                      setFooterNameCreate("");
+                                      setdocumentFilesDOcumentContentFooter("");
                                     }}
                                   >
                                     <CloseIcon />
                                   </Button>
                                 </Box>
                               ) : (
-                                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "center",
+                                  }}
+                                >
                                   {/* ✏️ Edit Button */}
                                   <Button
                                     sx={{
-                                      color: '#357AE8',
-                                      cursor: 'pointer',
-                                      minWidth: '30px',
-                                      p: '4px',
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
                                     }}
-                                    onClick={() => handleEditFooterCreate(index)}
+                                    onClick={() =>
+                                      handleEditFooterCreate(index)
+                                    }
                                   >
                                     <EditIcon />
                                   </Button>
@@ -4285,20 +5459,20 @@ function TempControlPanel() {
                                   {/* 🗑️ Delete Button */}
                                   <Button
                                     sx={{
-                                      color: '#357AE8',
-                                      cursor: 'pointer',
-                                      minWidth: '30px',
-                                      p: '4px',
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
                                     }}
-                                    onClick={() => handleDeleteFooterCreate(index)}
+                                    onClick={() =>
+                                      handleDeleteFooterCreate(index)
+                                    }
                                   >
                                     <DeleteIcon />
                                   </Button>
                                 </Box>
                               )}
                             </Grid>
-
-
                           </Grid>
                         </>
                       ))}
@@ -4308,46 +5482,89 @@ function TempControlPanel() {
                   <Grid item md={4} xs={12} sm={12}>
                     <Typography>
                       <b>Document Letter Head Body Content(Background)</b>
-                      <b style={{ color: 'red' }}>*</b>
+                      <b style={{ color: "red" }}>*</b>
                     </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                    <Box sx={{ display: "flex", justifyContent: "left" }}>
                       <div>
-                        <Button variant="contained" onClick={handleClick3} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleClick3}
+                          size="small"
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
 
-                        <Menu anchorEl={anchorElDoc3} open={Boolean(anchorElDoc3)} onClose={handleClose3}>
-                          <MenuItem onClick={() => handleMenuItemClick3('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick3('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDoc3}
+                          open={Boolean(anchorElDoc3)}
+                          onClose={handleClose3}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick3("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick3("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
 
-                        {option3 === 'local' && documentFilesDocumentBodyContent?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                            Upload Local
-                            <input
-                              type="file"
-                              id="resume"
-                              accept=".png"
-                              name="file"
-                              hidden
-                              onChange={(e) => {
-                                handleResumeUploadDocumentBodyContent(e);
+                        {option3 === "local" &&
+                          !documentFilesDocumentBodyContent && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
                               }}
-                            />
-                          </Button>
-                        )}
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadDocumentBodyContent(e);
+                                }}
+                              />
+                            </Button>
+                          )}
 
-                        {option3 === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {option3 === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              value={{ value: docBodyHeader3, label: docBodyHeader3 }}
+                              value={{
+                                value: docBodyHeader3,
+                                label: docBodyHeader3,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader3(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesDOcumentBodyContent([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesDOcumentBodyContent({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -4356,25 +5573,51 @@ function TempControlPanel() {
                     </Box>
                     <br></br>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesDocumentBodyContent?.length > 0 &&
-                        documentFilesDocumentBodyContent?.map((file, index) => (
+                      {
+                        documentFilesDocumentBodyContent && (
+                          // documentFilesDocumentBodyContent?.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesDocumentBodyContent.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBodyContent(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentBodyContent(
+                                      documentFilesDocumentBodyContent?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentBodyContent(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() =>
+                                    handleFileDeleteDocumentBodyContent()
+                                  }
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                 </Grid>
@@ -4389,7 +5632,7 @@ function TempControlPanel() {
                     <FormControl fullWidth size="small">
                       <Typography>
                         <b>Company URL</b>
-                        <b style={{ color: 'red' }}>*</b>
+                        <b style={{ color: "red" }}>*</b>
                       </Typography>
                       <OutlinedInput
                         id="component-outlined"
@@ -4404,45 +5647,89 @@ function TempControlPanel() {
                   </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
-                      <b>ID Card Front Header</b> <b style={{ color: 'red' }}>*</b>
+                      <b>ID Card Front Header</b>{" "}
+                      <b style={{ color: "red" }}>*</b>
                     </InputLabel>
-                    <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                    <Box sx={{ display: "flex", justifyContent: "left" }}>
                       <div>
-                        <Button variant="contained" onClick={handleClick4} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleClick4}
+                          size="small"
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDoc4} open={Boolean(anchorElDoc4)} onClose={handleClose4}>
-                          <MenuItem onClick={() => handleMenuItemClick4('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick4('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDoc4}
+                          open={Boolean(anchorElDoc4)}
+                          onClose={handleClose4}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick4("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick4("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
 
-                        {option4 === 'local' && documentFilesDocumentFrontHeader?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                            Upload Local
-                            <input
-                              type="file"
-                              id="resume"
-                              accept=".png"
-                              name="file"
-                              hidden
-                              onChange={(e) => {
-                                handleResumeUploadDocumentFrontHeader(e);
+                        {option4 === "local" &&
+                          !documentFilesDocumentFrontHeader && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
                               }}
-                            />
-                          </Button>
-                        )}
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadDocumentFrontHeader(e);
+                                }}
+                              />
+                            </Button>
+                          )}
 
-                        {option4 === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {option4 === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              value={{ value: docBodyHeader4, label: docBodyHeader4 }}
+                              value={{
+                                value: docBodyHeader4,
+                                label: docBodyHeader4,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader4(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesDOcumentFrontHeader([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesDOcumentFrontHeader({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -4451,68 +5738,138 @@ function TempControlPanel() {
                     </Box>
                     <br></br>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesDocumentFrontHeader?.length > 0 &&
-                        documentFilesDocumentFrontHeader?.map((file, index) => (
+                      {
+                        documentFilesDocumentFrontHeader && (
+                          // documentFilesDocumentFrontHeader?.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesDocumentFrontHeader.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentFrontHeader(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentFrontHeader(
+                                      documentFilesDocumentFrontHeader?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentFrontHeader(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() =>
+                                    handleFileDeleteDocumentFrontHeader()
+                                  }
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
-                      <b>ID Card Front Footer</b> <b style={{ color: 'red' }}>*</b>{' '}
+                      <b>ID Card Front Footer</b>{" "}
+                      <b style={{ color: "red" }}>*</b>{" "}
                     </InputLabel>
-                    <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                    <Box sx={{ display: "flex", justifyContent: "left" }}>
                       <div>
-                        <Button variant="contained" onClick={handleClick5} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleClick5}
+                          size="small"
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDoc5} open={Boolean(anchorElDoc5)} onClose={handleClose5}>
-                          <MenuItem onClick={() => handleMenuItemClick5('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick5('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDoc5}
+                          open={Boolean(anchorElDoc5)}
+                          onClose={handleClose5}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick5("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick5("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
 
-                        {option5 === 'local' && documentFilesDocumentFrontFooter?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                            Upload Local
-                            <input
-                              type="file"
-                              id="resume"
-                              accept=".png"
-                              name="file"
-                              hidden
-                              onChange={(e) => {
-                                handleResumeUploadDocumentFrontFooter(e);
+                        {option5 === "local" &&
+                          !documentFilesDocumentFrontFooter?.file && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
                               }}
-                            />
-                          </Button>
-                        )}
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadDocumentFrontFooter(e);
+                                }}
+                              />
+                            </Button>
+                          )}
 
-                        {option5 === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {option5 === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              value={{ value: docBodyHeader5, label: docBodyHeader5 }}
+                              value={{
+                                value: docBodyHeader5,
+                                label: docBodyHeader5,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader5(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesDOcumentFrontFooter([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesDOcumentFrontFooter({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -4521,25 +5878,51 @@ function TempControlPanel() {
                     </Box>
                     <br></br>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesDocumentFrontFooter?.length > 0 &&
-                        documentFilesDocumentFrontFooter?.map((file, index) => (
+                      {
+                        documentFilesDocumentFrontFooter?.file && (
+                          // documentFilesDocumentFrontFooter?.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesDocumentFrontFooter.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentFrontFooter(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentFrontFooter(
+                                      documentFilesDocumentFrontFooter?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentFrontFooter(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() =>
+                                    handleFileDeleteDocumentFrontFooter()
+                                  }
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                 </Grid>
@@ -4551,45 +5934,89 @@ function TempControlPanel() {
                 <Grid container spacing={2}>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
-                      <b>ID Card Back Header</b> <b style={{ color: 'red' }}>*</b>
+                      <b>ID Card Back Header</b>{" "}
+                      <b style={{ color: "red" }}>*</b>
                     </InputLabel>
-                    <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                    <Box sx={{ display: "flex", justifyContent: "left" }}>
                       <div>
-                        <Button variant="contained" onClick={handleClick6} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleClick6}
+                          size="small"
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDoc6} open={Boolean(anchorElDoc6)} onClose={handleClose6}>
-                          <MenuItem onClick={() => handleMenuItemClick6('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick6('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDoc6}
+                          open={Boolean(anchorElDoc6)}
+                          onClose={handleClose6}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick6("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick6("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
 
-                        {option6 === 'local' && documentFilesDocumentBackHeader?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                            Upload Local
-                            <input
-                              type="file"
-                              id="resume"
-                              accept=".png"
-                              name="file"
-                              hidden
-                              onChange={(e) => {
-                                handleResumeUploadDocumentBackHeader(e);
+                        {option6 === "local" &&
+                          !documentFilesDocumentBackHeader?.file && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
                               }}
-                            />
-                          </Button>
-                        )}
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadDocumentBackHeader(e);
+                                }}
+                              />
+                            </Button>
+                          )}
 
-                        {option6 === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {option6 === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              value={{ value: docBodyHeader6, label: docBodyHeader6 }}
+                              value={{
+                                value: docBodyHeader6,
+                                label: docBodyHeader6,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader6(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesDOcumentBackHeader([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesDOcumentBackHeader({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -4598,68 +6025,138 @@ function TempControlPanel() {
                     </Box>
                     <br></br>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesDocumentBackHeader?.length > 0 &&
-                        documentFilesDocumentBackHeader?.map((file, index) => (
+                      {
+                        documentFilesDocumentBackHeader?.file && (
+                          // documentFilesDocumentBackHeader?.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesDocumentBackHeader.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBackHeader(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentBackHeader(
+                                      documentFilesDocumentBackHeader?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentBackHeader(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() =>
+                                    handleFileDeleteDocumentBackHeader()
+                                  }
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
-                      <b>ID Card Back Footer</b> <b style={{ color: 'red' }}>*</b>
+                      <b>ID Card Back Footer</b>{" "}
+                      <b style={{ color: "red" }}>*</b>
                     </InputLabel>
-                    <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                    <Box sx={{ display: "flex", justifyContent: "left" }}>
                       <div>
-                        <Button variant="contained" onClick={handleClick7} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleClick7}
+                          size="small"
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDoc7} open={Boolean(anchorElDoc7)} onClose={handleClose7}>
-                          <MenuItem onClick={() => handleMenuItemClick7('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick7('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDoc7}
+                          open={Boolean(anchorElDoc7)}
+                          onClose={handleClose7}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick7("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick7("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
 
-                        {option7 === 'local' && documentFilesDocumentBackFooter?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                            Upload Local
-                            <input
-                              type="file"
-                              id="resume"
-                              accept=".png"
-                              name="file"
-                              hidden
-                              onChange={(e) => {
-                                handleResumeUploadDocumentBackFooter(e);
+                        {option7 === "local" &&
+                          !documentFilesDocumentBackFooter?.file && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
                               }}
-                            />
-                          </Button>
-                        )}
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadDocumentBackFooter(e);
+                                }}
+                              />
+                            </Button>
+                          )}
 
-                        {option7 === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {option7 === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              value={{ value: docBodyHeader7, label: docBodyHeader7 }}
+                              value={{
+                                value: docBodyHeader7,
+                                label: docBodyHeader7,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader7(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesDOcumentBackFooter([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesDOcumentBackFooter({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -4668,25 +6165,51 @@ function TempControlPanel() {
                     </Box>
                     <br></br>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesDocumentBackFooter?.length > 0 &&
-                        documentFilesDocumentBackFooter?.map((file, index) => (
+                      {
+                        documentFilesDocumentBackFooter?.file && (
+                          // documentFilesDocumentBackFooter?.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesDocumentBackFooter?.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBackFooter(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentBackFooter(
+                                      documentFilesDocumentBackFooter?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentBackFooter(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() =>
+                                    handleFileDeleteDocumentBackFooter()
+                                  }
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                 </Grid>
@@ -4702,7 +6225,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>Company Name</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <TextareaAutosize
                           aria-label="minimum height"
@@ -4718,7 +6241,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>Address</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <TextareaAutosize
                           aria-label="minimum height"
@@ -4738,18 +6261,53 @@ function TempControlPanel() {
                     <Typography>
                       <b>Logo</b>
                     </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                    <Box sx={{ display: "flex", justifyContent: "left" }}>
                       <div>
-                        <Button variant="contained" onClick={handleClick8} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleClick8}
+                          size="small"
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDoc8} open={Boolean(anchorElDoc8)} onClose={handleClose8}>
-                          <MenuItem onClick={() => handleMenuItemClick8('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick8('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDoc8}
+                          open={Boolean(anchorElDoc8)}
+                          onClose={handleClose8}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick8("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick8("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
 
-                        {option8 === 'local' && documentFiles?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        {option8 === "local" && !documentFiles?.file && (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload Local
                             <input
                               type="file"
@@ -4764,17 +6322,24 @@ function TempControlPanel() {
                           </Button>
                         )}
 
-                        {option8 === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {option8 === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              value={{ value: docBodyHeader8, label: docBodyHeader8 }}
+                              value={{
+                                value: docBodyHeader8,
+                                label: docBodyHeader8,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader8(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFiles([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFiles({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -4788,25 +6353,45 @@ function TempControlPanel() {
                                         </Button> */}
                     </Box>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFiles?.length > 0 &&
-                        documentFiles.map((file, index) => (
+                      {
+                        documentFiles?.file && (
+                          // documentFiles.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>{documentFiles?.name}</Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreview(documentFiles?.file)
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDelete(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() => handleFileDelete()}
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                 </Grid>
@@ -4816,7 +6401,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>To Company Name</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <TextareaAutosize
                           aria-label="minimum height"
@@ -4832,7 +6417,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>To Company Address</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <TextareaAutosize
                           aria-label="minimum height"
@@ -4845,12 +6430,16 @@ function TempControlPanel() {
                       </FormControl>
                     </Grid>
                     <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                      <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodoToCompany}>
+                      <Button
+                        variant="contained"
+                        sx={{ minWidth: "35px" }}
+                        onClick={handleCreateTodoToCompany}
+                      >
                         <FaPlus />
                       </Button>
                     </Grid>
                     <Grid item md={3} xs={12} sm={12}>
-                      {' '}
+                      {" "}
                     </Grid>
                   </>
                   <Grid item md={12} xs={12} sm={12}>
@@ -4858,7 +6447,7 @@ function TempControlPanel() {
                       <ul type="none">
                         {todoscheckToCompany?.length > 0 && (
                           <Typography>
-                            {' '}
+                            {" "}
                             <b>Todo : </b>
                           </Typography>
                         )}
@@ -4874,7 +6463,9 @@ function TempControlPanel() {
                                         minRows={5}
                                         value={toCompanynameCreate}
                                         onChange={(e) => {
-                                          setToCompanynameCreate(e.target.value);
+                                          setToCompanynameCreate(
+                                            e.target.value
+                                          );
                                         }}
                                       />
                                     </FormControl>
@@ -4895,7 +6486,9 @@ function TempControlPanel() {
                               ) : (
                                 <>
                                   <Grid item md={3} xs={12} sm={12}>
-                                    <Typography>{todo.toCompanyname}</Typography>
+                                    <Typography>
+                                      {todo.toCompanyname}
+                                    </Typography>
                                   </Grid>
                                   <Grid item md={3} xs={12} sm={12}>
                                     <Typography>{todo.toAddress}</Typography>
@@ -4908,26 +6501,41 @@ function TempControlPanel() {
                                     variant="contained"
                                     color="success"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     onClick={() => {
-                                      if (toCompanynameCreate === '') {
-                                        setPopupContentMalert(`Please Enter To Companyname`);
-                                        setPopupSeverityMalert('warning');
+                                      if (toCompanynameCreate === "") {
+                                        setPopupContentMalert(
+                                          `Please Enter To Companyname`
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
-                                      } else if (toAddressCreate === '') {
-                                        setPopupContentMalert(`Please Enter To Company Address`);
-                                        setPopupSeverityMalert('warning');
+                                      } else if (toAddressCreate === "") {
+                                        setPopupContentMalert(
+                                          `Please Enter To Company Address`
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
-                                      } else if (todoscheckToCompany.some((item, ind) => ind !== index && item?.toCompanyname?.toLowerCase() === toCompanynameCreate?.toLowerCase())) {
-                                        setPopupContentMalert('Already Details Added');
-                                        setPopupSeverityMalert('warning');
+                                      } else if (
+                                        todoscheckToCompany.some(
+                                          (item, ind) =>
+                                            ind !== index &&
+                                            item?.toCompanyname?.toLowerCase() ===
+                                              toCompanynameCreate?.toLowerCase()
+                                        )
+                                      ) {
+                                        setPopupContentMalert(
+                                          "Already Details Added"
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
                                       } else {
-                                        const updatedIsTodoEdit = [...isTodoEdit];
+                                        const updatedIsTodoEdit = [
+                                          ...isTodoEdit,
+                                        ];
                                         updatedIsTodoEdit[index] = false;
                                         setIsTodoEdit(updatedIsTodoEdit);
                                         handleUpdateTodocheckToCompany();
@@ -4936,8 +6544,8 @@ function TempControlPanel() {
                                   >
                                     <MdOutlineDone
                                       style={{
-                                        fontSize: '17px',
-                                        fontWeight: 'bold',
+                                        fontSize: "17px",
+                                        fontWeight: "bold",
                                       }}
                                     />
                                   </Button>
@@ -4946,12 +6554,15 @@ function TempControlPanel() {
                                     variant="contained"
                                     color="primary"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
-                                    disabled={editingIndexcheckToCompany !== index && editingIndexcheckToCompany !== -1}
+                                    disabled={
+                                      editingIndexcheckToCompany !== index &&
+                                      editingIndexcheckToCompany !== -1
+                                    }
                                     onClick={() => {
                                       const updatedIsTodoEdit = [...isTodoEdit];
                                       updatedIsTodoEdit[index] = true;
@@ -4971,10 +6582,10 @@ function TempControlPanel() {
                                     color="error"
                                     type="button"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     onClick={() => {
                                       const updatedIsTodoEdit = [...isTodoEdit];
@@ -4991,12 +6602,14 @@ function TempControlPanel() {
                                     color="error"
                                     type="button"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
-                                    onClick={() => handleDeleteTodocheckToCompany(index)}
+                                    onClick={() =>
+                                      handleDeleteTodocheckToCompany(index)
+                                    }
                                   >
                                     <AiOutlineClose />
                                   </Button>
@@ -5016,7 +6629,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>QR info</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <TextareaAutosize
                           aria-label="minimum height"
@@ -5029,17 +6642,24 @@ function TempControlPanel() {
                       </FormControl>
                     </Grid>
                     <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                      <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateQrInfo}>
+                      <Button
+                        variant="contained"
+                        sx={{ minWidth: "35px" }}
+                        onClick={handleCreateQrInfo}
+                      >
                         <FaPlus />
                       </Button>
                     </Grid>
                     <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                      <Button variant="contained" onClick={handleOpenKeywordPopup}>
+                      <Button
+                        variant="contained"
+                        onClick={handleOpenKeywordPopup}
+                      >
                         Keyword
                       </Button>
                     </Grid>
                     <Grid item md={3} xs={12} sm={12}>
-                      {' '}
+                      {" "}
                     </Grid>
                   </>
                   <Grid item md={12} xs={12} sm={12}>
@@ -5047,7 +6667,7 @@ function TempControlPanel() {
                       <ul type="none">
                         {qrInfoTodos?.length > 0 && (
                           <Typography>
-                            {' '}
+                            {" "}
                             <b>Todo : </b>
                           </Typography>
                         )}
@@ -5082,22 +6702,35 @@ function TempControlPanel() {
                                     variant="contained"
                                     color="success"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     onClick={() => {
-                                      if (qrInfoCreate === '') {
-                                        setPopupContentMalert(`Please Enter Details`);
-                                        setPopupSeverityMalert('warning');
+                                      if (qrInfoCreate === "") {
+                                        setPopupContentMalert(
+                                          `Please Enter Details`
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
-                                      } else if (qrInfoTodos.some((item, ind) => ind !== index && item?.details?.toLowerCase() === qrInfoCreate?.toLowerCase())) {
-                                        setPopupContentMalert('Already Details Added');
-                                        setPopupSeverityMalert('warning');
+                                      } else if (
+                                        qrInfoTodos.some(
+                                          (item, ind) =>
+                                            ind !== index &&
+                                            item?.details?.toLowerCase() ===
+                                              qrInfoCreate?.toLowerCase()
+                                        )
+                                      ) {
+                                        setPopupContentMalert(
+                                          "Already Details Added"
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
                                       } else {
-                                        const updatedIsTodoEdit = [...isTodoQrInfo];
+                                        const updatedIsTodoEdit = [
+                                          ...isTodoQrInfo,
+                                        ];
                                         updatedIsTodoEdit[index] = false;
                                         setIsTodoQrInfo(updatedIsTodoEdit);
                                         // handleUpdateTodocheckToCompany();
@@ -5107,8 +6740,8 @@ function TempControlPanel() {
                                   >
                                     <MdOutlineDone
                                       style={{
-                                        fontSize: '17px',
-                                        fontWeight: 'bold',
+                                        fontSize: "17px",
+                                        fontWeight: "bold",
                                       }}
                                     />
                                   </Button>
@@ -5117,14 +6750,19 @@ function TempControlPanel() {
                                     variant="contained"
                                     color="primary"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
-                                    disabled={qrIndexCheck !== index && qrIndexCheck !== -1}
+                                    disabled={
+                                      qrIndexCheck !== index &&
+                                      qrIndexCheck !== -1
+                                    }
                                     onClick={() => {
-                                      const updatedIsTodoEdit = [...isTodoQrInfo];
+                                      const updatedIsTodoEdit = [
+                                        ...isTodoQrInfo,
+                                      ];
                                       updatedIsTodoEdit[index] = true;
                                       setIsTodoQrInfo(updatedIsTodoEdit);
                                       setQrIndexcheck(index);
@@ -5143,13 +6781,15 @@ function TempControlPanel() {
                                     color="error"
                                     type="button"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     onClick={() => {
-                                      const updatedIsTodoEdit = [...isTodoQrInfo];
+                                      const updatedIsTodoEdit = [
+                                        ...isTodoQrInfo,
+                                      ];
                                       updatedIsTodoEdit[index] = false;
                                       setIsTodoQrInfo(updatedIsTodoEdit);
                                       setQrIndexcheck(-1);
@@ -5163,13 +6803,15 @@ function TempControlPanel() {
                                     color="error"
                                     type="button"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     // onClick={() => handleDeleteTodocheckToCompany(index)}
-                                    onClick={() => handleDeleteTodoQrInfo(index)}
+                                    onClick={() =>
+                                      handleDeleteTodoQrInfo(index)
+                                    }
                                   >
                                     <AiOutlineClose />
                                   </Button>
@@ -5193,7 +6835,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b> Seal Type</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <Selects
                           options={sealOptions}
@@ -5212,7 +6854,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>Name</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <OutlinedInput
                           id="component-outlined"
@@ -5230,19 +6872,54 @@ function TempControlPanel() {
                   <Grid item md={4} xs={12} sm={12}>
                     <Typography>
                       <b>Seal Logo</b>
-                      <b style={{ color: 'red' }}>*</b>
+                      <b style={{ color: "red" }}>*</b>
                     </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                    <Box sx={{ display: "flex", justifyContent: "left" }}>
                       <div>
-                        <Button variant="contained" onClick={handleClick9} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleClick9}
+                          size="small"
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDoc9} open={Boolean(anchorElDoc9)} onClose={handleClose9}>
-                          <MenuItem onClick={() => handleMenuItemClick9('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick9('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDoc9}
+                          open={Boolean(anchorElDoc9)}
+                          onClose={handleClose9}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick9("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick9("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
-                        {option9 === 'local' && documentFilesSeal?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        {option9 === "local" && !documentFilesSeal?.file && (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload Local
                             <input
                               type="file"
@@ -5256,17 +6933,24 @@ function TempControlPanel() {
                             />
                           </Button>
                         )}
-                        {option9 === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {option9 === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              value={{ value: docBodyHeader9, label: docBodyHeader9 }}
+                              value={{
+                                value: docBodyHeader9,
+                                label: docBodyHeader9,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader9(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesSeal([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesSeal({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -5281,29 +6965,57 @@ function TempControlPanel() {
                                         </Button> */}
                     </Box>
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesSeal?.length > 0 &&
-                        documentFilesSeal.map((file, index) => (
+                      {
+                        documentFilesSeal?.file && (
+                          // documentFilesSeal.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesSeal?.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewSeal(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewSeal(
+                                      documentFilesSeal?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteSeal(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() => handleFileDeleteSeal()}
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                   <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                    <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodocheckSeal}>
+                    <Button
+                      variant="contained"
+                      sx={{ minWidth: "35px" }}
+                      onClick={handleCreateTodocheckSeal}
+                    >
                       <FaPlus />
                     </Button>
                   </Grid>
@@ -5321,7 +7033,7 @@ function TempControlPanel() {
                                   <FormControl fullWidth size="small">
                                     <Typography>
                                       <b> Seal Type</b>
-                                      <b style={{ color: 'red' }}>*</b>
+                                      <b style={{ color: "red" }}>*</b>
                                     </Typography>
                                     <Selects
                                       options={sealOptions}
@@ -5340,7 +7052,7 @@ function TempControlPanel() {
                                   <FormControl fullWidth size="small">
                                     <Typography>
                                       <b>Name</b>
-                                      <b style={{ color: 'red' }}>*</b>
+                                      <b style={{ color: "red" }}>*</b>
                                     </Typography>
                                     <OutlinedInput
                                       id="component-outlined"
@@ -5360,39 +7072,60 @@ function TempControlPanel() {
                                 <Typography>
                                   <b>Seal Logo</b>
                                 </Typography>
-                                <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "left",
+                                  }}
+                                ></Box>
                                 <Grid item md={12} xs={12} sm={12}>
-                                  {todo.document?.length > 0 &&
-                                    todo.document.map((file, index) => (
+                                  {
+                                    todo?.document?.file && (
+                                      // todo.document.map((file, index) => (
                                       <>
                                         <Grid container spacing={2}>
                                           <Grid item md={8} sm={6} xs={6}>
-                                            <Typography>{file.name}</Typography>
+                                            <Typography>
+                                              {todo?.document?.name}
+                                            </Typography>
                                           </Grid>
                                           <Grid></Grid>
                                           <Grid item md={1} sm={6} xs={6}>
-                                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                            <VisibilityOutlinedIcon
+                                              style={{
+                                                fontsize: "large",
+                                                color: "#357AE8",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                renderFilePreview(
+                                                  todo?.document?.file
+                                                )
+                                              }
+                                            />
                                           </Grid>
                                         </Grid>
                                       </>
-                                    ))}
+                                    )
+                                    // ))
+                                  }
                                 </Grid>
                               </Grid>
                               <Grid item md={1} sm={1} mt={2} xs={1}>
                                 <Button
                                   variant="contained"
                                   style={{
-                                    minWidth: '20px',
-                                    minHeight: '41px',
-                                    background: 'transparent',
-                                    boxShadow: 'none',
-                                    marginTop: '5px !important',
-                                    '&:hover': {
-                                      background: '#f4f4f4',
-                                      borderRadius: '50%',
-                                      minHeight: '41px',
-                                      minWidth: '20px',
-                                      boxShadow: 'none',
+                                    minWidth: "20px",
+                                    minHeight: "41px",
+                                    background: "transparent",
+                                    boxShadow: "none",
+                                    marginTop: "5px !important",
+                                    "&:hover": {
+                                      background: "#f4f4f4",
+                                      borderRadius: "50%",
+                                      minHeight: "41px",
+                                      minWidth: "20px",
+                                      boxShadow: "none",
                                     },
                                   }}
                                   disabled={false}
@@ -5400,8 +7133,8 @@ function TempControlPanel() {
                                 >
                                   <CheckCircleIcon
                                     style={{
-                                      color: '#216d21',
-                                      fontSize: '1.5rem',
+                                      color: "#216d21",
+                                      fontSize: "1.5rem",
                                     }}
                                   />
                                 </Button>
@@ -5410,29 +7143,29 @@ function TempControlPanel() {
                                 <Button
                                   variant="contained"
                                   style={{
-                                    minWidth: '20px',
-                                    minHeight: '41px',
-                                    background: 'transparent',
-                                    boxShadow: 'none',
-                                    marginTop: '5px !important',
-                                    '&:hover': {
-                                      background: '#f4f4f4',
-                                      borderRadius: '50%',
-                                      minHeight: '41px',
-                                      minWidth: '20px',
-                                      boxShadow: 'none',
+                                    minWidth: "20px",
+                                    minHeight: "41px",
+                                    background: "transparent",
+                                    boxShadow: "none",
+                                    marginTop: "5px !important",
+                                    "&:hover": {
+                                      background: "#f4f4f4",
+                                      borderRadius: "50%",
+                                      minHeight: "41px",
+                                      minWidth: "20px",
+                                      boxShadow: "none",
                                     },
                                   }}
                                   onClick={() => {
                                     setSealTodoCreate(false);
                                     setIndexSealCreate(-1);
                                   }}
-                                // disabled={!empdigits}
+                                  // disabled={!empdigits}
                                 >
                                   <CancelIcon
                                     style={{
-                                      color: '#b92525',
-                                      fontSize: '1.5rem',
+                                      color: "#b92525",
+                                      fontSize: "1.5rem",
                                     }}
                                   />
                                 </Button>
@@ -5446,48 +7179,71 @@ function TempControlPanel() {
                                 <Typography>
                                   <b>Seal Logo</b>
                                 </Typography>
-                                <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "left",
+                                  }}
+                                ></Box>
                                 <Grid item md={12} xs={12} sm={12}>
-                                  {todo.document?.length > 0 &&
-                                    todo.document.map((file, index) => (
+                                  {
+                                    todo?.document?.file && (
+                                      // todo.document.map((file, index) => (
                                       <>
                                         <Grid container spacing={2}>
                                           <Grid item md={8} sm={6} xs={6}>
-                                            <Typography>{file.name}</Typography>
+                                            <Typography>
+                                              {todo?.document?.name}
+                                            </Typography>
                                           </Grid>
                                           <Grid></Grid>
                                           <Grid item md={1} sm={6} xs={6}>
-                                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                            <VisibilityOutlinedIcon
+                                              style={{
+                                                fontsize: "large",
+                                                color: "#357AE8",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                renderFilePreview(
+                                                  todo?.document?.file
+                                                )
+                                              }
+                                            />
                                           </Grid>
                                         </Grid>
                                       </>
-                                    ))}
+                                    )
+                                    // ))
+                                  }
                                 </Grid>
                               </Grid>
                               <Grid item md={1} mt={2} sm={6} xs={6}>
                                 <Button
                                   variant="contained"
                                   style={{
-                                    minWidth: '20px',
-                                    minHeight: '41px',
-                                    background: 'transparent',
-                                    boxShadow: 'none',
-                                    marginTop: '13px !important',
-                                    '&:hover': {
-                                      background: '#f4f4f4',
-                                      borderRadius: '50%',
-                                      minHeight: '41px',
-                                      minWidth: '20px',
-                                      boxShadow: 'none',
+                                    minWidth: "20px",
+                                    minHeight: "41px",
+                                    background: "transparent",
+                                    boxShadow: "none",
+                                    marginTop: "13px !important",
+                                    "&:hover": {
+                                      background: "#f4f4f4",
+                                      borderRadius: "50%",
+                                      minHeight: "41px",
+                                      minWidth: "20px",
+                                      boxShadow: "none",
                                     },
                                   }}
-                                  onClick={() => handleCreateSealEditTodo(index)}
-                                // disabled={!empdigits}
+                                  onClick={() =>
+                                    handleCreateSealEditTodo(index)
+                                  }
+                                  // disabled={!empdigits}
                                 >
                                   <FaEdit
                                     style={{
-                                      color: '#1976d2',
-                                      fontSize: '1.2rem',
+                                      color: "#1976d2",
+                                      fontSize: "1.2rem",
                                     }}
                                   />
                                 </Button>
@@ -5496,17 +7252,17 @@ function TempControlPanel() {
                                 <Button
                                   variant="contained"
                                   style={{
-                                    minWidth: '20px',
-                                    minHeight: '41px',
-                                    background: 'transparent',
-                                    boxShadow: 'none',
-                                    marginTop: '50px !important',
-                                    '&:hover': {
-                                      background: '#f4f4f4',
-                                      borderRadius: '50%',
-                                      minHeight: '41px',
-                                      minWidth: '20px',
-                                      boxShadow: 'none',
+                                    minWidth: "20px",
+                                    minHeight: "41px",
+                                    background: "transparent",
+                                    boxShadow: "none",
+                                    marginTop: "50px !important",
+                                    "&:hover": {
+                                      background: "#f4f4f4",
+                                      borderRadius: "50%",
+                                      minHeight: "41px",
+                                      minWidth: "20px",
+                                      boxShadow: "none",
                                     },
                                   }}
                                   onClick={() => {
@@ -5516,8 +7272,8 @@ function TempControlPanel() {
                                 >
                                   <FaTrash
                                     style={{
-                                      color: '#b92525',
-                                      fontSize: '1.2rem',
+                                      color: "#b92525",
+                                      fontSize: "1.2rem",
                                     }}
                                   />
                                 </Button>
@@ -5545,9 +7301,9 @@ function TempControlPanel() {
                               checked={allBranch}
                               onChange={(e) => {
                                 setAllBranch(e.target.checked);
-                                setUnit('Please Select Unit');
-                                setEmployee('Please Select Employee');
-                                setTeam('Please Select Team');
+                                setUnit("Please Select Unit");
+                                setEmployee("Please Select Employee");
+                                setTeam("Please Select Team");
                                 if (e.target.checked) {
                                   getAllBranchUsersData(company);
                                 } else {
@@ -5562,7 +7318,7 @@ function TempControlPanel() {
                     <Grid item md={2} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Unit<b style={{ color: 'red' }}>*</b>
+                          Unit<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <Selects
                           options={unitOption}
@@ -5570,8 +7326,8 @@ function TempControlPanel() {
                           value={{ value: unit, label: unit }}
                           onChange={(e) => {
                             setUnit(e.value);
-                            setEmployee('Please Select Employee');
-                            setTeam('Please Select Team');
+                            setEmployee("Please Select Employee");
+                            setTeam("Please Select Team");
                             setEmployeeOption([]);
                           }}
                         />
@@ -5580,24 +7336,35 @@ function TempControlPanel() {
                     <Grid item md={2} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Team<b style={{ color: 'red' }}>*</b>
+                          Team<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <Selects
                           options={allTeam
-                            ?.filter((comp) => company === comp.company && branch === comp.branch && unit === comp.unit)
+                            ?.filter(
+                              (comp) =>
+                                company === comp.company &&
+                                branch === comp.branch &&
+                                unit === comp.unit
+                            )
                             ?.map((data) => ({
                               label: data.teamname,
                               value: data.teamname,
                             }))
                             .filter((item, index, self) => {
-                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                              return (
+                                self.findIndex(
+                                  (i) =>
+                                    i.label === item.label &&
+                                    i.value === item.value
+                                ) === index
+                              );
                             })}
                           isDisabled={allBranch}
                           value={{ value: team, label: team }}
                           onChange={(e) => {
                             fetchEmployeeAll(company, branch, unit, e.value);
                             setTeam(e.value);
-                            setEmployee('Please Select Employee');
+                            setEmployee("Please Select Employee");
                           }}
                         />
                       </FormControl>
@@ -5605,17 +7372,23 @@ function TempControlPanel() {
                     <Grid item md={2} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Employee<b style={{ color: 'red' }}>*</b>
+                          Employee<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <Selects
                           options={employeeOption}
                           value={{ value: employee, label: employee }}
                           onChange={(e) => {
                             setEmployee(e.value);
-                            setIsUserDetails({ ...isUserdetails, bottoncnt: e.designation, username: e.legalname });
+                            setIsUserDetails({
+                              ...isUserdetails,
+                              bottoncnt: e.designation,
+                              username: e.legalname,
+                            });
                             setSignaturename(e.legalname);
-                            fetchEmployeeSignatureDefault(e.value, 'create');
-                            setBottomContent(forSeal === 'For Seal' ? e.designation : '');
+                            fetchEmployeeSignatureDefault(e.value, "create");
+                            setBottomContent(
+                              forSeal === "For Seal" ? e.designation : ""
+                            );
                           }}
                         />
                       </FormControl>
@@ -5623,29 +7396,33 @@ function TempControlPanel() {
                     <Grid item md={2} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Seal<b style={{ color: 'red' }}>*</b>
+                          Seal<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <Selects
                           options={[
-                            { label: 'None', value: 'None' },
-                            { label: 'For Seal', value: 'For Seal' },
+                            { label: "None", value: "None" },
+                            { label: "For Seal", value: "For Seal" },
                           ]}
                           value={{ value: forSeal, label: forSeal }}
                           onChange={(e) => {
                             setForSeal(e.value);
-                            setTopContent('');
-                            setBottomContent(e.value === 'For Seal' ? isUserdetails?.bottoncnt : '');
+                            setTopContent("");
+                            setBottomContent(
+                              e.value === "For Seal"
+                                ? isUserdetails?.bottoncnt
+                                : ""
+                            );
                           }}
                         />
                       </FormControl>
                     </Grid>
-                    {forSeal === 'For Seal' && (
+                    {forSeal === "For Seal" && (
                       <>
                         <Grid item md={2} xs={12} sm={12}>
                           <FormControl fullWidth size="small">
                             <Typography>
                               <b>Top Content</b>
-                              <b style={{ color: 'red' }}>*</b>
+                              <b style={{ color: "red" }}>*</b>
                             </Typography>
 
                             <OutlinedInput
@@ -5663,7 +7440,7 @@ function TempControlPanel() {
                           <FormControl fullWidth size="small">
                             <Typography>
                               <b>Bottom Content</b>
-                              <b style={{ color: 'red' }}>*</b>
+                              <b style={{ color: "red" }}>*</b>
                             </Typography>
                             <OutlinedInput
                               id="component-outlined"
@@ -5682,7 +7459,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>Name</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <OutlinedInput
                           id="component-outlined"
@@ -5700,43 +7477,91 @@ function TempControlPanel() {
                   <Grid item md={3} xs={12} sm={12}>
                     <Typography>
                       <b>Signature Logo</b>
-                      {forSeal === 'For Seal' ? '' : <b style={{ color: 'red' }}>*</b>}
+                      {forSeal === "For Seal" ? (
+                        ""
+                      ) : (
+                        <b style={{ color: "red" }}>*</b>
+                      )}
                     </Typography>
 
                     <div>
-                      <Button variant="contained" onClick={handleClick10} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                      <Button
+                        variant="contained"
+                        onClick={handleClick10}
+                        size="small"
+                        component="label"
+                        sx={{
+                          ...buttonStyles.buttonsubmit,
+                          "@media only screen and (max-width:550px)": {
+                            marginY: "5px",
+                          },
+                        }}
+                      >
                         Upload
                       </Button>
-                      <Menu anchorEl={anchorElDoc10} open={Boolean(anchorElDoc10)} onClose={handleClose10}>
-                        <MenuItem onClick={() => handleMenuItemClick10('local')}>Upload Local</MenuItem>
-                        <MenuItem onClick={() => handleMenuItemClick10('organizational')}>Organizational Document</MenuItem>
-                      </Menu>
-                      {option10 === 'local' && documentFilesSignature?.length === 0 && (
-                        <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                      <Menu
+                        anchorEl={anchorElDoc10}
+                        open={Boolean(anchorElDoc10)}
+                        onClose={handleClose10}
+                      >
+                        <MenuItem
+                          onClick={() => handleMenuItemClick10("local")}
+                        >
                           Upload Local
-                          <input
-                            type="file"
-                            id="resume"
-                            accept=".png"
-                            name="file"
-                            hidden
-                            onChange={(e) => {
-                              handleResumeUploadSignature(e);
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() =>
+                            handleMenuItemClick10("organizational")
+                          }
+                        >
+                          Organizational Document
+                        </MenuItem>
+                      </Menu>
+                      {option10 === "local" &&
+                        !documentFilesSignature?.file && (
+                          <Button
+                            variant="contained"
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
                             }}
-                          />
-                        </Button>
-                      )}
-                      {option10 === 'organizational' && (
-                        <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                          >
+                            Upload Local
+                            <input
+                              type="file"
+                              id="resume"
+                              accept=".png"
+                              name="file"
+                              hidden
+                              onChange={(e) => {
+                                handleResumeUploadSignature(e);
+                              }}
+                            />
+                          </Button>
+                        )}
+                      {option10 === "organizational" && (
+                        <FormControl fullWidth sx={{ marginTop: "10px" }}>
                           <Selects
                             options={orgDocuments}
-                            value={{ value: docBodyHeader10, label: docBodyHeader10 }}
+                            value={{
+                              value: docBodyHeader10,
+                              label: docBodyHeader10,
+                            }}
                             onChange={async (e) => {
                               setDocBodyHeader10(e.value);
                               const resume = e?.document[0];
                               const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                              const base64 = await getBase64FromMulterPath(filePath);
-                              setdocumentFilesSignature([{ name: resume?.name, preview: base64 }]);
+                              const base64 = await getFileObjectFromMulterPath(
+                                filePath
+                              );
+                              setdocumentFilesSignature({
+                                name: resume?.name,
+                                file: base64,
+                              });
                             }}
                           />
                         </FormControl>
@@ -5744,29 +7569,57 @@ function TempControlPanel() {
                     </div>
 
                     <Grid item md={12} xs={12} sm={12}>
-                      {documentFilesSignature?.length > 0 &&
-                        documentFilesSignature.map((file, index) => (
+                      {
+                        documentFilesSignature?.file && (
+                          // documentFilesSignature.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{file.name}</Typography>
+                                <Typography>
+                                  {documentFilesSignature?.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewSignature(file)} />
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewSignature(
+                                      documentFilesSignature?.file
+                                    )
+                                  }
+                                />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
-                                <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteSignature(index)}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() => handleFileDeleteSignature()}
+                                >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        ))}
+                        )
+                        // ))
+                      }
                     </Grid>
                   </Grid>
                   <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                    <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodocheckSignature}>
+                    <Button
+                      variant="contained"
+                      sx={{ minWidth: "35px" }}
+                      onClick={handleCreateTodocheckSignature}
+                    >
                       <FaPlus />
                     </Button>
                   </Grid>
@@ -5789,12 +7642,16 @@ function TempControlPanel() {
                                           checked={allBranchTodo}
                                           onChange={(e) => {
                                             setAllBranchTodo(e.target.checked);
-                                            setUnitTodo('Please Select Unit');
-                                            setEmployeeTodo('Please Select Employee');
-                                            setTeamTodo('Please Select Team');
+                                            setUnitTodo("Please Select Unit");
+                                            setEmployeeTodo(
+                                              "Please Select Employee"
+                                            );
+                                            setTeamTodo("Please Select Team");
 
                                             if (e.target.checked) {
-                                              getAllBranchUsersDataTodo(company);
+                                              getAllBranchUsersDataTodo(
+                                                company
+                                              );
                                             } else {
                                               setEmployeeOptionTodo([]);
                                             }
@@ -5807,16 +7664,21 @@ function TempControlPanel() {
                                 <Grid item md={2} xs={12} sm={6}>
                                   <FormControl fullWidth size="small">
                                     <Typography>
-                                      Unit<b style={{ color: 'red' }}>*</b>
+                                      Unit<b style={{ color: "red" }}>*</b>
                                     </Typography>
                                     <Selects
                                       options={unitOption}
                                       isDisabled={allBranchTodo}
-                                      value={{ value: unitTodo, label: unitTodo }}
+                                      value={{
+                                        value: unitTodo,
+                                        label: unitTodo,
+                                      }}
                                       onChange={(e) => {
                                         setUnitTodo(e.value);
-                                        setEmployeeTodo('Please Select Employee');
-                                        setTeamTodo('Please Select Team');
+                                        setEmployeeTodo(
+                                          "Please Select Employee"
+                                        );
+                                        setTeamTodo("Please Select Team");
                                         setEmployeeOptionTodo([]);
                                       }}
                                     />
@@ -5825,24 +7687,45 @@ function TempControlPanel() {
                                 <Grid item md={2} xs={12} sm={6}>
                                   <FormControl fullWidth size="small">
                                     <Typography>
-                                      Team<b style={{ color: 'red' }}>*</b>
+                                      Team<b style={{ color: "red" }}>*</b>
                                     </Typography>
                                     <Selects
                                       options={allTeam
-                                        ?.filter((comp) => company === comp.company && branch === comp.branch && unitTodo === comp.unit)
+                                        ?.filter(
+                                          (comp) =>
+                                            company === comp.company &&
+                                            branch === comp.branch &&
+                                            unitTodo === comp.unit
+                                        )
                                         ?.map((data) => ({
                                           label: data.teamname,
                                           value: data.teamname,
                                         }))
                                         .filter((item, index, self) => {
-                                          return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                                          return (
+                                            self.findIndex(
+                                              (i) =>
+                                                i.label === item.label &&
+                                                i.value === item.value
+                                            ) === index
+                                          );
                                         })}
                                       isDisabled={allBranchTodo}
-                                      value={{ value: teamTodo, label: teamTodo }}
+                                      value={{
+                                        value: teamTodo,
+                                        label: teamTodo,
+                                      }}
                                       onChange={(e) => {
-                                        fetchEmployeeAllTodo(company, branch, unitTodo, e.value);
+                                        fetchEmployeeAllTodo(
+                                          company,
+                                          branch,
+                                          unitTodo,
+                                          e.value
+                                        );
                                         setTeamTodo(e.value);
-                                        setEmployeeTodo('Please Select Employee');
+                                        setEmployeeTodo(
+                                          "Please Select Employee"
+                                        );
                                       }}
                                     />
                                   </FormControl>
@@ -5850,16 +7733,27 @@ function TempControlPanel() {
                                 <Grid item md={2} xs={12} sm={6}>
                                   <FormControl fullWidth size="small">
                                     <Typography>
-                                      Employee<b style={{ color: 'red' }}>*</b>
+                                      Employee<b style={{ color: "red" }}>*</b>
                                     </Typography>
                                     <Selects
                                       options={employeeOptionTodo}
-                                      value={{ value: employeeTodo, label: employeeTodo }}
+                                      value={{
+                                        value: employeeTodo,
+                                        label: employeeTodo,
+                                      }}
                                       onChange={(e) => {
                                         setEmployeeTodo(e.value);
                                         setSignaturenameTodo(e.legalname);
-                                        setIsUserDetails({ ...isUserdetails, bottoncnt: e.designation, username: e.legalname });
-                                        setBottomContentTodo(forSealTodo === 'For Seal' ? e.designation : '');
+                                        setIsUserDetails({
+                                          ...isUserdetails,
+                                          bottoncnt: e.designation,
+                                          username: e.legalname,
+                                        });
+                                        setBottomContentTodo(
+                                          forSealTodo === "For Seal"
+                                            ? e.designation
+                                            : ""
+                                        );
                                       }}
                                     />
                                   </FormControl>
@@ -5867,29 +7761,39 @@ function TempControlPanel() {
                                 <Grid item md={2} xs={12} sm={6}>
                                   <FormControl fullWidth size="small">
                                     <Typography>
-                                      Seal<b style={{ color: 'red' }}>*</b>
+                                      Seal<b style={{ color: "red" }}>*</b>
                                     </Typography>
                                     <Selects
                                       options={[
-                                        { label: 'None', value: 'None' },
-                                        { label: 'For Seal', value: 'For Seal' },
+                                        { label: "None", value: "None" },
+                                        {
+                                          label: "For Seal",
+                                          value: "For Seal",
+                                        },
                                       ]}
-                                      value={{ value: forSealTodo, label: forSealTodo }}
+                                      value={{
+                                        value: forSealTodo,
+                                        label: forSealTodo,
+                                      }}
                                       onChange={(e) => {
                                         setForSealTodo(e.value);
-                                        setTopContentTodo('');
-                                        setBottomContentTodo(e.value === 'For Seal' ? isUserdetails?.bottoncnt : '');
+                                        setTopContentTodo("");
+                                        setBottomContentTodo(
+                                          e.value === "For Seal"
+                                            ? isUserdetails?.bottoncnt
+                                            : ""
+                                        );
                                       }}
                                     />
                                   </FormControl>
                                 </Grid>
-                                {forSealTodo === 'For Seal' && (
+                                {forSealTodo === "For Seal" && (
                                   <>
                                     <Grid item md={2} xs={12} sm={12}>
                                       <FormControl fullWidth size="small">
                                         <Typography>
                                           <b>Top Content</b>
-                                          <b style={{ color: 'red' }}>*</b>
+                                          <b style={{ color: "red" }}>*</b>
                                         </Typography>
                                         <OutlinedInput
                                           id="component-outlined"
@@ -5906,7 +7810,7 @@ function TempControlPanel() {
                                       <FormControl fullWidth size="small">
                                         <Typography>
                                           <b>Bottom Content</b>
-                                          <b style={{ color: 'red' }}>*</b>
+                                          <b style={{ color: "red" }}>*</b>
                                         </Typography>
                                         <OutlinedInput
                                           id="component-outlined"
@@ -5914,7 +7818,9 @@ function TempControlPanel() {
                                           placeholder="Please Enter Bottom Content"
                                           value={bottomContentTodo}
                                           onChange={(e) => {
-                                            setBottomContentTodo(e.target.value);
+                                            setBottomContentTodo(
+                                              e.target.value
+                                            );
                                           }}
                                         />
                                       </FormControl>
@@ -5925,7 +7831,7 @@ function TempControlPanel() {
                                   <FormControl fullWidth size="small">
                                     <Typography>
                                       <b>Name</b>
-                                      <b style={{ color: 'red' }}>*</b>
+                                      <b style={{ color: "red" }}>*</b>
                                     </Typography>
                                     <OutlinedInput
                                       id="component-outlined"
@@ -5945,22 +7851,43 @@ function TempControlPanel() {
                                 <Typography>
                                   <b>Signature Logo</b>
                                 </Typography>
-                                <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "left",
+                                  }}
+                                ></Box>
                                 <Grid item md={12} xs={12} sm={12}>
-                                  {todo.document?.length > 0 &&
-                                    todo.document.map((file, index) => (
+                                  {
+                                    todo?.document && (
+                                      // todo.document.map((file, index) => (
                                       <>
                                         <Grid container spacing={2}>
                                           <Grid item md={8} sm={6} xs={6}>
-                                            <Typography>{file.name}</Typography>
+                                            <Typography>
+                                              {todo?.document?.name}
+                                            </Typography>
                                           </Grid>
                                           <Grid></Grid>
                                           <Grid item md={1} sm={6} xs={6}>
-                                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                            <VisibilityOutlinedIcon
+                                              style={{
+                                                fontsize: "large",
+                                                color: "#357AE8",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                renderFilePreview(
+                                                  todo?.document?.file
+                                                )
+                                              }
+                                            />
                                           </Grid>
                                         </Grid>
                                       </>
-                                    ))}
+                                    )
+                                    // ))
+                                  }
                                 </Grid>
                               </Grid>
 
@@ -5968,17 +7895,17 @@ function TempControlPanel() {
                                 <Button
                                   variant="contained"
                                   style={{
-                                    minWidth: '20px',
-                                    minHeight: '41px',
-                                    background: 'transparent',
-                                    boxShadow: 'none',
-                                    marginTop: '5px !important',
-                                    '&:hover': {
-                                      background: '#f4f4f4',
-                                      borderRadius: '50%',
-                                      minHeight: '41px',
-                                      minWidth: '20px',
-                                      boxShadow: 'none',
+                                    minWidth: "20px",
+                                    minHeight: "41px",
+                                    background: "transparent",
+                                    boxShadow: "none",
+                                    marginTop: "5px !important",
+                                    "&:hover": {
+                                      background: "#f4f4f4",
+                                      borderRadius: "50%",
+                                      minHeight: "41px",
+                                      minWidth: "20px",
+                                      boxShadow: "none",
                                     },
                                   }}
                                   disabled={false}
@@ -5986,8 +7913,8 @@ function TempControlPanel() {
                                 >
                                   <CheckCircleIcon
                                     style={{
-                                      color: '#216d21',
-                                      fontSize: '1.5rem',
+                                      color: "#216d21",
+                                      fontSize: "1.5rem",
                                     }}
                                   />
                                 </Button>
@@ -5996,29 +7923,29 @@ function TempControlPanel() {
                                 <Button
                                   variant="contained"
                                   style={{
-                                    minWidth: '20px',
-                                    minHeight: '41px',
-                                    background: 'transparent',
-                                    boxShadow: 'none',
-                                    marginTop: '5px !important',
-                                    '&:hover': {
-                                      background: '#f4f4f4',
-                                      borderRadius: '50%',
-                                      minHeight: '41px',
-                                      minWidth: '20px',
-                                      boxShadow: 'none',
+                                    minWidth: "20px",
+                                    minHeight: "41px",
+                                    background: "transparent",
+                                    boxShadow: "none",
+                                    marginTop: "5px !important",
+                                    "&:hover": {
+                                      background: "#f4f4f4",
+                                      borderRadius: "50%",
+                                      minHeight: "41px",
+                                      minWidth: "20px",
+                                      boxShadow: "none",
                                     },
                                   }}
                                   onClick={() => {
                                     setSignTodoCreate(false);
                                     setIndexSignatureCreate(-1);
                                   }}
-                                // disabled={!empdigits}
+                                  // disabled={!empdigits}
                                 >
                                   <CancelIcon
                                     style={{
-                                      color: '#b92525',
-                                      fontSize: '1.5rem',
+                                      color: "#b92525",
+                                      fontSize: "1.5rem",
                                     }}
                                   />
                                 </Button>
@@ -6032,7 +7959,9 @@ function TempControlPanel() {
                                     <Typography>
                                       <b>All branch</b>
                                     </Typography>
-                                    <Typography>{todo.allBranch ? 'True' : 'False'}</Typography>
+                                    <Typography>
+                                      {todo.allBranch ? "True" : "False"}
+                                    </Typography>
                                   </FormControl>
                                 </Grid>
                                 {!todo.allBranch && (
@@ -6071,14 +8000,16 @@ function TempControlPanel() {
                                     <Typography>{todo.seal}</Typography>
                                   </FormControl>
                                 </Grid>
-                                {todo?.seal === 'For Seal' && (
+                                {todo?.seal === "For Seal" && (
                                   <>
                                     <Grid item md={2} xs={12} sm={12}>
                                       <FormControl fullWidth size="small">
                                         <Typography>
                                           <b>Top Content</b>
                                         </Typography>
-                                        <Typography>{todo.topcontent}</Typography>
+                                        <Typography>
+                                          {todo.topcontent}
+                                        </Typography>
                                       </FormControl>
                                     </Grid>
                                     <Grid item md={2} xs={12} sm={12}>
@@ -6086,7 +8017,9 @@ function TempControlPanel() {
                                         <Typography>
                                           <b>Bottom Content</b>
                                         </Typography>
-                                        <Typography>{todo.bottomcontent}</Typography>
+                                        <Typography>
+                                          {todo.bottomcontent}
+                                        </Typography>
                                       </FormControl>
                                     </Grid>
                                   </>
@@ -6096,7 +8029,9 @@ function TempControlPanel() {
                                     <Typography>
                                       <b>Name</b>
                                     </Typography>
-                                    <Typography>{todo.signaturename}</Typography>
+                                    <Typography>
+                                      {todo.signaturename}
+                                    </Typography>
                                   </FormControl>
                                 </Grid>
                               </>
@@ -6106,48 +8041,71 @@ function TempControlPanel() {
                                 <Typography>
                                   <b>Signature Logo</b>
                                 </Typography>
-                                <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "left",
+                                  }}
+                                ></Box>
                                 <Grid item md={12} xs={12} sm={12}>
-                                  {todo.document?.length > 0 &&
-                                    todo.document.map((file, index) => (
+                                  {
+                                    todo?.document?.file && (
+                                      // todo.document.map((file, index) => (
                                       <>
                                         <Grid container spacing={2}>
                                           <Grid item md={8} sm={6} xs={6}>
-                                            <Typography>{file.name}</Typography>
+                                            <Typography>
+                                              {todo?.document?.name}
+                                            </Typography>
                                           </Grid>
                                           <Grid></Grid>
                                           <Grid item md={1} sm={6} xs={6}>
-                                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                            <VisibilityOutlinedIcon
+                                              style={{
+                                                fontsize: "large",
+                                                color: "#357AE8",
+                                                cursor: "pointer",
+                                              }}
+                                              onClick={() =>
+                                                renderFilePreview(
+                                                  todo?.document?.file
+                                                )
+                                              }
+                                            />
                                           </Grid>
                                         </Grid>
                                       </>
-                                    ))}
+                                    )
+                                    // ))
+                                  }
                                 </Grid>
                               </Grid>
                               <Grid item md={1} mt={2} sm={6} xs={6}>
                                 <Button
                                   variant="contained"
                                   style={{
-                                    minWidth: '20px',
-                                    minHeight: '41px',
-                                    background: 'transparent',
-                                    boxShadow: 'none',
-                                    marginTop: '-13px !important',
-                                    '&:hover': {
-                                      background: '#f4f4f4',
-                                      borderRadius: '50%',
-                                      minHeight: '41px',
-                                      minWidth: '20px',
-                                      boxShadow: 'none',
+                                    minWidth: "20px",
+                                    minHeight: "41px",
+                                    background: "transparent",
+                                    boxShadow: "none",
+                                    marginTop: "-13px !important",
+                                    "&:hover": {
+                                      background: "#f4f4f4",
+                                      borderRadius: "50%",
+                                      minHeight: "41px",
+                                      minWidth: "20px",
+                                      boxShadow: "none",
                                     },
                                   }}
-                                  onClick={() => handleCreateEditSignature(index)}
-                                // disabled={!empdigits}
+                                  onClick={() =>
+                                    handleCreateEditSignature(index)
+                                  }
+                                  // disabled={!empdigits}
                                 >
                                   <FaEdit
                                     style={{
-                                      color: '#1976d2',
-                                      fontSize: '1.2rem',
+                                      color: "#1976d2",
+                                      fontSize: "1.2rem",
                                     }}
                                   />
                                 </Button>
@@ -6156,17 +8114,17 @@ function TempControlPanel() {
                                 <Button
                                   variant="contained"
                                   style={{
-                                    minWidth: '20px',
-                                    minHeight: '41px',
-                                    background: 'transparent',
-                                    boxShadow: 'none',
-                                    marginTop: '-13px !important',
-                                    '&:hover': {
-                                      background: '#f4f4f4',
-                                      borderRadius: '50%',
-                                      minHeight: '41px',
-                                      minWidth: '20px',
-                                      boxShadow: 'none',
+                                    minWidth: "20px",
+                                    minHeight: "41px",
+                                    background: "transparent",
+                                    boxShadow: "none",
+                                    marginTop: "-13px !important",
+                                    "&:hover": {
+                                      background: "#f4f4f4",
+                                      borderRadius: "50%",
+                                      minHeight: "41px",
+                                      minWidth: "20px",
+                                      boxShadow: "none",
                                     },
                                   }}
                                   onClick={() => {
@@ -6176,8 +8134,8 @@ function TempControlPanel() {
                                 >
                                   <FaTrash
                                     style={{
-                                      color: '#b92525',
-                                      fontSize: '1.2rem',
+                                      color: "#b92525",
+                                      fontSize: "1.2rem",
                                     }}
                                   />
                                 </Button>
@@ -6197,9 +8155,15 @@ function TempControlPanel() {
                   <FormControl fullWidth size="small">
                     <Typography>
                       <b>From Email</b>
-                      <b style={{ color: 'red' }}>*</b>
+                      <b style={{ color: "red" }}>*</b>
                     </Typography>
-                    <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter from address" value={fromEmail} onChange={(e) => setFromEmail(e.target.value)} />
+                    <OutlinedInput
+                      id="component-outlined"
+                      type="text"
+                      placeholder="Please Enter from address"
+                      value={fromEmail}
+                      onChange={(e) => setFromEmail(e.target.value)}
+                    />
                   </FormControl>
                 </Grid>
 
@@ -6208,19 +8172,29 @@ function TempControlPanel() {
                     <Typography>
                       <b>CC Email</b>
                     </Typography>
-                    <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter CC address" value={ccEmail} onChange={(e) => setCcEmail(e.target.value)} />
+                    <OutlinedInput
+                      id="component-outlined"
+                      type="text"
+                      placeholder="Please Enter CC address"
+                      value={ccEmail}
+                      onChange={(e) => setCcEmail(e.target.value)}
+                    />
                   </FormControl>
                 </Grid>
 
                 <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                  <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateCCEmail}>
+                  <Button
+                    variant="contained"
+                    sx={{ minWidth: "35px" }}
+                    onClick={handleCreateCCEmail}
+                  >
                     <FaPlus />
                   </Button>
                 </Grid>
                 <Grid item md={12} xs={12} sm={12}>
                   {ccEmailTodo?.length > 0 && (
                     <Typography>
-                      {' '}
+                      {" "}
                       <b>CC Email Address Todo : </b>
                     </Typography>
                   )}
@@ -6233,7 +8207,15 @@ function TempControlPanel() {
                               <>
                                 <Grid item md={4} xs={12} sm={12}>
                                   <FormControl fullWidth size="small">
-                                    <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter CC address" value={ccEmailCreate} onChange={(e) => setCcEmailCreate(e.target.value)} />
+                                    <OutlinedInput
+                                      id="component-outlined"
+                                      type="text"
+                                      placeholder="Please Enter CC address"
+                                      value={ccEmailCreate}
+                                      onChange={(e) =>
+                                        setCcEmailCreate(e.target.value)
+                                      }
+                                    />
                                   </FormControl>
                                 </Grid>
                               </>
@@ -6250,26 +8232,41 @@ function TempControlPanel() {
                                   variant="contained"
                                   color="success"
                                   sx={{
-                                    height: '30px',
-                                    minWidth: '30px',
-                                    marginTop: '8px',
-                                    padding: '6px 10px',
+                                    height: "30px",
+                                    minWidth: "30px",
+                                    marginTop: "8px",
+                                    padding: "6px 10px",
                                   }}
                                   onClick={() => {
-                                    if (ccEmailCreate === '') {
-                                      setPopupContentMalert(`Please Enter CC Email`);
-                                      setPopupSeverityMalert('warning');
+                                    if (ccEmailCreate === "") {
+                                      setPopupContentMalert(
+                                        `Please Enter CC Email`
+                                      );
+                                      setPopupSeverityMalert("warning");
                                       handleClickOpenPopupMalert();
                                     } else if (!isValidEmail(ccEmailCreate)) {
-                                      setPopupContentMalert('Please Enter Valid CC Email');
-                                      setPopupSeverityMalert('warning');
+                                      setPopupContentMalert(
+                                        "Please Enter Valid CC Email"
+                                      );
+                                      setPopupSeverityMalert("warning");
                                       handleClickOpenPopupMalert();
-                                    } else if (ccEmailTodo.some((item, ind) => ind !== index && item?.toLowerCase() == ccEmailCreate?.toLowerCase())) {
-                                      setPopupContentMalert('Already Details Added');
-                                      setPopupSeverityMalert('warning');
+                                    } else if (
+                                      ccEmailTodo.some(
+                                        (item, ind) =>
+                                          ind !== index &&
+                                          item?.toLowerCase() ==
+                                            ccEmailCreate?.toLowerCase()
+                                      )
+                                    ) {
+                                      setPopupContentMalert(
+                                        "Already Details Added"
+                                      );
+                                      setPopupSeverityMalert("warning");
                                       handleClickOpenPopupMalert();
                                     } else {
-                                      const updatedIsTodoEdit = [...isTodoEditCCEmail];
+                                      const updatedIsTodoEdit = [
+                                        ...isTodoEditCCEmail,
+                                      ];
                                       updatedIsTodoEdit[index] = false;
                                       setIsTodoEditCCEmail(updatedIsTodoEdit);
                                       handleUpdateTodoCCEmail();
@@ -6278,8 +8275,8 @@ function TempControlPanel() {
                                 >
                                   <MdOutlineDone
                                     style={{
-                                      fontSize: '17px',
-                                      fontWeight: 'bold',
+                                      fontSize: "17px",
+                                      fontWeight: "bold",
                                     }}
                                   />
                                 </Button>
@@ -6288,14 +8285,19 @@ function TempControlPanel() {
                                   variant="contained"
                                   color="primary"
                                   sx={{
-                                    height: '30px',
-                                    minWidth: '30px',
-                                    marginTop: '8px',
-                                    padding: '6px 10px',
+                                    height: "30px",
+                                    minWidth: "30px",
+                                    marginTop: "8px",
+                                    padding: "6px 10px",
                                   }}
-                                  disabled={editingIndexcheckCCemail !== index && editingIndexcheckCCemail !== -1}
+                                  disabled={
+                                    editingIndexcheckCCemail !== index &&
+                                    editingIndexcheckCCemail !== -1
+                                  }
                                   onClick={() => {
-                                    const updatedIsTodoEdit = [...isTodoEditCCEmail];
+                                    const updatedIsTodoEdit = [
+                                      ...isTodoEditCCEmail,
+                                    ];
                                     updatedIsTodoEdit[index] = true;
                                     setIsTodoEditCCEmail(updatedIsTodoEdit);
                                     setEditingIndexcheckCCemail(index);
@@ -6313,13 +8315,15 @@ function TempControlPanel() {
                                   color="error"
                                   type="button"
                                   sx={{
-                                    height: '30px',
-                                    minWidth: '30px',
-                                    marginTop: '8px',
-                                    padding: '6px 10px',
+                                    height: "30px",
+                                    minWidth: "30px",
+                                    marginTop: "8px",
+                                    padding: "6px 10px",
                                   }}
                                   onClick={() => {
-                                    const updatedIsTodoEdit = [...isTodoEditCCEmail];
+                                    const updatedIsTodoEdit = [
+                                      ...isTodoEditCCEmail,
+                                    ];
                                     updatedIsTodoEdit[index] = false;
                                     setIsTodoEditCCEmail(updatedIsTodoEdit);
                                     setEditingIndexcheckCCemail(-1);
@@ -6333,10 +8337,10 @@ function TempControlPanel() {
                                   color="error"
                                   type="button"
                                   sx={{
-                                    height: '30px',
-                                    minWidth: '30px',
-                                    marginTop: '8px',
-                                    padding: '6px 10px',
+                                    height: "30px",
+                                    minWidth: "30px",
+                                    marginTop: "8px",
+                                    padding: "6px 10px",
                                   }}
                                   onClick={() => handleFileDeleteCCEmail(index)}
                                 >
@@ -6357,18 +8361,28 @@ function TempControlPanel() {
                     <Typography>
                       <b>BCC Email</b>
                     </Typography>
-                    <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter BCC address" value={bccEmail} onChange={(e) => setBccEmail(e.target.value)} />
+                    <OutlinedInput
+                      id="component-outlined"
+                      type="text"
+                      placeholder="Please Enter BCC address"
+                      value={bccEmail}
+                      onChange={(e) => setBccEmail(e.target.value)}
+                    />
                   </FormControl>
                 </Grid>
                 <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                  <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateBCCEmail}>
+                  <Button
+                    variant="contained"
+                    sx={{ minWidth: "35px" }}
+                    onClick={handleCreateBCCEmail}
+                  >
                     <FaPlus />
                   </Button>
                 </Grid>
                 <Grid item md={12} xs={12} sm={12}>
                   {bccEmailTodo?.length > 0 && (
                     <Typography>
-                      {' '}
+                      {" "}
                       <b>BCC Email Address Todo : </b>
                     </Typography>
                   )}
@@ -6381,7 +8395,15 @@ function TempControlPanel() {
                               <>
                                 <Grid item md={4} xs={12} sm={12}>
                                   <FormControl fullWidth size="small">
-                                    <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter BCC address" value={bccEmailCreate} onChange={(e) => setBccEmailCreate(e.target.value)} />
+                                    <OutlinedInput
+                                      id="component-outlined"
+                                      type="text"
+                                      placeholder="Please Enter BCC address"
+                                      value={bccEmailCreate}
+                                      onChange={(e) =>
+                                        setBccEmailCreate(e.target.value)
+                                      }
+                                    />
                                   </FormControl>
                                 </Grid>
                               </>
@@ -6398,26 +8420,41 @@ function TempControlPanel() {
                                   variant="contained"
                                   color="success"
                                   sx={{
-                                    height: '30px',
-                                    minWidth: '30px',
-                                    marginTop: '8px',
-                                    padding: '6px 10px',
+                                    height: "30px",
+                                    minWidth: "30px",
+                                    marginTop: "8px",
+                                    padding: "6px 10px",
                                   }}
                                   onClick={() => {
-                                    if (bccEmailCreate === '') {
-                                      setPopupContentMalert(`Please Enter BCC Email`);
-                                      setPopupSeverityMalert('warning');
+                                    if (bccEmailCreate === "") {
+                                      setPopupContentMalert(
+                                        `Please Enter BCC Email`
+                                      );
+                                      setPopupSeverityMalert("warning");
                                       handleClickOpenPopupMalert();
                                     } else if (!isValidEmail(bccEmailCreate)) {
-                                      setPopupContentMalert('Please Enter Valid BCC Email');
-                                      setPopupSeverityMalert('warning');
+                                      setPopupContentMalert(
+                                        "Please Enter Valid BCC Email"
+                                      );
+                                      setPopupSeverityMalert("warning");
                                       handleClickOpenPopupMalert();
-                                    } else if (bccEmailTodo.some((item, ind) => ind !== index && item?.toLowerCase() === bccEmailCreate?.toLowerCase())) {
-                                      setPopupContentMalert('Already Details Added');
-                                      setPopupSeverityMalert('warning');
+                                    } else if (
+                                      bccEmailTodo.some(
+                                        (item, ind) =>
+                                          ind !== index &&
+                                          item?.toLowerCase() ===
+                                            bccEmailCreate?.toLowerCase()
+                                      )
+                                    ) {
+                                      setPopupContentMalert(
+                                        "Already Details Added"
+                                      );
+                                      setPopupSeverityMalert("warning");
                                       handleClickOpenPopupMalert();
                                     } else {
-                                      const updatedIsTodoEdit = [...isTodoEditBCCEmail];
+                                      const updatedIsTodoEdit = [
+                                        ...isTodoEditBCCEmail,
+                                      ];
                                       updatedIsTodoEdit[index] = false;
                                       setIsTodoEditBCCEmail(updatedIsTodoEdit);
                                       handleUpdateTodoBCCEmail();
@@ -6426,8 +8463,8 @@ function TempControlPanel() {
                                 >
                                   <MdOutlineDone
                                     style={{
-                                      fontSize: '17px',
-                                      fontWeight: 'bold',
+                                      fontSize: "17px",
+                                      fontWeight: "bold",
                                     }}
                                   />
                                 </Button>
@@ -6436,14 +8473,19 @@ function TempControlPanel() {
                                   variant="contained"
                                   color="primary"
                                   sx={{
-                                    height: '30px',
-                                    minWidth: '30px',
-                                    marginTop: '8px',
-                                    padding: '6px 10px',
+                                    height: "30px",
+                                    minWidth: "30px",
+                                    marginTop: "8px",
+                                    padding: "6px 10px",
                                   }}
-                                  disabled={editingIndexcheckBCCemail !== index && editingIndexcheckBCCemail !== -1}
+                                  disabled={
+                                    editingIndexcheckBCCemail !== index &&
+                                    editingIndexcheckBCCemail !== -1
+                                  }
                                   onClick={() => {
-                                    const updatedIsTodoEdit = [...isTodoEditBCCEmail];
+                                    const updatedIsTodoEdit = [
+                                      ...isTodoEditBCCEmail,
+                                    ];
                                     updatedIsTodoEdit[index] = true;
                                     setIsTodoEditBCCEmail(updatedIsTodoEdit);
                                     setEditingIndexcheckBCCemail(index);
@@ -6461,13 +8503,15 @@ function TempControlPanel() {
                                   color="error"
                                   type="button"
                                   sx={{
-                                    height: '30px',
-                                    minWidth: '30px',
-                                    marginTop: '8px',
-                                    padding: '6px 10px',
+                                    height: "30px",
+                                    minWidth: "30px",
+                                    marginTop: "8px",
+                                    padding: "6px 10px",
                                   }}
                                   onClick={() => {
-                                    const updatedIsTodoEdit = [...isTodoEditBCCEmail];
+                                    const updatedIsTodoEdit = [
+                                      ...isTodoEditBCCEmail,
+                                    ];
                                     updatedIsTodoEdit[index] = false;
                                     setIsTodoEditBCCEmail(updatedIsTodoEdit);
                                     setEditingIndexcheckBCCemail(-1);
@@ -6481,12 +8525,14 @@ function TempControlPanel() {
                                   color="error"
                                   type="button"
                                   sx={{
-                                    height: '30px',
-                                    minWidth: '30px',
-                                    marginTop: '8px',
-                                    padding: '6px 10px',
+                                    height: "30px",
+                                    minWidth: "30px",
+                                    marginTop: "8px",
+                                    padding: "6px 10px",
                                   }}
-                                  onClick={() => handleFileDeleteBCCEmail(index)}
+                                  onClick={() =>
+                                    handleFileDeleteBCCEmail(index)
+                                  }
                                 >
                                   <AiOutlineClose />
                                 </Button>
@@ -6503,7 +8549,7 @@ function TempControlPanel() {
                 <Grid item md={12} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
-                      Email Format <b style={{ color: 'red' }}>*</b>
+                      Email Format <b style={{ color: "red" }}>*</b>
                     </Typography>
                     <ReactQuillAdvanced
                       agenda={emailFormat}
@@ -6542,7 +8588,14 @@ function TempControlPanel() {
               <br />
               <Grid container spacing={2}>
                 <Grid item md={2} xs={12} sm={6}>
-                  <LoadingButton sx={buttonStyles.buttonsubmit} loading={btnSubmit} variant="contained" color="primary" onClick={handleSubmit} disabled={isActive}>
+                  <LoadingButton
+                    sx={buttonStyles.buttonsubmit}
+                    loading={btnSubmit}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleSubmit}
+                    disabled={isActive}
+                  >
                     Submit
                   </LoadingButton>
                 </Grid>
@@ -6565,21 +8618,23 @@ function TempControlPanel() {
           aria-describedby="alert-dialog-description"
           fullWidth={true}
           maxWidth="lg"
-          sx={{ marginTop: '50px' }}
-        // sx={{
-        //     overflow: 'visible',
-        //     '& .MuiPaper-root': {
-        //         overflow: 'visible',
-        //     },
-        // }}
+          sx={{ marginTop: "50px" }}
+          // sx={{
+          //     overflow: 'visible',
+          //     '& .MuiPaper-root': {
+          //         overflow: 'visible',
+          //     },
+          // }}
         >
-          <Box sx={{ padding: '20px' }}>
+          <Box sx={{ padding: "20px" }}>
             <>
               <form onSubmit={editSubmit}>
                 {/* <DialogContent sx={{ width: '550px', padding: '20px' }}> */}
                 <Grid container spacing={2}>
                   <Grid item md={12} xs={12} sm={12}>
-                    <Typography sx={userStyle.HeaderText}>Edit Template Control Panel</Typography>
+                    <Typography sx={userStyle.HeaderText}>
+                      Edit Template Control Panel
+                    </Typography>
                   </Grid>
                 </Grid>
                 <br />
@@ -6588,7 +8643,7 @@ function TempControlPanel() {
                     <Grid item md={2} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Company <b style={{ color: 'red' }}>*</b>
+                          Company <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <Selects
                           options={companyOptionEdit}
@@ -6599,10 +8654,10 @@ function TempControlPanel() {
                             setCompanynameEdit(e.value);
                             setUnitOptionEdit([]);
                             setEmployeeOptionEdit([]);
-                            setEmployeeEdit('Please Select Employee');
-                            setTeamEdit('Please Select Team');
-                            setUnitEdit('Please Select Unit');
-                            setBranchEdit('Please Select Branch');
+                            setEmployeeEdit("Please Select Employee");
+                            setTeamEdit("Please Select Team");
+                            setUnitEdit("Please Select Unit");
+                            setBranchEdit("Please Select Branch");
                             setTodoscheckSignatureEdit([]);
                           }}
                         />
@@ -6611,7 +8666,7 @@ function TempControlPanel() {
                     <Grid item md={2} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Branch<b style={{ color: 'red' }}>*</b>
+                          Branch<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <Selects
                           options={branchOptionEdit}
@@ -6620,9 +8675,9 @@ function TempControlPanel() {
                             fetchUnitAllEdit(e.value);
                             setBranchEdit(e.value);
                             setAddressEdit(e.address);
-                            setEmployeeEdit('Please Select Employee');
-                            setTeamEdit('Please Select Team');
-                            setUnitEdit('Please Select Unit');
+                            setEmployeeEdit("Please Select Employee");
+                            setTeamEdit("Please Select Team");
+                            setUnitEdit("Please Select Unit");
                             setEmployeeOptionEdit([]);
                             setTodoscheckSignatureEdit([]);
                           }}
@@ -6640,14 +8695,19 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>Header Name</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <OutlinedInput
                           id="component-outlined"
                           type="text"
                           placeholder="Please Enter Header Name"
                           value={headerNameEdit}
-                          disabled={!isEditingHeaderEdit && documentFilesDocumentContentHeaderEdit.length > 0 ? false : false}
+                          disabled={
+                            !isEditingHeaderEdit &&
+                            documentFilesDocumentContentHeaderEdit.file
+                              ? false
+                              : false
+                          }
                           onChange={(e) => {
                             setHeaderNameEdit(e.target.value);
                           }}
@@ -6656,47 +8716,94 @@ function TempControlPanel() {
                     </Grid>
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
-                        {' '}
+                        {" "}
                         <b>Document Letter Head Content Header </b>
-                        <b style={{ color: 'red' }}>*</b>
+                        <b style={{ color: "red" }}>*</b>
                       </InputLabel>
                       <div>
-                        <Button variant="contained" size="small" disabled={isEditingHeaderEdit} component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }} onClick={handleClickEdit}>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          disabled={isEditingHeaderEdit}
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                          onClick={handleClickEdit}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDocEdit} open={Boolean(anchorElDocEdit)} onClose={handleCloseEdit}>
-                          <MenuItem onClick={() => handleMenuItemClickEdit('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClickEdit('organizational')}>Organizational Document</MenuItem>
+                        <Menu
+                          anchorEl={anchorElDocEdit}
+                          open={Boolean(anchorElDocEdit)}
+                          onClose={handleCloseEdit}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClickEdit("local")}
+                          >
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClickEdit("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
                         </Menu>
 
-                        {optionEdit === 'local' && documentFilesDocumentContentHeaderEdit?.length === 0 && (
-                          <Button variant="contained" disabled={isEditingHeaderEdit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                            Upload Local
-                            <input
-                              type="file"
-                              id="resume"
-                              accept=".png"
-                              name="file"
-                              hidden
-                              onChange={(e) => {
-                                handleResumeUploadDocumentContentheaderEdit(e);
+                        {optionEdit === "local" &&
+                          !documentFilesDocumentContentHeaderEdit?.name && (
+                            <Button
+                              variant="contained"
+                              disabled={isEditingHeaderEdit}
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
                               }}
-                            />
-                          </Button>
-                        )}
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadDocumentContentheaderEdit(
+                                    e
+                                  );
+                                }}
+                              />
+                            </Button>
+                          )}
 
-                        {optionEdit === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                        {optionEdit === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
                               disabled={isEditingHeaderEdit}
-                              value={{ value: docBodyHeaderEdit, label: docBodyHeaderEdit }}
+                              value={{
+                                value: docBodyHeaderEdit,
+                                label: docBodyHeaderEdit,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeaderEdit(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesDOcumentContentHeaderEdit([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesDOcumentContentHeaderEdit({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -6705,34 +8812,70 @@ function TempControlPanel() {
 
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesDocumentContentHeaderEdit?.length > 0 &&
-                          documentFilesDocumentContentHeaderEdit?.map((file, index) => (
+                        {
+                          documentFilesDocumentContentHeaderEdit?.file && (
+                            // documentFilesDocumentContentHeaderEdit?.map(
+                            //   (file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {
+                                      documentFilesDocumentContentHeaderEdit?.name
+                                    }
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentHeaderEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentContentHeaderEdit(
+                                        documentFilesDocumentContentHeaderEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentContentHeaderEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() =>
+                                      handleFileDeleteDocumentContentHeaderEdit()
+                                    }
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          //   )
+                          // )
+                        }
                       </Grid>
                     </Grid>
                     <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                      <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleEditTodoHeader}>
+                      <Button
+                        variant="contained"
+                        sx={{ minWidth: "35px" }}
+                        onClick={handleEditTodoHeader}
+                      >
                         {isEditingHeaderEdit ? <EditIcon /> : <FaPlus />}
                       </Button>
                     </Grid>
                     <Grid item md={12} xs={12} sm={12}>
-                      {headerTodoEdit?.length > 0 && <Typography variant='h6'>{"Headers List"}</Typography>}
+                      {headerTodoEdit?.length > 0 && (
+                        <Typography variant="h6">{"Headers List"}</Typography>
+                      )}
                       <br />
                       {headerTodoEdit?.length > 0 &&
                         headerTodoEdit?.map((file, index) => (
@@ -6742,19 +8885,28 @@ function TempControlPanel() {
                                 <Typography>{file?.headername}</Typography>
                               </Grid>
                               <Grid item md={6} sm={6} xs={6}>
-                                <Typography>{file?.headerimage[0]?.name}</Typography>
+                                <Typography>
+                                  {file?.headerimage?.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={2} sm={6} xs={6}>
-                                {isEditingHeaderEdit && editIndexHeaderEdit === index ? (
-                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                {isEditingHeaderEdit &&
+                                editIndexHeaderEdit === index ? (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      alignItems: "center",
+                                    }}
+                                  >
                                     {/* ✅ Save Button */}
                                     <Button
                                       sx={{
-                                        color: '#4CAF50',
-                                        cursor: 'pointer',
-                                        minWidth: '30px',
-                                        p: '4px',
+                                        color: "#4CAF50",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
                                       }}
                                       onClick={handleEditTodoHeader}
                                     >
@@ -6764,32 +8916,42 @@ function TempControlPanel() {
                                     {/* ❌ Cancel Button */}
                                     <Button
                                       sx={{
-                                        color: '#F44336',
-                                        cursor: 'pointer',
-                                        minWidth: '30px',
-                                        p: '4px',
+                                        color: "#F44336",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
                                       }}
                                       onClick={() => {
                                         setIsEditingHeaderEdit(false);
                                         setEditIndexHeaderEdit(null);
-                                        setHeaderNameEdit('');
-                                        setdocumentFilesDOcumentContentHeaderEdit([]);
+                                        setHeaderNameEdit("");
+                                        setdocumentFilesDOcumentContentHeaderEdit(
+                                          ""
+                                        );
                                       }}
                                     >
                                       <CloseIcon />
                                     </Button>
                                   </Box>
                                 ) : (
-                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      alignItems: "center",
+                                    }}
+                                  >
                                     {/* ✏️ Edit Button */}
                                     <Button
                                       sx={{
-                                        color: '#357AE8',
-                                        cursor: 'pointer',
-                                        minWidth: '30px',
-                                        p: '4px',
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
                                       }}
-                                      onClick={() => handleEditHeaderEdit(index)}
+                                      onClick={() =>
+                                        handleEditHeaderEdit(index)
+                                      }
                                     >
                                       <EditIcon />
                                     </Button>
@@ -6797,43 +8959,44 @@ function TempControlPanel() {
                                     {/* 🗑️ Delete Button */}
                                     <Button
                                       sx={{
-                                        color: '#357AE8',
-                                        cursor: 'pointer',
-                                        minWidth: '30px',
-                                        p: '4px',
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
                                       }}
-                                      onClick={() => handleDeleteHeaderEdit(index)}
+                                      onClick={() =>
+                                        handleDeleteHeaderEdit(index)
+                                      }
                                     >
                                       <DeleteIcon />
                                     </Button>
                                   </Box>
                                 )}
                               </Grid>
-
-
                             </Grid>
                           </>
                         ))}
                     </Grid>
                   </Grid>
 
-
-
-
-
                   <Grid container spacing={2}>
                     <Grid item md={4} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>Footer Name</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <OutlinedInput
                           id="component-outlined"
                           type="text"
                           placeholder="Please Enter Footer Name"
                           value={footerNameEdit}
-                          disabled={!isEditingFooterEdit && documentFilesDocumentContentFooterEdit.length > 0 ? false : false}
+                          disabled={
+                            !isEditingFooterEdit &&
+                            documentFilesDocumentContentFooterEdit?.file
+                              ? false
+                              : false
+                          }
                           onChange={(e) => {
                             setFooterNameEdit(e.target.value);
                           }}
@@ -6842,48 +9005,95 @@ function TempControlPanel() {
                     </Grid>
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
-                        {' '}
+                        {" "}
                         <b>Document Letter Head Content Footer</b>
-                        <b style={{ color: 'red' }}>*</b>
+                        <b style={{ color: "red" }}>*</b>
                       </InputLabel>
-                      <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                      <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
-                          <Button variant="contained" size="small" disabled={isEditingFooterEdit} component="label" onClick={handleClick2Edit} sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            disabled={isEditingFooterEdit}
+                            component="label"
+                            onClick={handleClick2Edit}
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload
                           </Button>
-                          <Menu anchorEl={anchorElDoc2Edit} open={Boolean(anchorElDoc2Edit)} onClose={handleClose2Edit}>
-                            <MenuItem onClick={() => handleMenuItemClick2Edit('local')}>Upload Local</MenuItem>
-                            <MenuItem onClick={() => handleMenuItemClick2Edit('organizational')}>Organizational Document</MenuItem>
+                          <Menu
+                            anchorEl={anchorElDoc2Edit}
+                            open={Boolean(anchorElDoc2Edit)}
+                            onClose={handleClose2Edit}
+                          >
+                            <MenuItem
+                              onClick={() => handleMenuItemClick2Edit("local")}
+                            >
+                              Upload Local
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                handleMenuItemClick2Edit("organizational")
+                              }
+                            >
+                              Organizational Document
+                            </MenuItem>
                           </Menu>
 
-                          {option2Edit === 'local' && documentFilesDocumentContentFooterEdit?.length === 0 && (
-                            <Button disabled={isEditingFooterEdit} variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                              Upload Local
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".png"
-                                name="file"
-                                hidden
-                                onChange={(e) => {
-                                  handleResumeUploadDocumentContentFooterEdit(e);
+                          {option2Edit === "local" &&
+                            !documentFilesDocumentContentFooterEdit?.name && (
+                              <Button
+                                disabled={isEditingFooterEdit}
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  ...buttonStyles.buttonsubmit,
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
                                 }}
-                              />
-                            </Button>
-                          )}
+                              >
+                                Upload Local
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={(e) => {
+                                    handleResumeUploadDocumentContentFooterEdit(
+                                      e
+                                    );
+                                  }}
+                                />
+                              </Button>
+                            )}
 
-                          {option2Edit === 'organizational' && (
-                            <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                          {option2Edit === "organizational" && (
+                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
                                 disabled={isEditingFooterEdit}
-                                value={{ value: docBodyHeader2Edit, label: docBodyHeader2Edit }}
+                                value={{
+                                  value: docBodyHeader2Edit,
+                                  label: docBodyHeader2Edit,
+                                }}
                                 onChange={async (e) => {
                                   setDocBodyHeader2Edit(e.value);
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 = await getBase64FromMulterPath(filePath);
-                                  setdocumentFilesDOcumentContentFooterEdit([{ name: resume?.name, preview: base64 }]);
+                                  const base64 =
+                                    await getFileObjectFromMulterPath(filePath);
+                                  setdocumentFilesDOcumentContentFooterEdit({
+                                    name: resume?.name,
+                                    file: base64,
+                                  });
                                 }}
                               />
                             </FormControl>
@@ -6892,34 +9102,72 @@ function TempControlPanel() {
                       </Box>
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesDocumentContentFooterEdit?.length > 0 &&
-                          documentFilesDocumentContentFooterEdit?.map((file, index) => (
+                        {
+                          documentFilesDocumentContentFooterEdit?.file && (
+                            // documentFilesDocumentContentFooterEdit?.map(
+                            // (file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {
+                                      documentFilesDocumentContentFooterEdit?.name
+                                    }
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentFooterEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentContentFooterEdit(
+                                        documentFilesDocumentContentFooterEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentContentFooterEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() =>
+                                      handleFileDeleteDocumentContentFooterEdit(
+                                        ""
+                                      )
+                                    }
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          //   )
+                          // )
+                        }
                       </Grid>
                     </Grid>
                     <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                      <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleEditTodoFooter}>
+                      <Button
+                        variant="contained"
+                        sx={{ minWidth: "35px" }}
+                        onClick={handleEditTodoFooter}
+                      >
                         {isEditingFooterEdit ? <EditIcon /> : <FaPlus />}
                       </Button>
                     </Grid>
                     <Grid item md={12} xs={12} sm={12}>
-                      {footerTodoEdit?.length > 0 && <Typography variant='h6'>{"Footers List"}</Typography>}
+                      {footerTodoEdit?.length > 0 && (
+                        <Typography variant="h6">{"Footers List"}</Typography>
+                      )}
                       <br />
                       {footerTodoEdit?.length > 0 &&
                         footerTodoEdit?.map((file, index) => (
@@ -6929,19 +9177,28 @@ function TempControlPanel() {
                                 <Typography>{file?.footername}</Typography>
                               </Grid>
                               <Grid item md={6} sm={6} xs={6}>
-                                <Typography>{file?.footerimage[0]?.name}</Typography>
+                                <Typography>
+                                  {file?.footerimage?.name}
+                                </Typography>
                               </Grid>
                               <Grid></Grid>
                               <Grid item md={2} sm={6} xs={6}>
-                                {isEditingFooterEdit && editIndexFooterEdit === index ? (
-                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                {isEditingFooterEdit &&
+                                editIndexFooterEdit === index ? (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      alignItems: "center",
+                                    }}
+                                  >
                                     {/* ✅ Save Button */}
                                     <Button
                                       sx={{
-                                        color: '#4CAF50',
-                                        cursor: 'pointer',
-                                        minWidth: '30px',
-                                        p: '4px',
+                                        color: "#4CAF50",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
                                       }}
                                       onClick={handleEditTodoFooter}
                                     >
@@ -6951,32 +9208,42 @@ function TempControlPanel() {
                                     {/* ❌ Cancel Button */}
                                     <Button
                                       sx={{
-                                        color: '#F44336',
-                                        cursor: 'pointer',
-                                        minWidth: '30px',
-                                        p: '4px',
+                                        color: "#F44336",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
                                       }}
                                       onClick={() => {
                                         setIsEditingFooterEdit(false);
                                         setEditIndexFooterEdit(null);
-                                        setFooterNameEdit('');
-                                        setdocumentFilesDOcumentContentFooterEdit([]);
+                                        setFooterNameEdit("");
+                                        setdocumentFilesDOcumentContentFooterEdit(
+                                          ""
+                                        );
                                       }}
                                     >
                                       <CloseIcon />
                                     </Button>
                                   </Box>
                                 ) : (
-                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      alignItems: "center",
+                                    }}
+                                  >
                                     {/* ✏️ Edit Button */}
                                     <Button
                                       sx={{
-                                        color: '#357AE8',
-                                        cursor: 'pointer',
-                                        minWidth: '30px',
-                                        p: '4px',
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
                                       }}
-                                      onClick={() => handleEditFooterEdit(index)}
+                                      onClick={() =>
+                                        handleEditFooterEdit(index)
+                                      }
                                     >
                                       <EditIcon />
                                     </Button>
@@ -6984,76 +9251,115 @@ function TempControlPanel() {
                                     {/* 🗑️ Delete Button */}
                                     <Button
                                       sx={{
-                                        color: '#357AE8',
-                                        cursor: 'pointer',
-                                        minWidth: '30px',
-                                        p: '4px',
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
                                       }}
-                                      onClick={() => handleDeleteFooterEdit(index)}
+                                      onClick={() =>
+                                        handleDeleteFooterEdit(index)
+                                      }
                                     >
                                       <DeleteIcon />
                                     </Button>
                                   </Box>
                                 )}
                               </Grid>
-
-
                             </Grid>
                           </>
                         ))}
                     </Grid>
-
                   </Grid>
-
-
-
-
-
 
                   <Grid container spacing={2}>
                     <Grid item md={4} xs={12} sm={12}>
                       <Typography>
                         <b>Document Letter Head Body Content(Background)</b>
-                        <b style={{ color: 'red' }}>*</b>
+                        <b style={{ color: "red" }}>*</b>
                       </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                      <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
-                          <Button variant="contained" onClick={handleClick3Edit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button
+                            variant="contained"
+                            onClick={handleClick3Edit}
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload
                           </Button>
 
-                          <Menu anchorEl={anchorElDoc3Edit} open={Boolean(anchorElDoc3Edit)} onClose={handleClose3Edit}>
-                            <MenuItem onClick={() => handleMenuItemClick3Edit('local')}>Upload Local</MenuItem>
-                            <MenuItem onClick={() => handleMenuItemClick3Edit('organizational')}>Organizational Document</MenuItem>
+                          <Menu
+                            anchorEl={anchorElDoc3Edit}
+                            open={Boolean(anchorElDoc3Edit)}
+                            onClose={handleClose3Edit}
+                          >
+                            <MenuItem
+                              onClick={() => handleMenuItemClick3Edit("local")}
+                            >
+                              Upload Local
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                handleMenuItemClick3Edit("organizational")
+                              }
+                            >
+                              Organizational Document
+                            </MenuItem>
                           </Menu>
 
-                          {option3Edit === 'local' && documentFilesDocumentBodyContentEdit?.length === 0 && (
-                            <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                              Upload Local
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".png"
-                                name="file"
-                                hidden
-                                onChange={(e) => {
-                                  handleResumeUploadDocumentBodyContentEdit(e);
+                          {option3Edit === "local" &&
+                            !documentFilesDocumentBodyContentEdit?.name && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  ...buttonStyles.buttonsubmit,
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
                                 }}
-                              />
-                            </Button>
-                          )}
+                              >
+                                Upload Local
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={(e) => {
+                                    handleResumeUploadDocumentBodyContentEdit(
+                                      e
+                                    );
+                                  }}
+                                />
+                              </Button>
+                            )}
 
-                          {option3Edit === 'organizational' && (
-                            <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                          {option3Edit === "organizational" && (
+                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
-                                value={{ value: docBodyHeader3Edit, label: docBodyHeader3Edit }}
+                                value={{
+                                  value: docBodyHeader3Edit,
+                                  label: docBodyHeader3Edit,
+                                }}
                                 onChange={async (e) => {
                                   setDocBodyHeader3Edit(e.value);
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 = await getBase64FromMulterPath(filePath);
-                                  setdocumentFilesDOcumentBodyContentEdit([{ name: resume?.name, preview: base64 }]);
+                                  const base64 =
+                                    await getFileObjectFromMulterPath(filePath);
+                                  setdocumentFilesDOcumentBodyContentEdit({
+                                    name: resume?.name,
+                                    file: base64,
+                                  });
                                 }}
                               />
                             </FormControl>
@@ -7062,25 +9368,55 @@ function TempControlPanel() {
                       </Box>
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesDocumentBodyContentEdit?.length > 0 &&
-                          documentFilesDocumentBodyContentEdit?.map((file, index) => (
+                        {
+                          documentFilesDocumentBodyContentEdit?.name && (
+                            // documentFilesDocumentBodyContentEdit?.map(
+                            //   (file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {documentFilesDocumentBodyContentEdit?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBodyContentEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentBodyContentEdit(
+                                        documentFilesDocumentBodyContentEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentBodyContentEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() =>
+                                      handleFileDeleteDocumentBodyContentEdit(
+                                        ""
+                                      )
+                                    }
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          //   )
+                          // )
+                        }
                       </Grid>
                     </Grid>
                   </Grid>
@@ -7095,7 +9431,7 @@ function TempControlPanel() {
                       <FormControl fullWidth size="small">
                         <Typography>
                           <b>Company URL</b>
-                          <b style={{ color: 'red' }}>*</b>
+                          <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <OutlinedInput
                           id="component-outlined"
@@ -7108,128 +9444,94 @@ function TempControlPanel() {
                         />
                       </FormControl>
                     </Grid>
-                    {/* <Grid item md={4} sm={12} xs={12}>
-                                            <InputLabel><b>ID Card Front Header</b> </InputLabel>
-                                            <Box sx={{ display: "flex", justifyContent: "left" }}>
-                                                <Button variant="contained" size="small" component="label" sx={{ "@media only screen and (max-width:550px)": { marginY: "5px" } }}>
-                                                    Upload
-                                                    <input
-                                                        type="file"
-                                                        id="resume"
-                                                        accept=".png"
-                                                        name="file"
-                                                        hidden
-                                                        onChange={(e) => {
-                                                            handleResumeUploadDocumentFrontHeaderEdit(e);
-                                                        }}
-                                                    />
-                                                </Button>
-                                            </Box>
-                                            <br></br>
-                                            <Grid item md={12} xs={12} sm={12}>
-                                                {documentFilesDocumentFrontHeaderEdit?.length > 0 &&
-                                                    documentFilesDocumentFrontHeaderEdit?.map((file, index) => (
-                                                        <>
-                                                            <Grid container spacing={2}>
-                                                                <Grid item md={8} sm={6} xs={6}>
-                                                                    <Typography>{file.name}</Typography>
-                                                                </Grid>
-                                                                <Grid></Grid>
-                                                                <Grid item md={1} sm={6} xs={6}>
-                                                                    <VisibilityOutlinedIcon style={{ fontsize: "large", color: "#357AE8", cursor: "pointer" }} onClick={() => renderFilePreviewDocumentFrontHeaderEdit(file)} />
-                                                                </Grid>
-                                                                <Grid item md={1} sm={6} xs={6}>
-                                                                    <Button style={{ fontsize: "large", color: "#357AE8", cursor: "pointer", marginTop: "-5px" }} onClick={() => handleFileDeleteDocumentFrontHeaderEdit(index)}>
-                                                                        <DeleteIcon />
-                                                                    </Button>
-                                                                </Grid>
-                                                            </Grid>
-                                                        </>
-                                                    ))}
-                                            </Grid>
-                                        </Grid>
-                                        <Grid item md={4} sm={12} xs={12}>
-                                            <InputLabel><b>ID Card Front Footer</b> </InputLabel>
-                                            <Box sx={{ display: "flex", justifyContent: "left" }}>
-                                                <Button variant="contained" size="small" component="label" sx={{ "@media only screen and (max-width:550px)": { marginY: "5px" } }}>
-                                                    Upload
-                                                    <input
-                                                        type="file"
-                                                        id="resume"
-                                                        accept=".png"
-                                                        name="file"
-                                                        hidden
-                                                        onChange={(e) => {
-                                                            handleResumeUploadDocumentFrontFooterEdit(e);
-                                                        }}
-                                                    />
-                                                </Button>
-                                            </Box>
-                                            <br></br>
-                                            <Grid item md={12} xs={12} sm={12}>
-                                                {documentFilesDocumentFrontFooterEdit?.length > 0 &&
-                                                    documentFilesDocumentFrontFooterEdit?.map((file, index) => (
-                                                        <>
-                                                            <Grid container spacing={2}>
-                                                                <Grid item md={8} sm={6} xs={6}>
-                                                                    <Typography>{file.name}</Typography>
-                                                                </Grid>
-                                                                <Grid></Grid>
-                                                                <Grid item md={1} sm={6} xs={6}>
-                                                                    <VisibilityOutlinedIcon style={{ fontsize: "large", color: "#357AE8", cursor: "pointer" }} onClick={() => renderFilePreviewDocumentFrontFooterEdit(file)} />
-                                                                </Grid>
-                                                                <Grid item md={1} sm={6} xs={6}>
-                                                                    <Button style={{ fontsize: "large", color: "#357AE8", cursor: "pointer", marginTop: "-5px" }} onClick={() => handleFileDeleteDocumentFrontFooterEdit(index)}>
-                                                                        <DeleteIcon />
-                                                                    </Button>
-                                                                </Grid>
-                                                            </Grid>
-                                                        </>
-                                                    ))}
-                                            </Grid>
-                                        </Grid> */}
 
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
-                        <b>ID Card Front Header</b> <b style={{ color: 'red' }}>*</b>
+                        <b>ID Card Front Header</b>{" "}
+                        <b style={{ color: "red" }}>*</b>
                       </InputLabel>
-                      <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                      <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
-                          <Button variant="contained" onClick={handleClick4Edit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button
+                            variant="contained"
+                            onClick={handleClick4Edit}
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload
                           </Button>
-                          <Menu anchorEl={anchorElDoc4Edit} open={Boolean(anchorElDoc4Edit)} onClose={handleClose4Edit}>
-                            <MenuItem onClick={() => handleMenuItemClick4Edit('local')}>Upload Local</MenuItem>
-                            <MenuItem onClick={() => handleMenuItemClick4Edit('organizational')}>Organizational Document</MenuItem>
+                          <Menu
+                            anchorEl={anchorElDoc4Edit}
+                            open={Boolean(anchorElDoc4Edit)}
+                            onClose={handleClose4Edit}
+                          >
+                            <MenuItem
+                              onClick={() => handleMenuItemClick4Edit("local")}
+                            >
+                              Upload Local
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                handleMenuItemClick4Edit("organizational")
+                              }
+                            >
+                              Organizational Document
+                            </MenuItem>
                           </Menu>
 
-                          {option4Edit === 'local' && documentFilesDocumentFrontHeaderEdit?.length === 0 && (
-                            <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                              Upload Local
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".png"
-                                name="file"
-                                hidden
-                                onChange={(e) => {
-                                  handleResumeUploadDocumentFrontHeaderEdit(e);
+                          {option4Edit === "local" &&
+                            !documentFilesDocumentFrontHeaderEdit?.name && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  ...buttonStyles.buttonsubmit,
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
                                 }}
-                              />
-                            </Button>
-                          )}
+                              >
+                                Upload Local
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={(e) => {
+                                    handleResumeUploadDocumentFrontHeaderEdit(
+                                      e
+                                    );
+                                  }}
+                                />
+                              </Button>
+                            )}
 
-                          {option4Edit === 'organizational' && (
-                            <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                          {option4Edit === "organizational" && (
+                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
-                                value={{ value: docBodyHeader4Edit, label: docBodyHeader4Edit }}
+                                value={{
+                                  value: docBodyHeader4Edit,
+                                  label: docBodyHeader4Edit,
+                                }}
                                 onChange={async (e) => {
                                   setDocBodyHeader4Edit(e.value);
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 = await getBase64FromMulterPath(filePath);
-                                  setdocumentFilesDOcumentFrontHeaderEdit([{ name: resume?.name, preview: base64 }]);
+                                  const base64 =
+                                    await getFileObjectFromMulterPath(filePath);
+                                  setdocumentFilesDOcumentFrontHeaderEdit({
+                                    name: resume?.name,
+                                    file: base64,
+                                  });
                                 }}
                               />
                             </FormControl>
@@ -7238,68 +9540,144 @@ function TempControlPanel() {
                       </Box>
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesDocumentFrontHeaderEdit?.length > 0 &&
-                          documentFilesDocumentFrontHeaderEdit?.map((file, index) => (
+                        {
+                          documentFilesDocumentFrontHeaderEdit && (
+                            // documentFilesDocumentFrontHeaderEdit?.map(
+                            //   (file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {documentFilesDocumentFrontHeaderEdit?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentFrontHeaderEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentFrontHeaderEdit(
+                                        documentFilesDocumentFrontHeaderEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentFrontHeaderEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() =>
+                                      handleFileDeleteDocumentFrontHeaderEdit(
+                                        ""
+                                      )
+                                    }
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          //   )
+                          // )
+                        }
                       </Grid>
                     </Grid>
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
-                        <b>ID Card Front Footer</b> <b style={{ color: 'red' }}>*</b>{' '}
+                        <b>ID Card Front Footer</b>{" "}
+                        <b style={{ color: "red" }}>*</b>{" "}
                       </InputLabel>
-                      <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                      <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
-                          <Button variant="contained" onClick={handleClick5Edit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button
+                            variant="contained"
+                            onClick={handleClick5Edit}
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload
                           </Button>
-                          <Menu anchorEl={anchorElDoc5Edit} open={Boolean(anchorElDoc5Edit)} onClose={handleClose5Edit}>
-                            <MenuItem onClick={() => handleMenuItemClick5Edit('local')}>Upload Local</MenuItem>
-                            <MenuItem onClick={() => handleMenuItemClick5Edit('organizational')}>Organizational Document</MenuItem>
+                          <Menu
+                            anchorEl={anchorElDoc5Edit}
+                            open={Boolean(anchorElDoc5Edit)}
+                            onClose={handleClose5Edit}
+                          >
+                            <MenuItem
+                              onClick={() => handleMenuItemClick5Edit("local")}
+                            >
+                              Upload Local
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                handleMenuItemClick5Edit("organizational")
+                              }
+                            >
+                              Organizational Document
+                            </MenuItem>
                           </Menu>
 
-                          {option5Edit === 'local' && documentFilesDocumentFrontFooterEdit?.length === 0 && (
-                            <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                              Upload Local
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".png"
-                                name="file"
-                                hidden
-                                onChange={(e) => {
-                                  handleResumeUploadDocumentFrontFooterEdit(e);
+                          {option5Edit === "local" &&
+                            !documentFilesDocumentFrontFooterEdit?.name && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  ...buttonStyles.buttonsubmit,
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
                                 }}
-                              />
-                            </Button>
-                          )}
+                              >
+                                Upload Local
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={(e) => {
+                                    handleResumeUploadDocumentFrontFooterEdit(
+                                      e
+                                    );
+                                  }}
+                                />
+                              </Button>
+                            )}
 
-                          {option5Edit === 'organizational' && (
-                            <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                          {option5Edit === "organizational" && (
+                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
-                                value={{ value: docBodyHeader5Edit, label: docBodyHeader5Edit }}
+                                value={{
+                                  value: docBodyHeader5Edit,
+                                  label: docBodyHeader5Edit,
+                                }}
                                 onChange={async (e) => {
                                   setDocBodyHeader5Edit(e.value);
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 = await getBase64FromMulterPath(filePath);
-                                  setdocumentFilesDOcumentFrontFooterEdit([{ name: resume?.name, preview: base64 }]);
+                                  const base64 =
+                                    await getFileObjectFromMulterPath(filePath);
+                                  setdocumentFilesDOcumentFrontFooterEdit({
+                                    name: resume?.name,
+                                    file: base64,
+                                  });
                                 }}
                               />
                             </FormControl>
@@ -7308,25 +9686,55 @@ function TempControlPanel() {
                       </Box>
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesDocumentFrontFooterEdit?.length > 0 &&
-                          documentFilesDocumentFrontFooterEdit?.map((file, index) => (
+                        {
+                          documentFilesDocumentFrontFooterEdit && (
+                            // documentFilesDocumentFrontFooterEdit?.map(
+                            //   (file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {documentFilesDocumentFrontFooterEdit?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentFrontFooterEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentFrontFooterEdit(
+                                        documentFilesDocumentFrontFooterEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentFrontFooterEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() =>
+                                      handleFileDeleteDocumentFrontFooterEdit(
+                                        ""
+                                      )
+                                    }
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          //   )
+                          // )
+                        }
                       </Grid>
                     </Grid>
                   </Grid>
@@ -7338,45 +9746,89 @@ function TempControlPanel() {
                   <Grid container spacing={2}>
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
-                        <b>ID Card Back Header</b> <b style={{ color: 'red' }}>*</b>
+                        <b>ID Card Back Header</b>{" "}
+                        <b style={{ color: "red" }}>*</b>
                       </InputLabel>
-                      <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                      <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
-                          <Button variant="contained" onClick={handleClick6Edit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button
+                            variant="contained"
+                            onClick={handleClick6Edit}
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload
                           </Button>
-                          <Menu anchorEl={anchorElDoc6Edit} open={Boolean(anchorElDoc6Edit)} onClose={handleClose6Edit}>
-                            <MenuItem onClick={() => handleMenuItemClick6Edit('local')}>Upload Local</MenuItem>
-                            <MenuItem onClick={() => handleMenuItemClick6Edit('organizational')}>Organizational Document</MenuItem>
+                          <Menu
+                            anchorEl={anchorElDoc6Edit}
+                            open={Boolean(anchorElDoc6Edit)}
+                            onClose={handleClose6Edit}
+                          >
+                            <MenuItem
+                              onClick={() => handleMenuItemClick6Edit("local")}
+                            >
+                              Upload Local
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                handleMenuItemClick6Edit("organizational")
+                              }
+                            >
+                              Organizational Document
+                            </MenuItem>
                           </Menu>
 
-                          {option6Edit === 'local' && documentFilesDocumentBackHeaderEdit?.length === 0 && (
-                            <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                              Upload Local
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".png"
-                                name="file"
-                                hidden
-                                onChange={(e) => {
-                                  handleResumeUploadDocumentBackHeaderEdit(e);
+                          {option6Edit === "local" &&
+                            !documentFilesDocumentBackHeaderEdit?.name && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  ...buttonStyles.buttonsubmit,
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
                                 }}
-                              />
-                            </Button>
-                          )}
+                              >
+                                Upload Local
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={(e) => {
+                                    handleResumeUploadDocumentBackHeaderEdit(e);
+                                  }}
+                                />
+                              </Button>
+                            )}
 
-                          {option6Edit === 'organizational' && (
-                            <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                          {option6Edit === "organizational" && (
+                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
-                                value={{ value: docBodyHeader6Edit, label: docBodyHeader6Edit }}
+                                value={{
+                                  value: docBodyHeader6Edit,
+                                  label: docBodyHeader6Edit,
+                                }}
                                 onChange={async (e) => {
                                   setDocBodyHeader6Edit(e.value);
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 = await getBase64FromMulterPath(filePath);
-                                  setdocumentFilesDOcumentBackHeaderEdit([{ name: resume?.name, preview: base64 }]);
+                                  const base64 =
+                                    await getFileObjectFromMulterPath(filePath);
+                                  setdocumentFilesDOcumentBackHeaderEdit({
+                                    name: resume?.name,
+                                    file: base64,
+                                  });
                                 }}
                               />
                             </FormControl>
@@ -7385,68 +9837,140 @@ function TempControlPanel() {
                       </Box>
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesDocumentBackHeaderEdit?.length > 0 &&
-                          documentFilesDocumentBackHeaderEdit?.map((file, index) => (
+                        {
+                          documentFilesDocumentBackHeaderEdit?.name && (
+                            // documentFilesDocumentBackHeaderEdit?.map(
+                            //   (file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {documentFilesDocumentBackHeaderEdit?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBackHeaderEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentBackHeaderEdit(
+                                        documentFilesDocumentBackHeaderEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentBackHeaderEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() =>
+                                      handleFileDeleteDocumentBackHeaderEdit("")
+                                    }
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          //   )
+                          // )
+                        }
                       </Grid>
                     </Grid>
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
-                        <b>ID Card Back Footer</b> <b style={{ color: 'red' }}>*</b>
+                        <b>ID Card Back Footer</b>{" "}
+                        <b style={{ color: "red" }}>*</b>
                       </InputLabel>
-                      <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                      <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
-                          <Button variant="contained" onClick={handleClick7Edit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button
+                            variant="contained"
+                            onClick={handleClick7Edit}
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload
                           </Button>
-                          <Menu anchorEl={anchorElDoc7Edit} open={Boolean(anchorElDoc7Edit)} onClose={handleClose7Edit}>
-                            <MenuItem onClick={() => handleMenuItemClick7Edit('local')}>Upload Local</MenuItem>
-                            <MenuItem onClick={() => handleMenuItemClick7Edit('organizational')}>Organizational Document</MenuItem>
+                          <Menu
+                            anchorEl={anchorElDoc7Edit}
+                            open={Boolean(anchorElDoc7Edit)}
+                            onClose={handleClose7Edit}
+                          >
+                            <MenuItem
+                              onClick={() => handleMenuItemClick7Edit("local")}
+                            >
+                              Upload Local
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                handleMenuItemClick7Edit("organizational")
+                              }
+                            >
+                              Organizational Document
+                            </MenuItem>
                           </Menu>
 
-                          {option7Edit === 'local' && documentFilesDocumentBackFooterEdit?.length === 0 && (
-                            <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                              Upload Local
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".png"
-                                name="file"
-                                hidden
-                                onChange={(e) => {
-                                  handleResumeUploadDocumentBackFooterEdit(e);
+                          {option7Edit === "local" &&
+                            !documentFilesDocumentBackFooterEdit?.name && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  ...buttonStyles.buttonsubmit,
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
                                 }}
-                              />
-                            </Button>
-                          )}
+                              >
+                                Upload Local
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={(e) => {
+                                    handleResumeUploadDocumentBackFooterEdit(e);
+                                  }}
+                                />
+                              </Button>
+                            )}
 
-                          {option7Edit === 'organizational' && (
-                            <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                          {option7Edit === "organizational" && (
+                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
-                                value={{ value: docBodyHeader7Edit, label: docBodyHeader7Edit }}
+                                value={{
+                                  value: docBodyHeader7Edit,
+                                  label: docBodyHeader7Edit,
+                                }}
                                 onChange={async (e) => {
                                   setDocBodyHeader7Edit(e.value);
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 = await getBase64FromMulterPath(filePath);
-                                  setdocumentFilesDOcumentBackFooterEdit([{ name: resume?.name, preview: base64 }]);
+                                  const base64 =
+                                    await getFileObjectFromMulterPath(filePath);
+                                  setdocumentFilesDOcumentBackFooterEdit({
+                                    name: resume?.name,
+                                    file: base64,
+                                  });
                                 }}
                               />
                             </FormControl>
@@ -7455,25 +9979,53 @@ function TempControlPanel() {
                       </Box>
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesDocumentBackFooterEdit?.length > 0 &&
-                          documentFilesDocumentBackFooterEdit?.map((file, index) => (
+                        {
+                          documentFilesDocumentBackFooterEdit?.name && (
+                            // documentFilesDocumentBackFooterEdit?.map(
+                            //   (file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {documentFilesDocumentBackFooterEdit?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBackFooterEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentBackFooterEdit(
+                                        documentFilesDocumentBackFooterEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteDocumentBackFooterEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() =>
+                                      handleFileDeleteDocumentBackFooterEdit()
+                                    }
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          //   )
+                          // )
+                        }
                       </Grid>
                     </Grid>
                   </Grid>
@@ -7489,7 +10041,7 @@ function TempControlPanel() {
                         <FormControl fullWidth size="small">
                           <Typography>
                             <b>Company Name</b>
-                            <b style={{ color: 'red' }}>*</b>
+                            <b style={{ color: "red" }}>*</b>
                           </Typography>
                           <TextareaAutosize
                             aria-label="minimum height"
@@ -7505,7 +10057,7 @@ function TempControlPanel() {
                         <FormControl fullWidth size="small">
                           <Typography>
                             <b>Address</b>
-                            <b style={{ color: 'red' }}>*</b>
+                            <b style={{ color: "red" }}>*</b>
                           </Typography>
                           <TextareaAutosize
                             aria-label="minimum height"
@@ -7523,43 +10075,86 @@ function TempControlPanel() {
                       <Typography>
                         <b>Logo</b>
                       </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                      <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
-                          <Button variant="contained" onClick={handleClick8Edit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button
+                            variant="contained"
+                            onClick={handleClick8Edit}
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload
                           </Button>
-                          <Menu anchorEl={anchorElDoc8Edit} open={Boolean(anchorElDoc8Edit)} onClose={handleClose8Edit}>
-                            <MenuItem onClick={() => handleMenuItemClick8Edit('local')}>Upload Local</MenuItem>
-                            <MenuItem onClick={() => handleMenuItemClick8Edit('organizational')}>Organizational Document</MenuItem>
+                          <Menu
+                            anchorEl={anchorElDoc8Edit}
+                            open={Boolean(anchorElDoc8Edit)}
+                            onClose={handleClose8Edit}
+                          >
+                            <MenuItem
+                              onClick={() => handleMenuItemClick8Edit("local")}
+                            >
+                              Upload Local
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                handleMenuItemClick8Edit("organizational")
+                              }
+                            >
+                              Organizational Document
+                            </MenuItem>
                           </Menu>
 
-                          {option8Edit === 'local' && documentFilesEdit?.length === 0 && (
-                            <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
-                              Upload Local
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".png"
-                                name="file"
-                                hidden
-                                onChange={(e) => {
-                                  handleResumeUploadEdit(e);
+                          {option8Edit === "local" &&
+                            !documentFilesEdit?.name && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  ...buttonStyles.buttonsubmit,
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
                                 }}
-                              />
-                            </Button>
-                          )}
+                              >
+                                Upload Local
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={(e) => {
+                                    handleResumeUploadEdit(e);
+                                  }}
+                                />
+                              </Button>
+                            )}
 
-                          {option8Edit === 'organizational' && (
-                            <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                          {option8Edit === "organizational" && (
+                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
-                                value={{ value: docBodyHeader8Edit, label: docBodyHeader8Edit }}
+                                value={{
+                                  value: docBodyHeader8Edit,
+                                  label: docBodyHeader8Edit,
+                                }}
                                 onChange={async (e) => {
                                   setDocBodyHeader8Edit(e.value);
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 = await getBase64FromMulterPath(filePath);
-                                  setdocumentFilesEdit([{ name: resume?.name, preview: base64 }]);
+                                  const base64 =
+                                    await getFileObjectFromMulterPath(filePath);
+                                  setdocumentFilesEdit({
+                                    name: resume?.name,
+                                    file: base64,
+                                  });
                                 }}
                               />
                             </FormControl>
@@ -7573,25 +10168,47 @@ function TempControlPanel() {
                                         </Button> */}
                       </Box>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesEdit?.length > 0 &&
-                          documentFilesEdit.map((file, index) => (
+                        {
+                          documentFilesEdit?.name && (
+                            // documentFilesEdit.map((file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {documentFilesEdit?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewEdit(documentFilesEdit)
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() => handleFileDeleteEdit()}
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          // ))
+                        }
                       </Grid>
                     </Grid>
                     <br /> <br />
@@ -7601,7 +10218,7 @@ function TempControlPanel() {
                           <FormControl fullWidth size="small">
                             <Typography>
                               <b>To Company Name</b>
-                              <b style={{ color: 'red' }}>*</b>
+                              <b style={{ color: "red" }}>*</b>
                             </Typography>
                             <TextareaAutosize
                               aria-label="minimum height"
@@ -7617,7 +10234,7 @@ function TempControlPanel() {
                           <FormControl fullWidth size="small">
                             <Typography>
                               <b>To Company Address</b>
-                              <b style={{ color: 'red' }}>*</b>
+                              <b style={{ color: "red" }}>*</b>
                             </Typography>
                             <TextareaAutosize
                               aria-label="minimum height"
@@ -7630,12 +10247,16 @@ function TempControlPanel() {
                           </FormControl>
                         </Grid>
                         <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                          <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodoToCompanyEdit}>
+                          <Button
+                            variant="contained"
+                            sx={{ minWidth: "35px" }}
+                            onClick={handleCreateTodoToCompanyEdit}
+                          >
                             <FaPlus />
                           </Button>
                         </Grid>
                         <Grid item md={3} xs={12} sm={12}>
-                          {' '}
+                          {" "}
                         </Grid>
                       </>
                       <Grid item md={12} xs={12} sm={12}>
@@ -7643,7 +10264,7 @@ function TempControlPanel() {
                           <ul type="none">
                             {todoscheckToCompanyEdit?.length > 0 && (
                               <Typography>
-                                {' '}
+                                {" "}
                                 <b>Todo : </b>
                               </Typography>
                             )}
@@ -7659,7 +10280,9 @@ function TempControlPanel() {
                                             minRows={5}
                                             value={toCompanynameCreateEdit}
                                             onChange={(e) => {
-                                              setToCompanynameCreateEdit(e.target.value);
+                                              setToCompanynameCreateEdit(
+                                                e.target.value
+                                              );
                                             }}
                                           />
                                         </FormControl>
@@ -7671,7 +10294,9 @@ function TempControlPanel() {
                                             minRows={5}
                                             value={toAddressCreateEdit}
                                             onChange={(e) => {
-                                              setToAddressCreateEdit(e.target.value);
+                                              setToAddressCreateEdit(
+                                                e.target.value
+                                              );
                                             }}
                                           />
                                         </FormControl>
@@ -7680,35 +10305,44 @@ function TempControlPanel() {
                                   ) : (
                                     <>
                                       <Grid item md={3} xs={12} sm={12}>
-                                        <Typography>{todo.toCompanyname}</Typography>
+                                        <Typography>
+                                          {todo.toCompanyname}
+                                        </Typography>
                                       </Grid>
                                       <Grid item md={3} xs={12} sm={12}>
-                                        <Typography>{todo.toAddress}</Typography>
+                                        <Typography>
+                                          {todo.toAddress}
+                                        </Typography>
                                       </Grid>
                                     </>
                                   )}
                                   <Grid item md={1} xs={12} sm={12}>
-                                    {editingIndexcheckToCompanyEdit === index ? (
+                                    {editingIndexcheckToCompanyEdit ===
+                                    index ? (
                                       <Button
                                         variant="contained"
                                         color="success"
                                         sx={{
-                                          height: '30px',
-                                          minWidth: '30px',
-                                          marginTop: '8px',
-                                          padding: '6px 10px',
+                                          height: "30px",
+                                          minWidth: "30px",
+                                          marginTop: "8px",
+                                          padding: "6px 10px",
                                         }}
                                         onClick={() => {
-                                          const updatedIsTodoEdit = [...isTodoToCompanyEdit];
+                                          const updatedIsTodoEdit = [
+                                            ...isTodoToCompanyEdit,
+                                          ];
                                           updatedIsTodoEdit[index] = false;
-                                          setIsTodoToCompanyEdit(updatedIsTodoEdit);
+                                          setIsTodoToCompanyEdit(
+                                            updatedIsTodoEdit
+                                          );
                                           handleUpdateTodocheckToCompanyEdit();
                                         }}
                                       >
                                         <MdOutlineDone
                                           style={{
-                                            fontSize: '17px',
-                                            fontWeight: 'bold',
+                                            fontSize: "17px",
+                                            fontWeight: "bold",
                                           }}
                                         />
                                       </Button>
@@ -7717,18 +10351,30 @@ function TempControlPanel() {
                                         variant="contained"
                                         color="primary"
                                         sx={{
-                                          height: '30px',
-                                          minWidth: '30px',
-                                          marginTop: '8px',
-                                          padding: '6px 10px',
+                                          height: "30px",
+                                          minWidth: "30px",
+                                          marginTop: "8px",
+                                          padding: "6px 10px",
                                         }}
-                                        disabled={editingIndexcheckToCompanyEdit !== index && editingIndexcheckToCompanyEdit !== -1}
+                                        disabled={
+                                          editingIndexcheckToCompanyEdit !==
+                                            index &&
+                                          editingIndexcheckToCompanyEdit !== -1
+                                        }
                                         onClick={() => {
-                                          const updatedIsTodoEdit = [...isTodoToCompanyEdit];
+                                          const updatedIsTodoEdit = [
+                                            ...isTodoToCompanyEdit,
+                                          ];
                                           updatedIsTodoEdit[index] = true;
-                                          setIsTodoToCompanyEdit(updatedIsTodoEdit);
-                                          setEditingIndexcheckToCompanyEdit(index);
-                                          handleEditTodocheckToCompanyEdit(index);
+                                          setIsTodoToCompanyEdit(
+                                            updatedIsTodoEdit
+                                          );
+                                          setEditingIndexcheckToCompanyEdit(
+                                            index
+                                          );
+                                          handleEditTodocheckToCompanyEdit(
+                                            index
+                                          );
                                         }}
                                       >
                                         <FaEdit />
@@ -7742,15 +10388,19 @@ function TempControlPanel() {
                                         color="error"
                                         type="button"
                                         sx={{
-                                          height: '30px',
-                                          minWidth: '30px',
-                                          marginTop: '8px',
-                                          padding: '6px 10px',
+                                          height: "30px",
+                                          minWidth: "30px",
+                                          marginTop: "8px",
+                                          padding: "6px 10px",
                                         }}
                                         onClick={() => {
-                                          const updatedIsTodoEdit = [...isTodoToCompanyEdit];
+                                          const updatedIsTodoEdit = [
+                                            ...isTodoToCompanyEdit,
+                                          ];
                                           updatedIsTodoEdit[index] = false;
-                                          setIsTodoToCompanyEdit(updatedIsTodoEdit);
+                                          setIsTodoToCompanyEdit(
+                                            updatedIsTodoEdit
+                                          );
                                           setEditingIndexcheckToCompanyEdit(-1);
                                         }}
                                       >
@@ -7762,12 +10412,16 @@ function TempControlPanel() {
                                         color="error"
                                         type="button"
                                         sx={{
-                                          height: '30px',
-                                          minWidth: '30px',
-                                          marginTop: '8px',
-                                          padding: '6px 10px',
+                                          height: "30px",
+                                          minWidth: "30px",
+                                          marginTop: "8px",
+                                          padding: "6px 10px",
                                         }}
-                                        onClick={() => handleDeleteTodocheckToCompanyEdit(index)}
+                                        onClick={() =>
+                                          handleDeleteTodocheckToCompanyEdit(
+                                            index
+                                          )
+                                        }
                                       >
                                         <AiOutlineClose />
                                       </Button>
@@ -7787,7 +10441,7 @@ function TempControlPanel() {
                           <FormControl fullWidth size="small">
                             <Typography>
                               <b>QR info</b>
-                              <b style={{ color: 'red' }}>*</b>
+                              <b style={{ color: "red" }}>*</b>
                             </Typography>
                             <TextareaAutosize
                               aria-label="minimum height"
@@ -7800,17 +10454,24 @@ function TempControlPanel() {
                           </FormControl>
                         </Grid>
                         <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                          <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateQrInfoEdit}>
+                          <Button
+                            variant="contained"
+                            sx={{ minWidth: "35px" }}
+                            onClick={handleCreateQrInfoEdit}
+                          >
                             <FaPlus />
                           </Button>
                         </Grid>
                         <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                          <Button variant="contained" onClick={handleOpenKeywordPopup}>
+                          <Button
+                            variant="contained"
+                            onClick={handleOpenKeywordPopup}
+                          >
                             Keyword
                           </Button>
                         </Grid>
                         <Grid item md={3} xs={12} sm={12}>
-                          {' '}
+                          {" "}
                         </Grid>
                       </>
                       <Grid item md={12} xs={12} sm={12}>
@@ -7818,7 +10479,7 @@ function TempControlPanel() {
                           <ul type="none">
                             {qrInfoTodosEdit?.length > 0 && (
                               <Typography>
-                                {' '}
+                                {" "}
                                 <b>Todo : </b>
                               </Typography>
                             )}
@@ -7834,7 +10495,9 @@ function TempControlPanel() {
                                             minRows={5}
                                             value={qrInfoCreateEdit}
                                             onChange={(e) => {
-                                              setQrInfoCreateEdit(e.target.value);
+                                              setQrInfoCreateEdit(
+                                                e.target.value
+                                              );
                                             }}
                                           />
                                         </FormControl>
@@ -7853,24 +10516,39 @@ function TempControlPanel() {
                                         variant="contained"
                                         color="success"
                                         sx={{
-                                          height: '30px',
-                                          minWidth: '30px',
-                                          marginTop: '8px',
-                                          padding: '6px 10px',
+                                          height: "30px",
+                                          minWidth: "30px",
+                                          marginTop: "8px",
+                                          padding: "6px 10px",
                                         }}
                                         onClick={() => {
-                                          if (qrInfoCreateEdit === '') {
-                                            setPopupContentMalert(`Please Enter Details`);
-                                            setPopupSeverityMalert('warning');
+                                          if (qrInfoCreateEdit === "") {
+                                            setPopupContentMalert(
+                                              `Please Enter Details`
+                                            );
+                                            setPopupSeverityMalert("warning");
                                             handleClickOpenPopupMalert();
-                                          } else if (qrInfoTodosEdit.some((item, ind) => ind !== index && item?.details?.toLowerCase() === qrInfoCreateEdit?.toLowerCase())) {
-                                            setPopupContentMalert('Already Details Added');
-                                            setPopupSeverityMalert('warning');
+                                          } else if (
+                                            qrInfoTodosEdit.some(
+                                              (item, ind) =>
+                                                ind !== index &&
+                                                item?.details?.toLowerCase() ===
+                                                  qrInfoCreateEdit?.toLowerCase()
+                                            )
+                                          ) {
+                                            setPopupContentMalert(
+                                              "Already Details Added"
+                                            );
+                                            setPopupSeverityMalert("warning");
                                             handleClickOpenPopupMalert();
                                           } else {
-                                            const updatedIsTodoEdit = [...isTodoQrInfoEdit];
+                                            const updatedIsTodoEdit = [
+                                              ...isTodoQrInfoEdit,
+                                            ];
                                             updatedIsTodoEdit[index] = false;
-                                            setIsTodoQrInfoEdit(updatedIsTodoEdit);
+                                            setIsTodoQrInfoEdit(
+                                              updatedIsTodoEdit
+                                            );
                                             // handleUpdateTodocheckToCompany();
                                             handleUpdateTodoQrInfoEdit();
                                           }
@@ -7878,8 +10556,8 @@ function TempControlPanel() {
                                       >
                                         <MdOutlineDone
                                           style={{
-                                            fontSize: '17px',
-                                            fontWeight: 'bold',
+                                            fontSize: "17px",
+                                            fontWeight: "bold",
                                           }}
                                         />
                                       </Button>
@@ -7888,16 +10566,23 @@ function TempControlPanel() {
                                         variant="contained"
                                         color="primary"
                                         sx={{
-                                          height: '30px',
-                                          minWidth: '30px',
-                                          marginTop: '8px',
-                                          padding: '6px 10px',
+                                          height: "30px",
+                                          minWidth: "30px",
+                                          marginTop: "8px",
+                                          padding: "6px 10px",
                                         }}
-                                        disabled={qrIndexCheckEdit !== index && qrIndexCheckEdit !== -1}
+                                        disabled={
+                                          qrIndexCheckEdit !== index &&
+                                          qrIndexCheckEdit !== -1
+                                        }
                                         onClick={() => {
-                                          const updatedIsTodoEdit = [...isTodoQrInfoEdit];
+                                          const updatedIsTodoEdit = [
+                                            ...isTodoQrInfoEdit,
+                                          ];
                                           updatedIsTodoEdit[index] = true;
-                                          setIsTodoQrInfoEdit(updatedIsTodoEdit);
+                                          setIsTodoQrInfoEdit(
+                                            updatedIsTodoEdit
+                                          );
                                           setQrIndexcheckEdit(index);
                                           // handleEditTodocheckToCompany(index);
                                           handleEditTodoQrInfoEdit(index);
@@ -7914,15 +10599,19 @@ function TempControlPanel() {
                                         color="error"
                                         type="button"
                                         sx={{
-                                          height: '30px',
-                                          minWidth: '30px',
-                                          marginTop: '8px',
-                                          padding: '6px 10px',
+                                          height: "30px",
+                                          minWidth: "30px",
+                                          marginTop: "8px",
+                                          padding: "6px 10px",
                                         }}
                                         onClick={() => {
-                                          const updatedIsTodoEdit = [...isTodoQrInfoEdit];
+                                          const updatedIsTodoEdit = [
+                                            ...isTodoQrInfoEdit,
+                                          ];
                                           updatedIsTodoEdit[index] = false;
-                                          setIsTodoQrInfoEdit(updatedIsTodoEdit);
+                                          setIsTodoQrInfoEdit(
+                                            updatedIsTodoEdit
+                                          );
                                           setQrIndexcheckEdit(-1);
                                         }}
                                       >
@@ -7934,13 +10623,15 @@ function TempControlPanel() {
                                         color="error"
                                         type="button"
                                         sx={{
-                                          height: '30px',
-                                          minWidth: '30px',
-                                          marginTop: '8px',
-                                          padding: '6px 10px',
+                                          height: "30px",
+                                          minWidth: "30px",
+                                          marginTop: "8px",
+                                          padding: "6px 10px",
                                         }}
                                         // onClick={() => handleDeleteTodocheckToCompany(index)}
-                                        onClick={() => handleDeleteTodoQrInfoEdit(index)}
+                                        onClick={() =>
+                                          handleDeleteTodoQrInfoEdit(index)
+                                        }
                                       >
                                         <AiOutlineClose />
                                       </Button>
@@ -7965,7 +10656,7 @@ function TempControlPanel() {
                         <FormControl fullWidth size="small">
                           <Typography>
                             <b> Seal Type</b>
-                            <b style={{ color: 'red' }}>*</b>
+                            <b style={{ color: "red" }}>*</b>
                           </Typography>
                           <Selects
                             options={sealOptions}
@@ -7984,7 +10675,7 @@ function TempControlPanel() {
                         <FormControl fullWidth size="small">
                           <Typography>
                             <b>Name</b>
-                            <b style={{ color: 'red' }}>*</b>
+                            <b style={{ color: "red" }}>*</b>
                           </Typography>
                           <OutlinedInput
                             id="component-outlined"
@@ -8002,43 +10693,86 @@ function TempControlPanel() {
                     <Grid item md={4} xs={12} sm={12}>
                       <Typography>
                         <b>Seal Logo</b>
-                        <b style={{ color: 'red' }}>*</b>
+                        <b style={{ color: "red" }}>*</b>
                       </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'left' }}>
+                      <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
-                          <Button variant="contained" onClick={handleClick9Edit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Button
+                            variant="contained"
+                            onClick={handleClick9Edit}
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
                             Upload
                           </Button>
-                          <Menu anchorEl={anchorElDoc9Edit} open={Boolean(anchorElDoc9Edit)} onClose={handleClose9Edit}>
-                            <MenuItem onClick={() => handleMenuItemClick9Edit('local')}>Upload Local</MenuItem>
-                            <MenuItem onClick={() => handleMenuItemClick9Edit('organizational')}>Organizational Document</MenuItem>
-                          </Menu>
-                          {option9Edit === 'local' && documentFilesSealEdit?.length === 0 && (
-                            <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                          <Menu
+                            anchorEl={anchorElDoc9Edit}
+                            open={Boolean(anchorElDoc9Edit)}
+                            onClose={handleClose9Edit}
+                          >
+                            <MenuItem
+                              onClick={() => handleMenuItemClick9Edit("local")}
+                            >
                               Upload Local
-                              <input
-                                type="file"
-                                id="resume"
-                                accept=".png"
-                                name="file"
-                                hidden
-                                onChange={(e) => {
-                                  handleResumeUploadSealEdit(e);
+                            </MenuItem>
+                            <MenuItem
+                              onClick={() =>
+                                handleMenuItemClick9Edit("organizational")
+                              }
+                            >
+                              Organizational Document
+                            </MenuItem>
+                          </Menu>
+                          {option9Edit === "local" &&
+                            !documentFilesSealEdit?.name && (
+                              <Button
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  ...buttonStyles.buttonsubmit,
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
                                 }}
-                              />
-                            </Button>
-                          )}
-                          {option9Edit === 'organizational' && (
-                            <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                              >
+                                Upload Local
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={(e) => {
+                                    handleResumeUploadSealEdit(e);
+                                  }}
+                                />
+                              </Button>
+                            )}
+                          {option9Edit === "organizational" && (
+                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
-                                value={{ value: docBodyHeader9Edit, label: docBodyHeader9Edit }}
+                                value={{
+                                  value: docBodyHeader9Edit,
+                                  label: docBodyHeader9Edit,
+                                }}
                                 onChange={async (e) => {
                                   setDocBodyHeader9Edit(e.value);
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 = await getBase64FromMulterPath(filePath);
-                                  setdocumentFilesSealEdit([{ name: resume?.name, preview: base64 }]);
+                                  const base64 =
+                                    await getFileObjectFromMulterPath(filePath);
+                                  setdocumentFilesSealEdit({
+                                    name: resume?.name,
+                                    file: base64,
+                                  });
                                 }}
                               />
                             </FormControl>
@@ -8053,29 +10787,57 @@ function TempControlPanel() {
                                         </Button> */}
                       </Box>
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesSealEdit?.length > 0 &&
-                          documentFilesSealEdit.map((file, index) => (
+                        {
+                          documentFilesSealEdit?.name && (
+                            // documentFilesSealEdit.map((file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {documentFilesSealEdit?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewSealEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewSealEdit(
+                                        documentFilesSealEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteSealEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() => handleFileDeleteSealEdit()}
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          // ))
+                        }
                       </Grid>
                     </Grid>
                     <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                      <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodocheckSealEdit}>
+                      <Button
+                        variant="contained"
+                        sx={{ minWidth: "35px" }}
+                        onClick={handleCreateTodocheckSealEdit}
+                      >
                         <FaPlus />
                       </Button>
                     </Grid>
@@ -8093,7 +10855,7 @@ function TempControlPanel() {
                                     <FormControl fullWidth size="small">
                                       <Typography>
                                         <b> Seal Type</b>
-                                        <b style={{ color: 'red' }}>*</b>
+                                        <b style={{ color: "red" }}>*</b>
                                       </Typography>
                                       <Selects
                                         options={sealOptions}
@@ -8112,7 +10874,7 @@ function TempControlPanel() {
                                     <FormControl fullWidth size="small">
                                       <Typography>
                                         <b>Name</b>
-                                        <b style={{ color: 'red' }}>*</b>
+                                        <b style={{ color: "red" }}>*</b>
                                       </Typography>
                                       <OutlinedInput
                                         id="component-outlined"
@@ -8132,39 +10894,60 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Seal Logo</b>
                                   </Typography>
-                                  <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "left",
+                                    }}
+                                  ></Box>
                                   <Grid item md={12} xs={12} sm={12}>
-                                    {todo.document?.length > 0 &&
-                                      todo.document.map((file, index) => (
+                                    {
+                                      todo?.document && (
+                                        // todo.document.map((file, index) => (
                                         <>
                                           <Grid container spacing={2}>
                                             <Grid item md={8} sm={6} xs={6}>
-                                              <Typography>{file.name}</Typography>
+                                              <Typography>
+                                                {todo?.document?.name}
+                                              </Typography>
                                             </Grid>
                                             <Grid></Grid>
                                             <Grid item md={1} sm={6} xs={6}>
-                                              <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewEdit(file)} />
+                                              <VisibilityOutlinedIcon
+                                                style={{
+                                                  fontsize: "large",
+                                                  color: "#357AE8",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() =>
+                                                  renderFilePreviewEdit(
+                                                    todo?.document
+                                                  )
+                                                }
+                                              />
                                             </Grid>
                                           </Grid>
                                         </>
-                                      ))}
+                                      )
+                                      // ))
+                                    }
                                   </Grid>
                                 </Grid>
                                 <Grid item md={1} sm={1} mt={2} xs={1}>
                                   <Button
                                     variant="contained"
                                     style={{
-                                      minWidth: '20px',
-                                      minHeight: '41px',
-                                      background: 'transparent',
-                                      boxShadow: 'none',
-                                      marginTop: '5px !important',
-                                      '&:hover': {
-                                        background: '#f4f4f4',
-                                        borderRadius: '50%',
-                                        minHeight: '41px',
-                                        minWidth: '20px',
-                                        boxShadow: 'none',
+                                      minWidth: "20px",
+                                      minHeight: "41px",
+                                      background: "transparent",
+                                      boxShadow: "none",
+                                      marginTop: "5px !important",
+                                      "&:hover": {
+                                        background: "#f4f4f4",
+                                        borderRadius: "50%",
+                                        minHeight: "41px",
+                                        minWidth: "20px",
+                                        boxShadow: "none",
                                       },
                                     }}
                                     disabled={false}
@@ -8172,8 +10955,8 @@ function TempControlPanel() {
                                   >
                                     <CheckCircleIcon
                                       style={{
-                                        color: '#216d21',
-                                        fontSize: '1.5rem',
+                                        color: "#216d21",
+                                        fontSize: "1.5rem",
                                       }}
                                     />
                                   </Button>
@@ -8182,29 +10965,29 @@ function TempControlPanel() {
                                   <Button
                                     variant="contained"
                                     style={{
-                                      minWidth: '20px',
-                                      minHeight: '41px',
-                                      background: 'transparent',
-                                      boxShadow: 'none',
-                                      marginTop: '5px !important',
-                                      '&:hover': {
-                                        background: '#f4f4f4',
-                                        borderRadius: '50%',
-                                        minHeight: '41px',
-                                        minWidth: '20px',
-                                        boxShadow: 'none',
+                                      minWidth: "20px",
+                                      minHeight: "41px",
+                                      background: "transparent",
+                                      boxShadow: "none",
+                                      marginTop: "5px !important",
+                                      "&:hover": {
+                                        background: "#f4f4f4",
+                                        borderRadius: "50%",
+                                        minHeight: "41px",
+                                        minWidth: "20px",
+                                        boxShadow: "none",
                                       },
                                     }}
                                     onClick={() => {
                                       setSealTodo(false);
                                       setEditingIndexSeal(-1);
                                     }}
-                                  // disabled={!empdigits}
+                                    // disabled={!empdigits}
                                   >
                                     <CancelIcon
                                       style={{
-                                        color: '#b92525',
-                                        fontSize: '1.5rem',
+                                        color: "#b92525",
+                                        fontSize: "1.5rem",
                                       }}
                                     />
                                   </Button>
@@ -8218,7 +11001,13 @@ function TempControlPanel() {
                                       <Typography>
                                         <b>Seal</b>
                                       </Typography>
-                                      <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter Name" value={todo.seal} readOnly={true} />
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter Name"
+                                        value={todo.seal}
+                                        readOnly={true}
+                                      />
                                     </FormControl>
                                   </Grid>
                                   <Grid item md={3} xs={12} sm={12}>
@@ -8226,7 +11015,13 @@ function TempControlPanel() {
                                       <Typography>
                                         <b>Name</b>
                                       </Typography>
-                                      <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter Name" value={todo.name} readOnly={true} />
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter Name"
+                                        value={todo.name}
+                                        readOnly={true}
+                                      />
                                     </FormControl>
                                   </Grid>
                                 </>
@@ -8236,48 +11031,69 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Seal Logo</b>
                                   </Typography>
-                                  <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "left",
+                                    }}
+                                  ></Box>
                                   <Grid item md={12} xs={12} sm={12}>
-                                    {todo.document?.length > 0 &&
-                                      todo.document.map((file, index) => (
+                                    {
+                                      todo?.document && (
+                                        // todo.document.map((file, index) => (
                                         <>
                                           <Grid container spacing={2}>
                                             <Grid item md={8} sm={6} xs={6}>
-                                              <Typography>{file.name}</Typography>
+                                              <Typography>
+                                                {todo?.document?.name}
+                                              </Typography>
                                             </Grid>
                                             <Grid></Grid>
                                             <Grid item md={1} sm={6} xs={6}>
-                                              <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewEdit(file)} />
+                                              <VisibilityOutlinedIcon
+                                                style={{
+                                                  fontsize: "large",
+                                                  color: "#357AE8",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() =>
+                                                  renderFilePreviewEdit(
+                                                    todo?.document
+                                                  )
+                                                }
+                                              />
                                             </Grid>
                                           </Grid>
                                         </>
-                                      ))}
+                                      )
+                                      // ))
+                                    }
                                   </Grid>
                                 </Grid>
                                 <Grid item md={1} mt={2} sm={6} xs={6}>
                                   <Button
                                     variant="contained"
                                     style={{
-                                      minWidth: '20px',
-                                      minHeight: '41px',
-                                      background: 'transparent',
-                                      boxShadow: 'none',
-                                      marginTop: '-13px !important',
-                                      '&:hover': {
-                                        background: '#f4f4f4',
-                                        borderRadius: '50%',
-                                        minHeight: '41px',
-                                        minWidth: '20px',
-                                        boxShadow: 'none',
+                                      minWidth: "20px",
+                                      minHeight: "41px",
+                                      background: "transparent",
+                                      boxShadow: "none",
+                                      marginTop: "-13px !important",
+                                      "&:hover": {
+                                        background: "#f4f4f4",
+                                        borderRadius: "50%",
+                                        minHeight: "41px",
+                                        minWidth: "20px",
+                                        boxShadow: "none",
                                       },
                                     }}
                                     onClick={() => handleEditTodoSeal(index)}
-                                  // disabled={!empdigits}
+                                    // disabled={!empdigits}
                                   >
                                     <FaEdit
                                       style={{
-                                        color: '#1976d2',
-                                        fontSize: '1.2rem',
+                                        color: "#1976d2",
+                                        fontSize: "1.2rem",
                                       }}
                                     />
                                   </Button>
@@ -8286,17 +11102,17 @@ function TempControlPanel() {
                                   <Button
                                     variant="contained"
                                     style={{
-                                      minWidth: '20px',
-                                      minHeight: '41px',
-                                      background: 'transparent',
-                                      boxShadow: 'none',
-                                      marginTop: '-13px !important',
-                                      '&:hover': {
-                                        background: '#f4f4f4',
-                                        borderRadius: '50%',
-                                        minHeight: '41px',
-                                        minWidth: '20px',
-                                        boxShadow: 'none',
+                                      minWidth: "20px",
+                                      minHeight: "41px",
+                                      background: "transparent",
+                                      boxShadow: "none",
+                                      marginTop: "-13px !important",
+                                      "&:hover": {
+                                        background: "#f4f4f4",
+                                        borderRadius: "50%",
+                                        minHeight: "41px",
+                                        minWidth: "20px",
+                                        boxShadow: "none",
                                       },
                                     }}
                                     onClick={() => {
@@ -8306,8 +11122,8 @@ function TempControlPanel() {
                                   >
                                     <FaTrash
                                       style={{
-                                        color: '#b92525',
-                                        fontSize: '1.2rem',
+                                        color: "#b92525",
+                                        fontSize: "1.2rem",
                                       }}
                                     />
                                   </Button>
@@ -8335,9 +11151,9 @@ function TempControlPanel() {
                                 checked={allBranchEdit}
                                 onChange={(e) => {
                                   setAllBranchEdit(e.target.checked);
-                                  setUnitEdit('Please Select Unit');
-                                  setEmployeeEdit('Please Select Employee');
-                                  setTeamEdit('Please Select Team');
+                                  setUnitEdit("Please Select Unit");
+                                  setEmployeeEdit("Please Select Employee");
+                                  setTeamEdit("Please Select Team");
                                   if (e.target.checked) {
                                     getAllBranchUsersDataEdit(companyEdit);
                                   } else {
@@ -8352,7 +11168,7 @@ function TempControlPanel() {
                       <Grid item md={2} xs={12} sm={6}>
                         <FormControl fullWidth size="small">
                           <Typography>
-                            Unit<b style={{ color: 'red' }}>*</b>
+                            Unit<b style={{ color: "red" }}>*</b>
                           </Typography>
                           <Selects
                             options={unitOptionEdit}
@@ -8360,8 +11176,8 @@ function TempControlPanel() {
                             value={{ value: unitEdit, label: unitEdit }}
                             onChange={(e) => {
                               setUnitEdit(e.value);
-                              setEmployeeEdit('Please Select Employee');
-                              setTeamEdit('Please Select Team');
+                              setEmployeeEdit("Please Select Employee");
+                              setTeamEdit("Please Select Team");
                               setEmployeeOptionEdit([]);
                             }}
                           />
@@ -8370,24 +11186,40 @@ function TempControlPanel() {
                       <Grid item md={2} xs={12} sm={6}>
                         <FormControl fullWidth size="small">
                           <Typography>
-                            Team<b style={{ color: 'red' }}>*</b>
+                            Team<b style={{ color: "red" }}>*</b>
                           </Typography>
                           <Selects
                             options={allTeam
-                              ?.filter((comp) => companyEdit === comp.company && branchEdit === comp.branch && unitEdit === comp.unit)
+                              ?.filter(
+                                (comp) =>
+                                  companyEdit === comp.company &&
+                                  branchEdit === comp.branch &&
+                                  unitEdit === comp.unit
+                              )
                               ?.map((data) => ({
                                 label: data.teamname,
                                 value: data.teamname,
                               }))
                               .filter((item, index, self) => {
-                                return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                                return (
+                                  self.findIndex(
+                                    (i) =>
+                                      i.label === item.label &&
+                                      i.value === item.value
+                                  ) === index
+                                );
                               })}
                             value={{ value: teamEdit, label: teamEdit }}
                             isDisabled={allBranchEdit}
                             onChange={(e) => {
-                              fetchEmployeeAllEdit(companyEdit, branchEdit, unitEdit, e.value);
+                              fetchEmployeeAllEdit(
+                                companyEdit,
+                                branchEdit,
+                                unitEdit,
+                                e.value
+                              );
                               setTeamEdit(e.value);
-                              setEmployeeEdit('Please Select Employee');
+                              setEmployeeEdit("Please Select Employee");
                             }}
                           />
                         </FormControl>
@@ -8395,16 +11227,20 @@ function TempControlPanel() {
                       <Grid item md={2} xs={12} sm={6}>
                         <FormControl fullWidth size="small">
                           <Typography>
-                            Employee<b style={{ color: 'red' }}>*</b>
+                            Employee<b style={{ color: "red" }}>*</b>
                           </Typography>
                           <Selects
                             options={employeeOptionEdit}
                             value={{ value: employeeEdit, label: employeeEdit }}
                             onChange={(e) => {
                               setEmployeeEdit(e.value);
-                              setIsUserDetails({ ...isUserdetails, bottoncnt: e.designation, username: e.legalname });
+                              setIsUserDetails({
+                                ...isUserdetails,
+                                bottoncnt: e.designation,
+                                username: e.legalname,
+                              });
                               setSignaturenameEdit(e.legalname);
-                              fetchEmployeeSignatureDefault(e.value, 'edit');
+                              fetchEmployeeSignatureDefault(e.value, "edit");
                               setBottomContentEdit(e.designation);
                             }}
                           />
@@ -8413,29 +11249,33 @@ function TempControlPanel() {
                       <Grid item md={2} xs={12} sm={6}>
                         <FormControl fullWidth size="small">
                           <Typography>
-                            Seal<b style={{ color: 'red' }}>*</b>
+                            Seal<b style={{ color: "red" }}>*</b>
                           </Typography>
                           <Selects
                             options={[
-                              { label: 'None', value: 'None' },
-                              { label: 'For Seal', value: 'For Seal' },
+                              { label: "None", value: "None" },
+                              { label: "For Seal", value: "For Seal" },
                             ]}
                             value={{ value: forSealEdit, label: forSealEdit }}
                             onChange={(e) => {
                               setForSealEdit(e.value);
-                              setTopContentEdit('');
-                              setBottomContentEdit(e.value === 'For Seal' ? isUserdetails.bottoncnt : '');
+                              setTopContentEdit("");
+                              setBottomContentEdit(
+                                e.value === "For Seal"
+                                  ? isUserdetails.bottoncnt
+                                  : ""
+                              );
                             }}
                           />
                         </FormControl>
                       </Grid>
-                      {forSealEdit === 'For Seal' && (
+                      {forSealEdit === "For Seal" && (
                         <>
                           <Grid item md={2} xs={12} sm={12}>
                             <FormControl fullWidth size="small">
                               <Typography>
                                 <b>Top Content</b>
-                                <b style={{ color: 'red' }}>*</b>
+                                <b style={{ color: "red" }}>*</b>
                               </Typography>
                               <OutlinedInput
                                 id="component-outlined"
@@ -8452,7 +11292,7 @@ function TempControlPanel() {
                             <FormControl fullWidth size="small">
                               <Typography>
                                 <b>Bottom Content</b>
-                                <b style={{ color: 'red' }}>*</b>
+                                <b style={{ color: "red" }}>*</b>
                               </Typography>
                               <OutlinedInput
                                 id="component-outlined"
@@ -8471,7 +11311,7 @@ function TempControlPanel() {
                         <FormControl fullWidth size="small">
                           <Typography>
                             <b>Name</b>
-                            <b style={{ color: 'red' }}>*</b>
+                            <b style={{ color: "red" }}>*</b>
                           </Typography>
                           <OutlinedInput
                             id="component-outlined"
@@ -8489,43 +11329,90 @@ function TempControlPanel() {
                     <Grid item md={3} xs={12} sm={12}>
                       <Typography>
                         <b>Signature Logo</b>
-                        {forSeal === 'For Seal' ? '' : <b style={{ color: 'red' }}>*</b>}
+                        {forSeal === "For Seal" ? (
+                          ""
+                        ) : (
+                          <b style={{ color: "red" }}>*</b>
+                        )}
                       </Typography>
 
                       <div>
-                        <Button variant="contained" onClick={handleClick10Edit} size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Button
+                          variant="contained"
+                          onClick={handleClick10Edit}
+                          size="small"
+                          component="label"
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                        >
                           Upload
                         </Button>
-                        <Menu anchorEl={anchorElDoc10Edit} open={Boolean(anchorElDoc10Edit)} onClose={handleClose10Edit}>
-                          <MenuItem onClick={() => handleMenuItemClick10Edit('local')}>Upload Local</MenuItem>
-                          <MenuItem onClick={() => handleMenuItemClick10Edit('organizational')}>Organizational Document</MenuItem>
-                        </Menu>
-                        {option10Edit === 'local' && documentFilesSignatureEdit?.length === 0 && (
-                          <Button variant="contained" size="small" component="label" sx={{ ...buttonStyles.buttonsubmit, '@media only screen and (max-width:550px)': { marginY: '5px' } }}>
+                        <Menu
+                          anchorEl={anchorElDoc10Edit}
+                          open={Boolean(anchorElDoc10Edit)}
+                          onClose={handleClose10Edit}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick10Edit("local")}
+                          >
                             Upload Local
-                            <input
-                              type="file"
-                              id="resume"
-                              accept=".png"
-                              name="file"
-                              hidden
-                              onChange={(e) => {
-                                handleResumeUploadSignatureEdit(e);
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick10Edit("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
+                        </Menu>
+                        {option10Edit === "local" &&
+                          !documentFilesSignatureEdit?.name && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
                               }}
-                            />
-                          </Button>
-                        )}
-                        {option10Edit === 'organizational' && (
-                          <FormControl fullWidth sx={{ marginTop: '10px' }}>
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadSignatureEdit(e);
+                                }}
+                              />
+                            </Button>
+                          )}
+                        {option10Edit === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              value={{ value: docBodyHeader10Edit, label: docBodyHeader10Edit }}
+                              value={{
+                                value: docBodyHeader10Edit,
+                                label: docBodyHeader10Edit,
+                              }}
                               onChange={async (e) => {
                                 setDocBodyHeader10Edit(e.value);
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                const base64 = await getBase64FromMulterPath(filePath);
-                                setdocumentFilesSignatureEdit([{ name: resume?.name, preview: base64 }]);
+                                const base64 =
+                                  await getFileObjectFromMulterPath(filePath);
+                                setdocumentFilesSignatureEdit({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
                               }}
                             />
                           </FormControl>
@@ -8533,29 +11420,59 @@ function TempControlPanel() {
                       </div>
 
                       <Grid item md={12} xs={12} sm={12}>
-                        {documentFilesSignatureEdit?.length > 0 &&
-                          documentFilesSignatureEdit.map((file, index) => (
+                        {
+                          documentFilesSignatureEdit?.name && (
+                            // documentFilesSignatureEdit.map((file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>{file.name}</Typography>
+                                  <Typography>
+                                    {documentFilesSignatureEdit?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewSignatureEdit(file)} />
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewSignatureEdit(
+                                        documentFilesSignatureEdit
+                                      )
+                                    }
+                                  />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  <Button style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer', marginTop: '-5px' }} onClick={() => handleFileDeleteSignatureEdit(index)}>
+                                  <Button
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      marginTop: "-5px",
+                                    }}
+                                    onClick={() =>
+                                      handleFileDeleteSignatureEdit()
+                                    }
+                                  >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          ))}
+                          )
+                          // ))
+                        }
                       </Grid>
                     </Grid>
                     <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                      <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateTodocheckSignatureEdit}>
+                      <Button
+                        variant="contained"
+                        sx={{ minWidth: "35px" }}
+                        onClick={handleCreateTodocheckSignatureEdit}
+                      >
                         <FaPlus />
                       </Button>
                     </Grid>
@@ -8578,12 +11495,22 @@ function TempControlPanel() {
                                             <Switch
                                               checked={allBranchEditTodo}
                                               onChange={(e) => {
-                                                setAllBranchEditTodo(e.target.checked);
-                                                setUnitEditTodo('Please Select Unit');
-                                                setEmployeeEditTodo('Please Select Employee');
-                                                setTeamEditTodo('Please Select Team');
+                                                setAllBranchEditTodo(
+                                                  e.target.checked
+                                                );
+                                                setUnitEditTodo(
+                                                  "Please Select Unit"
+                                                );
+                                                setEmployeeEditTodo(
+                                                  "Please Select Employee"
+                                                );
+                                                setTeamEditTodo(
+                                                  "Please Select Team"
+                                                );
                                                 if (e.target.checked) {
-                                                  getAllBranchUsersDataEditTodo(companyEdit);
+                                                  getAllBranchUsersDataEditTodo(
+                                                    companyEdit
+                                                  );
                                                 } else {
                                                   setEmployeeOptionEdit([]);
                                                 }
@@ -8596,16 +11523,23 @@ function TempControlPanel() {
                                     <Grid item md={2} xs={12} sm={6}>
                                       <FormControl fullWidth size="small">
                                         <Typography>
-                                          Unit<b style={{ color: 'red' }}>*</b>
+                                          Unit<b style={{ color: "red" }}>*</b>
                                         </Typography>
                                         <Selects
                                           options={unitOptionEdit}
                                           isDisabled={allBranchEditTodo}
-                                          value={{ value: unitEditTodo, label: unitEditTodo }}
+                                          value={{
+                                            value: unitEditTodo,
+                                            label: unitEditTodo,
+                                          }}
                                           onChange={(e) => {
                                             setUnitEditTodo(e.value);
-                                            setEmployeeEditTodo('Please Select Employee');
-                                            setTeamEditTodo('Please Select Team');
+                                            setEmployeeEditTodo(
+                                              "Please Select Employee"
+                                            );
+                                            setTeamEditTodo(
+                                              "Please Select Team"
+                                            );
                                             setEmployeeOptionEdit([]);
                                           }}
                                         />
@@ -8614,24 +11548,45 @@ function TempControlPanel() {
                                     <Grid item md={2} xs={12} sm={6}>
                                       <FormControl fullWidth size="small">
                                         <Typography>
-                                          Team<b style={{ color: 'red' }}>*</b>
+                                          Team<b style={{ color: "red" }}>*</b>
                                         </Typography>
                                         <Selects
                                           options={allTeam
-                                            ?.filter((comp) => companyEdit === comp.company && branchEdit === comp.branch && unitEditTodo === comp.unit)
+                                            ?.filter(
+                                              (comp) =>
+                                                companyEdit === comp.company &&
+                                                branchEdit === comp.branch &&
+                                                unitEditTodo === comp.unit
+                                            )
                                             ?.map((data) => ({
                                               label: data.teamname,
                                               value: data.teamname,
                                             }))
                                             .filter((item, index, self) => {
-                                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                                              return (
+                                                self.findIndex(
+                                                  (i) =>
+                                                    i.label === item.label &&
+                                                    i.value === item.value
+                                                ) === index
+                                              );
                                             })}
-                                          value={{ value: teamEditTodo, label: teamEditTodo }}
+                                          value={{
+                                            value: teamEditTodo,
+                                            label: teamEditTodo,
+                                          }}
                                           isDisabled={allBranchEditTodo}
                                           onChange={(e) => {
-                                            fetchEmployeeAllEditTodo(companyEdit, branchEdit, unitEditTodo, e.value);
+                                            fetchEmployeeAllEditTodo(
+                                              companyEdit,
+                                              branchEdit,
+                                              unitEditTodo,
+                                              e.value
+                                            );
                                             setTeamEditTodo(e.value);
-                                            setEmployeeEditTodo('Please Select Employee');
+                                            setEmployeeEditTodo(
+                                              "Please Select Employee"
+                                            );
                                           }}
                                         />
                                       </FormControl>
@@ -8639,16 +11594,28 @@ function TempControlPanel() {
                                     <Grid item md={2} xs={12} sm={6}>
                                       <FormControl fullWidth size="small">
                                         <Typography>
-                                          Employee<b style={{ color: 'red' }}>*</b>
+                                          Employee
+                                          <b style={{ color: "red" }}>*</b>
                                         </Typography>
                                         <Selects
                                           options={employeeOptionTodoEdit}
-                                          value={{ value: employeeEditTodo, label: employeeEditTodo }}
+                                          value={{
+                                            value: employeeEditTodo,
+                                            label: employeeEditTodo,
+                                          }}
                                           onChange={(e) => {
-                                            setIsUserDetails({ ...isUserdetails, bottoncnt: e.designation, username: e.legalname });
+                                            setIsUserDetails({
+                                              ...isUserdetails,
+                                              bottoncnt: e.designation,
+                                              username: e.legalname,
+                                            });
                                             setEmployeeEditTodo(e.value);
-                                            setSignaturenameEditTodo(e.legalname);
-                                            setBottomContentEditTodo(e.designation);
+                                            setSignaturenameEditTodo(
+                                              e.legalname
+                                            );
+                                            setBottomContentEditTodo(
+                                              e.designation
+                                            );
                                           }}
                                         />
                                       </FormControl>
@@ -8656,29 +11623,39 @@ function TempControlPanel() {
                                     <Grid item md={2} xs={12} sm={6}>
                                       <FormControl fullWidth size="small">
                                         <Typography>
-                                          Seal<b style={{ color: 'red' }}>*</b>
+                                          Seal<b style={{ color: "red" }}>*</b>
                                         </Typography>
                                         <Selects
                                           options={[
-                                            { label: 'None', value: 'None' },
-                                            { label: 'For Seal', value: 'For Seal' },
+                                            { label: "None", value: "None" },
+                                            {
+                                              label: "For Seal",
+                                              value: "For Seal",
+                                            },
                                           ]}
-                                          value={{ value: forSealEditTodo, label: forSealEditTodo }}
+                                          value={{
+                                            value: forSealEditTodo,
+                                            label: forSealEditTodo,
+                                          }}
                                           onChange={(e) => {
                                             setForSealEditTodo(e.value);
-                                            setTopContentEditTodo('');
-                                            setBottomContentEditTodo(e.value === 'For Seal' ? isUserdetails?.bottoncnt : '');
+                                            setTopContentEditTodo("");
+                                            setBottomContentEditTodo(
+                                              e.value === "For Seal"
+                                                ? isUserdetails?.bottoncnt
+                                                : ""
+                                            );
                                           }}
                                         />
                                       </FormControl>
                                     </Grid>
-                                    {forSealEditTodo === 'For Seal' && (
+                                    {forSealEditTodo === "For Seal" && (
                                       <>
                                         <Grid item md={2} xs={12} sm={12}>
                                           <FormControl fullWidth size="small">
                                             <Typography>
                                               <b>Top Content</b>
-                                              <b style={{ color: 'red' }}>*</b>
+                                              <b style={{ color: "red" }}>*</b>
                                             </Typography>
                                             <OutlinedInput
                                               id="component-outlined"
@@ -8686,7 +11663,9 @@ function TempControlPanel() {
                                               placeholder="Please Enter Top Content"
                                               value={topContentEditTodo}
                                               onChange={(e) => {
-                                                setTopContentEditTodo(e.target.value);
+                                                setTopContentEditTodo(
+                                                  e.target.value
+                                                );
                                               }}
                                             />
                                           </FormControl>
@@ -8695,7 +11674,7 @@ function TempControlPanel() {
                                           <FormControl fullWidth size="small">
                                             <Typography>
                                               <b>Bottom Content</b>
-                                              <b style={{ color: 'red' }}>*</b>
+                                              <b style={{ color: "red" }}>*</b>
                                             </Typography>
                                             <OutlinedInput
                                               id="component-outlined"
@@ -8703,7 +11682,9 @@ function TempControlPanel() {
                                               placeholder="Please Enter Bottom Content"
                                               value={bottomContentEditTodo}
                                               onChange={(e) => {
-                                                setBottomContentEditTodo(e.target.value);
+                                                setBottomContentEditTodo(
+                                                  e.target.value
+                                                );
                                               }}
                                             />
                                           </FormControl>
@@ -8714,7 +11695,7 @@ function TempControlPanel() {
                                       <FormControl fullWidth size="small">
                                         <Typography>
                                           <b>Name</b>
-                                          <b style={{ color: 'red' }}>*</b>
+                                          <b style={{ color: "red" }}>*</b>
                                         </Typography>
                                         <OutlinedInput
                                           id="component-outlined"
@@ -8722,7 +11703,9 @@ function TempControlPanel() {
                                           placeholder="Please Enter Name"
                                           value={signaturenameEditTodo}
                                           onChange={(e) => {
-                                            setSignaturenameEditTodo(e.target.value);
+                                            setSignaturenameEditTodo(
+                                              e.target.value
+                                            );
                                           }}
                                         />
                                       </FormControl>
@@ -8735,40 +11718,56 @@ function TempControlPanel() {
                                     <b>Signature Logo</b>
                                   </Typography>
                                   <Grid item md={12} xs={12} sm={12}>
-                                    {todo.document?.length > 0 &&
-                                      todo.document.map((file, index) => (
+                                    {
+                                      todo.document?.name && (
+                                        // todo.document.map((file, index) => (
                                         <>
                                           <Grid container spacing={2}>
                                             <Grid item md={10} sm={6} xs={6}>
-                                              <Typography>{file.name}</Typography>
+                                              <Typography>
+                                                {todo.document?.name}
+                                              </Typography>
                                             </Grid>
                                             <Grid></Grid>
                                             <Grid item md={1} sm={6} xs={6}>
-                                              <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                              <VisibilityOutlinedIcon
+                                                style={{
+                                                  fontsize: "large",
+                                                  color: "#357AE8",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() =>
+                                                  renderFilePreview(
+                                                    todo.document
+                                                  )
+                                                }
+                                              />
                                             </Grid>
                                           </Grid>
                                         </>
-                                      ))}
+                                      )
+                                      // ))
+                                    }
                                   </Grid>
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  {' '}
+                                  {" "}
                                 </Grid>
                                 <Grid item md={1} sm={1} mt={2} xs={1}>
                                   <Button
                                     variant="contained"
                                     style={{
-                                      minWidth: '20px',
-                                      minHeight: '41px',
-                                      background: 'transparent',
-                                      boxShadow: 'none',
-                                      marginTop: '5px !important',
-                                      '&:hover': {
-                                        background: '#f4f4f4',
-                                        borderRadius: '50%',
-                                        minHeight: '41px',
-                                        minWidth: '20px',
-                                        boxShadow: 'none',
+                                      minWidth: "20px",
+                                      minHeight: "41px",
+                                      background: "transparent",
+                                      boxShadow: "none",
+                                      marginTop: "5px !important",
+                                      "&:hover": {
+                                        background: "#f4f4f4",
+                                        borderRadius: "50%",
+                                        minHeight: "41px",
+                                        minWidth: "20px",
+                                        boxShadow: "none",
                                       },
                                     }}
                                     disabled={false}
@@ -8776,8 +11775,8 @@ function TempControlPanel() {
                                   >
                                     <CheckCircleIcon
                                       style={{
-                                        color: '#216d21',
-                                        fontSize: '1.5rem',
+                                        color: "#216d21",
+                                        fontSize: "1.5rem",
                                       }}
                                     />
                                   </Button>
@@ -8786,29 +11785,29 @@ function TempControlPanel() {
                                   <Button
                                     variant="contained"
                                     style={{
-                                      minWidth: '20px',
-                                      minHeight: '41px',
-                                      background: 'transparent',
-                                      boxShadow: 'none',
-                                      marginTop: '5px !important',
-                                      '&:hover': {
-                                        background: '#f4f4f4',
-                                        borderRadius: '50%',
-                                        minHeight: '41px',
-                                        minWidth: '20px',
-                                        boxShadow: 'none',
+                                      minWidth: "20px",
+                                      minHeight: "41px",
+                                      background: "transparent",
+                                      boxShadow: "none",
+                                      marginTop: "5px !important",
+                                      "&:hover": {
+                                        background: "#f4f4f4",
+                                        borderRadius: "50%",
+                                        minHeight: "41px",
+                                        minWidth: "20px",
+                                        boxShadow: "none",
                                       },
                                     }}
                                     onClick={() => {
                                       setSignTodo(false);
                                       setEditingIndexcheck(-1);
                                     }}
-                                  // disabled={!empdigits}
+                                    // disabled={!empdigits}
                                   >
                                     <CancelIcon
                                       style={{
-                                        color: '#b92525',
-                                        fontSize: '1.5rem',
+                                        color: "#b92525",
+                                        fontSize: "1.5rem",
                                       }}
                                     />
                                   </Button>
@@ -8822,7 +11821,9 @@ function TempControlPanel() {
                                       <Typography>
                                         <b>All Branch</b>
                                       </Typography>
-                                      <Typography>{todo.allBranch ? 'True' : 'False'}</Typography>
+                                      <Typography>
+                                        {todo.allBranch ? "True" : "False"}
+                                      </Typography>
                                     </FormControl>
                                   </Grid>
                                   {!todo.allBranch && (
@@ -8861,14 +11862,16 @@ function TempControlPanel() {
                                       <Typography>{todo.seal}</Typography>
                                     </FormControl>
                                   </Grid>
-                                  {todo?.seal === 'For Seal' && (
+                                  {todo?.seal === "For Seal" && (
                                     <>
                                       <Grid item md={2} xs={12} sm={12}>
                                         <FormControl fullWidth size="small">
                                           <Typography>
                                             <b>Top Content</b>
                                           </Typography>
-                                          <Typography>{todo.topcontent}</Typography>
+                                          <Typography>
+                                            {todo.topcontent}
+                                          </Typography>
                                         </FormControl>
                                       </Grid>
                                       <Grid item md={2} xs={12} sm={12}>
@@ -8876,7 +11879,9 @@ function TempControlPanel() {
                                           <Typography>
                                             <b>Bottom Content</b>
                                           </Typography>
-                                          <Typography>{todo.bottomcontent}</Typography>
+                                          <Typography>
+                                            {todo.bottomcontent}
+                                          </Typography>
                                         </FormControl>
                                       </Grid>
                                     </>
@@ -8886,7 +11891,9 @@ function TempControlPanel() {
                                       <Typography>
                                         <b>Name</b>
                                       </Typography>
-                                      <Typography>{todo.signaturename}</Typography>
+                                      <Typography>
+                                        {todo.signaturename}
+                                      </Typography>
                                     </FormControl>
                                   </Grid>
                                 </>
@@ -8896,51 +11903,72 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Signature Logo</b>
                                   </Typography>
-                                  <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "left",
+                                    }}
+                                  ></Box>
                                   <Grid item md={12} xs={12} sm={12}>
-                                    {todo.document?.length > 0 &&
-                                      todo.document.map((file, index) => (
+                                    {
+                                      todo?.document?.name && (
+                                        // todo.document.map((file, index) => (
                                         <>
                                           <Grid container spacing={2}>
                                             <Grid item md={10} sm={6} xs={6}>
-                                              <Typography>{file.name}</Typography>
+                                              <Typography>
+                                                {todo?.document?.name}
+                                              </Typography>
                                             </Grid>
                                             <Grid></Grid>
                                             <Grid item md={1} sm={6} xs={6}>
-                                              <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                              <VisibilityOutlinedIcon
+                                                style={{
+                                                  fontsize: "large",
+                                                  color: "#357AE8",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() =>
+                                                  renderFilePreview(
+                                                    todo?.document
+                                                  )
+                                                }
+                                              />
                                             </Grid>
                                           </Grid>
                                         </>
-                                      ))}
+                                      )
+                                      // ))
+                                    }
                                   </Grid>
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
-                                  {' '}
+                                  {" "}
                                 </Grid>
                                 <Grid item md={1} mt={2} sm={6} xs={6}>
                                   <Button
                                     variant="contained"
                                     style={{
-                                      minWidth: '20px',
-                                      minHeight: '41px',
-                                      background: 'transparent',
-                                      boxShadow: 'none',
-                                      marginTop: '-13px !important',
-                                      '&:hover': {
-                                        background: '#f4f4f4',
-                                        borderRadius: '50%',
-                                        minHeight: '41px',
-                                        minWidth: '20px',
-                                        boxShadow: 'none',
+                                      minWidth: "20px",
+                                      minHeight: "41px",
+                                      background: "transparent",
+                                      boxShadow: "none",
+                                      marginTop: "-13px !important",
+                                      "&:hover": {
+                                        background: "#f4f4f4",
+                                        borderRadius: "50%",
+                                        minHeight: "41px",
+                                        minWidth: "20px",
+                                        boxShadow: "none",
                                       },
                                     }}
                                     onClick={() => handleEditTodocheck(index)}
-                                  // disabled={!empdigits}
+                                    // disabled={!empdigits}
                                   >
                                     <FaEdit
                                       style={{
-                                        color: '#1976d2',
-                                        fontSize: '1.2rem',
+                                        color: "#1976d2",
+                                        fontSize: "1.2rem",
                                       }}
                                     />
                                   </Button>
@@ -8949,17 +11977,17 @@ function TempControlPanel() {
                                   <Button
                                     variant="contained"
                                     style={{
-                                      minWidth: '20px',
-                                      minHeight: '41px',
-                                      background: 'transparent',
-                                      boxShadow: 'none',
-                                      marginTop: '-15px !important',
-                                      '&:hover': {
-                                        background: '#f4f4f4',
-                                        borderRadius: '50%',
-                                        minHeight: '41px',
-                                        minWidth: '20px',
-                                        boxShadow: 'none',
+                                      minWidth: "20px",
+                                      minHeight: "41px",
+                                      background: "transparent",
+                                      boxShadow: "none",
+                                      marginTop: "-15px !important",
+                                      "&:hover": {
+                                        background: "#f4f4f4",
+                                        borderRadius: "50%",
+                                        minHeight: "41px",
+                                        minWidth: "20px",
+                                        boxShadow: "none",
                                       },
                                     }}
                                     onClick={() => {
@@ -8969,8 +11997,8 @@ function TempControlPanel() {
                                   >
                                     <FaTrash
                                       style={{
-                                        color: '#b92525',
-                                        fontSize: '1.2rem',
+                                        color: "#b92525",
+                                        fontSize: "1.2rem",
                                       }}
                                     />
                                   </Button>
@@ -8990,7 +12018,7 @@ function TempControlPanel() {
                     <FormControl fullWidth size="small">
                       <Typography>
                         <b>From Email</b>
-                        <b style={{ color: 'red' }}>*</b>
+                        <b style={{ color: "red" }}>*</b>
                       </Typography>
                       <OutlinedInput
                         id="component-outlined"
@@ -8998,7 +12026,7 @@ function TempControlPanel() {
                         placeholder="Please Enter from address"
                         value={fromEmailEdit}
                         onChange={(e) => setFromEmailEdit(e.target.value)}
-                      // value={todo.signaturename}
+                        // value={todo.signaturename}
                       />
                     </FormControl>
                   </Grid>
@@ -9008,18 +12036,28 @@ function TempControlPanel() {
                       <Typography>
                         <b>CC Email</b>
                       </Typography>
-                      <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter CC address" value={ccEmailEdit} onChange={(e) => setCcEmailEdit(e.target.value)} />
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter CC address"
+                        value={ccEmailEdit}
+                        onChange={(e) => setCcEmailEdit(e.target.value)}
+                      />
                     </FormControl>
                   </Grid>
                   <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                    <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateCCEmailEdit}>
+                    <Button
+                      variant="contained"
+                      sx={{ minWidth: "35px" }}
+                      onClick={handleCreateCCEmailEdit}
+                    >
                       <FaPlus />
                     </Button>
                   </Grid>
                   <Grid item md={12} xs={12} sm={12}>
                     {ccEmailTodoEdit?.length > 0 && (
                       <Typography>
-                        {' '}
+                        {" "}
                         <b>CC Email Address Todo : </b>
                       </Typography>
                     )}
@@ -9032,7 +12070,15 @@ function TempControlPanel() {
                                 <>
                                   <Grid item md={4} xs={12} sm={12}>
                                     <FormControl fullWidth size="small">
-                                      <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter CC address" value={ccEmailCreateEdit} onChange={(e) => setCcEmailCreateEdit(e.target.value)} />
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter CC address"
+                                        value={ccEmailCreateEdit}
+                                        onChange={(e) =>
+                                          setCcEmailCreateEdit(e.target.value)
+                                        }
+                                      />
                                     </FormControl>
                                   </Grid>
                                 </>
@@ -9049,36 +12095,55 @@ function TempControlPanel() {
                                     variant="contained"
                                     color="success"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     onClick={() => {
-                                      if (ccEmailCreateEdit === '') {
-                                        setPopupContentMalert(`Please Enter CC Email`);
-                                        setPopupSeverityMalert('warning');
+                                      if (ccEmailCreateEdit === "") {
+                                        setPopupContentMalert(
+                                          `Please Enter CC Email`
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
-                                      } else if (!isValidEmail(ccEmailCreateEdit)) {
-                                        setPopupContentMalert('Please Enter Valid CC Email');
-                                        setPopupSeverityMalert('warning');
+                                      } else if (
+                                        !isValidEmail(ccEmailCreateEdit)
+                                      ) {
+                                        setPopupContentMalert(
+                                          "Please Enter Valid CC Email"
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
-                                      } else if (ccEmailTodoEdit.some((item, ind) => ind !== index && item?.toLowerCase() === ccEmailCreateEdit?.toLowerCase())) {
-                                        setPopupContentMalert('Already Details Added');
-                                        setPopupSeverityMalert('warning');
+                                      } else if (
+                                        ccEmailTodoEdit.some(
+                                          (item, ind) =>
+                                            ind !== index &&
+                                            item?.toLowerCase() ===
+                                              ccEmailCreateEdit?.toLowerCase()
+                                        )
+                                      ) {
+                                        setPopupContentMalert(
+                                          "Already Details Added"
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
                                       } else {
-                                        const updatedIsTodoEdit = [...isTodoEditCCEmailEdit];
+                                        const updatedIsTodoEdit = [
+                                          ...isTodoEditCCEmailEdit,
+                                        ];
                                         updatedIsTodoEdit[index] = false;
-                                        setIsTodoEditCCEmailEdit(updatedIsTodoEdit);
+                                        setIsTodoEditCCEmailEdit(
+                                          updatedIsTodoEdit
+                                        );
                                         handleUpdateTodoCCEmailEdit();
                                       }
                                     }}
                                   >
                                     <MdOutlineDone
                                       style={{
-                                        fontSize: '17px',
-                                        fontWeight: 'bold',
+                                        fontSize: "17px",
+                                        fontWeight: "bold",
                                       }}
                                     />
                                   </Button>
@@ -9087,16 +12152,23 @@ function TempControlPanel() {
                                     variant="contained"
                                     color="primary"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
-                                    disabled={editingIndexcheckCCemailEdit !== index && editingIndexcheckCCemailEdit !== -1}
+                                    disabled={
+                                      editingIndexcheckCCemailEdit !== index &&
+                                      editingIndexcheckCCemailEdit !== -1
+                                    }
                                     onClick={() => {
-                                      const updatedIsTodoEdit = [...isTodoEditCCEmailEdit];
+                                      const updatedIsTodoEdit = [
+                                        ...isTodoEditCCEmailEdit,
+                                      ];
                                       updatedIsTodoEdit[index] = true;
-                                      setIsTodoEditCCEmailEdit(updatedIsTodoEdit);
+                                      setIsTodoEditCCEmailEdit(
+                                        updatedIsTodoEdit
+                                      );
                                       setEditingIndexcheckCCemailEdit(index);
                                       handleEditTodocheckCCEmailEdit(index);
                                     }}
@@ -9112,15 +12184,19 @@ function TempControlPanel() {
                                     color="error"
                                     type="button"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     onClick={() => {
-                                      const updatedIsTodoEdit = [...isTodoEditCCEmailEdit];
+                                      const updatedIsTodoEdit = [
+                                        ...isTodoEditCCEmailEdit,
+                                      ];
                                       updatedIsTodoEdit[index] = false;
-                                      setIsTodoEditCCEmailEdit(updatedIsTodoEdit);
+                                      setIsTodoEditCCEmailEdit(
+                                        updatedIsTodoEdit
+                                      );
                                       setEditingIndexcheckCCemailEdit(-1);
                                     }}
                                   >
@@ -9132,12 +12208,14 @@ function TempControlPanel() {
                                     color="error"
                                     type="button"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
-                                    onClick={() => handleFileDeleteCCEmailEdit(index)}
+                                    onClick={() =>
+                                      handleFileDeleteCCEmailEdit(index)
+                                    }
                                   >
                                     <AiOutlineClose />
                                   </Button>
@@ -9156,18 +12234,28 @@ function TempControlPanel() {
                       <Typography>
                         <b>BCC Email</b>
                       </Typography>
-                      <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter BCC address" value={bccEmailEdit} onChange={(e) => setBccEmailEdit(e.target.value)} />
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter BCC address"
+                        value={bccEmailEdit}
+                        onChange={(e) => setBccEmailEdit(e.target.value)}
+                      />
                     </FormControl>
                   </Grid>
                   <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
-                    <Button variant="contained" sx={{ minWidth: '35px' }} onClick={handleCreateBCCEmailEdit}>
+                    <Button
+                      variant="contained"
+                      sx={{ minWidth: "35px" }}
+                      onClick={handleCreateBCCEmailEdit}
+                    >
                       <FaPlus />
                     </Button>
                   </Grid>
                   <Grid item md={12} xs={12} sm={12}>
                     {bccEmailTodoEdit?.length > 0 && (
                       <Typography>
-                        {' '}
+                        {" "}
                         <b>BCC Email Address Todo : </b>
                       </Typography>
                     )}
@@ -9180,7 +12268,15 @@ function TempControlPanel() {
                                 <>
                                   <Grid item md={4} xs={12} sm={12}>
                                     <FormControl fullWidth size="small">
-                                      <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter BCC address" value={bccEmailCreateEdit} onChange={(e) => setBccEmailCreateEdit(e.target.value)} />
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter BCC address"
+                                        value={bccEmailCreateEdit}
+                                        onChange={(e) =>
+                                          setBccEmailCreateEdit(e.target.value)
+                                        }
+                                      />
                                     </FormControl>
                                   </Grid>
                                 </>
@@ -9197,36 +12293,55 @@ function TempControlPanel() {
                                     variant="contained"
                                     color="success"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     onClick={() => {
-                                      if (bccEmailCreateEdit === '') {
-                                        setPopupContentMalert(`Please Enter BCC Email`);
-                                        setPopupSeverityMalert('warning');
+                                      if (bccEmailCreateEdit === "") {
+                                        setPopupContentMalert(
+                                          `Please Enter BCC Email`
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
-                                      } else if (!isValidEmail(bccEmailCreateEdit)) {
-                                        setPopupContentMalert('Please Enter Valid BCC Email');
-                                        setPopupSeverityMalert('warning');
+                                      } else if (
+                                        !isValidEmail(bccEmailCreateEdit)
+                                      ) {
+                                        setPopupContentMalert(
+                                          "Please Enter Valid BCC Email"
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
-                                      } else if (bccEmailTodoEdit.some((item, ind) => ind !== index && item?.toLowerCase() === bccEmailCreateEdit?.toLowerCase())) {
-                                        setPopupContentMalert('Already Details Added');
-                                        setPopupSeverityMalert('warning');
+                                      } else if (
+                                        bccEmailTodoEdit.some(
+                                          (item, ind) =>
+                                            ind !== index &&
+                                            item?.toLowerCase() ===
+                                              bccEmailCreateEdit?.toLowerCase()
+                                        )
+                                      ) {
+                                        setPopupContentMalert(
+                                          "Already Details Added"
+                                        );
+                                        setPopupSeverityMalert("warning");
                                         handleClickOpenPopupMalert();
                                       } else {
-                                        const updatedIsTodoEdit = [...isTodoEditBCCEmailEdit];
+                                        const updatedIsTodoEdit = [
+                                          ...isTodoEditBCCEmailEdit,
+                                        ];
                                         updatedIsTodoEdit[index] = false;
-                                        setIsTodoEditBCCEmailEdit(updatedIsTodoEdit);
+                                        setIsTodoEditBCCEmailEdit(
+                                          updatedIsTodoEdit
+                                        );
                                         handleUpdateTodoBCCEmailEdit();
                                       }
                                     }}
                                   >
                                     <MdOutlineDone
                                       style={{
-                                        fontSize: '17px',
-                                        fontWeight: 'bold',
+                                        fontSize: "17px",
+                                        fontWeight: "bold",
                                       }}
                                     />
                                   </Button>
@@ -9235,16 +12350,23 @@ function TempControlPanel() {
                                     variant="contained"
                                     color="primary"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
-                                    disabled={editingIndexcheckBCCemailEdit !== index && editingIndexcheckBCCemailEdit !== -1}
+                                    disabled={
+                                      editingIndexcheckBCCemailEdit !== index &&
+                                      editingIndexcheckBCCemailEdit !== -1
+                                    }
                                     onClick={() => {
-                                      const updatedIsTodoEdit = [...isTodoEditBCCEmailEdit];
+                                      const updatedIsTodoEdit = [
+                                        ...isTodoEditBCCEmailEdit,
+                                      ];
                                       updatedIsTodoEdit[index] = true;
-                                      setIsTodoEditBCCEmailEdit(updatedIsTodoEdit);
+                                      setIsTodoEditBCCEmailEdit(
+                                        updatedIsTodoEdit
+                                      );
                                       setEditingIndexcheckBCCemailEdit(index);
                                       handleEditTodocheckBCCEmailEdit(index);
                                     }}
@@ -9260,15 +12382,19 @@ function TempControlPanel() {
                                     color="error"
                                     type="button"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
                                     onClick={() => {
-                                      const updatedIsTodoEdit = [...isTodoEditBCCEmailEdit];
+                                      const updatedIsTodoEdit = [
+                                        ...isTodoEditBCCEmailEdit,
+                                      ];
                                       updatedIsTodoEdit[index] = false;
-                                      setIsTodoEditBCCEmailEdit(updatedIsTodoEdit);
+                                      setIsTodoEditBCCEmailEdit(
+                                        updatedIsTodoEdit
+                                      );
                                       setEditingIndexcheckBCCemailEdit(-1);
                                     }}
                                   >
@@ -9280,12 +12406,14 @@ function TempControlPanel() {
                                     color="error"
                                     type="button"
                                     sx={{
-                                      height: '30px',
-                                      minWidth: '30px',
-                                      marginTop: '8px',
-                                      padding: '6px 10px',
+                                      height: "30px",
+                                      minWidth: "30px",
+                                      marginTop: "8px",
+                                      padding: "6px 10px",
                                     }}
-                                    onClick={() => handleFileDeleteBCCEmailEdit(index)}
+                                    onClick={() =>
+                                      handleFileDeleteBCCEmailEdit(index)
+                                    }
                                   >
                                     <AiOutlineClose />
                                   </Button>
@@ -9302,7 +12430,7 @@ function TempControlPanel() {
                   <Grid item md={12} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Email Format <b style={{ color: 'red' }}>*</b>
+                        Email Format <b style={{ color: "red" }}>*</b>
                       </Typography>
                       <ReactQuillAdvanced
                         agenda={emailFormatEdit}
@@ -9341,12 +12469,19 @@ function TempControlPanel() {
                 <br />
                 <Grid container spacing={2}>
                   <Grid item md={6} xs={6} sm={6}>
-                    <LoadingButton sx={buttonStyles.buttonsubmit} variant="contained" type="submit">
+                    <LoadingButton
+                      sx={buttonStyles.buttonsubmit}
+                      variant="contained"
+                      type="submit"
+                    >
                       Update
                     </LoadingButton>
                   </Grid>
                   <Grid item md={6} xs={6} sm={6}>
-                    <Button sx={buttonStyles.btncancel} onClick={handleCloseModEdit}>
+                    <Button
+                      sx={buttonStyles.btncancel}
+                      onClick={handleCloseModEdit}
+                    >
                       Cancel
                     </Button>
                   </Grid>
@@ -9359,12 +12494,14 @@ function TempControlPanel() {
       </Box>
       <br />
       {/* ****** Table Start ****** */}
-      {isUserRoleCompare?.includes('ltemplatecontrolpanel') && (
+      {isUserRoleCompare?.includes("ltemplatecontrolpanel") && (
         <>
           <Box sx={userStyle.container}>
             {/* ******************************************************EXPORT Buttons****************************************************** */}
             <Grid item xs={8}>
-              <Typography sx={userStyle.importheadtext}>Template Control Panel List</Typography>
+              <Typography sx={userStyle.importheadtext}>
+                Template Control Panel List
+              </Typography>
             </Grid>
             <br />
             <Grid container spacing={2} style={userStyle.dataTablestyle}>
@@ -9383,7 +12520,7 @@ function TempControlPanel() {
                       },
                     }}
                     onChange={handlePageSizeChange}
-                    sx={{ width: '77px' }}
+                    sx={{ width: "77px" }}
                   >
                     <MenuItem value={1}>1</MenuItem>
                     <MenuItem value={5}>5</MenuItem>
@@ -9395,14 +12532,24 @@ function TempControlPanel() {
                   </Select>
                 </Box>
               </Grid>
-              <Grid item md={8} xs={12} sm={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Grid
+                item
+                md={8}
+                xs={12}
+                sm={12}
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <Box>
-                  {isUserRoleCompare?.includes('exceltemplatecontrolpanel') && (
+                  {isUserRoleCompare?.includes("exceltemplatecontrolpanel") && (
                     <>
                       <Button
                         onClick={(e) => {
                           setIsFilterOpen(true);
-                          setFormat('xl');
+                          setFormat("xl");
                         }}
                         sx={userStyle.buttongrp}
                       >
@@ -9411,12 +12558,12 @@ function TempControlPanel() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes('csvtemplatecontrolpanel') && (
+                  {isUserRoleCompare?.includes("csvtemplatecontrolpanel") && (
                     <>
                       <Button
                         onClick={(e) => {
                           setIsFilterOpen(true);
-                          setFormat('csv');
+                          setFormat("csv");
                         }}
                         sx={userStyle.buttongrp}
                       >
@@ -9425,7 +12572,7 @@ function TempControlPanel() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes('printtemplatecontrolpanel') && (
+                  {isUserRoleCompare?.includes("printtemplatecontrolpanel") && (
                     <>
                       <Button sx={userStyle.buttongrp} onClick={handleprint}>
                         &ensp;
@@ -9434,7 +12581,7 @@ function TempControlPanel() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes('pdftemplatecontrolpanel') && (
+                  {isUserRoleCompare?.includes("pdftemplatecontrolpanel") && (
                     <>
                       <Button
                         sx={userStyle.buttongrp}
@@ -9447,10 +12594,15 @@ function TempControlPanel() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes('imagetemplatecontrolpanel') && (
-                    <Button sx={userStyle.buttongrp} onClick={handleCaptureImage}>
-                      {' '}
-                      <ImageIcon sx={{ fontSize: '15px' }} /> &ensp;Image&ensp;{' '}
+                  {isUserRoleCompare?.includes("imagetemplatecontrolpanel") && (
+                    <Button
+                      sx={userStyle.buttongrp}
+                      onClick={handleCaptureImage}
+                    >
+                      {" "}
+                      <ImageIcon
+                        sx={{ fontSize: "15px" }}
+                      /> &ensp;Image&ensp;{" "}
                     </Button>
                   )}
                 </Box>
@@ -9459,7 +12611,12 @@ function TempControlPanel() {
                 <Box>
                   <FormControl fullWidth size="small">
                     <Typography>Search</Typography>
-                    <OutlinedInput id="component-outlined" type="text" value={searchQuery} onChange={handleSearchChange} />
+                    <OutlinedInput
+                      id="component-outlined"
+                      type="text"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                    />
                   </FormControl>
                 </Box>
               </Grid>
@@ -9473,8 +12630,13 @@ function TempControlPanel() {
               Manage Columns
             </Button>
             &ensp;
-            {isUserRoleCompare?.includes('bdtemplatecontrolpanel') && (
-              <Button sx={buttonStyles.buttonbulkdelete} variant="contained" color="error" onClick={handleClickOpenalert}>
+            {isUserRoleCompare?.includes("bdtemplatecontrolpanel") && (
+              <Button
+                sx={buttonStyles.buttonbulkdelete}
+                variant="contained"
+                color="error"
+                onClick={handleClickOpenalert}
+              >
                 Bulk Delete
               </Button>
             )}
@@ -9482,22 +12644,35 @@ function TempControlPanel() {
             <br />
             {!sourceCheck ? (
               <>
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <ThreeDots height="80" width="80" radius="9" color="#1976d2" ariaLabel="three-dots-loading" wrapperStyle={{}} wrapperClassName="" visible={true} />
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <ThreeDots
+                    height="80"
+                    width="80"
+                    radius="9"
+                    color="#1976d2"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClassName=""
+                    visible={true}
+                  />
                 </Box>
               </>
             ) : (
               <>
                 <Box
                   style={{
-                    width: '100%',
-                    overflowY: 'hidden', // Hide the y-axis scrollbar
+                    width: "100%",
+                    overflowY: "hidden", // Hide the y-axis scrollbar
                   }}
                 >
                   <StyledDataGrid
-                    onClipboardCopy={(copiedString) => setCopiedData(copiedString)}
+                    onClipboardCopy={(copiedString) =>
+                      setCopiedData(copiedString)
+                    }
                     rows={rowsWithCheckboxes}
-                    columns={columnDataTable.filter((column) => columnVisibility[column.field])}
+                    columns={columnDataTable.filter(
+                      (column) => columnVisibility[column.field]
+                    )}
                     onSelectionModelChange={handleSelectionChange}
                     selectionModel={selectedRows}
                     autoHeight={true}
@@ -9510,25 +12685,50 @@ function TempControlPanel() {
                 </Box>
                 <Box style={userStyle.dataTablestyle}>
                   <Box>
-                    Showing {filteredData.length > 0 ? (page - 1) * pageSize + 1 : 0} to {Math.min(page * pageSize, filteredDatas.length)} of {filteredDatas.length} entries
+                    Showing{" "}
+                    {filteredData.length > 0 ? (page - 1) * pageSize + 1 : 0} to{" "}
+                    {Math.min(page * pageSize, filteredDatas.length)} of{" "}
+                    {filteredDatas.length} entries
                   </Box>
                   <Box>
-                    <Button onClick={() => setPage(1)} disabled={page === 1} sx={userStyle.paginationbtn}>
+                    <Button
+                      onClick={() => setPage(1)}
+                      disabled={page === 1}
+                      sx={userStyle.paginationbtn}
+                    >
                       <FirstPageIcon />
                     </Button>
-                    <Button onClick={() => handlePageChange(page - 1)} disabled={page === 1} sx={userStyle.paginationbtn}>
+                    <Button
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page === 1}
+                      sx={userStyle.paginationbtn}
+                    >
                       <NavigateBeforeIcon />
                     </Button>
                     {pageNumbers?.map((pageNumber) => (
-                      <Button key={pageNumber} sx={userStyle.paginationbtn} onClick={() => handlePageChange(pageNumber)} className={page === pageNumber ? 'active' : ''} disabled={page === pageNumber}>
+                      <Button
+                        key={pageNumber}
+                        sx={userStyle.paginationbtn}
+                        onClick={() => handlePageChange(pageNumber)}
+                        className={page === pageNumber ? "active" : ""}
+                        disabled={page === pageNumber}
+                      >
                         {pageNumber}
                       </Button>
                     ))}
                     {lastVisiblePage < totalPages && <span>...</span>}
-                    <Button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages} sx={userStyle.paginationbtn}>
+                    <Button
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page === totalPages}
+                      sx={userStyle.paginationbtn}
+                    >
                       <NavigateNextIcon />
                     </Button>
-                    <Button onClick={() => setPage(totalPages)} disabled={page === totalPages} sx={userStyle.paginationbtn}>
+                    <Button
+                      onClick={() => setPage(totalPages)}
+                      disabled={page === totalPages}
+                      sx={userStyle.paginationbtn}
+                    >
                       <LastPageIcon />
                     </Button>
                   </Box>
@@ -9545,8 +12745,8 @@ function TempControlPanel() {
         anchorEl={anchorEl}
         onClose={handleCloseManageColumns}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
+          vertical: "bottom",
+          horizontal: "left",
         }}
       >
         {manageColumnsContent}
@@ -9555,10 +12755,19 @@ function TempControlPanel() {
       {/* Delete Modal */}
       <Box>
         {/* ALERT DIALOG */}
-        <Dialog open={isDeleteOpen} onClose={handleCloseMod} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '80px', color: 'orange' }} />
-            <Typography variant="h5" sx={{ color: 'red', textAlign: 'center' }}>
+        <Dialog
+          open={isDeleteOpen}
+          onClose={handleCloseMod}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "80px", color: "orange" }}
+            />
+            <Typography variant="h5" sx={{ color: "red", textAlign: "center" }}>
               Are you sure?
             </Typography>
           </DialogContent>
@@ -9566,19 +12775,35 @@ function TempControlPanel() {
             <Button onClick={handleCloseMod} sx={buttonStyles.btncancel}>
               Cancel
             </Button>
-            <Button autoFocus variant="contained" sx={buttonStyles.buttonsubmit} onClick={(e) => delSource(Sourcesid)}>
-              {' '}
-              OK{' '}
+            <Button
+              autoFocus
+              variant="contained"
+              sx={buttonStyles.buttonsubmit}
+              onClick={(e) => delSource(Sourcesid)}
+            >
+              {" "}
+              OK{" "}
             </Button>
           </DialogActions>
         </Dialog>
       </Box>
 
       {/* view model */}
-      <Dialog open={openview} onClose={handleClickOpenview} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg" sx={{ marginTop: '50px' }} fullWidth={true}>
-        <Box sx={{ padding: '30px 50px' }}>
+      <Dialog
+        open={openview}
+        onClose={handleClickOpenview}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="lg"
+        sx={{ marginTop: "50px" }}
+        fullWidth={true}
+      >
+        <Box sx={{ padding: "30px 50px" }}>
           <>
-            <Typography sx={userStyle.HeaderText}> View Template Control Panel</Typography>
+            <Typography sx={userStyle.HeaderText}>
+              {" "}
+              View Template Control Panel
+            </Typography>
             <br /> <br />
             <Grid container spacing={2}>
               <Grid item md={6} xs={12} sm={12}>
@@ -9599,7 +12824,7 @@ function TempControlPanel() {
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
                 <Typography>
-                  <b>Document Letter Head Content Header</b>{' '}
+                  <b>Document Letter Head Content Header</b>{" "}
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
@@ -9611,11 +12836,24 @@ function TempControlPanel() {
                             <Typography>{file.headername}</Typography>
                           </Grid>
                           <Grid item md={6} sm={6} xs={6}>
-                            <Typography>{file?.headerimage[0]?.name}</Typography>
+                            <Typography>
+                              {file?.headerimage[0]?.name}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentHeader(file?.headerimage[0])} />
+                            <VisibilityOutlinedIcon
+                              style={{
+                                fontsize: "large",
+                                color: "#357AE8",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                renderFilePreviewDocumentContentHeader(
+                                  file?.headerimage[0]
+                                )
+                              }
+                            />
                           </Grid>
                         </Grid>
                       </>
@@ -9624,7 +12862,7 @@ function TempControlPanel() {
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
                 <Typography>
-                  <b>Document Letter Head Content Footer</b>{' '}
+                  <b>Document Letter Head Content Footer</b>{" "}
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
@@ -9636,11 +12874,24 @@ function TempControlPanel() {
                             <Typography>{file.footername}</Typography>
                           </Grid>
                           <Grid item md={6} sm={6} xs={6}>
-                            <Typography>{file?.footerimage[0]?.name}</Typography>
+                            <Typography>
+                              {file?.footerimage[0]?.name}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentContentFooter(file?.footerimage[0])} />
+                            <VisibilityOutlinedIcon
+                              style={{
+                                fontsize: "large",
+                                color: "#357AE8",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                renderFilePreviewDocumentContentFooter(
+                                  file?.footerimage[0]
+                                )
+                              }
+                            />
                           </Grid>
                         </Grid>
                       </>
@@ -9649,7 +12900,7 @@ function TempControlPanel() {
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
                 <Typography>
-                  <b>Document Letter Head Body Content(Background)</b>{' '}
+                  <b>Document Letter Head Body Content(Background)</b>{" "}
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
@@ -9662,7 +12913,16 @@ function TempControlPanel() {
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBodyContent(file)} />
+                            <VisibilityOutlinedIcon
+                              style={{
+                                fontsize: "large",
+                                color: "#357AE8",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                renderFilePreviewDocumentBodyContent(file)
+                              }
+                            />
                           </Grid>
                         </Grid>
                       </>
@@ -9679,7 +12939,7 @@ function TempControlPanel() {
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
                 <Typography>
-                  <b>ID Card Front Header</b>{' '}
+                  <b>ID Card Front Header</b>{" "}
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
@@ -9692,7 +12952,16 @@ function TempControlPanel() {
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentFrontHeader(file)} />
+                            <VisibilityOutlinedIcon
+                              style={{
+                                fontsize: "large",
+                                color: "#357AE8",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                renderFilePreviewDocumentFrontHeader(file)
+                              }
+                            />
                           </Grid>
                         </Grid>
                       </>
@@ -9714,7 +12983,16 @@ function TempControlPanel() {
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentFrontFooter(file)} />
+                            <VisibilityOutlinedIcon
+                              style={{
+                                fontsize: "large",
+                                color: "#357AE8",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                renderFilePreviewDocumentFrontFooter(file)
+                              }
+                            />
                           </Grid>
                         </Grid>
                       </>
@@ -9723,7 +13001,7 @@ function TempControlPanel() {
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
                 <Typography>
-                  <b>ID Card Back Header</b>{' '}
+                  <b>ID Card Back Header</b>{" "}
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
@@ -9736,7 +13014,16 @@ function TempControlPanel() {
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBackHeader(file)} />
+                            <VisibilityOutlinedIcon
+                              style={{
+                                fontsize: "large",
+                                color: "#357AE8",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                renderFilePreviewDocumentBackHeader(file)
+                              }
+                            />
                           </Grid>
                         </Grid>
                       </>
@@ -9758,7 +13045,16 @@ function TempControlPanel() {
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBackFooter(file)} />
+                            <VisibilityOutlinedIcon
+                              style={{
+                                fontsize: "large",
+                                color: "#357AE8",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                renderFilePreviewDocumentBackFooter(file)
+                              }
+                            />
                           </Grid>
                         </Grid>
                       </>
@@ -9783,7 +13079,7 @@ function TempControlPanel() {
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
                 <Typography>
-                  <b>Logo</b>{' '}
+                  <b>Logo</b>{" "}
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
@@ -9796,7 +13092,16 @@ function TempControlPanel() {
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
-                            <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreviewDocumentBackFooter(file)} />
+                            <VisibilityOutlinedIcon
+                              style={{
+                                fontsize: "large",
+                                color: "#357AE8",
+                                cursor: "pointer",
+                              }}
+                              onClick={() =>
+                                renderFilePreviewDocumentBackFooter(file)
+                              }
+                            />
                           </Grid>
                         </Grid>
                       </>
@@ -9809,12 +13114,12 @@ function TempControlPanel() {
                   <Grid container spacing={2}>
                     <Grid item md={4} sm={6} xs={6}>
                       <Typography>
-                        <b>To Company</b>{' '}
+                        <b>To Company</b>{" "}
                       </Typography>
                     </Grid>
                     <Grid item md={4} sm={6} xs={6}>
                       <Typography>
-                        <b>To Address</b>{' '}
+                        <b>To Address</b>{" "}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -9852,7 +13157,13 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Seal Type</b>
                                   </Typography>
-                                  <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter Name" value={todo.seal} readOnly={true} />
+                                  <OutlinedInput
+                                    id="component-outlined"
+                                    type="text"
+                                    placeholder="Please Enter Name"
+                                    value={todo.seal}
+                                    readOnly={true}
+                                  />
                                 </FormControl>
                               </Grid>
                               <Grid item md={3} xs={12} sm={12}>
@@ -9860,7 +13171,13 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Name</b>
                                   </Typography>
-                                  <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter Name" value={todo.name} readOnly={true} />
+                                  <OutlinedInput
+                                    id="component-outlined"
+                                    type="text"
+                                    placeholder="Please Enter Name"
+                                    value={todo.name}
+                                    readOnly={true}
+                                  />
                                 </FormControl>
                               </Grid>
                             </>
@@ -9870,7 +13187,9 @@ function TempControlPanel() {
                               <Typography>
                                 <b>Seal Logo</b>
                               </Typography>
-                              <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                              <Box
+                                sx={{ display: "flex", justifyContent: "left" }}
+                              ></Box>
                               <Grid item md={12} xs={12} sm={12}>
                                 {todo.document?.length > 0 &&
                                   todo.document.map((file, index) => (
@@ -9881,7 +13200,16 @@ function TempControlPanel() {
                                         </Grid>
                                         <Grid></Grid>
                                         <Grid item md={1} sm={6} xs={6}>
-                                          <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                          <VisibilityOutlinedIcon
+                                            style={{
+                                              fontsize: "large",
+                                              color: "#357AE8",
+                                              cursor: "pointer",
+                                            }}
+                                            onClick={() =>
+                                              renderFilePreview(file)
+                                            }
+                                          />
                                         </Grid>
                                       </Grid>
                                     </>
@@ -9910,7 +13238,13 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Unit</b>
                                   </Typography>
-                                  <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter Name" value={todo.unit} readOnly={true} />
+                                  <OutlinedInput
+                                    id="component-outlined"
+                                    type="text"
+                                    placeholder="Please Enter Name"
+                                    value={todo.unit}
+                                    readOnly={true}
+                                  />
                                 </FormControl>
                               </Grid>
                               <Grid item md={2.5} xs={12} sm={12}>
@@ -9918,7 +13252,13 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Team</b>
                                   </Typography>
-                                  <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter Name" value={todo.team} readOnly={true} />
+                                  <OutlinedInput
+                                    id="component-outlined"
+                                    type="text"
+                                    placeholder="Please Enter Name"
+                                    value={todo.team}
+                                    readOnly={true}
+                                  />
                                 </FormControl>
                               </Grid>
                               <Grid item md={2.5} xs={12} sm={12}>
@@ -9926,7 +13266,13 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Employee</b>
                                   </Typography>
-                                  <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter Name" value={todo.employee} readOnly={true} />
+                                  <OutlinedInput
+                                    id="component-outlined"
+                                    type="text"
+                                    placeholder="Please Enter Name"
+                                    value={todo.employee}
+                                    readOnly={true}
+                                  />
                                 </FormControl>
                               </Grid>
                               <Grid item md={2.5} xs={12} sm={12}>
@@ -9934,7 +13280,13 @@ function TempControlPanel() {
                                   <Typography>
                                     <b>Name</b>
                                   </Typography>
-                                  <OutlinedInput id="component-outlined" type="text" placeholder="Please Enter Name" value={todo.signaturename} readOnly={true} />
+                                  <OutlinedInput
+                                    id="component-outlined"
+                                    type="text"
+                                    placeholder="Please Enter Name"
+                                    value={todo.signaturename}
+                                    readOnly={true}
+                                  />
                                 </FormControl>
                               </Grid>
                             </>
@@ -9944,7 +13296,9 @@ function TempControlPanel() {
                               <Typography>
                                 <b>Signature Logo</b>
                               </Typography>
-                              <Box sx={{ display: 'flex', justifyContent: 'left' }}></Box>
+                              <Box
+                                sx={{ display: "flex", justifyContent: "left" }}
+                              ></Box>
                               <Grid item md={12} xs={12} sm={12}>
                                 {todo.document?.length > 0 &&
                                   todo.document.map((file, index) => (
@@ -9955,7 +13309,16 @@ function TempControlPanel() {
                                         </Grid>
                                         <Grid></Grid>
                                         <Grid item md={1} sm={6} xs={6}>
-                                          <VisibilityOutlinedIcon style={{ fontsize: 'large', color: '#357AE8', cursor: 'pointer' }} onClick={() => renderFilePreview(file)} />
+                                          <VisibilityOutlinedIcon
+                                            style={{
+                                              fontsize: "large",
+                                              color: "#357AE8",
+                                              cursor: "pointer",
+                                            }}
+                                            onClick={() =>
+                                              renderFilePreview(file)
+                                            }
+                                          />
                                         </Grid>
                                       </Grid>
                                     </>
@@ -9977,7 +13340,11 @@ function TempControlPanel() {
                                 <Typography>
                                   <b>CC Email</b>
                                 </Typography>
-                                {Array.isArray(purposeEdit.ccemail) ? purposeEdit.ccemail?.map((item) => <Typography>{item}</Typography>) : ''}
+                                {Array.isArray(purposeEdit.ccemail)
+                                  ? purposeEdit.ccemail?.map((item) => (
+                                      <Typography>{item}</Typography>
+                                    ))
+                                  : ""}
                               </FormControl>
                             </Grid>
                             <Grid item md={4} xs={12} sm={12}>
@@ -9985,7 +13352,11 @@ function TempControlPanel() {
                                 <Typography>
                                   <b>BCC Email</b>
                                 </Typography>
-                                {Array.isArray(purposeEdit.bccemail) ? purposeEdit.bccemail?.map((item) => <Typography>{item}</Typography>) : ''}
+                                {Array.isArray(purposeEdit.bccemail)
+                                  ? purposeEdit.bccemail?.map((item) => (
+                                      <Typography>{item}</Typography>
+                                    ))
+                                  : ""}
                               </FormControl>
                             </Grid>
                           </Grid>
@@ -9999,9 +13370,14 @@ function TempControlPanel() {
             </Grid>
             <br /> <br /> <br />
             <Grid container spacing={2}>
-              <Button sx={buttonStyles.btncancel} variant="contained" color="primary" onClick={handleCloseview}>
-                {' '}
-                Back{' '}
+              <Button
+                sx={buttonStyles.btncancel}
+                variant="contained"
+                color="primary"
+                onClick={handleCloseview}
+              >
+                {" "}
+                Back{" "}
               </Button>
             </Grid>
           </>
@@ -10010,8 +13386,15 @@ function TempControlPanel() {
 
       {/* ALERT DIALOG */}
       <Box>
-        <Dialog open={isErrorOpenpop} onClose={handleCloseerrpop} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
+        <Dialog
+          open={isErrorOpenpop}
+          onClose={handleCloseerrpop}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
             <Typography variant="h6">{showAlertpop}</Typography>
           </DialogContent>
           <DialogActions>
@@ -10028,15 +13411,15 @@ function TempControlPanel() {
             <Button
               sx={buttonStyles.btncancel}
               style={{
-                backgroundColor: '#f4f4f4',
-                color: '#444',
-                boxShadow: 'none',
-                borderRadius: '3px',
-                padding: '7px 13px',
-                border: '1px solid #0000006b',
-                '&:hover': {
-                  '& .css-bluauu-MuiButtonBase-root-MuiButton-root': {
-                    backgroundColor: '#f4f4f4',
+                backgroundColor: "#f4f4f4",
+                color: "#444",
+                boxShadow: "none",
+                borderRadius: "3px",
+                padding: "7px 13px",
+                border: "1px solid #0000006b",
+                "&:hover": {
+                  "& .css-bluauu-MuiButtonBase-root-MuiButton-root": {
+                    backgroundColor: "#f4f4f4",
                   },
                 },
               }}
@@ -10049,82 +13432,171 @@ function TempControlPanel() {
       </Box>
 
       <Box>
-        <Dialog open={isDeleteOpencheckbox} onClose={handleCloseModcheckbox} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '80px', color: 'orange' }} />
-            <Typography variant="h5" sx={{ color: 'red', textAlign: 'center' }}>
+        <Dialog
+          open={isDeleteOpencheckbox}
+          onClose={handleCloseModcheckbox}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "80px", color: "orange" }}
+            />
+            <Typography variant="h5" sx={{ color: "red", textAlign: "center" }}>
               Are you sure?
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseModcheckbox} sx={buttonStyles.btncancel}>
+            <Button
+              onClick={handleCloseModcheckbox}
+              sx={buttonStyles.btncancel}
+            >
               Cancel
             </Button>
-            <Button autoFocus variant="contained" sx={buttonStyles.buttonsubmit} onClick={(e) => delSourcecheckbox(e)}>
-              {' '}
-              OK{' '}
+            <Button
+              autoFocus
+              variant="contained"
+              sx={buttonStyles.buttonsubmit}
+              onClick={(e) => delSourcecheckbox(e)}
+            >
+              {" "}
+              OK{" "}
             </Button>
           </DialogActions>
         </Dialog>
       </Box>
       <Box>
         {/* ALERT DIALOG */}
-        <Dialog open={isDeleteOpenalert} onClose={handleCloseModalert} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '70px', color: 'orange' }} />
-            <Typography variant="h6" sx={{ color: 'black', textAlign: 'center' }}>
+        <Dialog
+          open={isDeleteOpenalert}
+          onClose={handleCloseModalert}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "70px", color: "orange" }}
+            />
+            <Typography
+              variant="h6"
+              sx={{ color: "black", textAlign: "center" }}
+            >
               Please Select any Row
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button autoFocus variant="contained" sx={buttonStyles.buttonsubmit} onClick={handleCloseModalert}>
-              {' '}
-              OK{' '}
+            <Button
+              autoFocus
+              variant="contained"
+              sx={buttonStyles.buttonsubmit}
+              onClick={handleCloseModalert}
+            >
+              {" "}
+              OK{" "}
             </Button>
           </DialogActions>
         </Dialog>
       </Box>
 
       {/* Clear DIALOG */}
-      <Dialog open={isClearOpenalert} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogContent sx={{ padding: '37px 23px', width: '350px', textAlign: 'center', alignItems: 'center' }}>
-          <CheckCircleOutlineIcon sx={{ fontSize: '100px', color: 'orange' }} />
+      <Dialog
+        open={isClearOpenalert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent
+          sx={{
+            padding: "37px 23px",
+            width: "350px",
+            textAlign: "center",
+            alignItems: "center",
+          }}
+        >
+          <CheckCircleOutlineIcon sx={{ fontSize: "100px", color: "orange" }} />
           <Typography variant="h6">
             <b>Cleared Successfully👍</b>
           </Typography>
         </DialogContent>
       </Dialog>
       {/* Add DIALOG */}
-      <Dialog open={isAddOpenalert} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogContent sx={{ padding: '37px 23px', width: '350px', textAlign: 'center', alignItems: 'center' }}>
-          <CheckCircleOutlineIcon sx={{ fontSize: '100px', color: 'orange' }} />
+      <Dialog
+        open={isAddOpenalert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent
+          sx={{
+            padding: "37px 23px",
+            width: "350px",
+            textAlign: "center",
+            alignItems: "center",
+          }}
+        >
+          <CheckCircleOutlineIcon sx={{ fontSize: "100px", color: "orange" }} />
           <Typography variant="h6">
             <b>Added Successfully👍</b>
           </Typography>
         </DialogContent>
       </Dialog>
       {/* Delete DIALOG */}
-      <Dialog open={isDeletealert} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogContent sx={{ padding: '37px 23px', width: '350px', textAlign: 'center', alignItems: 'center' }}>
-          <CheckCircleOutlineIcon sx={{ fontSize: '100px', color: 'orange' }} />
+      <Dialog
+        open={isDeletealert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent
+          sx={{
+            padding: "37px 23px",
+            width: "350px",
+            textAlign: "center",
+            alignItems: "center",
+          }}
+        >
+          <CheckCircleOutlineIcon sx={{ fontSize: "100px", color: "orange" }} />
           <Typography variant="h6">
             <b>Deleted Successfully👍</b>
           </Typography>
         </DialogContent>
       </Dialog>
       {/* BulkDelete DIALOG */}
-      <Dialog open={isBulkDelOpenalert} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogContent sx={{ padding: '37px 23px', width: '350px', textAlign: 'center', alignItems: 'center' }}>
-          <CheckCircleOutlineIcon sx={{ fontSize: '100px', color: 'orange' }} />
+      <Dialog
+        open={isBulkDelOpenalert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent
+          sx={{
+            padding: "37px 23px",
+            width: "350px",
+            textAlign: "center",
+            alignItems: "center",
+          }}
+        >
+          <CheckCircleOutlineIcon sx={{ fontSize: "100px", color: "orange" }} />
           <Typography variant="h6">
             <b>Deleted Successfully👍</b>
           </Typography>
         </DialogContent>
       </Dialog>
       {/* BulkDelete DIALOG */}
-      <Dialog open={isUpdateOpenalert} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogContent sx={{ padding: '37px 23px', width: '350px', textAlign: 'center', alignItems: 'center' }}>
-          <CheckCircleOutlineIcon sx={{ fontSize: '100px', color: 'orange' }} />
+      <Dialog
+        open={isUpdateOpenalert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent
+          sx={{
+            padding: "37px 23px",
+            width: "350px",
+            textAlign: "center",
+            alignItems: "center",
+          }}
+        >
+          <CheckCircleOutlineIcon sx={{ fontSize: "100px", color: "orange" }} />
           <Typography variant="h6">
             <b>Updated Successfully👍</b>
           </Typography>
@@ -10134,33 +13606,103 @@ function TempControlPanel() {
       {/*INFO For Uploading Signature */}
 
       <Box>
-        <Dialog open={isInfoOpenImage} onClose={handleCloseInfoImage} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="md" fullWidth={true} sx={{ marginTop: '80px' }}>
-          <DialogContent sx={{ textAlign: 'center', alignItems: 'center' }}>
-            <Typography variant="h6">In case you are uploading An signature's , Please make sure that image's will properly alligned and uploaded in a way that the image shown below</Typography>
-            <Box sx={{ margin: '16px 0' }}>
-              <Grid container spacing={2} justifyContent="space-between" alignItems="center">
+        <Dialog
+          open={isInfoOpenImage}
+          onClose={handleCloseInfoImage}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          maxWidth="md"
+          fullWidth={true}
+          sx={{ marginTop: "80px" }}
+        >
+          <DialogContent sx={{ textAlign: "center", alignItems: "center" }}>
+            <Typography variant="h6">
+              In case you are uploading An signature's , Please make sure that
+              image's will properly alligned and uploaded in a way that the
+              image shown below
+            </Typography>
+            <Box sx={{ margin: "16px 0" }}>
+              <Grid
+                container
+                spacing={2}
+                justifyContent="space-between"
+                alignItems="center"
+              >
                 <Grid item md={6} sm={6} xs={6}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
                     <img src="/SignInfoImage.png" alt="SignInformationImage" />
-                    <HighlightOffIcon sx={{ fontSize: '40px', color: 'red', marginTop: '8px' }} />
+                    <HighlightOffIcon
+                      sx={{ fontSize: "40px", color: "red", marginTop: "8px" }}
+                    />
                   </Box>
                 </Grid>
                 <Grid item md={6} sm={6} xs={6}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src="/SignInfoImageCorrect.png" alt="SignInformationImageCorrect" />
-                    <CheckCircleOutlineIcon sx={{ fontSize: '40px', color: 'green', marginTop: '8px' }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src="/SignInfoImageCorrect.png"
+                      alt="SignInformationImageCorrect"
+                    />
+                    <CheckCircleOutlineIcon
+                      sx={{
+                        fontSize: "40px",
+                        color: "green",
+                        marginTop: "8px",
+                      }}
+                    />
                   </Box>
                 </Grid>
                 <Grid item md={6} sm={6} xs={6}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src="/sealWrong.png" alt="Sealwrong" height={100} width={100} />
-                    <HighlightOffIcon sx={{ fontSize: '40px', color: 'red', marginTop: '8px' }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src="/sealWrong.png"
+                      alt="Sealwrong"
+                      height={100}
+                      width={100}
+                    />
+                    <HighlightOffIcon
+                      sx={{ fontSize: "40px", color: "red", marginTop: "8px" }}
+                    />
                   </Box>
                 </Grid>
                 <Grid item md={6} sm={6} xs={6}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src="/sealCorrect.png" alt="SealCorrect" height={100} width={100} />
-                    <CheckCircleOutlineIcon sx={{ fontSize: '40px', color: 'green', marginTop: '8px' }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src="/sealCorrect.png"
+                      alt="SealCorrect"
+                      height={100}
+                      width={100}
+                    />
+                    <CheckCircleOutlineIcon
+                      sx={{
+                        fontSize: "40px",
+                        color: "green",
+                        marginTop: "8px",
+                      }}
+                    />
                   </Box>
                 </Grid>
               </Grid>
@@ -10170,62 +13712,158 @@ function TempControlPanel() {
             <Button onClick={handleCloseInfoImage} sx={buttonStyles.btncancel}>
               Cancel
             </Button>
-            <LoadingButton sx={buttonStyles.buttonsubmit} loading={btnSubmit} autoFocus variant="contained" color="primary" onClick={(e) => sendRequest(e)}>
-              {' '}
-              Submit{' '}
+            <LoadingButton
+              sx={buttonStyles.buttonsubmit}
+              loading={btnSubmit}
+              autoFocus
+              variant="contained"
+              color="primary"
+              onClick={(e) => sendRequest(e)}
+            >
+              {" "}
+              Submit{" "}
             </LoadingButton>
           </DialogActions>
         </Dialog>
       </Box>
       <Box>
-        <Dialog open={isInfoOpenImageEdit} onClose={handleCloseInfoImageEdit} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="md" fullWidth={true} sx={{ marginTop: '80px' }}>
-          <DialogContent sx={{ textAlign: 'center', alignItems: 'center' }}>
-            <Typography variant="h6">In case you are uploading An signature's , Please make sure that image's will properly alligned and uploaded in a way that the image shown below</Typography>
-            <Box sx={{ margin: '16px 0' }}>
-              <Grid container spacing={2} justifyContent="space-between" alignItems="center">
+        <Dialog
+          open={isInfoOpenImageEdit}
+          onClose={handleCloseInfoImageEdit}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          maxWidth="md"
+          fullWidth={true}
+          sx={{ marginTop: "80px" }}
+        >
+          <DialogContent sx={{ textAlign: "center", alignItems: "center" }}>
+            <Typography variant="h6">
+              In case you are uploading An signature's , Please make sure that
+              image's will properly alligned and uploaded in a way that the
+              image shown below
+            </Typography>
+            <Box sx={{ margin: "16px 0" }}>
+              <Grid
+                container
+                spacing={2}
+                justifyContent="space-between"
+                alignItems="center"
+              >
                 <Grid item md={6} sm={6} xs={6}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
                     <img src="/SignInfoImage.png" alt="SignInformationImage" />
-                    <HighlightOffIcon sx={{ fontSize: '40px', color: 'red', marginTop: '8px' }} />
+                    <HighlightOffIcon
+                      sx={{ fontSize: "40px", color: "red", marginTop: "8px" }}
+                    />
                   </Box>
                 </Grid>
                 <Grid item md={6} sm={6} xs={6}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src="/SignInfoImageCorrect.png" alt="SignInformationImageCorrect" />
-                    <CheckCircleOutlineIcon sx={{ fontSize: '40px', color: 'green', marginTop: '8px' }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src="/SignInfoImageCorrect.png"
+                      alt="SignInformationImageCorrect"
+                    />
+                    <CheckCircleOutlineIcon
+                      sx={{
+                        fontSize: "40px",
+                        color: "green",
+                        marginTop: "8px",
+                      }}
+                    />
                   </Box>
                 </Grid>
                 <Grid item md={6} sm={6} xs={6}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src="/sealWrong.png" alt="Sealwrong" height={100} width={100} />
-                    <HighlightOffIcon sx={{ fontSize: '40px', color: 'red', marginTop: '8px' }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src="/sealWrong.png"
+                      alt="Sealwrong"
+                      height={100}
+                      width={100}
+                    />
+                    <HighlightOffIcon
+                      sx={{ fontSize: "40px", color: "red", marginTop: "8px" }}
+                    />
                   </Box>
                 </Grid>
                 <Grid item md={6} sm={6} xs={6}>
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <img src="/sealCorrect.png" alt="SealCorrect" height={100} width={100} />
-                    <CheckCircleOutlineIcon sx={{ fontSize: '40px', color: 'green', marginTop: '8px' }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                    }}
+                  >
+                    <img
+                      src="/sealCorrect.png"
+                      alt="SealCorrect"
+                      height={100}
+                      width={100}
+                    />
+                    <CheckCircleOutlineIcon
+                      sx={{
+                        fontSize: "40px",
+                        color: "green",
+                        marginTop: "8px",
+                      }}
+                    />
                   </Box>
                 </Grid>
               </Grid>
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseInfoImageEdit} sx={buttonStyles.btncancel}>
+            <Button
+              onClick={handleCloseInfoImageEdit}
+              sx={buttonStyles.btncancel}
+            >
               Cancel
             </Button>
-            <LoadingButton sx={buttonStyles.buttonsubmit} loading={btnSubmitEdit} autoFocus variant="contained" color="primary" onClick={(e) => sendEditRequest(e)}>
-              {' '}
-              Update{' '}
+            <LoadingButton
+              sx={buttonStyles.buttonsubmit}
+              loading={btnSubmitEdit}
+              autoFocus
+              variant="contained"
+              color="primary"
+              onClick={(e) => sendEditRequest(e)}
+            >
+              {" "}
+              Update{" "}
             </LoadingButton>
           </DialogActions>
         </Dialog>
       </Box>
       {/* QRCODE keyword reference popup */}
       <Box>
-        <Dialog open={isOpenKeyword} onClose={handleCloseKeywordPopup} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
-            <Typography variant="h6">QRCODE Content Keyword Instruction</Typography>
+        <Dialog
+          open={isOpenKeyword}
+          onClose={handleCloseKeywordPopup}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
+            <Typography variant="h6">
+              QRCODE Content Keyword Instruction
+            </Typography>
 
             <Table>
               <TableHead>
@@ -10247,7 +13885,11 @@ function TempControlPanel() {
             </Table>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="error" onClick={handleCloseKeywordPopup}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCloseKeywordPopup}
+            >
               CLOSE
             </Button>
           </DialogActions>
@@ -10255,9 +13897,19 @@ function TempControlPanel() {
       </Box>
       {/* EXTERNAL COMPONENTS -------------- START */}
       {/* VALIDATION */}
-      <MessageAlert openPopup={openPopupMalert} handleClosePopup={handleClosePopupMalert} popupContent={popupContentMalert} popupSeverity={popupSeverityMalert} />
+      <MessageAlert
+        openPopup={openPopupMalert}
+        handleClosePopup={handleClosePopupMalert}
+        popupContent={popupContentMalert}
+        popupSeverity={popupSeverityMalert}
+      />
       {/* SUCCESS */}
-      <AlertDialog openPopup={openPopup} handleClosePopup={handleClosePopup} popupContent={popupContent} popupSeverity={popupSeverity} />
+      <AlertDialog
+        openPopup={openPopup}
+        handleClosePopup={handleClosePopup}
+        popupContent={popupContent}
+        popupSeverity={popupSeverity}
+      />
       {/* PRINT PDF EXCEL CSV */}
       <ExportData
         isFilterOpen={isFilterOpen}
@@ -10269,13 +13921,19 @@ function TempControlPanel() {
         handleClosePdfFilterMod={handleClosePdfFilterMod}
         filteredDataTwo={rowDataTable ?? []}
         itemsTwo={items ?? []}
-        filename={'Template Control Panel'}
+        filename={"Template Control Panel"}
         exportColumnNames={exportColumnNames}
         exportRowValues={exportRowValues}
         componentRef={componentRef}
       />
       {/* INFO */}
-      <InfoPopup openInfo={openInfo} handleCloseinfo={handleCloseinfo} heading="Template Control Panel Info" addedby={addedby} updateby={updateby} />
+      <InfoPopup
+        openInfo={openInfo}
+        handleCloseinfo={handleCloseinfo}
+        heading="Template Control Panel Info"
+        addedby={addedby}
+        updateby={updateby}
+      />
     </Box>
   );
 }
