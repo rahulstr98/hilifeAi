@@ -192,7 +192,7 @@ function DocumentPreparation() {
     top += selectedMargin === 'narrow' ? 80 : 35; // increase space for header image
     bottom += selectedMargin === 'narrow' ? 80 : 35; // increase space for footer image
 
-    return convertPxArrayToMm([top, right, (bottom + footerReservedSpace), left]);
+    return convertPxArrayToMm([top, right, bottom + footerReservedSpace, left]);
   };
   const getPageDimensions = () => {
     const dimensions = {
@@ -254,26 +254,25 @@ function DocumentPreparation() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
         date: selecteddate,
-        usernames: person
+        usernames: person,
       });
-      return response?.data?.finalresult ?? ""
-      console.log(response?.data, "259 - document Preparation")
-    }
-    catch (err) {
+      return response?.data?.finalresult ?? '';
+      console.log(response?.data, '259 - document Preparation');
+    } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
-  }
+  };
 
   const handleEmployeeModeOptions = (e) => {
     const employeeModeOpt =
       e?.employeemode?.length > 0
         ? [
-          ...e?.employeemode?.map((data) => ({
-            label: data,
-            value: data,
-          })),
-          { label: 'Manual', value: 'Manual' },
-        ]
+            ...e?.employeemode?.map((data) => ({
+              label: data,
+              value: data,
+            })),
+            { label: 'Manual', value: 'Manual' },
+          ]
         : [{ label: 'Manual', value: 'Manual' }];
     setEmployeeModeOptions(employeeModeOpt);
   };
@@ -347,10 +346,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                ...item,
-                header: personId?.letterheadcontentheader[0]?.preview,
-                //  footer: personId?.letterheadcontentfooter[0]?.preview
-              }
+                  ...item,
+                  header: personId?.letterheadcontentheader[0]?.preview,
+                  //  footer: personId?.letterheadcontentfooter[0]?.preview
+                }
               : item
           )
         );
@@ -361,10 +360,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                ...item,
-                // header: personId?.letterheadcontentheader[0]?.preview,
-                footer: personId?.letterheadcontentfooter[0]?.preview,
-              }
+                  ...item,
+                  // header: personId?.letterheadcontentheader[0]?.preview,
+                  footer: personId?.letterheadcontentfooter[0]?.preview,
+                }
               : item
           )
         );
@@ -373,10 +372,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                ...item,
-                header: personId?.letterheadcontentheader[0]?.preview,
-                footer: personId?.letterheadcontentfooter[0]?.preview,
-              }
+                  ...item,
+                  header: personId?.letterheadcontentheader[0]?.preview,
+                  footer: personId?.letterheadcontentfooter[0]?.preview,
+                }
               : item
           )
         );
@@ -389,10 +388,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                ...item,
-                header: '',
-                footer: '',
-              }
+                  ...item,
+                  header: '',
+                  footer: '',
+                }
               : item
           )
         );
@@ -420,10 +419,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                ...item,
-                header: '',
-                footer: '',
-              }
+                  ...item,
+                  header: '',
+                  footer: '',
+                }
               : item
           )
         );
@@ -1001,35 +1000,35 @@ function DocumentPreparation() {
   // AssignBranch For Users
   const accessbranch = isUserRoleAccess?.role?.includes('Manager')
     ? isAssignBranch?.map((data) => ({
-      branch: data.branch,
-      company: data.company,
-      unit: data.unit,
-    }))
-    : isAssignBranch
-      ?.filter((data) => {
-        let fetfinalurl = [];
-        if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.subsubpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.subpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.mainpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.submodulenameurl;
-        } else if (data?.modulenameurl?.length !== 0) {
-          fetfinalurl = data.modulenameurl;
-        } else {
-          fetfinalurl = [];
-        }
-
-        const remove = [window.location.pathname?.substring(1), window.location.pathname];
-        return fetfinalurl?.some((item) => remove?.includes(item));
-      })
-      ?.map((data) => ({
         branch: data.branch,
         company: data.company,
         unit: data.unit,
-      }));
+      }))
+    : isAssignBranch
+        ?.filter((data) => {
+          let fetfinalurl = [];
+          if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+            fetfinalurl = data.subsubpagenameurl;
+          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+            fetfinalurl = data.subpagenameurl;
+          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+            fetfinalurl = data.mainpagenameurl;
+          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+            fetfinalurl = data.submodulenameurl;
+          } else if (data?.modulenameurl?.length !== 0) {
+            fetfinalurl = data.modulenameurl;
+          } else {
+            fetfinalurl = [];
+          }
+
+          const remove = [window.location.pathname?.substring(1), window.location.pathname];
+          return fetfinalurl?.some((item) => remove?.includes(item));
+        })
+        ?.map((data) => ({
+          branch: data.branch,
+          company: data.company,
+          unit: data.unit,
+        }));
 
   let exportColumnNames = ['Date ', 'Reference No', 'Template No', 'Template', 'EmployeeMode', 'Department', 'Company', 'Branch', 'Unit', 'Team', 'Person', 'Printing Status', 'Issued Person Details', 'Issuing Authority'];
   let exportRowValues = ['date', 'referenceno', 'templateno', 'template', 'employeemode', 'department', 'company', 'branch', 'unit', 'team', 'person', 'printingstatus', 'issuedpersondetails', 'issuingauthority'];
@@ -1250,9 +1249,9 @@ function DocumentPreparation() {
     // console.log(branches, "branches")
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-        branch: data.branch,
-        company: data.company,
-      }))
+          branch: data.branch,
+          company: data.company,
+        }))
       : [];
     setPageName(!pageName);
     try {
@@ -1268,7 +1267,7 @@ function DocumentPreparation() {
         }
       );
 
-      const tempValues = res?.data?.templatecreation?.filter(data => branches?.includes(data?.branch));
+      const tempValues = res?.data?.templatecreation?.filter((data) => branches?.includes(data?.branch));
       const tempOptions = tempValues?.length > 0 ? tempValues : [];
       setTemplateValues(
         tempOptions?.map((data) => ({
@@ -1541,7 +1540,7 @@ function DocumentPreparation() {
                 year: selectedYear,
                 doj: res.data.users.map((d) => d.doj),
                 mode: selectedModeType,
-              })
+              }),
             ]);
             // console.log(res_employee.data.departmentdetails, "res_employee.data.departmentdetails")
 
@@ -1553,7 +1552,6 @@ function DocumentPreparation() {
             throw err;
           }
         }
-
 
         function splitArrayItems(array, chunkSize) {
           const resultarr = [];
@@ -1806,15 +1804,15 @@ function DocumentPreparation() {
             let findSalDetails =
               modevalue && modevalue.expmode === 'Manual'
                 ? {
-                  basic: modevalue.basic,
-                  hra: modevalue.hra,
-                  conveyance: modevalue.conveyance,
-                  gross: modevalue.gross,
-                  medicalallowance: modevalue.medicalallowance,
-                  productionallowance: modevalue.productionallowance,
-                  otherallowance: modevalue.otherallowance,
-                  productionallowancetwo: modevalue.productionallowancetwo,
-                }
+                    basic: modevalue.basic,
+                    hra: modevalue.hra,
+                    conveyance: modevalue.conveyance,
+                    gross: modevalue.gross,
+                    medicalallowance: modevalue.medicalallowance,
+                    productionallowance: modevalue.productionallowance,
+                    otherallowance: modevalue.otherallowance,
+                    productionallowancetwo: modevalue.productionallowancetwo,
+                  }
                 : salSlabs.find((d) => d.company === item.company && d.branch === item.branch && d.salarycode === processcodeexpvaluesalary);
 
             const isHadreasondate = item.reasondate != '' && item.reasondate != undefined;
@@ -1929,61 +1927,60 @@ function DocumentPreparation() {
         }
 
         const result = await getAllResultsItems();
-        finalSalaryDetails =
-          result.allResultsItems
-            .sort((a, b) => {
-              if (Number(b.experience) !== Number(a.experience)) {
-                return Number(b.experience) - Number(a.experience);
-              }
+        finalSalaryDetails = result.allResultsItems
+          .sort((a, b) => {
+            if (Number(b.experience) !== Number(a.experience)) {
+              return Number(b.experience) - Number(a.experience);
+            }
 
-              return a.companyname.localeCompare(b.companyname);
-            })
-            .map((item, index) => {
-              const basic = item.oldbasic ? Number(item.oldbasic) : 0;
-              const hra = item.oldhra ? Number(item.oldhra) : 0;
-              const conveyance = item.oldconveyance ? Number(item.oldconveyance) : 0;
-              const medicalallowance = item.oldmedicalallowance ? Number(item.oldmedicalallowance) : 0;
-              const productionallowance = item.oldproductionallowance ? Number(item.oldproductionallowance) : 0;
-              const productionallowancetwo = item.oldproductionallowancetwo ? Number(item.oldproductionallowancetwo) : 0;
-              const otherallowance = item.oldotherallowance ? Number(item.oldotherallowance) : 0;
-              const gross =
-                basic +
-                hra +
-                conveyance +
-                medicalallowance +
-                productionallowance +
-                // productionallowancetwo +
-                otherallowance;
+            return a.companyname.localeCompare(b.companyname);
+          })
+          .map((item, index) => {
+            const basic = item.oldbasic ? Number(item.oldbasic) : 0;
+            const hra = item.oldhra ? Number(item.oldhra) : 0;
+            const conveyance = item.oldconveyance ? Number(item.oldconveyance) : 0;
+            const medicalallowance = item.oldmedicalallowance ? Number(item.oldmedicalallowance) : 0;
+            const productionallowance = item.oldproductionallowance ? Number(item.oldproductionallowance) : 0;
+            const productionallowancetwo = item.oldproductionallowancetwo ? Number(item.oldproductionallowancetwo) : 0;
+            const otherallowance = item.oldotherallowance ? Number(item.oldotherallowance) : 0;
+            const gross =
+              basic +
+              hra +
+              conveyance +
+              medicalallowance +
+              productionallowance +
+              // productionallowancetwo +
+              otherallowance;
 
-              const annualgrossctc = gross * 12;
-              // console.log(item, "item")
-              return {
-                // ...item,
-                id: item._id,
-                serialNumber: index + 1,
-                employeename: item.companyname,
-                basic,
-                hra,
-                selectedMonth: item?.selectedMonth,
-                selectedYear: item?.selectedYear,
-                conveyance,
-                medicalallowance,
-                productionallowance,
-                productionallowancetwo,
-                otherallowance,
-                gross,
-                annualgrossctc
-              };
-            })
+            const annualgrossctc = gross * 12;
+            // console.log(item, "item")
+            return {
+              // ...item,
+              id: item._id,
+              serialNumber: index + 1,
+              employeename: item.companyname,
+              basic,
+              hra,
+              selectedMonth: item?.selectedMonth,
+              selectedYear: item?.selectedYear,
+              conveyance,
+              medicalallowance,
+              productionallowance,
+              productionallowancetwo,
+              otherallowance,
+              gross,
+              annualgrossctc,
+            };
+          });
       }
       // console.log(finalSalaryDetails, "FinalSalaryDetails")
-      setViewData(finalSalaryDetails[0])
+      setViewData(finalSalaryDetails[0]);
       return finalSalaryDetails;
     } catch (err) {
       console.log(err);
       handleApiError(err, setShowAlert, handleClickOpenerr);
     }
-  }
+  };
 
   const getAttModeTarget = (rowdaystatus) => {
     let result = attModearr.filter((data, index) => {
@@ -2056,12 +2053,12 @@ function DocumentPreparation() {
         getWeekNumberInMonth(startMonthDate) === 1
           ? `${getWeekNumberInMonth(startMonthDate)}st Week`
           : getWeekNumberInMonth(startMonthDate) === 2
-            ? `${getWeekNumberInMonth(startMonthDate)}nd Week`
-            : getWeekNumberInMonth(startMonthDate) === 3
-              ? `${getWeekNumberInMonth(startMonthDate)}rd Week`
-              : getWeekNumberInMonth(startMonthDate) > 3
-                ? `${getWeekNumberInMonth(startMonthDate)}th Week`
-                : '';
+          ? `${getWeekNumberInMonth(startMonthDate)}nd Week`
+          : getWeekNumberInMonth(startMonthDate) === 3
+          ? `${getWeekNumberInMonth(startMonthDate)}rd Week`
+          : getWeekNumberInMonth(startMonthDate) > 3
+          ? `${getWeekNumberInMonth(startMonthDate)}th Week`
+          : '';
 
       daysArray.push({ formattedDate, dayName, dayCount, shiftMode, weekNumberInMonth });
 
@@ -2163,8 +2160,6 @@ function DocumentPreparation() {
     }
   };
 
-
-
   function getMonthsInRange(month, year) {
     // console.log(month, "month")
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -2227,7 +2222,7 @@ function DocumentPreparation() {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        type: "Individual",
+        type: 'Individual',
         company: [user?.company],
         branch: [user?.branch],
         unit: [user?.unit],
@@ -2345,7 +2340,6 @@ function DocumentPreparation() {
               return d;
             }
           });
-
 
           const findPreviousNonWeekOff = (items, index) => {
             for (let i = index - 1; i >= 0; i--) {
@@ -2513,7 +2507,6 @@ function DocumentPreparation() {
           });
           resultBefore.sort((a, b) => moment(a.rowformattedDate, 'DD/MM/YYYY') - moment(b.rowformattedDate, 'DD/MM/YYYY'));
 
-
           // Group data by empcode
           let groupedData = {};
           resultBefore.forEach((item) => {
@@ -2637,7 +2630,6 @@ function DocumentPreparation() {
             return null;
           }
 
-
           itemsWithSerialNumber.forEach((item, index, array) => {
             if (item.shift === 'Week Off') {
               const previousItem = getPreviousRelevantEntry(index, array);
@@ -2748,10 +2740,10 @@ function DocumentPreparation() {
           let fianlResult = itemsWithSerialNumber.filter((data) => Number(data.year) === Number(chooseyear) && data.monthname === monthstring[Number(getMonthIndex(choosemonth) + 1) - 1]);
 
           // console.log(fianlResult, 'fianlResult')
-          // 
+          //
           return fianlResult;
         } catch (err) {
-          console.log(err, 'err')
+          console.log(err, 'err');
 
           console.error('Error in POST request for batch:', batch.data, err);
         }
@@ -2828,7 +2820,6 @@ function DocumentPreparation() {
 
       const results = await getAllResults();
       const resultdataEnd = results.allResults?.forEach((item) => {
-
         const leaveOnDateApproved = leaveresult?.find((d) => d.date === item.rowformattedDate && d.empcode === item.empcode);
         const permissionOnDateApproved = permissionresult?.find((d) => d.date === item.finalDate && d.employeeid === item.empcode && d.compensationstatus === '');
         let weekoffdayscount = 0;
@@ -3080,7 +3071,7 @@ function DocumentPreparation() {
 
       return resultdata;
     } catch (err) {
-      console.log(err, "err")
+      console.log(err, 'err');
       // setLoader(true);
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
@@ -3102,9 +3093,8 @@ function DocumentPreparation() {
       // console.log(res_applyleave?.data?.daypointsupload, "res_applyleave?.data?.daypointsupload")
       const answer = res_applyleave?.data?.daypointsupload?.length > 0 ? res_applyleave?.data?.daypointsupload[0] : '';
       // setLoadingProdDate(false);
-      return answer
+      return answer;
       // setProductionDateStatus(answer);
-
     } catch (err) {
       // setLoadingProdDate(false);
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -3139,7 +3129,7 @@ function DocumentPreparation() {
     }
     setDocumentPrepartion({
       ...documentPrepartion,
-      issuingauthority: "Please Select Issuing Authority",
+      issuingauthority: 'Please Select Issuing Authority',
       signature: 'Please Select Signature',
       seal: 'Please Select Seal',
     });
@@ -3149,17 +3139,14 @@ function DocumentPreparation() {
     return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please Select Employee';
   };
 
-
-
-
   const [selectedBranch, setSelectedBranch] = useState([]);
   const [selectedBranchValues, setSelectedBranchValues] = useState([]);
 
   const handleBranchChange = (options) => {
     setSelectedBranch(options);
-    setSelectedBranchValues(options?.map(data => data?.value));
-    const branches = options?.map(data => data?.value);
-    TemplateDropdowns(branches)
+    setSelectedBranchValues(options?.map((data) => data?.value));
+    const branches = options?.map((data) => data?.value);
+    TemplateDropdowns(branches);
     setDocumentPrepartion({
       ...documentPrepartion,
       template: 'Please Select Template Name',
@@ -3301,10 +3288,10 @@ function DocumentPreparation() {
       setIssuingAutholrity(
         answer?.length > 0
           ? answer.map((Data) => ({
-            ...Data,
-            label: Data.companyname,
-            value: Data.companyname,
-          }))
+              ...Data,
+              label: Data.companyname,
+              value: Data.companyname,
+            }))
           : []
       );
     } catch (err) {
@@ -3328,10 +3315,10 @@ function DocumentPreparation() {
       setIssuingAutholrity(
         answer?.length > 0
           ? answer.map((Data) => ({
-            ...Data,
-            label: Data.companyname,
-            value: Data.companyname,
-          }))
+              ...Data,
+              label: Data.companyname,
+              value: Data.companyname,
+            }))
           : []
       );
     } catch (err) {
@@ -3610,7 +3597,7 @@ function DocumentPreparation() {
     try {
       const response = await QRCode.toDataURL(`${Allcodedata}`);
       setImageUrl(response);
-    } catch (error) { }
+    } catch (error) {}
   };
   const generateQrCodeEdit = async () => {
     setPageName(!pageName);
@@ -3670,23 +3657,23 @@ function DocumentPreparation() {
   };
 
   function getMonthYear(dateString) {
-    if (!dateString) return
+    if (!dateString) return;
     const date = new Date(dateString);
     const month = monthNames[date.getMonth()]; // getMonth() gives 0–11
     const year = date.getFullYear(); // gives 4-digit year
     return { month, year };
   }
   const renderRefToBase64Image = async (ref) => {
-    if (!ref?.current) return "";
+    if (!ref?.current) return '';
 
     // Convert DOM node → canvas
     const canvas = await html2canvas(ref.current, {
-      backgroundColor: "#fff",
+      backgroundColor: '#fff',
       scale: 2, // higher = better quality
     });
 
     // Convert canvas → base64
-    const base64Data = canvas.toDataURL("image/png");
+    const base64Data = canvas.toDataURL('image/png');
     // console.log(base64Data, "base64Data")
     // Return an <img> tag with base64 as src
     return `<img 
@@ -3708,7 +3695,7 @@ function DocumentPreparation() {
         reader.readAsDataURL(blob);
       });
     } catch (error) {
-      console.error("Error fetching file:", error);
+      console.error('Error fetching file:', error);
       return null;
     }
   }
@@ -3718,10 +3705,9 @@ function DocumentPreparation() {
     // console.log(companyName, "companyName");
     let departmentDesigDateBased = '';
 
-
     let employeename = employeeMode === 'Manual' ? '' : person ? person : employeeValue;
     if (employeename) {
-      departmentDesigDateBased = await fetchDesigDepartBasedOnDate(documentPrepartion?.manualdate, employeename)
+      departmentDesigDateBased = await fetchDesigDepartBasedOnDate(documentPrepartion?.manualdate, employeename);
     }
 
     const constAuotId = await fetchAllRaisedTickets();
@@ -3732,24 +3718,24 @@ function DocumentPreparation() {
       prefixString.length == 1
         ? `000${prefixString}`
         : prefixString.length == 2
-          ? `00${prefixString}`
-          : prefixString.length == 3
-            ? `0${prefixString}`
-            : prefixString.length == 4
-              ? `0${prefixString}`
-              : prefixString.length == 5
-                ? `0${prefixString}`
-                : prefixString.length == 6
-                  ? `0${prefixString}`
-                  : prefixString.length == 7
-                    ? `0${prefixString}`
-                    : prefixString.length == 8
-                      ? `0${prefixString}`
-                      : prefixString.length == 9
-                        ? `0${prefixString}`
-                        : prefixString.length == 10
-                          ? `0${prefixString}`
-                          : prefixString;
+        ? `00${prefixString}`
+        : prefixString.length == 3
+        ? `0${prefixString}`
+        : prefixString.length == 4
+        ? `0${prefixString}`
+        : prefixString.length == 5
+        ? `0${prefixString}`
+        : prefixString.length == 6
+        ? `0${prefixString}`
+        : prefixString.length == 7
+        ? `0${prefixString}`
+        : prefixString.length == 8
+        ? `0${prefixString}`
+        : prefixString.length == 9
+        ? `0${prefixString}`
+        : prefixString.length == 10
+        ? `0${prefixString}`
+        : prefixString;
 
     let newval = employeeControlPanel
       ? uniqueCode + employeeControlPanel?.team?.slice(0, 3) + '#' + templateCreationValue?.tempcode + '_' + postfixLength
@@ -3757,9 +3743,9 @@ function DocumentPreparation() {
     let newvalRefNo = `DP_${postfixLength}`;
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-        branch: data.branch,
-        company: data.company,
-      }))
+          branch: data.branch,
+          company: data.company,
+        }))
       : [];
     setPageName(!pageName);
     try {
@@ -3779,7 +3765,7 @@ function DocumentPreparation() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-          employeename: employeeMode === 'Manual' ? "" : employeename,
+          employeename: employeeMode === 'Manual' ? '' : employeename,
         }),
         axios.get(SERVICE.SHIFT, {
           headers: {
@@ -3798,16 +3784,23 @@ function DocumentPreparation() {
 
       let employee = res_emp?.data?.usersstatus;
       if (companyName?.qrInfo?.length > 0) {
-        setQrCodeInfoDetails(companyName?.qrInfo?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-          .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', employee ? employee?.doj : "")}`))
+        setQrCodeInfoDetails(
+          companyName?.qrInfo?.map(
+            (data, index) =>
+              `${index + 1}. ${data?.details
+                ?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
+                .replaceAll('$C:DATE$', date)
+                .replaceAll('$DOJ$', employee ? employee?.doj : '')}`
+          )
+        );
       }
-      let attendanceDetails = "";
+      let attendanceDetails = '';
       if (AttendanceNeed) {
-        const result = documentPrepartion.attendancesort === "Date" ? getMonthYear(documentPrepartion.attendancedate) : {};
-        const attMonthCal = documentPrepartion.attendancesort === "Date" ? result?.month : documentPrepartion.attendancemonth;
-        const attYearCal = documentPrepartion.attendancesort === "Date" ? result?.year : documentPrepartion.attendanceyear;
+        const result = documentPrepartion.attendancesort === 'Date' ? getMonthYear(documentPrepartion.attendancedate) : {};
+        const attMonthCal = documentPrepartion.attendancesort === 'Date' ? result?.month : documentPrepartion.attendancemonth;
+        const attYearCal = documentPrepartion.attendancesort === 'Date' ? result?.year : documentPrepartion.attendanceyear;
         const resultAttendance = await fetchUsersFilter(employee, attMonthCal, attYearCal, documentPrepartion.attendancesort);
-        attendanceDetails = resultAttendance?.length > 0 ? (documentPrepartion.attendancesort === "Date" ? resultAttendance[0]?.monthdata?.find(data => data?.finalDate === documentPrepartion.attendancedate)?.daystatus : resultAttendance[0].lopcount) : "";
+        attendanceDetails = resultAttendance?.length > 0 ? (documentPrepartion.attendancesort === 'Date' ? resultAttendance[0]?.monthdata?.find((data) => data?.finalDate === documentPrepartion.attendancedate)?.daystatus : resultAttendance[0].lopcount) : '';
       }
       const companyTitleName = companynameSettings?.data?.overallsettings?.companyname;
       const branchAddress = isAssignBranch?.find((data) => data?.branch === res_emp?.data?.usersstatus?.branch);
@@ -3817,24 +3810,21 @@ function DocumentPreparation() {
       let format = res?.data?.templatecreation?.find((data) => data.company === matches[1] && data.branch === matches[2] && data?.name === documentPrepartion?.template?.split('--')[0]);
 
       let SalaryDetails = [];
-      if (documentPrepartion?.employeemode !== "Manual" && SalaryNeed) {
-        SalaryDetails = await fetchSalaryDetails(
-          employee?.department,
-          employee?.branch,
-          employee?.unit,
-          employee?.team,
-          employee.companyname
-        );
+      if (documentPrepartion?.employeemode !== 'Manual' && SalaryNeed) {
+        SalaryDetails = await fetchSalaryDetails(employee?.department, employee?.branch, employee?.unit, employee?.team, employee.companyname);
       }
-      await new Promise(resolve => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 0));
       const htmlImg = await renderRefToBase64Image(hiddenRef);
 
-      const ProductionDetails = documentPrepartion?.employeemode !== "Manual" ? (documentPrepartion.productionsort === "Date" ? await fetchProductionDateStatus(employeeControlPanel, documentPrepartion?.productiondate)
-        : documentPrepartion.productionsort === 'Month' ? await fetchDepartmentMonthsets(documentPrepartion?.productionyear)
-          : []) : [];
-      const salaryKeyValues = SalaryDetails?.length > 0 ? SalaryDetails[0] : "";
-
-
+      const ProductionDetails =
+        documentPrepartion?.employeemode !== 'Manual'
+          ? documentPrepartion.productionsort === 'Date'
+            ? await fetchProductionDateStatus(employeeControlPanel, documentPrepartion?.productiondate)
+            : documentPrepartion.productionsort === 'Month'
+            ? await fetchDepartmentMonthsets(documentPrepartion?.productionyear)
+            : []
+          : [];
+      const salaryKeyValues = SalaryDetails?.length > 0 ? SalaryDetails[0] : '';
 
       // console.log(ProductionDetails, "ProductionDetails")
       setEmailUser(employee?.email);
@@ -3868,8 +3858,7 @@ function DocumentPreparation() {
       // });
       async function replaceKeywordsWithBase64() {
         for (const data of manualKeywordOptions || []) {
-          let replacement = "";
-
+          let replacement = '';
 
           if (data?.description) {
             replacement += `<div>${data.description}</div>`;
@@ -3892,10 +3881,12 @@ function DocumentPreparation() {
       await replaceKeywordsWithBase64();
 
       setLoadingGeneratingDatas(false);
-      let branchAddressTextHorizontal = `${!branchAddress?.branchcity ? '' : branchAddress?.branchcity + ', '}${!branchAddress?.branchstate ? '' : branchAddress?.branchstate + ', '}${!branchAddress?.branchcountry ? '' : branchAddress?.branchcountry}${!branchAddress?.branchpincode ? '' : '- ' + branchAddress?.branchpincode
-        }`;
-      let branchAddressTextVertical = `${!branchAddress?.branchcity ? '' : branchAddress?.branchcity + ', '}${!branchAddress?.branchstate ? '' : `</br>${branchAddress?.branchstate}  , `}${!branchAddress?.branchcountry ? '' : `</br>${branchAddress?.branchcountry}`}${!branchAddress?.branchpincode ? '' : '- ' + branchAddress?.branchpincode
-        }`;
+      let branchAddressTextHorizontal = `${!branchAddress?.branchcity ? '' : branchAddress?.branchcity + ', '}${!branchAddress?.branchstate ? '' : branchAddress?.branchstate + ', '}${!branchAddress?.branchcountry ? '' : branchAddress?.branchcountry}${
+        !branchAddress?.branchpincode ? '' : '- ' + branchAddress?.branchpincode
+      }`;
+      let branchAddressTextVertical = `${!branchAddress?.branchcity ? '' : branchAddress?.branchcity + ', '}${!branchAddress?.branchstate ? '' : `</br>${branchAddress?.branchstate}  , `}${!branchAddress?.branchcountry ? '' : `</br>${branchAddress?.branchcountry}`}${
+        !branchAddress?.branchpincode ? '' : '- ' + branchAddress?.branchpincode
+      }`;
       if (employeeMode === 'Manual') {
         let findMethod = texted
           .replaceAll('$UNIID$', newval ? newval : '')
@@ -3906,14 +3897,11 @@ function DocumentPreparation() {
           .replaceAll('$C:DATE$', date)
           .replaceAll('$MANUALDATE$', documentPrepartion?.manualdate);
 
-
         setChecking(findMethod);
       } else {
         let caddress = `${!employee?.cdoorno ? '' : employee?.cdoorno + ', '}${!employee?.cstreet ? '' : employee?.cstreet + ', '}${!employee?.carea ? '' : employee?.carea + ', '}
     <br>${!employee?.clandmark ? '' : employee?.clandmark + ', '}${!employee?.ctaluk ? '' : employee?.ctaluk + ', '}${!employee?.cpost ? '' : employee?.cpost + ', '}
     <br>${!employee?.ccity ? '' : employee?.ccity + ', '}${!employee?.cstate ? '' : employee?.cstate + ', '}${!employee?.ccountry ? '' : employee?.ccountry + ', '}${!employee?.cpincode ? '' : '- ' + employee?.cpincode}`;
-
-
 
         let GenderHeShe = employee?.gender !== '' || employee?.gender !== undefined ? (employee?.gender === 'Male' ? 'He' : employee?.gender === 'Female' ? 'She' : 'He/She') : 'He/She';
 
@@ -3984,8 +3972,8 @@ function DocumentPreparation() {
           .replaceAll('$IFSC$', employee?.ifsc ? employee?.ifsc : '')
           .replaceAll('$AC:NUMBER$', employee?.accno ? employee?.accno : '')
           .replaceAll('$C:DATE$', date)
-          .replaceAll('$DOJSALARYCOMPONENT$', (SalaryNeed && selectedModeType === "DOJ") ? htmlImg : "")
-          .replaceAll('$MONTHYEARSALARYCOMPONENT$', (SalaryNeed && selectedModeType !== "DOJ") ? htmlImg : "")
+          .replaceAll('$DOJSALARYCOMPONENT$', SalaryNeed && selectedModeType === 'DOJ' ? htmlImg : '')
+          .replaceAll('$MONTHYEARSALARYCOMPONENT$', SalaryNeed && selectedModeType !== 'DOJ' ? htmlImg : '')
           .replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
           .replaceAll('$BREAK$', employeeBreak?.breakhours ? employeeBreak?.breakhours : '')
           .replaceAll('$F:NAME$', employee?.firstname ? employee?.firstname : '')
@@ -3994,12 +3982,12 @@ function DocumentPreparation() {
           .replaceAll('$WORKSTATION:COUNT$', employee?.workstation ? employee?.workstation?.length : '')
           .replaceAll('$SYSTEM:COUNT$', employee?.employeecount ? employee?.employeecount : '')
           .replaceAll('$UNIID$', newval ? newval : '')
-          .replaceAll('$ATTENDANCEDATE$', (documentPrepartion?.attendancesort === "Date" && AttendanceNeed) ? attendanceDetails : '')
-          .replaceAll('$ATTENDANCEMONTH$', (documentPrepartion?.attendancesort === "Month" && AttendanceNeed) ? attendanceDetails : '')
-          .replaceAll('$PRODUCTIONDATEPOINT$', (ProductionNeed && ProductionDetails) ? ProductionDetails?.point : '')
-          .replaceAll('$PRODUCTIONDATETARGET$', (ProductionNeed && ProductionDetails) ? ProductionDetails?.target : '')
-          .replaceAll('$PRODUCTIONMONTHTARGET$', (productionMonthStatus && documentPrepartion?.productionsort === "Month") ? productionMonthStatus?.target : '')
-          .replaceAll('$PRODUCTIONMONTHPOINT$', (productionMonthStatus && documentPrepartion?.productionsort === "Month") ? productionMonthStatus?.point : '')
+          .replaceAll('$ATTENDANCEDATE$', documentPrepartion?.attendancesort === 'Date' && AttendanceNeed ? attendanceDetails : '')
+          .replaceAll('$ATTENDANCEMONTH$', documentPrepartion?.attendancesort === 'Month' && AttendanceNeed ? attendanceDetails : '')
+          .replaceAll('$PRODUCTIONDATEPOINT$', ProductionNeed && ProductionDetails ? ProductionDetails?.point : '')
+          .replaceAll('$PRODUCTIONDATETARGET$', ProductionNeed && ProductionDetails ? ProductionDetails?.target : '')
+          .replaceAll('$PRODUCTIONMONTHTARGET$', productionMonthStatus && documentPrepartion?.productionsort === 'Month' ? productionMonthStatus?.target : '')
+          .replaceAll('$PRODUCTIONMONTHPOINT$', productionMonthStatus && documentPrepartion?.productionsort === 'Month' ? productionMonthStatus?.point : '')
           .replaceAll(
             '$RSEAL$',
             sealPlacement
@@ -4013,12 +4001,13 @@ function DocumentPreparation() {
             signatureContent?.seal === 'For Seal'
               ? `<span style="display: inline-block; vertical-align: top;">
           <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent}</span><br/>
-          ${signature
-                ? `<span style="position: relative; display: inline-block;">
+          ${
+            signature
+              ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
-                : ''
-              }
+              : ''
+          }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
           </span>
@@ -4066,7 +4055,7 @@ function DocumentPreparation() {
           branch: employee?.branch ? String(employee?.branch) : String(documentPrepartion.branch),
           unit: employee?.unit ? String(employee?.unit) : String(documentPrepartion.unit),
           team: employee?.team ? String(employee?.team) : String(documentPrepartion.team),
-          employeedoj: employee?.doj ? employee?.doj : "",
+          employeedoj: employee?.doj ? employee?.doj : '',
           autoid: newval,
           employeemode: String(documentPrepartion.employeemode),
           data: findMethod,
@@ -4082,10 +4071,10 @@ function DocumentPreparation() {
           qrcodeNeed: qrCodeNeed,
           qrcode: imageUrl,
           signature: signature,
-          signaturetype: signatureContent?.seal ? signatureContent?.seal : "",
-          topcontent: signatureContent?.topcontent ? signatureContent?.topcontent : "",
-          bottomcontent: signatureContent?.bottomcontent ? signatureContent?.bottomcontent : "",
-          usersignature: userESignature ? userESignature : "",
+          signaturetype: signatureContent?.seal ? signatureContent?.seal : '',
+          topcontent: signatureContent?.topcontent ? signatureContent?.topcontent : '',
+          bottomcontent: signatureContent?.bottomcontent ? signatureContent?.bottomcontent : '',
+          usersignature: userESignature ? userESignature : '',
           seal: sealPlacement,
           frommailemail: fromEmail,
           pageheight: agendaEditStyles.height,
@@ -4131,9 +4120,8 @@ function DocumentPreparation() {
       setSelectedEmployee([]);
       setIndexViewQuest(1);
       departmentDesigDateBased = '';
-
     } catch (err) {
-      console.log(err, "err")
+      console.log(err, 'err');
       setLoadingGeneratingDatas(false);
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
@@ -4222,7 +4210,7 @@ function DocumentPreparation() {
   };
 
   const downloadPdfTesdt = (index) => {
-    if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
+    if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== 'Notice Period') {
       setPopupContentMalert('This Employee is not eligibile to receieve any kind of documents!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -4295,7 +4283,6 @@ function DocumentPreparation() {
         const usableContentHeight = pageHeight - footerHeight - margin - reservedSealHeight;
         const contentEndY = Math.min(actualContentHeight, usableContentHeight);
 
-
         for (let i = 1; i <= totalPages; i++) {
           doc.setPage(i);
           const pageWidth = doc.internal.pageSize.getWidth();
@@ -4332,7 +4319,7 @@ function DocumentPreparation() {
           const footerX = 5; // Start from the left
 
           const footerY = pageHeight - footerImgHeight - 5;
-          if (foot !== "") {
+          if (foot !== '') {
             doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
           } else {
             doc.setFillColor(255, 255, 255);
@@ -4343,7 +4330,7 @@ function DocumentPreparation() {
           // if (checkingArray[index]?.signatureneed) {
           const signatureNeed = checkingArray[index]?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
@@ -4356,21 +4343,21 @@ function DocumentPreparation() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = checkingArray[index]?.qrcodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = checkingArray[index]?.qrcodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -4381,33 +4368,29 @@ function DocumentPreparation() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (checkingArray[index]?.signature) {
-                if (checkingArray[index]?.signaturetype === "For Seal" && checkingArray[index]?.topcontent) {
+                if (checkingArray[index]?.signaturetype === 'For Seal' && checkingArray[index]?.topcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
                   doc.text(checkingArray[index].topcontent, leftX, yPos - topTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(checkingArray[index].signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(checkingArray[index].signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                if (checkingArray[index]?.signaturetype === "For Seal" && checkingArray[index]?.bottomcontent) {
+                if (checkingArray[index]?.signaturetype === 'For Seal' && checkingArray[index]?.bottomcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
-                  doc.text(
-                    checkingArray[index].bottomcontent,
-                    leftX,
-                    yPos + sigHeight + bottomTextHeight
-                  );
+                  doc.text(checkingArray[index].bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (checkingArray[index]?.seal) {
-                doc.addImage(checkingArray[index].seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(checkingArray[index].seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -4415,7 +4398,7 @@ function DocumentPreparation() {
               if (checkingArray[index]?.usersignature) {
                 doc.addImage(
                   checkingArray[index].usersignature,
-                  "PNG",
+                  'PNG',
                   rightX,
                   yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                   userSigWidth,
@@ -4423,10 +4406,6 @@ function DocumentPreparation() {
                 );
               }
             }
-
-
-
-
           }
           // }
           if (checkingArray[index]?.pagenumberneed === 'All Pages') {
@@ -4436,7 +4415,7 @@ function DocumentPreparation() {
             const textY = footerY - 3;
             doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
           }
-          if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === "End Page") {
+          if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === 'End Page') {
             // Add QR code and statement only on the last page
             if (i === totalPages) {
               // Add QR code in the left corner
@@ -4446,11 +4425,8 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 15; // 15 units above the footer image
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`
-              ];
+              const statements =
+                qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -4460,14 +4436,13 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
             }
             // doc.text(statementText, statementX, statementY, { maxWidth: lineWidth });
           }
-          if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === "All Pages") {
+          if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === 'All Pages') {
             // Add QR code and statement only on the last page
             if (i === totalPages) {
               // Add QR code in the left corner
@@ -4477,11 +4452,8 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 15; // 15 units above the footer image
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`
-              ];
+              const statements =
+                qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -4491,19 +4463,17 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-            }
-            else {
+            } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
             }
@@ -4590,7 +4560,7 @@ function DocumentPreparation() {
   };
 
   const downloadPdfTesdtManual = () => {
-    if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
+    if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== 'Notice Period') {
       setPopupContentMalert('This Employee is not eligibile to receieve any kind of documents!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -4615,12 +4585,13 @@ function DocumentPreparation() {
           signatureContent?.seal === 'For Seal'
             ? `<span style="display: inline-block; vertical-align: top;">
           <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent}</span><br/>
-          ${signature
+          ${
+            signature
               ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
               : ''
-            }
+          }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
           </span>
@@ -4718,7 +4689,6 @@ function DocumentPreparation() {
           } else {
             doc.setFillColor(255, 255, 255);
             doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, 'F'); // "F" = filled rectangle
-
           }
           const imgWidth = pageWidth * 0.5;
           const imgHeight = pageHeight * 0.25;
@@ -4732,7 +4702,7 @@ function DocumentPreparation() {
           const footerImgHeight = pageHeight * 0.067;
           const footerX = 5;
           const footerY = pageHeight - footerImgHeight - 5;
-          if (foot !== "") {
+          if (foot !== '') {
             doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
           } else {
             doc.setFillColor(255, 255, 255);
@@ -4746,12 +4716,11 @@ function DocumentPreparation() {
             doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
           }
 
-
           // ---------- SIGNATURE & SEAL ----------
           // if (documentPrepartion?.signatureneed) {
           const signatureNeed = documentPrepartion?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
@@ -4764,21 +4733,21 @@ function DocumentPreparation() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = documentPrepartion?.qrcodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = documentPrepartion?.qrcodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -4789,33 +4758,29 @@ function DocumentPreparation() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (documentPrepartion?.signature) {
-                if (documentPrepartion?.signaturetype === "For Seal" && documentPrepartion?.topcontent) {
+                if (documentPrepartion?.signaturetype === 'For Seal' && documentPrepartion?.topcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
                   doc.text(documentPrepartion.topcontent, leftX, yPos - topTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(documentPrepartion.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(documentPrepartion.signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                if (documentPrepartion?.signaturetype === "For Seal" && documentPrepartion?.bottomcontent) {
+                if (documentPrepartion?.signaturetype === 'For Seal' && documentPrepartion?.bottomcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
-                  doc.text(
-                    documentPrepartion.bottomcontent,
-                    leftX,
-                    yPos + sigHeight + bottomTextHeight
-                  );
+                  doc.text(documentPrepartion.bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (documentPrepartion?.seal) {
-                doc.addImage(documentPrepartion.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(documentPrepartion.seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -4823,7 +4788,7 @@ function DocumentPreparation() {
               if (documentPrepartion?.usersignature) {
                 doc.addImage(
                   documentPrepartion.usersignature,
-                  "PNG",
+                  'PNG',
                   rightX,
                   yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                   userSigWidth,
@@ -4831,15 +4796,10 @@ function DocumentPreparation() {
                 );
               }
             }
-
-
-
-
           }
           // }
 
-
-          if (qrCodeNeed && documentPrepartion?.qrcodevalue === "End Page") {
+          if (qrCodeNeed && documentPrepartion?.qrcodevalue === 'End Page') {
             if (i === totalPages) {
               const qrCodeWidth = 25;
               const qrCodeHeight = 25;
@@ -4847,12 +4807,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4;
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -4862,14 +4817,12 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-
             }
           }
-          if (qrCodeNeed && documentPrepartion?.qrcodevalue === "All Pages") {
+          if (qrCodeNeed && documentPrepartion?.qrcodevalue === 'All Pages') {
             if (i === totalPages) {
               const qrCodeWidth = 25;
               const qrCodeHeight = 25;
@@ -4877,12 +4830,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4;
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -4892,19 +4840,17 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-
             } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
             }
@@ -4996,7 +4942,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Please Select With Letter Head!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
+    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== 'Notice Period') {
       setButtonLoadingPreview(false);
       setPopupContentMalert('This Employee is not eligible to receive any kind of documents!');
       setPopupSeverityMalert('info');
@@ -5130,7 +5076,7 @@ function DocumentPreparation() {
                 const footerImgHeight = pageHeight * 0.067;
                 const footerX = 5;
                 const footerY = pageHeight - footerImgHeight - 5;
-                if (checkingArray[index]?.footer !== "") {
+                if (checkingArray[index]?.footer !== '') {
                   doc.addImage(checkingArray[index]?.footer, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
                 } else {
                   doc.setFillColor(255, 255, 255);
@@ -5140,7 +5086,7 @@ function DocumentPreparation() {
                 // ---------- SIGNATURE & SEAL ----------
                 // if (checkingArray[index]?.signatureneed) {
                 const signatureNeed = checkingArray[index]?.signatureneed; // "All Pages" or "End Page"
-                if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+                if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
                   // Decide Y position right after content but above footer
                   const imageY = contentEndY;
 
@@ -5153,21 +5099,21 @@ function DocumentPreparation() {
 
                     // --- Unified Row Position ---
                     const rowYOffset = 10; // ✅ Move row slightly lower
-                    const sigWidth = 40;    // reduced from 53
-                    const sigHeight = 6;    // reduced from 8
+                    const sigWidth = 40; // reduced from 53
+                    const sigHeight = 6; // reduced from 8
 
-                    const sealWidth = 17;   // reduced from 25/35
-                    const sealHeight = 17;  // reduced from 25/35
+                    const sealWidth = 17; // reduced from 25/35
+                    const sealHeight = 17; // reduced from 25/35
                     const sealUpShift = 8;
                     // ✅ Make user signature a bit wider but slightly shorter
-                    const userSigWidth = 47;  // increased width
+                    const userSigWidth = 47; // increased width
                     const userSigHeight = 20; // reduced height
                     const userSigUpShift = 11;
                     let yPos;
 
                     if (i === totalPages) {
                       // ✅ Use available space from bottom instead of rect.height
-                      yPos = checkingArray[index]?.qrcodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                      yPos = checkingArray[index]?.qrcodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
                     } else {
                       yPos = contentEndY + rowYOffset;
                     }
@@ -5178,33 +5124,29 @@ function DocumentPreparation() {
                     // --- Left: Main Signature ---
                     let leftX = margin;
                     if (checkingArray[index]?.signature) {
-                      if (checkingArray[index]?.signaturetype === "For Seal" && checkingArray[index]?.topcontent) {
+                      if (checkingArray[index]?.signaturetype === 'For Seal' && checkingArray[index]?.topcontent) {
                         doc.setFontSize(8);
-                        doc.setFont(undefined, "bold");
+                        doc.setFont(undefined, 'bold');
                         doc.setTextColor(83, 23, 126);
                         doc.text(checkingArray[index].topcontent, leftX, yPos - topTextHeight);
                         doc.setTextColor(0, 0, 0);
                       }
 
-                      doc.addImage(checkingArray[index].signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                      doc.addImage(checkingArray[index].signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                      if (checkingArray[index]?.signaturetype === "For Seal" && checkingArray[index]?.bottomcontent) {
+                      if (checkingArray[index]?.signaturetype === 'For Seal' && checkingArray[index]?.bottomcontent) {
                         doc.setFontSize(8);
-                        doc.setFont(undefined, "bold");
+                        doc.setFont(undefined, 'bold');
                         doc.setTextColor(83, 23, 126);
-                        doc.text(
-                          checkingArray[index].bottomcontent,
-                          leftX,
-                          yPos + sigHeight + bottomTextHeight
-                        );
+                        doc.text(checkingArray[index].bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                         doc.setTextColor(0, 0, 0);
                       }
                     }
 
                     // --- Center: Seal (align with same yPos) ---
-                    const centerX = (pageWidth / 2) - (sealWidth / 2);
+                    const centerX = pageWidth / 2 - sealWidth / 2;
                     if (checkingArray[index]?.seal) {
-                      doc.addImage(checkingArray[index].seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                      doc.addImage(checkingArray[index].seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
                     }
 
                     // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -5212,7 +5154,7 @@ function DocumentPreparation() {
                     if (checkingArray[index]?.usersignature) {
                       doc.addImage(
                         checkingArray[index].usersignature,
-                        "PNG",
+                        'PNG',
                         rightX,
                         yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                         userSigWidth,
@@ -5220,14 +5162,10 @@ function DocumentPreparation() {
                       );
                     }
                   }
-
-
-
-
                 }
                 // }
 
-                // ---------- PAGE NUMBER ---------- 
+                // ---------- PAGE NUMBER ----------
                 if (checkingArray[index]?.pagenumberneed === 'All Pages') {
                   const textY = footerY - 3;
                   doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, { align: 'center' });
@@ -5236,7 +5174,7 @@ function DocumentPreparation() {
                   doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
                 }
                 // ---------- QR CODE ----------
-                if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === "End Page") {
+                if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === 'End Page') {
                   if (i === totalPages) {
                     const qrCodeWidth = 25;
                     const qrCodeHeight = 25;
@@ -5244,11 +5182,10 @@ function DocumentPreparation() {
                     const qrCodeY = footerY - qrCodeHeight - 4;
                     doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-                    const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                      '1. Scan to verify the authenticity of this document.',
-                      `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                      `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`
-                    ];
+                    const statements =
+                      qrCodeInfoDetails?.length > 0
+                        ? qrCodeInfoDetails
+                        : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`];
 
                     // starting position
                     const statementX = qrCodeX + qrCodeWidth + 10;
@@ -5258,14 +5195,12 @@ function DocumentPreparation() {
                     doc.setFontSize(12);
 
                     statements.forEach((text, idx) => {
-                      const y = statementY1 + (idx * lineGap);
+                      const y = statementY1 + idx * lineGap;
                       doc.text(text, statementX, y);
                     });
-
-
                   }
                 }
-                if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === "All Pages") {
+                if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === 'All Pages') {
                   if (i === totalPages) {
                     const qrCodeWidth = 25;
                     const qrCodeHeight = 25;
@@ -5273,11 +5208,10 @@ function DocumentPreparation() {
                     const qrCodeY = footerY - qrCodeHeight - 4;
                     doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-                    const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                      '1. Scan to verify the authenticity of this document.',
-                      `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                      `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`
-                    ];
+                    const statements =
+                      qrCodeInfoDetails?.length > 0
+                        ? qrCodeInfoDetails
+                        : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`];
 
                     // starting position
                     const statementX = qrCodeX + qrCodeWidth + 10;
@@ -5287,20 +5221,17 @@ function DocumentPreparation() {
                     doc.setFontSize(12);
 
                     statements.forEach((text, idx) => {
-                      const y = statementY1 + (idx * lineGap);
+                      const y = statementY1 + idx * lineGap;
                       doc.text(text, statementX, y);
                     });
-
-
-                  }
-                  else {
+                  } else {
                     // ✅ for all other pages → add page number + small QR code on the right
                     const textY = footerY - 3;
                     // small QR code next to it (bottom-right corner)
-                    const qrCodeWidth = 15;   // smaller size
+                    const qrCodeWidth = 15; // smaller size
                     const qrCodeHeight = 15;
                     const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-                    const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+                    const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
                     doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
                   }
@@ -5313,8 +5244,6 @@ function DocumentPreparation() {
             const hasFooterImage = checkingArray[index]?.footer !== '';
             const adjustedMargin = getAdjustedMargin(selectedMargin, hasHeaderImage, hasFooterImage);
             const pdfDimensions = getPageDimensions();
-
-
 
             // 1️⃣ Measure content height BEFORE html2pdf
             const tempDiv = document.createElement('div');
@@ -5336,9 +5265,6 @@ function DocumentPreparation() {
             // console.log(`✅ Page Height: ${pageHeightMM.toFixed(2)} mm`);
             // console.log(`✅ Last Page Used Height: ${lastPageUsedHeight.toFixed(2)} mm`);
 
-
-
-
             html2pdf()
               .from(pdfElement)
               .set({
@@ -5355,7 +5281,6 @@ function DocumentPreparation() {
               .toPdf()
               .get('pdf')
               .then((pdf) => {
-
                 const img = new Image();
                 img.src = waterMarkText;
                 img.onload = () => {
@@ -5377,11 +5302,11 @@ function DocumentPreparation() {
                   //   const headerImgHeight = pageHeight * 0.067; // adjust if you use different scale for header
 
                   //   // Calculate last content Y position relative to page
-                  //   let yEnd = 
-                  //   adjustedMargin[0] 
+                  //   let yEnd =
+                  //   adjustedMargin[0]
                   //   +
-                  //     headerImgHeight 
-                  //     + 
+                  //     headerImgHeight
+                  //     +
                   //     lastPageUsedHeight;
                   //   console.log(adjustedMargin[0], headerImgHeight, lastPageUsedHeight)
                   //   // Clamp to page bottom
@@ -5401,7 +5326,6 @@ function DocumentPreparation() {
 
                   //   console.log(`✅ Drew red line at Y=${yEnd.toFixed(2)} mm (includes header height + 15mm)`);
                   // };
-
 
                   const qrImg = new Image();
                   qrImg.src = checkingArray[index]?.qrcodeNeed ? checkingArray[index]?.qrcode : ''; // QR code image URL
@@ -5471,7 +5395,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Please Select With Letter Head!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
+    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== 'Notice Period') {
       setButtonLoadingPreview(false);
       setPopupContentMalert('This Employee is not eligible to receive any kind of documents!');
       setPopupSeverityMalert('info');
@@ -5514,12 +5438,13 @@ function DocumentPreparation() {
                 signatureContent?.seal === 'For Seal'
                   ? `<span style="display: inline-block; vertical-align: top;">
           <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent}</span><br/>
-          ${signature
-                    ? `<span style="position: relative; display: inline-block;">
+          ${
+            signature
+              ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
-                    : ''
-                  }
+              : ''
+          }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
           </span>
@@ -5609,7 +5534,6 @@ function DocumentPreparation() {
                 } else {
                   doc.setFillColor(255, 255, 255);
                   doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, 'F'); // "F" = filled rectangle
-
                 }
                 const imgWidth = pageWidth * 0.5;
                 const imgHeight = pageHeight * 0.25;
@@ -5623,19 +5547,18 @@ function DocumentPreparation() {
                 const footerImgHeight = pageHeight * 0.067;
                 const footerX = 5;
                 const footerY = pageHeight - footerImgHeight - 5;
-                if (foot !== "") {
+                if (foot !== '') {
                   doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
                 } else {
                   doc.setFillColor(255, 255, 255);
                   doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, 'F');
                 }
 
-
                 // ---------- SIGNATURE & SEAL ----------
                 // if (documentPrepartion?.signatureneed) {
                 const signatureNeed = documentPrepartion?.signatureneed; // "All Pages" or "End Page"
 
-                if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+                if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
                   // Decide Y position right after content but above footer
                   const imageY = contentEndY;
 
@@ -5648,21 +5571,21 @@ function DocumentPreparation() {
 
                     // --- Unified Row Position ---
                     const rowYOffset = 10; // ✅ Move row slightly lower
-                    const sigWidth = 40;    // reduced from 53
-                    const sigHeight = 6;    // reduced from 8
+                    const sigWidth = 40; // reduced from 53
+                    const sigHeight = 6; // reduced from 8
 
-                    const sealWidth = 17;   // reduced from 25/35
-                    const sealHeight = 17;  // reduced from 25/35
+                    const sealWidth = 17; // reduced from 25/35
+                    const sealHeight = 17; // reduced from 25/35
                     const sealUpShift = 8;
                     // ✅ Make user signature a bit wider but slightly shorter
-                    const userSigWidth = 47;  // increased width
+                    const userSigWidth = 47; // increased width
                     const userSigHeight = 20; // reduced height
                     const userSigUpShift = 11;
                     let yPos;
 
                     if (i === totalPages) {
                       // ✅ Use available space from bottom instead of rect.height
-                      yPos = documentPrepartion?.qrcodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                      yPos = documentPrepartion?.qrcodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
                     } else {
                       yPos = contentEndY + rowYOffset;
                     }
@@ -5673,33 +5596,29 @@ function DocumentPreparation() {
                     // --- Left: Main Signature ---
                     let leftX = margin;
                     if (documentPrepartion?.signature) {
-                      if (documentPrepartion?.signaturetype === "For Seal" && documentPrepartion?.topcontent) {
+                      if (documentPrepartion?.signaturetype === 'For Seal' && documentPrepartion?.topcontent) {
                         doc.setFontSize(8);
-                        doc.setFont(undefined, "bold");
+                        doc.setFont(undefined, 'bold');
                         doc.setTextColor(83, 23, 126);
                         doc.text(documentPrepartion.topcontent, leftX, yPos - topTextHeight);
                         doc.setTextColor(0, 0, 0);
                       }
 
-                      doc.addImage(documentPrepartion.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                      doc.addImage(documentPrepartion.signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                      if (documentPrepartion?.signaturetype === "For Seal" && documentPrepartion?.bottomcontent) {
+                      if (documentPrepartion?.signaturetype === 'For Seal' && documentPrepartion?.bottomcontent) {
                         doc.setFontSize(8);
-                        doc.setFont(undefined, "bold");
+                        doc.setFont(undefined, 'bold');
                         doc.setTextColor(83, 23, 126);
-                        doc.text(
-                          documentPrepartion.bottomcontent,
-                          leftX,
-                          yPos + sigHeight + bottomTextHeight
-                        );
+                        doc.text(documentPrepartion.bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                         doc.setTextColor(0, 0, 0);
                       }
                     }
 
                     // --- Center: Seal (align with same yPos) ---
-                    const centerX = (pageWidth / 2) - (sealWidth / 2);
+                    const centerX = pageWidth / 2 - sealWidth / 2;
                     if (documentPrepartion?.seal) {
-                      doc.addImage(documentPrepartion.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                      doc.addImage(documentPrepartion.seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
                     }
 
                     // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -5707,7 +5626,7 @@ function DocumentPreparation() {
                     if (documentPrepartion?.usersignature) {
                       doc.addImage(
                         documentPrepartion.usersignature,
-                        "PNG",
+                        'PNG',
                         rightX,
                         yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                         userSigWidth,
@@ -5715,10 +5634,6 @@ function DocumentPreparation() {
                       );
                     }
                   }
-
-
-
-
                 }
                 // }
 
@@ -5730,7 +5645,7 @@ function DocumentPreparation() {
                   doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
                 }
 
-                if (qrCodeNeed && documentPrepartion?.qrcodevalue === "End Page") {
+                if (qrCodeNeed && documentPrepartion?.qrcodevalue === 'End Page') {
                   if (i === totalPages) {
                     const qrCodeWidth = 25;
                     const qrCodeHeight = 25;
@@ -5738,11 +5653,7 @@ function DocumentPreparation() {
                     const qrCodeY = footerY - qrCodeHeight - 4;
                     doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-                    const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                      '1. Scan to verify the authenticity of this document.',
-                      `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                      `3. For questions, contact us at ${fromEmail}.`
-                    ];
+                    const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
                     // starting position
                     const statementX = qrCodeX + qrCodeWidth + 10;
@@ -5752,12 +5663,12 @@ function DocumentPreparation() {
                     doc.setFontSize(12);
 
                     statements.forEach((text, idx) => {
-                      const y = statementY1 + (idx * lineGap);
+                      const y = statementY1 + idx * lineGap;
                       doc.text(text, statementX, y);
                     });
                   }
                 }
-                if (qrCodeNeed && documentPrepartion?.qrcodevalue === "All Pages") {
+                if (qrCodeNeed && documentPrepartion?.qrcodevalue === 'All Pages') {
                   if (i === totalPages) {
                     const qrCodeWidth = 25;
                     const qrCodeHeight = 25;
@@ -5765,11 +5676,7 @@ function DocumentPreparation() {
                     const qrCodeY = footerY - qrCodeHeight - 4;
                     doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-                    const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                      '1. Scan to verify the authenticity of this document.',
-                      `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                      `3. For questions, contact us at ${fromEmail}.`
-                    ];
+                    const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
                     // starting position
                     const statementX = qrCodeX + qrCodeWidth + 10;
@@ -5779,18 +5686,17 @@ function DocumentPreparation() {
                     doc.setFontSize(12);
 
                     statements.forEach((text, idx) => {
-                      const y = statementY1 + (idx * lineGap);
+                      const y = statementY1 + idx * lineGap;
                       doc.text(text, statementX, y);
                     });
-                  }
-                  else {
+                  } else {
                     // ✅ for all other pages → add page number + small QR code on the right
                     const textY = footerY - 3;
                     // small QR code next to it (bottom-right corner)
-                    const qrCodeWidth = 15;   // smaller size
+                    const qrCodeWidth = 15; // smaller size
                     const qrCodeHeight = 15;
                     const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-                    const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+                    const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
                     doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
                   }
@@ -5881,11 +5787,12 @@ function DocumentPreparation() {
         signatureContent?.seal === 'For Seal'
           ? `<span style="display: inline-block; vertical-align: top;">
           <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent}</span><br/>
-          ${signature
-            ? `<span style="position: relative; display: inline-block;">
+          ${
+            signature
+              ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
-            : ''
+              : ''
           }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
@@ -5984,7 +5891,6 @@ function DocumentPreparation() {
         } else {
           doc.setFillColor(255, 255, 255);
           doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, 'F'); // "F" = filled rectangle
-
         }
         const imgWidth = pageWidth * 0.5;
         const imgHeight = pageHeight * 0.25;
@@ -5998,20 +5904,18 @@ function DocumentPreparation() {
         const footerImgHeight = pageHeight * 0.067;
         const footerX = 5;
         const footerY = pageHeight - footerImgHeight - 5;
-        if (foot !== "") {
+        if (foot !== '') {
           doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
         } else {
           doc.setFillColor(255, 255, 255);
           doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, 'F');
         }
 
-
-
         // ---------- SIGNATURE & SEAL ----------
         // if (documentPrepartion?.signatureneed) {
         const signatureNeed = documentPrepartion?.signatureneed; // "All Pages" or "End Page"
 
-        if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+        if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
           // Decide Y position right after content but above footer
           const imageY = contentEndY;
 
@@ -6024,21 +5928,21 @@ function DocumentPreparation() {
 
             // --- Unified Row Position ---
             const rowYOffset = 10; // ✅ Move row slightly lower
-            const sigWidth = 40;    // reduced from 53
-            const sigHeight = 6;    // reduced from 8
+            const sigWidth = 40; // reduced from 53
+            const sigHeight = 6; // reduced from 8
 
-            const sealWidth = 17;   // reduced from 25/35
-            const sealHeight = 17;  // reduced from 25/35
+            const sealWidth = 17; // reduced from 25/35
+            const sealHeight = 17; // reduced from 25/35
             const sealUpShift = 8;
             // ✅ Make user signature a bit wider but slightly shorter
-            const userSigWidth = 47;  // increased width
+            const userSigWidth = 47; // increased width
             const userSigHeight = 20; // reduced height
             const userSigUpShift = 11;
             let yPos;
 
             if (i === totalPages) {
               // ✅ Use available space from bottom instead of rect.height
-              yPos = documentPrepartion?.qrcodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+              yPos = documentPrepartion?.qrcodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
             } else {
               yPos = contentEndY + rowYOffset;
             }
@@ -6049,33 +5953,29 @@ function DocumentPreparation() {
             // --- Left: Main Signature ---
             let leftX = margin;
             if (documentPrepartion?.signature) {
-              if (documentPrepartion?.signaturetype === "For Seal" && documentPrepartion?.topcontent) {
+              if (documentPrepartion?.signaturetype === 'For Seal' && documentPrepartion?.topcontent) {
                 doc.setFontSize(8);
-                doc.setFont(undefined, "bold");
+                doc.setFont(undefined, 'bold');
                 doc.setTextColor(83, 23, 126);
                 doc.text(documentPrepartion.topcontent, leftX, yPos - topTextHeight);
                 doc.setTextColor(0, 0, 0);
               }
 
-              doc.addImage(documentPrepartion.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+              doc.addImage(documentPrepartion.signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-              if (documentPrepartion?.signaturetype === "For Seal" && documentPrepartion?.bottomcontent) {
+              if (documentPrepartion?.signaturetype === 'For Seal' && documentPrepartion?.bottomcontent) {
                 doc.setFontSize(8);
-                doc.setFont(undefined, "bold");
+                doc.setFont(undefined, 'bold');
                 doc.setTextColor(83, 23, 126);
-                doc.text(
-                  documentPrepartion.bottomcontent,
-                  leftX,
-                  yPos + sigHeight + bottomTextHeight
-                );
+                doc.text(documentPrepartion.bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                 doc.setTextColor(0, 0, 0);
               }
             }
 
             // --- Center: Seal (align with same yPos) ---
-            const centerX = (pageWidth / 2) - (sealWidth / 2);
+            const centerX = pageWidth / 2 - sealWidth / 2;
             if (documentPrepartion?.seal) {
-              doc.addImage(documentPrepartion.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+              doc.addImage(documentPrepartion.seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
             }
 
             // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -6083,7 +5983,7 @@ function DocumentPreparation() {
             if (documentPrepartion?.usersignature) {
               doc.addImage(
                 documentPrepartion.usersignature,
-                "PNG",
+                'PNG',
                 rightX,
                 yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                 userSigWidth,
@@ -6091,10 +5991,6 @@ function DocumentPreparation() {
               );
             }
           }
-
-
-
-
         }
         // }
         if (documentPrepartion?.pagenumberneed === 'All Pages') {
@@ -6105,7 +6001,7 @@ function DocumentPreparation() {
           doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
         }
 
-        if (qrCodeNeed && documentPrepartion?.qrcodevalue === "End Page") {
+        if (qrCodeNeed && documentPrepartion?.qrcodevalue === 'End Page') {
           if (i === totalPages) {
             const qrCodeWidth = 25;
             const qrCodeHeight = 25;
@@ -6113,11 +6009,7 @@ function DocumentPreparation() {
             const qrCodeY = footerY - qrCodeHeight - 4;
             doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-            const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-              '1. Scan to verify the authenticity of this document.',
-              `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-              `3. For questions, contact us at ${fromEmail}.`
-            ];
+            const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
             // starting position
             const statementX = qrCodeX + qrCodeWidth + 10;
@@ -6127,12 +6019,12 @@ function DocumentPreparation() {
             doc.setFontSize(12);
 
             statements.forEach((text, idx) => {
-              const y = statementY1 + (idx * lineGap);
+              const y = statementY1 + idx * lineGap;
               doc.text(text, statementX, y);
             });
           }
         }
-        if (qrCodeNeed && documentPrepartion?.qrcodevalue === "All Pages") {
+        if (qrCodeNeed && documentPrepartion?.qrcodevalue === 'All Pages') {
           if (i === totalPages) {
             const qrCodeWidth = 25;
             const qrCodeHeight = 25;
@@ -6140,11 +6032,7 @@ function DocumentPreparation() {
             const qrCodeY = footerY - qrCodeHeight - 4;
             doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-            const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-              '1. Scan to verify the authenticity of this document.',
-              `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-              `3. For questions, contact us at ${fromEmail}.`
-            ];
+            const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
             // starting position
             const statementX = qrCodeX + qrCodeWidth + 10;
@@ -6154,18 +6042,17 @@ function DocumentPreparation() {
             doc.setFontSize(12);
 
             statements.forEach((text, idx) => {
-              const y = statementY1 + (idx * lineGap);
+              const y = statementY1 + idx * lineGap;
               doc.text(text, statementX, y);
             });
-          }
-          else {
+          } else {
             // ✅ for all other pages → add page number + small QR code on the right
             const textY = footerY - 3;
             // small QR code next to it (bottom-right corner)
-            const qrCodeWidth = 15;   // smaller size
+            const qrCodeWidth = 15; // smaller size
             const qrCodeHeight = 15;
             const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-            const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+            const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
             doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
           }
@@ -6314,7 +6201,6 @@ function DocumentPreparation() {
           } else {
             doc.setFillColor(255, 255, 255);
             doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, 'F'); // "F" = filled rectangle
-
           }
           if (checkingArray[index]?.header !== '') {
             const imgWidth = pageWidth * 0.5;
@@ -6331,7 +6217,7 @@ function DocumentPreparation() {
           const footerX = 5;
           const footerY = pageHeight - footerImgHeight - 5;
 
-          if (checkingArray[index]?.footer !== "") {
+          if (checkingArray[index]?.footer !== '') {
             doc.addImage(checkingArray[index]?.footer, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
           } else {
             doc.setFillColor(255, 255, 255);
@@ -6342,7 +6228,7 @@ function DocumentPreparation() {
           // if (checkingArray[index]?.signatureneed) {
           const signatureNeed = checkingArray[index]?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
@@ -6355,21 +6241,21 @@ function DocumentPreparation() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = checkingArray[index]?.qrcodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = checkingArray[index]?.qrcodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -6380,33 +6266,29 @@ function DocumentPreparation() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (checkingArray[index]?.signature) {
-                if (checkingArray[index]?.signaturetype === "For Seal" && checkingArray[index]?.topcontent) {
+                if (checkingArray[index]?.signaturetype === 'For Seal' && checkingArray[index]?.topcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
                   doc.text(checkingArray[index].topcontent, leftX, yPos - topTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(checkingArray[index].signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(checkingArray[index].signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                if (checkingArray[index]?.signaturetype === "For Seal" && checkingArray[index]?.bottomcontent) {
+                if (checkingArray[index]?.signaturetype === 'For Seal' && checkingArray[index]?.bottomcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
-                  doc.text(
-                    checkingArray[index].bottomcontent,
-                    leftX,
-                    yPos + sigHeight + bottomTextHeight
-                  );
+                  doc.text(checkingArray[index].bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (checkingArray[index]?.seal) {
-                doc.addImage(checkingArray[index].seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(checkingArray[index].seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -6414,7 +6296,7 @@ function DocumentPreparation() {
               if (checkingArray[index]?.usersignature) {
                 doc.addImage(
                   checkingArray[index].usersignature,
-                  "PNG",
+                  'PNG',
                   rightX,
                   yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                   userSigWidth,
@@ -6432,7 +6314,7 @@ function DocumentPreparation() {
             doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
           }
 
-          if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === "End Page") {
+          if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === 'End Page') {
             if (i === totalPages) {
               const qrCodeWidth = 25;
               const qrCodeHeight = 25;
@@ -6440,11 +6322,8 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4;
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`
-              ];
+              const statements =
+                qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -6454,14 +6333,12 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-
             }
           }
-          if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === "All Pages") {
+          if (checkingArray[index]?.qrcodeNeed && checkingArray[index]?.qrcodevalue === 'All Pages') {
             if (i === totalPages) {
               const qrCodeWidth = 25;
               const qrCodeHeight = 25;
@@ -6469,11 +6346,8 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4;
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`
-              ];
+              const statements =
+                qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -6483,20 +6357,17 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-
-            }
-            else {
+            } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
             }
@@ -6586,12 +6457,13 @@ function DocumentPreparation() {
           signatureContent?.seal === 'For Seal'
             ? `<span style="display: inline-block; vertical-align: top;">
           <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent}</span><br/>
-          ${signature
+          ${
+            signature
               ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
               : ''
-            }
+          }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
           </span>
@@ -6687,7 +6559,6 @@ function DocumentPreparation() {
           } else {
             doc.setFillColor(255, 255, 255);
             doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, 'F'); // "F" = filled rectangle
-
           }
           const imgWidth = pageWidth * 0.5;
           const imgHeight = pageHeight * 0.25;
@@ -6701,7 +6572,7 @@ function DocumentPreparation() {
           const footerImgHeight = pageHeight * 0.067;
           const footerX = 5;
           const footerY = pageHeight - footerImgHeight - 5;
-          if (foot !== "") {
+          if (foot !== '') {
             doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
           } else {
             doc.setFillColor(255, 255, 255);
@@ -6712,7 +6583,7 @@ function DocumentPreparation() {
           // if (documentPrepartion?.signatureneed) {
           const signatureNeed = documentPrepartion?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
@@ -6725,21 +6596,21 @@ function DocumentPreparation() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = documentPrepartion?.qrcodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = documentPrepartion?.qrcodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -6750,33 +6621,29 @@ function DocumentPreparation() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (documentPrepartion?.signature) {
-                if (documentPrepartion?.signaturetype === "For Seal" && documentPrepartion?.topcontent) {
+                if (documentPrepartion?.signaturetype === 'For Seal' && documentPrepartion?.topcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
                   doc.text(documentPrepartion.topcontent, leftX, yPos - topTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(documentPrepartion.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(documentPrepartion.signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                if (documentPrepartion?.signaturetype === "For Seal" && documentPrepartion?.bottomcontent) {
+                if (documentPrepartion?.signaturetype === 'For Seal' && documentPrepartion?.bottomcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
-                  doc.text(
-                    documentPrepartion.bottomcontent,
-                    leftX,
-                    yPos + sigHeight + bottomTextHeight
-                  );
+                  doc.text(documentPrepartion.bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (documentPrepartion?.seal) {
-                doc.addImage(documentPrepartion.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(documentPrepartion.seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -6784,7 +6651,7 @@ function DocumentPreparation() {
               if (documentPrepartion?.usersignature) {
                 doc.addImage(
                   documentPrepartion.usersignature,
-                  "PNG",
+                  'PNG',
                   rightX,
                   yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                   userSigWidth,
@@ -6792,10 +6659,6 @@ function DocumentPreparation() {
                 );
               }
             }
-
-
-
-
           }
           // }
 
@@ -6807,7 +6670,7 @@ function DocumentPreparation() {
             doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
           }
 
-          if (qrCodeNeed && documentPrepartion?.qrcodevalue === "End Page") {
+          if (qrCodeNeed && documentPrepartion?.qrcodevalue === 'End Page') {
             if (i === totalPages) {
               const qrCodeWidth = 25;
               const qrCodeHeight = 25;
@@ -6815,11 +6678,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4;
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -6829,12 +6688,12 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
             }
           }
-          if (qrCodeNeed && documentPrepartion?.qrcodevalue === "All Pages") {
+          if (qrCodeNeed && documentPrepartion?.qrcodevalue === 'All Pages') {
             if (i === totalPages) {
               const qrCodeWidth = 25;
               const qrCodeHeight = 25;
@@ -6842,11 +6701,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4;
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -6856,18 +6711,17 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-            }
-            else {
+            } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
             }
@@ -7039,7 +6893,7 @@ function DocumentPreparation() {
               const footerImgHeight = pageHeight * 0.067; // Adjust height as needed
               const footerX = 5; // Start from the left
               const footerY = pageHeight - footerImgHeight - 5;
-              if (foot !== "") {
+              if (foot !== '') {
                 doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
               } else {
                 doc.setFillColor(255, 255, 255);
@@ -7050,7 +6904,7 @@ function DocumentPreparation() {
               // if (response?.data?.sdocumentPreparation?.signatureneed) {
               const signatureNeed = response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
 
-              if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+              if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
                 // Decide Y position right after content but above footer
                 const imageY = contentEndY;
 
@@ -7063,21 +6917,21 @@ function DocumentPreparation() {
 
                   // --- Unified Row Position ---
                   const rowYOffset = 10; // ✅ Move row slightly lower
-                  const sigWidth = 40;    // reduced from 53
-                  const sigHeight = 6;    // reduced from 8
+                  const sigWidth = 40; // reduced from 53
+                  const sigHeight = 6; // reduced from 8
 
-                  const sealWidth = 17;   // reduced from 25/35
-                  const sealHeight = 17;  // reduced from 25/35
+                  const sealWidth = 17; // reduced from 25/35
+                  const sealHeight = 17; // reduced from 25/35
                   const sealUpShift = 8;
                   // ✅ Make user signature a bit wider but slightly shorter
-                  const userSigWidth = 47;  // increased width
+                  const userSigWidth = 47; // increased width
                   const userSigHeight = 20; // reduced height
                   const userSigUpShift = 11;
                   let yPos;
 
                   if (i === totalPages) {
                     // ✅ Use available space from bottom instead of rect.height
-                    yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                    yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
                   } else {
                     yPos = contentEndY + rowYOffset;
                   }
@@ -7088,33 +6942,29 @@ function DocumentPreparation() {
                   // --- Left: Main Signature ---
                   let leftX = margin;
                   if (response?.data?.sdocumentPreparation?.signature) {
-                    if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.topcontent) {
+                    if (response?.data?.sdocumentPreparation?.signaturetype === 'For Seal' && response?.data?.sdocumentPreparation?.topcontent) {
                       doc.setFontSize(8);
-                      doc.setFont(undefined, "bold");
+                      doc.setFont(undefined, 'bold');
                       doc.setTextColor(83, 23, 126);
                       doc.text(response?.data?.sdocumentPreparation.topcontent, leftX, yPos - topTextHeight);
                       doc.setTextColor(0, 0, 0);
                     }
 
-                    doc.addImage(response?.data?.sdocumentPreparation.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                    doc.addImage(response?.data?.sdocumentPreparation.signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                    if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.bottomcontent) {
+                    if (response?.data?.sdocumentPreparation?.signaturetype === 'For Seal' && response?.data?.sdocumentPreparation?.bottomcontent) {
                       doc.setFontSize(8);
-                      doc.setFont(undefined, "bold");
+                      doc.setFont(undefined, 'bold');
                       doc.setTextColor(83, 23, 126);
-                      doc.text(
-                        response?.data?.sdocumentPreparation.bottomcontent,
-                        leftX,
-                        yPos + sigHeight + bottomTextHeight
-                      );
+                      doc.text(response?.data?.sdocumentPreparation.bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                       doc.setTextColor(0, 0, 0);
                     }
                   }
 
                   // --- Center: Seal (align with same yPos) ---
-                  const centerX = (pageWidth / 2) - (sealWidth / 2);
+                  const centerX = pageWidth / 2 - sealWidth / 2;
                   if (response?.data?.sdocumentPreparation?.seal) {
-                    doc.addImage(response?.data?.sdocumentPreparation.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                    doc.addImage(response?.data?.sdocumentPreparation.seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
                   }
 
                   // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -7122,7 +6972,7 @@ function DocumentPreparation() {
                   if (response?.data?.sdocumentPreparation?.usersignature) {
                     doc.addImage(
                       response?.data?.sdocumentPreparation.usersignature,
-                      "PNG",
+                      'PNG',
                       rightX,
                       yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                       userSigWidth,
@@ -7130,10 +6980,6 @@ function DocumentPreparation() {
                     );
                   }
                 }
-
-
-
-
               }
               // }
               if (response?.data?.sdocumentPreparation?.pagenumberneed === 'All Pages') {
@@ -7145,7 +6991,7 @@ function DocumentPreparation() {
               }
               // Add QR code and statement only on the last page
 
-              if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "End Page") {
+              if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === 'End Page') {
                 if (i === totalPages) {
                   // Add QR code in the left corner
                   const qrCodeWidth = 25; // Adjust as needed
@@ -7154,13 +7000,7 @@ function DocumentPreparation() {
                   const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
                   doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-
-                  const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                    '1. Scan to verify the authenticity of this document.',
-                    `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                    `3. For questions, contact us at ${fromEmail}.`
-                  ];
+                  const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
                   // starting position
                   const statementX = qrCodeX + qrCodeWidth + 10;
@@ -7170,13 +7010,12 @@ function DocumentPreparation() {
                   doc.setFontSize(12);
 
                   statements.forEach((text, idx) => {
-                    const y = statementY1 + (idx * lineGap);
+                    const y = statementY1 + idx * lineGap;
                     doc.text(text, statementX, y);
                   });
-
                 }
               }
-              if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages") {
+              if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === 'All Pages') {
                 if (i === totalPages) {
                   // Add QR code in the left corner
                   const qrCodeWidth = 25; // Adjust as needed
@@ -7185,13 +7024,7 @@ function DocumentPreparation() {
                   const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
                   doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-
-                  const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                    '1. Scan to verify the authenticity of this document.',
-                    `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                    `3. For questions, contact us at ${fromEmail}.`
-                  ];
+                  const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
                   // starting position
                   const statementX = qrCodeX + qrCodeWidth + 10;
@@ -7201,19 +7034,17 @@ function DocumentPreparation() {
                   doc.setFontSize(12);
 
                   statements.forEach((text, idx) => {
-                    const y = statementY1 + (idx * lineGap);
+                    const y = statementY1 + idx * lineGap;
                     doc.text(text, statementX, y);
                   });
-
-                }
-                else {
+                } else {
                   // ✅ for all other pages → add page number + small QR code on the right
                   const textY = footerY - 3;
                   // small QR code next to it (bottom-right corner)
-                  const qrCodeWidth = 15;   // smaller size
+                  const qrCodeWidth = 15; // smaller size
                   const qrCodeHeight = 15;
                   const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-                  const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+                  const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
                   doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
                 }
@@ -7442,24 +7273,24 @@ function DocumentPreparation() {
       prefixString.length == 1
         ? `000${prefixString}`
         : prefixString.length == 2
-          ? `00${prefixString}`
-          : prefixString.length == 3
-            ? `0${prefixString}`
-            : prefixString.length == 4
-              ? `0${prefixString}`
-              : prefixString.length == 5
-                ? `0${prefixString}`
-                : prefixString.length == 6
-                  ? `0${prefixString}`
-                  : prefixString.length == 7
-                    ? `0${prefixString}`
-                    : prefixString.length == 8
-                      ? `0${prefixString}`
-                      : prefixString.length == 9
-                        ? `0${prefixString}`
-                        : prefixString.length == 10
-                          ? `0${prefixString}`
-                          : prefixString;
+        ? `00${prefixString}`
+        : prefixString.length == 3
+        ? `0${prefixString}`
+        : prefixString.length == 4
+        ? `0${prefixString}`
+        : prefixString.length == 5
+        ? `0${prefixString}`
+        : prefixString.length == 6
+        ? `0${prefixString}`
+        : prefixString.length == 7
+        ? `0${prefixString}`
+        : prefixString.length == 8
+        ? `0${prefixString}`
+        : prefixString.length == 9
+        ? `0${prefixString}`
+        : prefixString.length == 10
+        ? `0${prefixString}`
+        : prefixString;
 
     let newval = employeeControlPanel
       ? uniqueCode + employeeControlPanel?.team?.slice(0, 3) + '#' + templateCreationValue?.tempcode + '_' + postfixLength
@@ -7485,11 +7316,12 @@ function DocumentPreparation() {
         signatureContent?.seal === 'For Seal'
           ? `<span style="display: inline-block; vertical-align: top;">
           <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent}</span><br/>
-          ${signature
-            ? `<span style="position: relative; display: inline-block;">
+          ${
+            signature
+              ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
-            : ''
+              : ''
           }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
@@ -7525,10 +7357,10 @@ function DocumentPreparation() {
         department: String(documentPrepartion.department),
         pagenumberneed: String(documentPrepartion.pagenumberneed),
         signatureneed: String(documentPrepartion.signatureneed),
-        signaturetype: signatureContent?.seal ? signatureContent?.seal : "",
-        topcontent: signatureContent?.topcontent ? String(signatureContent?.topcontent) : "",
-        bottomcontent: signatureContent.bottomcontent ? String(signatureContent.bottomcontent) : "",
-        usersignature: signatureContent.usersignature ? String(signatureContent.usersignature) : "",
+        signaturetype: signatureContent?.seal ? signatureContent?.seal : '',
+        topcontent: signatureContent?.topcontent ? String(signatureContent?.topcontent) : '',
+        bottomcontent: signatureContent.bottomcontent ? String(signatureContent.bottomcontent) : '',
+        usersignature: signatureContent.usersignature ? String(signatureContent.usersignature) : '',
         qrcodevalue: String(documentPrepartion.qrcodevalue),
         company: String(documentPrepartion.company),
         branch: String(documentPrepartion.branch),
@@ -7536,7 +7368,7 @@ function DocumentPreparation() {
         team: String(documentPrepartion.team),
         person: documentPrepartion.person === 'Please Select Person' ? '' : documentPrepartion.person,
         proption: String(documentPrepartion.proption),
-        employeedoj: "",
+        employeedoj: '',
         watermark: waterMarkText,
         pageheight: agendaEditStyles.height,
         pagewidth: agendaEditStyles.width,
@@ -7602,7 +7434,6 @@ function DocumentPreparation() {
     const isNameMatch = templateCreationArrayCreate?.some((item) => item.template?.toLowerCase() === documentPrepartion.template?.toLowerCase() && item.person === documentPrepartion.person);
     const isNameMatchInside = checkingArray?.some((item) => item.template?.toLowerCase() === documentPrepartion.template?.toLowerCase() && item.empname === documentPrepartion.person);
 
-
     if (selectedBranch?.length === 0) {
       setPopupContentMalert('Please Select Template Branch!');
       setPopupSeverityMalert('warning');
@@ -7643,19 +7474,15 @@ function DocumentPreparation() {
       setPopupContentMalert('Please Select Person!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-    else if (AttendanceNeed && documentPrepartion.attendancesort === 'Please Select Attendance Sort') {
+    } else if (AttendanceNeed && documentPrepartion.attendancesort === 'Please Select Attendance Sort') {
       setPopupContentMalert('Please Select Attendace Sort!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-    else if (ProductionNeed && documentPrepartion.productionsort === 'Please Select Production Sort') {
+    } else if (ProductionNeed && documentPrepartion.productionsort === 'Please Select Production Sort') {
       setPopupContentMalert('Please Select Production Sort!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-
-    else if (AttendanceNeed && documentPrepartion.attendancesort === 'Date' && documentPrepartion?.attendancedate === '') {
+    } else if (AttendanceNeed && documentPrepartion.attendancesort === 'Date' && documentPrepartion?.attendancedate === '') {
       setPopupContentMalert('Please Select Attendance Date!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
@@ -7667,9 +7494,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Please Select Attendance Year!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-
-    else if (ProductionNeed && documentPrepartion.productionsort === 'Please Select Production Sort') {
+    } else if (ProductionNeed && documentPrepartion.productionsort === 'Please Select Production Sort') {
       setPopupContentMalert('Please Select Production Sort!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
@@ -7685,8 +7510,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Please Select Production Year!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-    else if (documentPrepartion.issuingauthority === '' || documentPrepartion.issuingauthority === 'Please Select Issuing Authority') {
+    } else if (documentPrepartion.issuingauthority === '' || documentPrepartion.issuingauthority === 'Please Select Issuing Authority') {
       setPopupContentMalert('Please Select Issuing Authority!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
@@ -7774,7 +7598,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Document Todo is Empty!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
+    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== 'Notice Period') {
       setPopupContentMalert('This Employee is not eligibile to receieve any kind of documents!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -7916,7 +7740,7 @@ function DocumentPreparation() {
       setPopupContentMalert('Document is Empty!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== "Notice Period") {
+    } else if (!noticePeriodEmpCheck && noticePeriodEmpCheckPerson && documentPrepartion.employeemode !== 'Notice Period') {
       setPopupContentMalert('This Employee is not eligibile to receieve any kind of documents!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -8003,8 +7827,8 @@ function DocumentPreparation() {
     setGenerateData(false);
     setCheckingArray([]);
     setIndexViewQuest(1);
-    setSelectedBranch([])
-    setSelectedBranchValues([])
+    setSelectedBranch([]);
+    setSelectedBranchValues([]);
     setDocumentPrepartion({
       date: '',
       documentname: '',
@@ -8044,9 +7868,9 @@ function DocumentPreparation() {
       documentneed: 'Print Document',
     });
     setDocumentNeed(false);
-    setAttendanceNeed(false)
-    setProductionNeed(false)
-    setSalaryNeed(false)
+    setAttendanceNeed(false);
+    setProductionNeed(false);
+    setSalaryNeed(false);
     setCheckingArray([]);
     setSelectedEmployeeValues([]);
     setSelectedEmployee([]);
@@ -8076,8 +7900,8 @@ function DocumentPreparation() {
   const handleclearedManual = (e) => {
     e.preventDefault();
     setGenerateData(false);
-    setSelectedBranch([])
-    setSelectedBranchValues([])
+    setSelectedBranch([]);
+    setSelectedBranchValues([]);
     setDocumentPrepartion({
       date: '',
       documentname: '',
@@ -8137,10 +7961,10 @@ function DocumentPreparation() {
   const fetchBrandMaster = async () => {
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-        branch: data.branch,
-        company: data.company,
-        unit: data.unit,
-      }))
+          branch: data.branch,
+          company: data.company,
+          unit: data.unit,
+        }))
       : [];
 
     setPageName(!pageName);
@@ -8161,17 +7985,17 @@ function DocumentPreparation() {
       const answer =
         res_freq?.data?.documentPreparation?.length > 0
           ? res_freq?.data?.documentPreparation
-            ?.filter((data) => data?.printingstatus === 'Not-Printed')
-            ?.map((item, index) => ({
-              ...item,
-              // ...item,
-              serialNumber: index + 1,
-              id: item?._id,
-              approval: item?.approval === 'sentforapproval' ? 'Sent to Approval' : item?.approval === 'approved' ? 'Approved' : 'Not yet sent',
-              department: item?.department === 'Please Select Department' ? '' : item?.department,
-              date: moment(item.date).format('DD-MM-YYYY'),
-              daystatus: item.attendanceautostatus ? item.attendanceautostatus : item.weekoffpresentstatus ? 'WEEKOFF PRESENT' : getattendancestatus(item),
-            }))
+              ?.filter((data) => data?.printingstatus === 'Not-Printed')
+              ?.map((item, index) => ({
+                ...item,
+                // ...item,
+                serialNumber: index + 1,
+                id: item?._id,
+                approval: item?.approval === 'sentforapproval' ? 'Sent to Approval' : item?.approval === 'approved' ? 'Approved' : 'Not yet sent',
+                department: item?.department === 'Please Select Department' ? '' : item?.department,
+                date: moment(item.date).format('DD-MM-YYYY'),
+                daystatus: item.attendanceautostatus ? item.attendanceautostatus : item.weekoffpresentstatus ? 'WEEKOFF PRESENT' : getattendancestatus(item),
+              }))
           : [];
       setTemplateCreationArrayCreate(answer);
       setTemplateCreationArray(res_freq?.data?.overalldocuments);
@@ -8185,10 +8009,10 @@ function DocumentPreparation() {
   const fetchBrandMasterOverall = async () => {
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-        branch: data.branch,
-        company: data.company,
-        unit: data.unit,
-      }))
+          branch: data.branch,
+          company: data.company,
+          unit: data.unit,
+        }))
       : [];
 
     setPageName(!pageName);
@@ -8208,17 +8032,17 @@ function DocumentPreparation() {
       const answer =
         res_freq?.data?.overalldocuments?.length > 0
           ? res_freq?.data?.overalldocuments
-            ?.filter((data) => data?.printingstatus === 'Not-Printed')
-            ?.map((item, index) => ({
-              ...item,
-              // ...item,
-              serialNumber: index + 1,
-              id: item?._id,
-              approval: item?.approval === 'sentforapproval' ? 'Sent to Approval' : item?.approval === 'approved' ? 'Approved' : 'Not yet sent',
-              department: item?.department === 'Please Select Department' ? '' : item?.department,
-              date: moment(item.date).format('DD-MM-YYYY'),
-              daystatus: item.attendanceautostatus ? item.attendanceautostatus : item.weekoffpresentstatus ? 'WEEKOFF PRESENT' : getattendancestatus(item),
-            }))
+              ?.filter((data) => data?.printingstatus === 'Not-Printed')
+              ?.map((item, index) => ({
+                ...item,
+                // ...item,
+                serialNumber: index + 1,
+                id: item?._id,
+                approval: item?.approval === 'sentforapproval' ? 'Sent to Approval' : item?.approval === 'approved' ? 'Approved' : 'Not yet sent',
+                department: item?.department === 'Please Select Department' ? '' : item?.department,
+                date: moment(item.date).format('DD-MM-YYYY'),
+                daystatus: item.attendanceautostatus ? item.attendanceautostatus : item.weekoffpresentstatus ? 'WEEKOFF PRESENT' : getattendancestatus(item),
+              }))
           : [];
       setTemplateCreationArray(answer);
       setChanged('ChangedStatus');
@@ -8302,12 +8126,12 @@ function DocumentPreparation() {
           $inc: { printedcount: 1 },
           updatedby: update
             ? [
-              ...update,
-              {
-                name: isUserRoleAccess.companyname,
-                date: new Date(serverTime),
-              },
-            ]
+                ...update,
+                {
+                  name: isUserRoleAccess.companyname,
+                  date: new Date(serverTime),
+                },
+              ]
             : [],
         });
         // await fetchBrandMaster();
@@ -8427,19 +8251,18 @@ function DocumentPreparation() {
           const footerImgHeight = pageHeight * 0.067; // Adjust height as needed
           const footerX = 5; // Start from the left
           const footerY = pageHeight - footerImgHeight - 5;
-          if (foot !== "") {
+          if (foot !== '') {
             doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
           } else {
             doc.setFillColor(255, 255, 255);
             doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, 'F');
           }
 
-
           // ---------- SIGNATURE & SEAL ----------
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
           const signatureNeed = response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
@@ -8452,21 +8275,21 @@ function DocumentPreparation() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -8477,33 +8300,29 @@ function DocumentPreparation() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (response?.data?.sdocumentPreparation?.signature) {
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.topcontent) {
+                if (response?.data?.sdocumentPreparation?.signaturetype === 'For Seal' && response?.data?.sdocumentPreparation?.topcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
                   doc.text(response?.data?.sdocumentPreparation.topcontent, leftX, yPos - topTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(response?.data?.sdocumentPreparation.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(response?.data?.sdocumentPreparation.signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.bottomcontent) {
+                if (response?.data?.sdocumentPreparation?.signaturetype === 'For Seal' && response?.data?.sdocumentPreparation?.bottomcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
-                  doc.text(
-                    response?.data?.sdocumentPreparation.bottomcontent,
-                    leftX,
-                    yPos + sigHeight + bottomTextHeight
-                  );
+                  doc.text(response?.data?.sdocumentPreparation.bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (response?.data?.sdocumentPreparation?.seal) {
-                doc.addImage(response?.data?.sdocumentPreparation.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(response?.data?.sdocumentPreparation.seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -8511,7 +8330,7 @@ function DocumentPreparation() {
               if (response?.data?.sdocumentPreparation?.usersignature) {
                 doc.addImage(
                   response?.data?.sdocumentPreparation.usersignature,
-                  "PNG",
+                  'PNG',
                   rightX,
                   yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                   userSigWidth,
@@ -8531,7 +8350,7 @@ function DocumentPreparation() {
           }
           // Add QR code and statement only on the last page
 
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "End Page") {
+          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === 'End Page') {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
@@ -8540,13 +8359,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -8556,13 +8369,12 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
             }
           }
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages") {
+          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === 'All Pages') {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
@@ -8571,13 +8383,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -8587,19 +8393,17 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-            }
-            else {
+            } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
             }
@@ -8855,9 +8659,16 @@ function DocumentPreparation() {
         setPersonId(ans);
         handleClickOpenLetterHeader(pagename);
         setDataTableId(e?.id);
-        const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
-        setQrCodeInfoDetails(qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-          .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', e ? e?.employeedoj : "")}`))
+        const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : [];
+        setQrCodeInfoDetails(
+          qrInfoDetails?.map(
+            (data, index) =>
+              `${index + 1}. ${data?.details
+                ?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
+                .replaceAll('$C:DATE$', date)
+                .replaceAll('$DOJ$', e ? e?.employeedoj : '')}`
+          )
+        );
       }
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -9224,7 +9035,7 @@ function DocumentPreparation() {
           const footerImgHeight = pageHeight * 0.067;
           const footerX = 5;
           const footerY = pageHeight - footerImgHeight - 5;
-          if (foot !== "") {
+          if (foot !== '') {
             doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
           } else {
             doc.setFillColor(255, 255, 255);
@@ -9235,7 +9046,7 @@ function DocumentPreparation() {
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
           const signatureNeed = response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
@@ -9248,21 +9059,21 @@ function DocumentPreparation() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -9273,33 +9084,29 @@ function DocumentPreparation() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (response?.data?.sdocumentPreparation?.signature) {
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.topcontent) {
+                if (response?.data?.sdocumentPreparation?.signaturetype === 'For Seal' && response?.data?.sdocumentPreparation?.topcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
                   doc.text(response?.data?.sdocumentPreparation.topcontent, leftX, yPos - topTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(response?.data?.sdocumentPreparation.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(response?.data?.sdocumentPreparation.signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.bottomcontent) {
+                if (response?.data?.sdocumentPreparation?.signaturetype === 'For Seal' && response?.data?.sdocumentPreparation?.bottomcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
-                  doc.text(
-                    response?.data?.sdocumentPreparation.bottomcontent,
-                    leftX,
-                    yPos + sigHeight + bottomTextHeight
-                  );
+                  doc.text(response?.data?.sdocumentPreparation.bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (response?.data?.sdocumentPreparation?.seal) {
-                doc.addImage(response?.data?.sdocumentPreparation.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(response?.data?.sdocumentPreparation.seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -9307,7 +9114,7 @@ function DocumentPreparation() {
               if (response?.data?.sdocumentPreparation?.usersignature) {
                 doc.addImage(
                   response?.data?.sdocumentPreparation.usersignature,
-                  "PNG",
+                  'PNG',
                   rightX,
                   yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                   userSigWidth,
@@ -9315,10 +9122,6 @@ function DocumentPreparation() {
                 );
               }
             }
-
-
-
-
           }
           // }
 
@@ -9330,7 +9133,7 @@ function DocumentPreparation() {
             doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
           }
 
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "End Page") {
+          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === 'End Page') {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
@@ -9339,13 +9142,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -9355,13 +9152,12 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
             }
           }
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages") {
+          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === 'All Pages') {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
@@ -9370,13 +9166,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -9386,19 +9176,17 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-            }
-            else {
+            } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
             }
@@ -9565,7 +9353,7 @@ function DocumentPreparation() {
           const footerImgHeight = pageHeight * 0.067;
           const footerX = 5;
           const footerY = pageHeight - footerImgHeight - 5;
-          if (foot !== "") {
+          if (foot !== '') {
             doc.addImage(foot, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
           } else {
             doc.setFillColor(255, 255, 255);
@@ -9576,7 +9364,7 @@ function DocumentPreparation() {
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
           const signatureNeed = response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (signatureNeed === 'All Pages' || (signatureNeed === 'End Page' && i === totalPages)) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
@@ -9589,21 +9377,21 @@ function DocumentPreparation() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? pageHeight - footerGap - userSigHeight - 30 : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -9614,33 +9402,29 @@ function DocumentPreparation() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (response?.data?.sdocumentPreparation?.signature) {
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.topcontent) {
+                if (response?.data?.sdocumentPreparation?.signaturetype === 'For Seal' && response?.data?.sdocumentPreparation?.topcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
                   doc.text(response?.data?.sdocumentPreparation.topcontent, leftX, yPos - topTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(response?.data?.sdocumentPreparation.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(response?.data?.sdocumentPreparation.signature, 'PNG', leftX, yPos, sigWidth, sigHeight);
 
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.bottomcontent) {
+                if (response?.data?.sdocumentPreparation?.signaturetype === 'For Seal' && response?.data?.sdocumentPreparation?.bottomcontent) {
                   doc.setFontSize(8);
-                  doc.setFont(undefined, "bold");
+                  doc.setFont(undefined, 'bold');
                   doc.setTextColor(83, 23, 126);
-                  doc.text(
-                    response?.data?.sdocumentPreparation.bottomcontent,
-                    leftX,
-                    yPos + sigHeight + bottomTextHeight
-                  );
+                  doc.text(response?.data?.sdocumentPreparation.bottomcontent, leftX, yPos + sigHeight + bottomTextHeight);
                   doc.setTextColor(0, 0, 0);
                 }
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (response?.data?.sdocumentPreparation?.seal) {
-                doc.addImage(response?.data?.sdocumentPreparation.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(response?.data?.sdocumentPreparation.seal, 'PNG', centerX, yPos - sealUpShift, sealWidth, sealHeight);
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -9648,7 +9432,7 @@ function DocumentPreparation() {
               if (response?.data?.sdocumentPreparation?.usersignature) {
                 doc.addImage(
                   response?.data?.sdocumentPreparation.usersignature,
-                  "PNG",
+                  'PNG',
                   rightX,
                   yPos - userSigUpShift, // ✅ Same yPos as others (aligned row)
                   userSigWidth,
@@ -9656,10 +9440,6 @@ function DocumentPreparation() {
                 );
               }
             }
-
-
-
-
           }
           // }
 
@@ -9671,7 +9451,7 @@ function DocumentPreparation() {
             doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
           }
 
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "End Page") {
+          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === 'End Page') {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
@@ -9680,13 +9460,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -9696,13 +9470,12 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
             }
           }
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages") {
+          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === 'All Pages') {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
@@ -9711,13 +9484,7 @@ function DocumentPreparation() {
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : ['1. Scan to verify the authenticity of this document.', `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`, `3. For questions, contact us at ${fromEmail}.`];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -9727,19 +9494,17 @@ function DocumentPreparation() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-            }
-            else {
+            } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
               doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
             }
@@ -9980,9 +9745,6 @@ function DocumentPreparation() {
                             ...documentPrepartion,
                             manualdate: e?.target?.value,
                           });
-
-
-
                         }}
                       />
                     </FormControl>
@@ -10067,9 +9829,9 @@ function DocumentPreparation() {
                           team: 'Please Select Team',
                           person: 'Please Select Person',
                         });
-                        setAttendanceNeed(false)
-                        setProductionNeed(false)
-                        setSalaryNeed(false)
+                        setAttendanceNeed(false);
+                        setProductionNeed(false);
+                        setSalaryNeed(false);
                         setEmployeeMode(e.value);
                         setDepartmentCheck(false);
                         setAllBranchValue(false);
@@ -10125,17 +9887,24 @@ function DocumentPreparation() {
                     />
                   </FormControl>
                 </Grid> */}
-                {documentPrepartion.employeemode != 'Manual' &&
+                {documentPrepartion.employeemode != 'Manual' && (
                   <>
                     <Grid item md={2} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <FormControlLabel
-                          control={<Checkbox sx={{ '& .MuiSvgIcon-root': { fontSize: 40, marginTop: 1 } }} checked={DocumentNeed} onChange={() => {
-                            setDocumentNeed((val) => !val);
-                            setAttendanceNeed(false)
-                            setProductionNeed(false)
-                            setSalaryNeed(false)
-                          }} color="primary" />}
+                          control={
+                            <Checkbox
+                              sx={{ '& .MuiSvgIcon-root': { fontSize: 40, marginTop: 1 } }}
+                              checked={DocumentNeed}
+                              onChange={() => {
+                                setDocumentNeed((val) => !val);
+                                setAttendanceNeed(false);
+                                setProductionNeed(false);
+                                setSalaryNeed(false);
+                              }}
+                              color="primary"
+                            />
+                          }
                           // sx={{marginTop: 1}}
                           label="Document"
                         />
@@ -10169,7 +9938,7 @@ function DocumentPreparation() {
                       </FormControl>
                     </Grid>
                   </>
-                }
+                )}
                 {documentPrepartion.employeemode != 'Manual' && (
                   <>
                     <Grid item md={2} xs={12} sm={12}>
@@ -10351,7 +10120,6 @@ function DocumentPreparation() {
                             seal: 'Please Select Seal',
                             sealing: 'Please Select Seal',
                             sort: 'Please Select Sort',
-
                           });
 
                           setEmployeeValue(e.value);
@@ -10390,7 +10158,7 @@ function DocumentPreparation() {
                   </Grid>
                 )}
 
-                {(AttendanceNeed) && (
+                {AttendanceNeed && (
                   <>
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
@@ -10611,7 +10379,7 @@ function DocumentPreparation() {
                     </Typography>
                     <Selects
                       maxMenuHeight={300}
-                      options={issuingauthority?.filter(data => DocumentNeed ? !selectedEmployeeValues?.includes(data?.value) : documentPrepartion?.person !== data?.value)}
+                      options={issuingauthority?.filter((data) => (DocumentNeed ? !selectedEmployeeValues?.includes(data?.value) : documentPrepartion?.person !== data?.value))}
                       value={{ label: documentPrepartion.issuingauthority, value: documentPrepartion.issuingauthority }}
                       onChange={(e) => {
                         setDocumentPrepartion({
@@ -10633,10 +10401,9 @@ function DocumentPreparation() {
                         </Typography>
                         <Selects
                           maxMenuHeight={300}
-                          options={companyName?.documentsignature?.filter(data =>
-                            (DocumentNeed ? !selectedEmployeeValues?.includes(data?.employee) : documentPrepartion?.person !== data?.employee
-                            ) && documentPrepartion?.issuingauthority === data?.employee)?.map((data) =>
-                            ({
+                          options={companyName?.documentsignature
+                            ?.filter((data) => (DocumentNeed ? !selectedEmployeeValues?.includes(data?.employee) : documentPrepartion?.person !== data?.employee) && documentPrepartion?.issuingauthority === data?.employee)
+                            ?.map((data) => ({
                               ...data,
                               label: `${data.signaturename} -- ${data.employee}`,
                               value: `${data.signaturename} -- ${data.employee}`,
@@ -10784,7 +10551,6 @@ function DocumentPreparation() {
                   </>
                 )}
 
-
                 <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <FormControlLabel
@@ -10794,7 +10560,7 @@ function DocumentPreparation() {
                     />
                   </FormControl>
                 </Grid>
-                {qrCodeNeed &&
+                {qrCodeNeed && (
                   <Grid item md={3} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography>
@@ -10815,9 +10581,8 @@ function DocumentPreparation() {
                         }}
                       />
                     </FormControl>
-                  </Grid>}
-
-
+                  </Grid>
+                )}
 
                 <Grid item md={3} xs={12} sm={12}></Grid>
                 <Grid item md={12} xs={12} sm={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -10974,7 +10739,7 @@ function DocumentPreparation() {
                         onClick={() => {
                           documentPrepartion?.documentneed === 'Employee Approval' ? handlePreviewDocumentManual() : handleClickOpenLetterHeader('Preview Manual');
                         }}
-                      // onClick={handlePreviewDocumentManual}
+                        // onClick={handlePreviewDocumentManual}
                       >
                         Preview
                       </LoadingButton>
@@ -10991,7 +10756,7 @@ function DocumentPreparation() {
                         color="primary"
                         sx={userStyle.buttonadd}
                         onClick={() => (documentPrepartion?.documentneed === 'Employee Approval' ? handlePrintDocumentManual() : handleClickOpenLetterHeader('Print Manual'))}
-                      // onClick={handlePrintDocumentManual}
+                        // onClick={handlePrintDocumentManual}
                       >
                         Print
                       </LoadingButton>
@@ -11020,7 +10785,7 @@ function DocumentPreparation() {
                         color="primary"
                         sx={userStyle.buttonadd}
                         onClick={() => (documentPrepartion?.documentneed === 'Employee Approval' ? handlePreviewDocument(indexViewQuest - 1) : handleClickOpenLetterHeader('Preview'))}
-                      // onClick={() => handlePreviewDocument(indexViewQuest - 1)}
+                        // onClick={() => handlePreviewDocument(indexViewQuest - 1)}
                       >
                         Preview
                       </LoadingButton>
@@ -11037,7 +10802,7 @@ function DocumentPreparation() {
                         color="primary"
                         sx={userStyle.buttonadd}
                         onClick={() => (documentPrepartion?.documentneed === 'Employee Approval' ? handlePrintDocument(indexViewQuest - 1) : handleClickOpenLetterHeader('Print'))}
-                      // onClick={() => handlePrintDocument(indexViewQuest - 1)}
+                        // onClick={() => handlePrintDocument(indexViewQuest - 1)}
                       >
                         Print
                       </LoadingButton>
@@ -11420,7 +11185,7 @@ function DocumentPreparation() {
               autoFocus
               variant="contained"
               color="primary"
-            // onClick={(e) => downloadPdfTesdt(e)}
+              // onClick={(e) => downloadPdfTesdt(e)}
             >
               {' '}
               Download
@@ -11712,10 +11477,10 @@ function DocumentPreparation() {
                           prevArray.map((item, ind) =>
                             ind === indexViewQuest - 1
                               ? {
-                                ...item,
-                                header: '',
-                                footer: '',
-                              }
+                                  ...item,
+                                  header: '',
+                                  footer: '',
+                                }
                               : item
                           )
                         );
@@ -11729,11 +11494,7 @@ function DocumentPreparation() {
                       <Typography>
                         With Letter Head <b style={{ color: 'red' }}>*</b>
                       </Typography>
-                      <MultiSelect
-                       maxMenuHeight={300} 
-                       options={WithHeaderOptions}
-                        value={selectedHeadOpt} 
-                        onChange={handleHeadChange} valueRenderer={customValueRenderHeadFrom} />
+                      <MultiSelect maxMenuHeight={300} options={WithHeaderOptions} value={selectedHeadOpt} onChange={handleHeadChange} valueRenderer={customValueRenderHeadFrom} />
                     </FormControl>
                   </Grid>
                 )}
@@ -11905,14 +11666,15 @@ function DocumentPreparation() {
           // visibility: 'hidden', // still renderable by html2canvas
         }}
       >
-        <Box sx={{
-          py: 8,   // top & bottom padding
-          px: 15,  // left & right padding,
-          borderRadius: '6px', background: 'white'
-        }}>
-          <Typography sx={{ ...userStyle.HeaderText, fontSize: '21px' }}>
-            {viewData.employeename}
-          </Typography>
+        <Box
+          sx={{
+            py: 8, // top & bottom padding
+            px: 15, // left & right padding,
+            borderRadius: '6px',
+            background: 'white',
+          }}
+        >
+          <Typography sx={{ ...userStyle.HeaderText, fontSize: '21px' }}>{viewData.employeename}</Typography>
           <Table>
             <TableHead sx={{ background: '#f5f5f6', border: '1px solid #c3c3c982' }}>
               <TableCell sx={{ ...tableStyles, fontFamily: 'auto', fontSize: '19px !important' }}>{'Component'}</TableCell>
@@ -11921,27 +11683,27 @@ function DocumentPreparation() {
             <TableBody sx={{ border: '1px solid #dbdbdf', fontSize: '16px' }}>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'Basic Salary'}</StyledTableCell>
-                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.basic || "0.00"}</StyledTableCell>
+                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.basic || '0.00'}</StyledTableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'House Rent Allowance (HRA)'}</StyledTableCell>
-                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.hra || "0.00"}</StyledTableCell>
+                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.hra || '0.00'}</StyledTableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'Conveyance Allowance'}</StyledTableCell>
-                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.conveyance || "0.00"}</StyledTableCell>
+                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.conveyance || '0.00'}</StyledTableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'Medical Allowance'}</StyledTableCell>
-                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.medicalallowance || "0.00"}</StyledTableCell>
+                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.medicalallowance || '0.00'}</StyledTableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'Production Allowance'}</StyledTableCell>
-                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.productionallowance || "0.00"}</StyledTableCell>
+                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.productionallowance || '0.00'}</StyledTableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'Other Allowance'}</StyledTableCell>
-                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.otherallowance || "0.00"}</StyledTableCell>
+                <StyledTableCell sx={tableStylesVales}> ₹ {viewData.otherallowance || '0.00'}</StyledTableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'Performance Incentive (Optional)'}</StyledTableCell>
@@ -11949,11 +11711,11 @@ function DocumentPreparation() {
               </TableRow>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'Gross Monthly Salary'}</StyledTableCell>
-                <StyledTableCell sx={{ ...tableStylesVales, fontSize: '18px !IMPORTANT', fontWeight: 600, color: '#595656' }}> ₹ {viewData.gross || "0.00"}</StyledTableCell>
+                <StyledTableCell sx={{ ...tableStylesVales, fontSize: '18px !IMPORTANT', fontWeight: 600, color: '#595656' }}> ₹ {viewData.gross || '0.00'}</StyledTableCell>
               </TableRow>
               <TableRow>
                 <StyledTableCell sx={tableStyles}>{'Annual CTC'}</StyledTableCell>
-                <StyledTableCell sx={{ ...tableStylesVales, fontSize: '18px !IMPORTANT', fontWeight: 600, color: '#595656' }}> ₹ {viewData.annualgrossctc || "0.00"}</StyledTableCell>
+                <StyledTableCell sx={{ ...tableStylesVales, fontSize: '18px !IMPORTANT', fontWeight: 600, color: '#595656' }}> ₹ {viewData.annualgrossctc || '0.00'}</StyledTableCell>
               </TableRow>
             </TableBody>
           </Table>

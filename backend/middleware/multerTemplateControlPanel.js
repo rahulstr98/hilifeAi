@@ -36,6 +36,7 @@ const fileFilter = (req, file, cb) => {
     "letterheadcontentheader",
     "letterheadcontentfooter",
     "documentseal",
+    "documentcompany",
     "documentsignature",
     "letterheadbodycontent",
     "idcardfrontheader",

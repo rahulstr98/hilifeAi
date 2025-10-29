@@ -148,7 +148,6 @@ const smallSelectStyle = {
 
 const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargin, setSelectedMargin, pageSize, setPageSize, pageOrientation, setPageOrientation }) => {
   const quillRef = useRef();
-  console.log(agenda, "agenda")
   const [searchTerm, setSearchTerm] = useState('');
   const [replaceTerm, setReplaceTerm] = useState('');
 

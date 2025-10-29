@@ -1265,6 +1265,11 @@ function TempControlPanel() {
     setBtnSubmit(true);
     setPageName(!pageName);
     try {
+      const addedby = [
+        {
+          name: String(isUserRoleAccess?.username),
+        },
+      ];
       const formData = new FormData();
 
       // 🔹 Append normal fields
@@ -1281,6 +1286,7 @@ function TempControlPanel() {
       formData.append("sealname", sealname);
       formData.append("toCompany", JSON.stringify(todoscheckToCompany));
       formData.append("qrInfo", JSON.stringify(qrInfoTodos));
+      formData.append("addedby", JSON.stringify(addedby));
       // ... (other normal text fields)
 
       // 🔹 Append arrays with text + files
@@ -1347,77 +1353,8 @@ function TempControlPanel() {
           "idcardbackfooter",
           documentFilesDocumentBackFooter.file
         );
-
-      // let res = await axios.post(`${SERVICE.TEMPLATECONTROLPANEL_CREATE}`, {
-      //   headers: {
-      //     Authorization: `Bearer ${auth.APIToken}`,
-      //   },
-      //   company: String(company),
-      //   branch: String(branch),
-      //   emailformat: String(emailFormat),
-      //   fromemail: String(fromEmail),
-      //   ccemail: ccEmailTodo,
-      //   bccemail: bccEmailTodo,
-      //   companyurl: String(companyurl),
-      //   companyname: String(companyname),
-      //   address: String(address),
-      //   sealtype: String(sealtype),
-      //   toCompany: todoscheckToCompany,
-      //   qrInfo: qrInfoTodos,
-      //   sealname: String(sealname),
-
-      //   letterheadcontentheader: headerTodoCreate,
-      //   letterheadcontentfooter: footerTodoCreate,
-      //   documentseal: todoscheckSeal,
-      //   documentsignature: todoscheckSignature,
-
-      //   letterheadbodycontent: documentFilesDocumentBodyContent,
-      //   idcardfrontheader: documentFilesDocumentFrontHeader,
-      //   idcardfrontfooter: documentFilesDocumentFrontFooter,
-      //   idcardbackheader: documentFilesDocumentBackHeader,
-      //   idcardbackfooter: documentFilesDocumentBackFooter,
-      //   documentcompany: documentFiles,
-
-      //   // templatecontrolpanellog: [
-      //   //   {
-      //   //     company: String(company),
-      //   //     branch: String(branch),
-      //   //     emailformat: String(emailFormat),
-      //   //     fromemail: String(fromEmail),
-      //   //     ccemail: ccEmailTodo,
-      //   //     bccemail: bccEmailTodo,
-      //   //     letterheadcontentheader: headerTodoCreate,
-      //   //     letterheadcontentfooter: footerTodoCreate,
-      //   //     letterheadbodycontent: documentFilesDocumentBodyContent,
-      //   //     companyurl: String(companyurl),
-      //   //     toCompany: todoscheckToCompany,
-      //   //     qrInfo: qrInfoTodos,
-      //   //     idcardfrontheader: documentFilesDocumentFrontHeader,
-      //   //     idcardfrontfooter: documentFilesDocumentFrontFooter,
-      //   //     idcardbackheader: documentFilesDocumentBackHeader,
-      //   //     idcardbackfooter: documentFilesDocumentBackFooter,
-      //   //     companyname: String(companyname),
-      //   //     address: String(address),
-      //   //     sealtype: String(sealtype),
-      //   //     sealname: String(sealname),
-      //   //     documentcompany: documentFiles,
-      //   //     documentseal: todoscheckSeal,
-      //   //     documentsignature: todoscheckSignature,
-      //   //     createdAt: String(new Date(serverTime)),
-      //   //     addedby: [
-      //   //       {
-      //   //         name: String(isUserRoleAccess.companyname),
-      //   //       },
-      //   //     ],
-      //   //   },
-      //   // ],
-      //   addedby: [
-      //     {
-      //       name: String(isUserRoleAccess.companyname),
-      //     },
-      //   ],
-      // });
-
+      if (documentFiles?.file)
+        formData.append("documentcompany", documentFiles?.file);
       const res = await axios.post(
         `${SERVICE.TEMPLATECONTROLPANEL_CREATE}`,
         formData,
@@ -1493,109 +1430,107 @@ function TempControlPanel() {
       setPopupContentMalert("Please Select Branch");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    }
-    // else if (headerTodoCreate?.length === 0) {
-    //   setPopupContentMalert("Please Add Header Todo");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (footerTodoCreate?.length === 0) {
-    //   setPopupContentMalert("Please Add Footer Todo");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (documentFilesDocumentBodyContent.length === 0) {
-    //   setPopupContentMalert(
-    //     "Please Upload Document Letter Head Body Content(Background)"
-    //   );
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (companyurl === "") {
-    //   setPopupContentMalert("Please Enter Company URL");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (documentFilesDocumentFrontHeader.length === 0) {
-    //   setPopupContentMalert("Please Upload ID Card Front Header");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (documentFilesDocumentFrontFooter.length === 0) {
-    //   setPopupContentMalert("Please Upload ID Card Front Footer");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (documentFilesDocumentBackHeader.length === 0) {
-    //   setPopupContentMalert("Please Upload ID Card Back Header");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (documentFilesDocumentBackFooter.length === 0) {
-    //   setPopupContentMalert("Please Upload ID Card Back Footer");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (companyname === "") {
-    //   setPopupContentMalert("Please Enter Company Name");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (address === "") {
-    //   setPopupContentMalert("Please Enter Address");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (todoscheckToCompany?.length < 1) {
-    //   setPopupContentMalert("Atleast Add one To Company and To Address Todo");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (isTodoEdit.some((data) => data === true)) {
-    //   setPopupContentMalert(
-    //     "Please Update The Todo And Submit in ToCompany and ToAddress Todo"
-    //   );
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (isTodoQrInfo.some((data) => data === true)) {
-    //   setPopupContentMalert("Please Update The Todo And Submit in Qr Info");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (todoscheckSeal.length === 0) {
-    //   setPopupContentMalert("Please Add Seal Todo");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (todoscheckSignature.length === 0) {
-    //   setPopupContentMalert("Please Add Signature Todo");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (fromEmail === undefined || fromEmail === "") {
-    //   setPopupContentMalert("Please Enter From Email Adddress");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (!isValidEmail(fromEmail)) {
-    //   setPopupContentMalert("Please Enter Valid From Email Adddress");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (isTodoEditCCEmail.some((data) => data === true)) {
-    //   setPopupContentMalert(
-    //     "Please Update The Todo And Submit in CC Email Address Todo"
-    //   );
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (isTodoEditBCCEmail.some((data) => data === true)) {
-    //   setPopupContentMalert(
-    //     "Please Update The Todo And Submit in BCC Email Address Todo"
-    //   );
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (
-    //   emailFormat === undefined ||
-    //   emailFormat === "" ||
-    //   emailFormat === "<p><br></p>"
-    // ) {
-    //   setPopupContentMalert("Please Enter Email Format");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (isNameMatch) {
-    //   setPopupContentMalert("Data already exists!");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // } else if (sealTodoCreate || signTodoCreate) {
-    //   setPopupContentMalert("Please Update the Todo and Submit the Data!");
-    //   setPopupSeverityMalert("warning");
-    //   handleClickOpenPopupMalert();
-    // }
-    else {
+    } else if (headerTodoCreate?.length === 0) {
+      setPopupContentMalert("Please Add Header Todo");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (footerTodoCreate?.length === 0) {
+      setPopupContentMalert("Please Add Footer Todo");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (!documentFilesDocumentBodyContent.name) {
+      setPopupContentMalert(
+        "Please Upload Document Letter Head Body Content(Background)"
+      );
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (companyurl === "") {
+      setPopupContentMalert("Please Enter Company URL");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (!documentFilesDocumentFrontHeader.name) {
+      setPopupContentMalert("Please Upload ID Card Front Header");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (!documentFilesDocumentFrontFooter) {
+      setPopupContentMalert("Please Upload ID Card Front Footer");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (!documentFilesDocumentBackHeader) {
+      setPopupContentMalert("Please Upload ID Card Back Header");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (!documentFilesDocumentBackFooter) {
+      setPopupContentMalert("Please Upload ID Card Back Footer");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (companyname === "") {
+      setPopupContentMalert("Please Enter Company Name");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (address === "") {
+      setPopupContentMalert("Please Enter Address");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (todoscheckToCompany?.length < 1) {
+      setPopupContentMalert("Atleast Add one To Company and To Address Todo");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (isTodoEdit.some((data) => data === true)) {
+      setPopupContentMalert(
+        "Please Update The Todo And Submit in ToCompany and ToAddress Todo"
+      );
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (isTodoQrInfo.some((data) => data === true)) {
+      setPopupContentMalert("Please Update The Todo And Submit in Qr Info");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (todoscheckSeal.length === 0) {
+      setPopupContentMalert("Please Add Seal Todo");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (todoscheckSignature.length === 0) {
+      setPopupContentMalert("Please Add Signature Todo");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (fromEmail === undefined || fromEmail === "") {
+      setPopupContentMalert("Please Enter From Email Adddress");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (!isValidEmail(fromEmail)) {
+      setPopupContentMalert("Please Enter Valid From Email Adddress");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (isTodoEditCCEmail.some((data) => data === true)) {
+      setPopupContentMalert(
+        "Please Update The Todo And Submit in CC Email Address Todo"
+      );
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (isTodoEditBCCEmail.some((data) => data === true)) {
+      setPopupContentMalert(
+        "Please Update The Todo And Submit in BCC Email Address Todo"
+      );
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      emailFormat === undefined ||
+      emailFormat === "" ||
+      emailFormat === "<p><br></p>"
+    ) {
+      setPopupContentMalert("Please Enter Email Format");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (isNameMatch) {
+      setPopupContentMalert("Data already exists!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (sealTodoCreate || signTodoCreate) {
+      setPopupContentMalert("Please Update the Todo and Submit the Data!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else {
       handleClickOpenInfoImage();
     }
   };
@@ -2202,78 +2137,179 @@ function TempControlPanel() {
     e.preventDefault();
     setPageName(!pageName);
     try {
-      let res = await axios.put(
+      const formData = new FormData();
+      const updatedby = [
+        ...updateby,
+        {
+          name: String(isUserRoleAccess.companyname),
+        },
+      ];
+      // 🔹 Append normal string fields
+      formData.append("company", companyEdit);
+      formData.append("branch", branchEdit);
+      formData.append("emailformat", emailFormatEdit);
+      formData.append("fromemail", fromEmailEdit);
+      formData.append("ccemail", JSON.stringify(ccEmailTodoEdit));
+      formData.append("bccemail", JSON.stringify(bccEmailTodoEdit));
+      formData.append("companyurl", companyurlEdit);
+      formData.append("companyname", companynameEdit);
+      formData.append("address", addressEdit);
+      formData.append("sealtype", sealtypeEdit);
+      formData.append("sealname", sealnameEdit);
+      formData.append("toCompany", JSON.stringify(todoscheckToCompanyEdit));
+      formData.append("qrInfo", JSON.stringify(qrInfoTodosEdit));
+      formData.append("updatedby", JSON.stringify(updatedby));
+      formData.append("templatecontrolpanellog", JSON.stringify(preallTemp));
+
+      // 🔹 Handle dynamic arrays (same as create)
+      const appendTodoArray = (array, key) => {
+        if (Array.isArray(array)) {
+          array.forEach((item, index) => {
+            Object.keys(item).forEach((subKey) => {
+              const isFileField =
+                (key === "letterheadcontentheader" &&
+                  subKey === "headerimage") ||
+                (key === "letterheadcontentfooter" &&
+                  subKey === "footerimage") ||
+                ((key === "documentseal" || key === "documentsignature") &&
+                  subKey === "document");
+
+              if (isFileField && item[subKey]) {
+                const fileToSend = item[subKey]?.file || item[subKey];
+                if (fileToSend instanceof File) {
+                  formData.append(`${key}_${index}_${subKey}`, fileToSend);
+                } else {
+                  // old image/file info (JSON)
+                  formData.append(
+                    `${key}_${index}_${subKey}_old`,
+                    JSON.stringify(item[subKey])
+                  );
+                }
+              } else {
+                formData.append(
+                  `${key}_${index}_${subKey}`,
+                  item[subKey] ?? ""
+                );
+              }
+            });
+          });
+        }
+      };
+
+      appendTodoArray(headerTodoEdit, "letterheadcontentheader");
+      appendTodoArray(footerTodoEdit, "letterheadcontentfooter");
+      appendTodoArray(todoscheckSealEdit, "documentseal");
+      appendTodoArray(todoscheckSignatureEdit, "documentsignature");
+
+      // 🔹 Single file fields (with old ref if no new file selected)
+      const appendSingleFile = (key, fileData) => {
+        if (fileData?.file instanceof File) {
+          formData.append(key, fileData.file);
+        } else {
+          formData.append(`${key}_old`, JSON.stringify(fileData || {}));
+        }
+      };
+
+      appendSingleFile(
+        "letterheadbodycontent",
+        documentFilesDocumentBodyContentEdit
+      );
+      appendSingleFile(
+        "idcardfrontheader",
+        documentFilesDocumentFrontHeaderEdit
+      );
+      appendSingleFile(
+        "idcardfrontfooter",
+        documentFilesDocumentFrontFooterEdit
+      );
+      appendSingleFile("idcardbackheader", documentFilesDocumentBackHeaderEdit);
+      appendSingleFile("idcardbackfooter", documentFilesDocumentBackFooterEdit);
+      appendSingleFile("documentcompany", documentFilesEdit);
+
+      // 🔹 Send request
+      const res = await axios.put(
         `${SERVICE.TEMPLATECONTROLPANEL_SINGLE}/${subprojectsid}`,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
+            "Content-Type": "multipart/form-data",
           },
-          company: String(companyEdit),
-          branch: String(branchEdit),
-          letterheadcontentheader: headerTodoEdit,
-          letterheadcontentfooter: footerTodoEdit,
-          letterheadbodycontent: documentFilesDocumentBodyContentEdit,
-          companyurl: String(companyurlEdit),
-          idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
-          idcardfrontfooter: documentFilesDocumentFrontFooterEdit,
-          idcardbackheader: documentFilesDocumentBackHeaderEdit,
-          idcardbackfooter: documentFilesDocumentBackFooterEdit,
-          companyname: String(companynameEdit),
-          toCompany: todoscheckToCompanyEdit,
-          qrInfo: qrInfoTodosEdit,
-          address: String(addressEdit),
-          sealtype: String(sealtypeEdit),
-          sealname: String(sealnameEdit),
-          documentcompany: documentFilesEdit,
-          documentseal: todoscheckSealEdit,
-          documentsignature: todoscheckSignatureEdit,
-          emailformat: emailFormatEdit,
-          fromemail: String(fromEmailEdit),
-          ccemail: ccEmailTodoEdit,
-          bccemail: bccEmailTodoEdit,
-          templatecontrolpanellog: [
-            ...preallTemp,
-            {
-              company: String(companyEdit),
-              branch: String(branchEdit),
-              letterheadcontentheader: headerTodoEdit,
-              letterheadcontentfooter: footerTodoEdit,
-              letterheadbodycontent: documentFilesDocumentBodyContentEdit,
-              companyurl: String(companyurlEdit),
-              idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
-              idcardfrontfooter: documentFilesDocumentFrontFooterEdit,
-              idcardbackheader: documentFilesDocumentBackHeaderEdit,
-              idcardbackfooter: documentFilesDocumentBackFooterEdit,
-              companyname: String(companynameEdit),
-              toCompany: todoscheckToCompanyEdit,
-              qrInfo: qrInfoTodosEdit,
-              address: String(addressEdit),
-              sealtype: String(sealtypeEdit),
-              sealname: String(sealnameEdit),
-              documentcompany: documentFilesEdit,
-              documentseal: todoscheckSealEdit,
-              documentsignature: todoscheckSignatureEdit,
-              emailformat: emailFormatEdit,
-              fromemail: String(fromEmailEdit),
-              ccemail: ccEmailTodoEdit,
-              bccemail: bccEmailTodoEdit,
-              createdAt: String(new Date(serverTime)),
-              updatedby: [
-                ...updateby,
-                {
-                  name: String(isUserRoleAccess.companyname),
-                },
-              ],
-            },
-          ],
-          updatedby: [
-            ...updateby,
-            {
-              name: String(isUserRoleAccess.companyname),
-            },
-          ],
         }
       );
+
+      // let res = await axios.put(
+      //   `${SERVICE.TEMPLATECONTROLPANEL_SINGLE}/${subprojectsid}`,
+      //   {
+      //     headers: {
+      //       Authorization: `Bearer ${auth.APIToken}`,
+      //     },
+      //     company: String(companyEdit),
+      //     branch: String(branchEdit),
+      //     letterheadcontentheader: headerTodoEdit,
+      //     letterheadcontentfooter: footerTodoEdit,
+      //     letterheadbodycontent: documentFilesDocumentBodyContentEdit,
+      //     companyurl: String(companyurlEdit),
+      //     idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
+      //     idcardfrontfooter: documentFilesDocumentFrontFooterEdit,
+      //     idcardbackheader: documentFilesDocumentBackHeaderEdit,
+      //     idcardbackfooter: documentFilesDocumentBackFooterEdit,
+      //     companyname: String(companynameEdit),
+      //     toCompany: todoscheckToCompanyEdit,
+      //     qrInfo: qrInfoTodosEdit,
+      //     address: String(addressEdit),
+      //     sealtype: String(sealtypeEdit),
+      //     sealname: String(sealnameEdit),
+      //     documentcompany: documentFilesEdit,
+      //     documentseal: todoscheckSealEdit,
+      //     documentsignature: todoscheckSignatureEdit,
+      //     emailformat: emailFormatEdit,
+      //     fromemail: String(fromEmailEdit),
+      //     ccemail: ccEmailTodoEdit,
+      //     bccemail: bccEmailTodoEdit,
+      //     templatecontrolpanellog: [
+      //       ...preallTemp,
+      //       {
+      //         company: String(companyEdit),
+      //         branch: String(branchEdit),
+      //         letterheadcontentheader: headerTodoEdit,
+      //         letterheadcontentfooter: footerTodoEdit,
+      //         letterheadbodycontent: documentFilesDocumentBodyContentEdit,
+      //         companyurl: String(companyurlEdit),
+      //         idcardfrontheader: documentFilesDocumentFrontHeaderEdit,
+      //         idcardfrontfooter: documentFilesDocumentFrontFooterEdit,
+      //         idcardbackheader: documentFilesDocumentBackHeaderEdit,
+      //         idcardbackfooter: documentFilesDocumentBackFooterEdit,
+      //         companyname: String(companynameEdit),
+      //         toCompany: todoscheckToCompanyEdit,
+      //         qrInfo: qrInfoTodosEdit,
+      //         address: String(addressEdit),
+      //         sealtype: String(sealtypeEdit),
+      //         sealname: String(sealnameEdit),
+      //         documentcompany: documentFilesEdit,
+      //         documentseal: todoscheckSealEdit,
+      //         documentsignature: todoscheckSignatureEdit,
+      //         emailformat: emailFormatEdit,
+      //         fromemail: String(fromEmailEdit),
+      //         ccemail: ccEmailTodoEdit,
+      //         bccemail: bccEmailTodoEdit,
+      //         createdAt: String(new Date(serverTime)),
+      //         updatedby: [
+      //           ...updateby,
+      //           {
+      //             name: String(isUserRoleAccess.companyname),
+      //           },
+      //         ],
+      //       },
+      //     ],
+      //     updatedby: [
+      //       ...updateby,
+      //       {
+      //         name: String(isUserRoleAccess.companyname),
+      //       },
+      //     ],
+      //   }
+      // );
       await fetchAssignedBy();
       fetchSourceAll();
       handleCloseModEdit();
@@ -2332,25 +2368,25 @@ function TempControlPanel() {
       setPopupContentMalert("Please Add Footer Todo");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentBodyContentEdit.length === 0) {
+    } else if (!documentFilesDocumentBodyContentEdit) {
       setPopupContentMalert(
         "Please Upload Document Letter Head Body Content(Background)"
       );
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentFrontHeaderEdit.length === 0) {
+    } else if (!documentFilesDocumentFrontHeaderEdit) {
       setPopupContentMalert("Please Upload ID Card Front Header");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentFrontFooterEdit.length === 0) {
+    } else if (!documentFilesDocumentFrontFooterEdit) {
       setPopupContentMalert("Please Upload ID Card Front Footer");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentBackHeaderEdit.length === 0) {
+    } else if (!documentFilesDocumentBackHeaderEdit) {
       setPopupContentMalert("Please Upload ID Card Back Header");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (documentFilesDocumentBackFooterEdit.length === 0) {
+    } else if (!documentFilesDocumentBackFooterEdit) {
       setPopupContentMalert("Please Upload ID Card Back Footer");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -3948,7 +3984,10 @@ function TempControlPanel() {
   const [editIndexFooterCreate, setEditIndexFooterCreate] = useState(null);
   const [headerTodoView, setHeaderTodoView] = useState([]);
   const [footerTodoView, setFooterTodoView] = useState([]);
-
+  console.log(
+    documentFilesDocumentContentHeader,
+    "documentFilesDocumentContentHeader"
+  );
   // Header Todo Create Section
   const handleCreateTodoHeader = () => {
     if (!headerNameCreate.trim()) {
@@ -4001,6 +4040,8 @@ function TempControlPanel() {
     // 🧹 Reset fields
     setHeaderNameCreate("");
     setdocumentFilesDOcumentContentHeader("");
+    handleClose();
+    setOption("");
   };
   const handleEditHeaderCreate = (index) => {
     const selected = headerTodoCreate[index];
@@ -4086,6 +4127,8 @@ function TempControlPanel() {
 
     // 🧹 Reset fields
     setFooterNameCreate("");
+    handleClose2();
+    setOption2("");
     setdocumentFilesDOcumentContentFooter("");
   };
 
@@ -4178,7 +4221,8 @@ function TempControlPanel() {
       // ➕ Add new header
       setHeaderTodoEdit((prev) => [...prev, header]);
     }
-
+    handleCloseEdit();
+    setOptionEdit("");
     // 🧹 Reset fields
     setHeaderNameEdit("");
     setdocumentFilesDOcumentContentHeaderEdit("");
@@ -4261,6 +4305,8 @@ function TempControlPanel() {
 
     // 🧹 Reset fields
     setFooterNameEdit("");
+    handleClose2Edit();
+    setOption2Edit("");
     setdocumentFilesDOcumentContentFooterEdit("");
   };
 
@@ -4318,14 +4364,14 @@ function TempControlPanel() {
       const file = resume[0];
       // reader.readAsDataURL(file);
       // reader.onload = () => {
-      setdocumentFilesDOcumentBodyContentEdit([
+      setdocumentFilesDOcumentBodyContentEdit(
         {
           name: file.name,
           file: file,
           // preview: reader.result,
           remark: "BAckground Image",
         },
-      ]);
+      );
       // };
     }
   };
@@ -4586,16 +4632,24 @@ function TempControlPanel() {
   };
 
   const renderFilePreviewDocumentContentHeader = async (file) => {
-    console.log(file, "file");
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentContentHeaderEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4609,13 +4663,23 @@ function TempControlPanel() {
   };
   const renderFilePreviewDocumentContentFooter = async (file) => {
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentContentFooterEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4629,14 +4693,23 @@ function TempControlPanel() {
   };
   const renderFilePreviewDocumentBodyContent = async (file) => {
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentBodyContentEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4650,14 +4723,23 @@ function TempControlPanel() {
   };
   const renderFilePreviewDocumentFrontHeader = async (file) => {
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentFrontHeaderEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4671,14 +4753,23 @@ function TempControlPanel() {
   };
   const renderFilePreviewDocumentFrontFooter = async (file) => {
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentFrontFooterEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4692,14 +4783,23 @@ function TempControlPanel() {
   };
   const renderFilePreviewDocumentBackHeader = async (file) => {
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentBackHeaderEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4713,14 +4813,23 @@ function TempControlPanel() {
   };
   const renderFilePreviewDocumentBackFooter = async (file) => {
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewDocumentBackFooterEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4735,14 +4844,23 @@ function TempControlPanel() {
 
   const renderFilePreview = async (file) => {
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4757,15 +4875,24 @@ function TempControlPanel() {
 
   const renderFilePreviewSeal = async (file) => {
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
 
   const renderFilePreviewSealEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -4780,14 +4907,23 @@ function TempControlPanel() {
 
   const renderFilePreviewSignature = async (file) => {
     if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    window.open(url, "_blank");
+    if (file?.file) {
+      const url = URL.createObjectURL(file?.file);
+      window.open(url, "_blank");
+      return;
+    }
+    if (file?.path) {
+      // Extract filename from the stored path
+      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
+      window.open(fileUrl, "_blank");
+      return;
+    }
   };
   const renderFilePreviewSignatureEdit = async (file) => {
     if (!file) return;
     if (file?.file) {
-      const url = URL.createObjectURL(file);
+      const url = URL.createObjectURL(file?.file);
       window.open(url, "_blank");
       return;
     }
@@ -5024,7 +5160,8 @@ function TempControlPanel() {
                               const resume = e?.document[0];
                               const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                               const base64 = await getFileObjectFromMulterPath(
-                                filePath
+                                filePath,
+                                resume?.name
                               );
                               setdocumentFilesDOcumentContentHeader({
                                 name: resume?.name,
@@ -5058,7 +5195,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewDocumentContentHeader(
-                                      documentFilesDocumentContentHeader?.file
+                                      documentFilesDocumentContentHeader
                                     )
                                   }
                                 />
@@ -5306,7 +5443,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesDOcumentContentFooter({
                                   name: resume?.name,
                                   file: base64,
@@ -5339,7 +5479,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewDocumentContentFooter(
-                                      documentFilesDocumentContentFooter?.file
+                                      documentFilesDocumentContentFooter
                                     )
                                   }
                                 />
@@ -5560,7 +5700,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesDOcumentBodyContent({
                                   name: resume?.name,
                                   file: base64,
@@ -5593,7 +5736,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewDocumentBodyContent(
-                                      documentFilesDocumentBodyContent?.file
+                                      documentFilesDocumentBodyContent
                                     )
                                   }
                                 />
@@ -5725,7 +5868,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesDOcumentFrontHeader({
                                   name: resume?.name,
                                   file: base64,
@@ -5758,7 +5904,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewDocumentFrontHeader(
-                                      documentFilesDocumentFrontHeader?.file
+                                      documentFilesDocumentFrontHeader
                                     )
                                   }
                                 />
@@ -5865,7 +6011,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesDOcumentFrontFooter({
                                   name: resume?.name,
                                   file: base64,
@@ -5898,7 +6047,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewDocumentFrontFooter(
-                                      documentFilesDocumentFrontFooter?.file
+                                      documentFilesDocumentFrontFooter
                                     )
                                   }
                                 />
@@ -6012,7 +6161,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesDOcumentBackHeader({
                                   name: resume?.name,
                                   file: base64,
@@ -6045,7 +6197,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewDocumentBackHeader(
-                                      documentFilesDocumentBackHeader?.file
+                                      documentFilesDocumentBackHeader
                                     )
                                   }
                                 />
@@ -6152,7 +6304,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesDOcumentBackFooter({
                                   name: resume?.name,
                                   file: base64,
@@ -6185,7 +6340,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewDocumentBackFooter(
-                                      documentFilesDocumentBackFooter?.file
+                                      documentFilesDocumentBackFooter
                                     )
                                   }
                                 />
@@ -6335,7 +6490,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFiles({
                                   name: resume?.name,
                                   file: base64,
@@ -6370,7 +6528,7 @@ function TempControlPanel() {
                                     cursor: "pointer",
                                   }}
                                   onClick={() =>
-                                    renderFilePreview(documentFiles?.file)
+                                    renderFilePreview(documentFiles)
                                   }
                                 />
                               </Grid>
@@ -6946,7 +7104,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesSeal({
                                   name: resume?.name,
                                   file: base64,
@@ -6985,7 +7146,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewSeal(
-                                      documentFilesSeal?.file
+                                      documentFilesSeal
                                     )
                                   }
                                 />
@@ -7099,7 +7260,7 @@ function TempControlPanel() {
                                               }}
                                               onClick={() =>
                                                 renderFilePreview(
-                                                  todo?.document?.file
+                                                  todo?.document
                                                 )
                                               }
                                             />
@@ -7206,7 +7367,7 @@ function TempControlPanel() {
                                               }}
                                               onClick={() =>
                                                 renderFilePreview(
-                                                  todo?.document?.file
+                                                  todo?.document
                                                 )
                                               }
                                             />
@@ -7556,7 +7717,8 @@ function TempControlPanel() {
                               const resume = e?.document[0];
                               const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                               const base64 = await getFileObjectFromMulterPath(
-                                filePath
+                                filePath,
+                                resume?.name
                               );
                               setdocumentFilesSignature({
                                 name: resume?.name,
@@ -7589,7 +7751,7 @@ function TempControlPanel() {
                                   }}
                                   onClick={() =>
                                     renderFilePreviewSignature(
-                                      documentFilesSignature?.file
+                                      documentFilesSignature
                                     )
                                   }
                                 />
@@ -7878,7 +8040,7 @@ function TempControlPanel() {
                                               }}
                                               onClick={() =>
                                                 renderFilePreview(
-                                                  todo?.document?.file
+                                                  todo?.document
                                                 )
                                               }
                                             />
@@ -8068,7 +8230,7 @@ function TempControlPanel() {
                                               }}
                                               onClick={() =>
                                                 renderFilePreview(
-                                                  todo?.document?.file
+                                                  todo?.document
                                                 )
                                               }
                                             />
@@ -8799,7 +8961,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesDOcumentContentHeaderEdit({
                                   name: resume?.name,
                                   file: base64,
@@ -9089,7 +9254,10 @@ function TempControlPanel() {
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                   const base64 =
-                                    await getFileObjectFromMulterPath(filePath);
+                                    await getFileObjectFromMulterPath(
+                                      filePath,
+                                      resume?.name
+                                    );
                                   setdocumentFilesDOcumentContentFooterEdit({
                                     name: resume?.name,
                                     file: base64,
@@ -9355,7 +9523,10 @@ function TempControlPanel() {
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                   const base64 =
-                                    await getFileObjectFromMulterPath(filePath);
+                                    await getFileObjectFromMulterPath(
+                                      filePath,
+                                      resume?.name
+                                    );
                                   setdocumentFilesDOcumentBodyContentEdit({
                                     name: resume?.name,
                                     file: base64,
@@ -9369,7 +9540,7 @@ function TempControlPanel() {
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
                         {
-                          documentFilesDocumentBodyContentEdit?.name && (
+                          documentFilesDocumentBodyContentEdit && (
                             // documentFilesDocumentBodyContentEdit?.map(
                             //   (file, index) => (
                             <>
@@ -9527,7 +9698,10 @@ function TempControlPanel() {
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                   const base64 =
-                                    await getFileObjectFromMulterPath(filePath);
+                                    await getFileObjectFromMulterPath(
+                                      filePath,
+                                      resume?.name
+                                    );
                                   setdocumentFilesDOcumentFrontHeaderEdit({
                                     name: resume?.name,
                                     file: base64,
@@ -9673,7 +9847,10 @@ function TempControlPanel() {
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                   const base64 =
-                                    await getFileObjectFromMulterPath(filePath);
+                                    await getFileObjectFromMulterPath(
+                                      filePath,
+                                      resume?.name
+                                    );
                                   setdocumentFilesDOcumentFrontFooterEdit({
                                     name: resume?.name,
                                     file: base64,
@@ -9824,7 +10001,10 @@ function TempControlPanel() {
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                   const base64 =
-                                    await getFileObjectFromMulterPath(filePath);
+                                    await getFileObjectFromMulterPath(
+                                      filePath,
+                                      resume?.name
+                                    );
                                   setdocumentFilesDOcumentBackHeaderEdit({
                                     name: resume?.name,
                                     file: base64,
@@ -9966,7 +10146,10 @@ function TempControlPanel() {
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                   const base64 =
-                                    await getFileObjectFromMulterPath(filePath);
+                                    await getFileObjectFromMulterPath(
+                                      filePath,
+                                      resume?.name
+                                    );
                                   setdocumentFilesDOcumentBackFooterEdit({
                                     name: resume?.name,
                                     file: base64,
@@ -10150,7 +10333,10 @@ function TempControlPanel() {
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                   const base64 =
-                                    await getFileObjectFromMulterPath(filePath);
+                                    await getFileObjectFromMulterPath(
+                                      filePath,
+                                      resume?.name
+                                    );
                                   setdocumentFilesEdit({
                                     name: resume?.name,
                                     file: base64,
@@ -10768,7 +10954,10 @@ function TempControlPanel() {
                                   const resume = e?.document[0];
                                   const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                   const base64 =
-                                    await getFileObjectFromMulterPath(filePath);
+                                    await getFileObjectFromMulterPath(
+                                      filePath,
+                                      resume?.name
+                                    );
                                   setdocumentFilesSealEdit({
                                     name: resume?.name,
                                     file: base64,
@@ -11408,7 +11597,10 @@ function TempControlPanel() {
                                 const resume = e?.document[0];
                                 const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
                                 const base64 =
-                                  await getFileObjectFromMulterPath(filePath);
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
                                 setdocumentFilesSignatureEdit({
                                   name: resume?.name,
                                   file: base64,
@@ -12836,9 +13028,7 @@ function TempControlPanel() {
                             <Typography>{file.headername}</Typography>
                           </Grid>
                           <Grid item md={6} sm={6} xs={6}>
-                            <Typography>
-                              {file?.headerimage[0]?.name}
-                            </Typography>
+                            <Typography>{file?.headerimage?.name}</Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -12850,7 +13040,7 @@ function TempControlPanel() {
                               }}
                               onClick={() =>
                                 renderFilePreviewDocumentContentHeader(
-                                  file?.headerimage[0]
+                                  file?.headerimage
                                 )
                               }
                             />
@@ -12874,9 +13064,7 @@ function TempControlPanel() {
                             <Typography>{file.footername}</Typography>
                           </Grid>
                           <Grid item md={6} sm={6} xs={6}>
-                            <Typography>
-                              {file?.footerimage[0]?.name}
-                            </Typography>
+                            <Typography>{file?.footerimage?.name}</Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -12888,7 +13076,7 @@ function TempControlPanel() {
                               }}
                               onClick={() =>
                                 renderFilePreviewDocumentContentFooter(
-                                  file?.footerimage[0]
+                                  file?.footerimage
                                 )
                               }
                             />
@@ -12904,12 +13092,15 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {documentFilesDocumentBodyContentView?.length > 0 &&
-                    documentFilesDocumentBodyContentView?.map((file, index) => (
+                  {
+                    documentFilesDocumentBodyContentView && (
+                      // documentFilesDocumentBodyContentView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{file.name}</Typography>
+                            <Typography>
+                              {documentFilesDocumentBodyContentView?.name}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -12920,13 +13111,17 @@ function TempControlPanel() {
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                renderFilePreviewDocumentBodyContent(file)
+                                renderFilePreviewDocumentBodyContent(
+                                  documentFilesDocumentBodyContentView
+                                )
                               }
                             />
                           </Grid>
                         </Grid>
                       </>
-                    ))}
+                    )
+                    // ))
+                  }
                 </Grid>
               </Grid>
               <Grid item md={6} xs={12} sm={12}>
@@ -12943,12 +13138,15 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {documentFilesDocumentFrontHeaderView?.length > 0 &&
-                    documentFilesDocumentFrontHeaderView?.map((file, index) => (
+                  {
+                    documentFilesDocumentFrontHeaderView && (
+                      // documentFilesDocumentFrontHeaderView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{file.name}</Typography>
+                            <Typography>
+                              {documentFilesDocumentFrontHeaderView?.name}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -12959,13 +13157,17 @@ function TempControlPanel() {
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                renderFilePreviewDocumentFrontHeader(file)
+                                renderFilePreviewDocumentFrontHeader(
+                                  documentFilesDocumentFrontHeaderView
+                                )
                               }
                             />
                           </Grid>
                         </Grid>
                       </>
-                    ))}
+                    )
+                    // ))
+                  }
                 </Grid>
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
@@ -12974,12 +13176,15 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {documentFilesDocumentFrontFooterView?.length > 0 &&
-                    documentFilesDocumentFrontFooterView?.map((file, index) => (
+                  {
+                    documentFilesDocumentFrontFooterView && (
+                      // documentFilesDocumentFrontFooterView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{file.name}</Typography>
+                            <Typography>
+                              {documentFilesDocumentFrontFooterView?.name}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -12990,13 +13195,17 @@ function TempControlPanel() {
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                renderFilePreviewDocumentFrontFooter(file)
+                                renderFilePreviewDocumentFrontFooter(
+                                  documentFilesDocumentFrontFooterView
+                                )
                               }
                             />
                           </Grid>
                         </Grid>
                       </>
-                    ))}
+                    )
+                    // ))
+                  }
                 </Grid>
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
@@ -13005,12 +13214,15 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {documentFilesDocumentBackHeaderView?.length > 0 &&
-                    documentFilesDocumentBackHeaderView?.map((file, index) => (
+                  {
+                    documentFilesDocumentBackHeaderView && (
+                      // documentFilesDocumentBackHeaderView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{file.name}</Typography>
+                            <Typography>
+                              {documentFilesDocumentBackHeaderView?.name}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -13021,13 +13233,17 @@ function TempControlPanel() {
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                renderFilePreviewDocumentBackHeader(file)
+                                renderFilePreviewDocumentBackHeader(
+                                  documentFilesDocumentBackHeaderView
+                                )
                               }
                             />
                           </Grid>
                         </Grid>
                       </>
-                    ))}
+                    )
+                    // ))
+                  }
                 </Grid>
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
@@ -13036,12 +13252,15 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {documentFilesDocumentBackFooterView?.length > 0 &&
-                    documentFilesDocumentBackFooterView?.map((file, index) => (
+                  {
+                    documentFilesDocumentBackFooterView && (
+                      // documentFilesDocumentBackFooterView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{file.name}</Typography>
+                            <Typography>
+                              {documentFilesDocumentBackFooterView?.name}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -13052,13 +13271,17 @@ function TempControlPanel() {
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                renderFilePreviewDocumentBackFooter(file)
+                                renderFilePreviewDocumentBackFooter(
+                                  documentFilesDocumentBackFooterView
+                                )
                               }
                             />
                           </Grid>
                         </Grid>
                       </>
-                    ))}
+                    )
+                    // ))
+                  }
                 </Grid>
               </Grid>
               <Grid item md={6} xs={12} sm={12}>
@@ -13083,12 +13306,13 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {documentFilesView?.length > 0 &&
-                    documentFilesView?.map((file, index) => (
+                  {
+                    documentFilesView && (
+                      // documentFilesView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{file.name}</Typography>
+                            <Typography>{documentFilesView?.name}</Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -13099,13 +13323,17 @@ function TempControlPanel() {
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                renderFilePreviewDocumentBackFooter(file)
+                                renderFilePreviewDocumentBackFooter(
+                                  documentFilesView
+                                )
                               }
                             />
                           </Grid>
                         </Grid>
                       </>
-                    ))}
+                    )
+                    // ))
+                  }
                 </Grid>
               </Grid>
 
@@ -13191,12 +13419,15 @@ function TempControlPanel() {
                                 sx={{ display: "flex", justifyContent: "left" }}
                               ></Box>
                               <Grid item md={12} xs={12} sm={12}>
-                                {todo.document?.length > 0 &&
-                                  todo.document.map((file, index) => (
+                                {
+                                  todo.document && (
+                                    // todo.document.map((file, index) => (
                                     <>
                                       <Grid container spacing={2}>
                                         <Grid item md={8} sm={6} xs={6}>
-                                          <Typography>{file.name}</Typography>
+                                          <Typography>
+                                            {todo?.document?.name}
+                                          </Typography>
                                         </Grid>
                                         <Grid></Grid>
                                         <Grid item md={1} sm={6} xs={6}>
@@ -13207,13 +13438,15 @@ function TempControlPanel() {
                                               cursor: "pointer",
                                             }}
                                             onClick={() =>
-                                              renderFilePreview(file)
+                                              renderFilePreview(todo?.document)
                                             }
                                           />
                                         </Grid>
                                       </Grid>
                                     </>
-                                  ))}
+                                  )
+                                  // ))
+                                }
                               </Grid>
                             </Grid>
                           </Grid>
@@ -13300,12 +13533,15 @@ function TempControlPanel() {
                                 sx={{ display: "flex", justifyContent: "left" }}
                               ></Box>
                               <Grid item md={12} xs={12} sm={12}>
-                                {todo.document?.length > 0 &&
-                                  todo.document.map((file, index) => (
+                                {
+                                  todo?.document && (
+                                    // todo.document.map((file, index) => (
                                     <>
                                       <Grid container spacing={2}>
                                         <Grid item md={8} sm={6} xs={6}>
-                                          <Typography>{file.name}</Typography>
+                                          <Typography>
+                                            {todo?.document?.name}
+                                          </Typography>
                                         </Grid>
                                         <Grid></Grid>
                                         <Grid item md={1} sm={6} xs={6}>
@@ -13316,55 +13552,54 @@ function TempControlPanel() {
                                               cursor: "pointer",
                                             }}
                                             onClick={() =>
-                                              renderFilePreview(file)
+                                              renderFilePreview(todo?.document)
                                             }
                                           />
                                         </Grid>
                                       </Grid>
                                     </>
-                                  ))}
+                                  )
+                                  // ))
+                                }
                               </Grid>
                             </Grid>
-                            <br />
-                            <br />
-                            <Grid item md={4} xs={12} sm={12}>
-                              <FormControl fullWidth size="small">
-                                <Typography>
-                                  <b>From Email</b>
-                                </Typography>
-                                <Typography>{purposeEdit.fromemail}</Typography>
-                              </FormControl>
-                            </Grid>
-                            <Grid item md={4} xs={12} sm={12}>
-                              <FormControl fullWidth size="small">
-                                <Typography>
-                                  <b>CC Email</b>
-                                </Typography>
-                                {Array.isArray(purposeEdit.ccemail)
-                                  ? purposeEdit.ccemail?.map((item) => (
-                                      <Typography>{item}</Typography>
-                                    ))
-                                  : ""}
-                              </FormControl>
-                            </Grid>
-                            <Grid item md={4} xs={12} sm={12}>
-                              <FormControl fullWidth size="small">
-                                <Typography>
-                                  <b>BCC Email</b>
-                                </Typography>
-                                {Array.isArray(purposeEdit.bccemail)
-                                  ? purposeEdit.bccemail?.map((item) => (
-                                      <Typography>{item}</Typography>
-                                    ))
-                                  : ""}
-                              </FormControl>
-                            </Grid>
                           </Grid>
-
                           <br />
                         </div>
                       ))}
                   </Grid>
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <FormControl fullWidth size="small">
+                  <Typography>
+                    <b>From Email</b>
+                  </Typography>
+                  <Typography>{purposeEdit.fromemail}</Typography>
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <FormControl fullWidth size="small">
+                  <Typography>
+                    <b>CC Email</b>
+                  </Typography>
+                  {Array.isArray(purposeEdit.ccemail)
+                    ? purposeEdit.ccemail?.map((item) => (
+                        <Typography>{item}</Typography>
+                      ))
+                    : ""}
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <FormControl fullWidth size="small">
+                  <Typography>
+                    <b>BCC Email</b>
+                  </Typography>
+                  {Array.isArray(purposeEdit.bccemail)
+                    ? purposeEdit.bccemail?.map((item) => (
+                        <Typography>{item}</Typography>
+                      ))
+                    : ""}
                 </FormControl>
               </Grid>
             </Grid>

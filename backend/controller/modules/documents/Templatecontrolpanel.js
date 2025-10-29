@@ -190,100 +190,106 @@ exports.createTemplatecontrolpanelModel = catchAsyncErrors(
   async (req, res, next) => {
     // console.log("🧾 req.body:", req.body);
     // console.log("📂 req.files:", req.files);
+    try {
+      // Group files dynamically
+      const groupedFiles = groupFilesByField(req.files || []);
 
-    // Group files dynamically
-    const groupedFiles = groupFilesByField(req.files || []);
+      // Extract normal string fields
+      const {
+        company,
+        branch,
+        emailformat,
+        fromemail,
+        ccemail,
+        bccemail,
+        companyurl,
+        companyname,
+        address,
+        sealtype,
+        toCompany,
+        qrInfo,
+        addedby,
+      } = req.body;
 
-    // Extract normal string fields
-    const {
-      company,
-      branch,
-      emailformat,
-      fromemail,
-      ccemail,
-      bccemail,
-      companyurl,
-      companyname,
-      address,
-      sealtype,
-      toCompany,
-      qrInfo,
-    } = req.body;
+      const StringItems = {
+        company,
+        branch,
+        emailformat,
+        fromemail,
+        ccemail: parseSafe(ccemail),
+        bccemail: parseSafe(bccemail),
+        companyurl,
+        companyname,
+        address,
+        sealtype,
+        toCompany: parseSafe(toCompany),
+        qrInfo: parseSafe(qrInfo),
+        addedby: parseSafe(addedby),
+      };
 
-    const StringItems = {
-      company,
-      branch,
-      emailformat,
-      fromemail,
-      ccemail: parseSafe(ccemail),
-      bccemail: parseSafe(bccemail),
-      companyurl,
-      companyname,
-      address,
-      sealtype,
-      toCompany: parseSafe(toCompany),
-      qrInfo: parseSafe(qrInfo),
-    };
+      // 🧱 Step 3: Reconstruct complex fields (TODO-type)
+      const buildTodoArray = (prefix) => {
+        const result = [];
 
-    // 🧱 Step 3: Reconstruct complex fields (TODO-type)
-    const buildTodoArray = (prefix) => {
-      const result = [];
-
-      // find all keys that start with prefix + "_index_"
-      Object.keys(req.body).forEach((key) => {
-        if (key.startsWith(prefix + "_")) {
-          const [_, index, field] = key.split("_");
-          if (!result[index]) result[index] = {};
-          result[index][field] = req.body[key];
-        }
-      });
-
-      // Merge file data if exists
-      if (groupedFiles[prefix]) {
-        Object.keys(groupedFiles[prefix]).forEach((index) => {
-          const fileObj = groupedFiles[prefix][index];
-          result[index] = { ...(result[index] || {}), ...fileObj };
+        // find all keys that start with prefix + "_index_"
+        Object.keys(req.body).forEach((key) => {
+          if (key.startsWith(prefix + "_")) {
+            const [_, index, field] = key.split("_");
+            if (!result[index]) result[index] = {};
+            result[index][field] = req.body[key];
+          }
         });
-      }
 
-      return result.filter(Boolean);
-    };
+        // Merge file data if exists
+        if (groupedFiles[prefix]) {
+          Object.keys(groupedFiles[prefix]).forEach((index) => {
+            const fileObj = groupedFiles[prefix][index];
+            result[index] = { ...(result[index] || {}), ...fileObj };
+          });
+        }
 
-    // ✅ Step 4: Construct file data (merged)
-    const FileItems = {
-      letterheadcontentheader: buildTodoArray("letterheadcontentheader"),
-      letterheadcontentfooter: buildTodoArray("letterheadcontentfooter"),
-      documentseal: buildTodoArray("documentseal"),
-      documentsignature: buildTodoArray("documentsignature"),
+        return result.filter(Boolean);
+      };
 
-      // normal file-only fields (not array)
-      letterheadbodycontent: groupedFiles.letterheadbodycontent || [],
-      idcardfrontheader: groupedFiles.idcardfrontheader || [],
-      idcardfrontfooter: groupedFiles.idcardfrontfooter || [],
-      idcardbackheader: groupedFiles.idcardbackheader || [],
-      idcardbackfooter: groupedFiles.idcardbackfooter || [],
-    };
+      // ✅ Step 4: Construct file data (merged)
+      const FileItems = {
+        letterheadcontentheader: buildTodoArray("letterheadcontentheader"),
+        letterheadcontentfooter: buildTodoArray("letterheadcontentfooter"),
+        documentseal: buildTodoArray("documentseal"),
+        documentsignature: buildTodoArray("documentsignature"),
 
-    // ✅ Step 5: Combine
-    const dataToSave = { ...StringItems, ...FileItems };
-    const finalDataSave = {
-      ...dataToSave,
-      templatecontrolpanellog: [dataToSave],
-    };
+        // normal file-only fields (not array)
+        letterheadbodycontent: groupedFiles.letterheadbodycontent || {},
+        idcardfrontheader: groupedFiles.idcardfrontheader || {},
+        idcardfrontfooter: groupedFiles.idcardfrontfooter || {},
+        idcardbackheader: groupedFiles.idcardbackheader || {},
+        idcardbackfooter: groupedFiles.idcardbackfooter || {},
+        documentcompany: groupedFiles.documentcompany || {},
+      };
 
-    console.log(
-      //   finalDataSave,
-      "📦 Final structured data:",
-      JSON.stringify(finalDataSave, null, 2)
-    );
+      // ✅ Step 5: Combine
+      const dataToSave = { ...StringItems, ...FileItems };
+      const finalDataSave = {
+        ...dataToSave,
+        templatecontrolpanellog: [dataToSave],
+      };
 
-    // Save to MongoDB or perform further logic
-    let data = await TemplatecontrolpanelModel.create(finalDataSave);
+      // console.log(
+      //   //   finalDataSave,
+      //   "📦 Final structured data:",
+      //   JSON.stringify(finalDataSave, null, 2)
+      // );
 
-    return res.status(200).json({
-      message: "Successfully added",
-      data: dataToSave,
-    });
+      // Save to MongoDB or perform further logic
+      let data = await TemplatecontrolpanelModel.create(finalDataSave);
+
+      return res.status(200).json({
+        message: "Successfully added",
+        data: dataToSave,
+      });
+    } catch (err) {
+      console.log(err, "err");
+    }
   }
 );
 
@@ -315,124 +321,225 @@ exports.getSingleTemplatecontrolpanelModel = catchAsyncErrors(
 //   }
 // );
 
+const groupFilesByFieldEdit = (files) => {
+  const grouped = {};
+
+  files.forEach((file) => {
+    const parts = file.fieldname.split("_");
+
+    // Example: documentseal_0_document
+    if (parts.length === 3) {
+      const [key, index, subKey] = parts;
+
+      if (!grouped[key]) grouped[key] = {};
+      if (!grouped[key][index]) grouped[key][index] = {};
+
+      grouped[key][index][subKey] = {
+        name: file.filename,
+        originalname: file.originalname,
+        path: file.path,
+        mimetype: file.mimetype,
+        size: file.size,
+      };
+    }
+
+    // Example: letterheadbodycontent (no underscore)
+    else if (parts.length === 1) {
+      const key = parts[0];
+
+      grouped[key] = {
+        name: file.filename,
+        originalname: file.originalname,
+        path: file.path,
+        mimetype: file.mimetype,
+        size: file.size,
+      };
+    }
+  });
+
+  return grouped;
+};
+
 exports.updateTemplatecontrolpanelModel = catchAsyncErrors(
   async (req, res, next) => {
-    const id = req.params.id;
+    try {
+      const id = req.params.id;
 
-    // 🧩 Step 1: Group new uploaded files
-    const groupedFiles = groupFilesByField(req.files || []);
+      // 🧩 Step 1: Group uploaded files (new)
+      const groupedFiles = groupFilesByFieldEdit(req.files || []);
 
-    // 🧩 Step 2: Parse JSON safely
-    const parseSafe = (str) => {
-      try {
-        return str ? JSON.parse(str) : [];
-      } catch {
-        return [];
-      }
-    };
+      // console.log(req?.files, req?.body);
 
-    // 🧩 Step 3: Handle text + JSON fields
-    const {
-      company,
-      branch,
-      emailformat,
-      fromemail,
-      ccemail,
-      bccemail,
-      companyurl,
-      companyname,
-      address,
-      sealtype,
-      toCompany,
-      qrInfo,
-    } = req.body;
+      // 🧩 Step 2: Safe JSON parser
+      const parseSafe = (str) => {
+        try {
+          return str ? JSON.parse(str) : [];
+        } catch {
+          return [];
+        }
+      };
 
-    const StringItems = {
-      company,
-      branch,
-      emailformat,
-      fromemail,
-      ccemail: parseSafe(ccemail),
-      bccemail: parseSafe(bccemail),
-      companyurl,
-      companyname,
-      address,
-      sealtype,
-      toCompany: parseSafe(toCompany),
-      qrInfo: parseSafe(qrInfo),
-    };
+      const buildTodoArrayEdit = (prefix) => {
+        const result = [];
 
-    // 🧩 Step 4: Rebuild file arrays with merge of old + new
-    const buildTodoArray = (prefix) => {
-      const result = [];
-
-      // collect text fields
-      Object.keys(req.body).forEach((key) => {
-        if (key.startsWith(prefix + "_")) {
-          const parts = key.split("_");
-          const [_, index, field, suffix] = parts;
-
-          if (!result[index]) result[index] = {};
-
-          if (suffix === "old") {
-            // 🗃️ Old file ref preserved
-            result[index][field] = parseSafe(req.body[key]);
-          } else if (field && !suffix) {
-            // 🧾 Normal text field
+        // find all keys that start with prefix + "_index_"
+        Object.keys(req.body).forEach((key) => {
+          if (key.startsWith(prefix + "_")) {
+            const [_, index, field] = key.split("_");
+            if (!result[index]) result[index] = {};
             result[index][field] = req.body[key];
           }
-        }
-      });
-
-      // Merge new uploaded files (if any)
-      if (groupedFiles[prefix]) {
-        Object.keys(groupedFiles[prefix]).forEach((index) => {
-          const fileObj = groupedFiles[prefix][index];
-          result[index] = { ...(result[index] || {}), ...fileObj };
         });
+
+        // Merge file data if exists
+        if (groupedFiles[prefix]) {
+          Object.keys(groupedFiles[prefix]).forEach((index) => {
+            const fileObj = groupedFiles[prefix][index];
+            result[index] = { ...(result[index] || {}), ...fileObj };
+          });
+        }
+
+        // 🔹 Convert known file fields (string ➜ object)
+        result.forEach((item) => {
+          if (
+            prefix === "letterheadcontentheader" &&
+            typeof item.headerimage === "string"
+          ) {
+            try {
+              item.headerimage = JSON.parse(item.headerimage);
+            } catch {
+              item.headerimage = { name: item.headerimage };
+            }
+          }
+
+          if (
+            prefix === "letterheadcontentfooter" &&
+            typeof item.footerimage === "string"
+          ) {
+            try {
+              item.footerimage = JSON.parse(item.footerimage);
+            } catch {
+              item.footerimage = { name: item.footerimage };
+            }
+          }
+
+          if (
+            (prefix === "documentseal" || prefix === "documentsignature") &&
+            typeof item.document === "string"
+          ) {
+            try {
+              item.document = JSON.parse(item.document);
+            } catch {
+              item.document = { name: item.document };
+            }
+          }
+        });
+
+        return result.filter(Boolean);
+      };
+      // 🧩 Step 3: Extract string fields
+      // Extract normal string fields
+      const {
+        company,
+        branch,
+        emailformat,
+        fromemail,
+        ccemail,
+        bccemail,
+        companyurl,
+        companyname,
+        address,
+        sealtype,
+        toCompany,
+        qrInfo,
+        updatedby,
+        templatecontrolpanellog,
+        letterheadbodycontent_old,
+        idcardfrontheader_old,
+        idcardfrontfooter_old,
+        idcardbackheader_old,
+        idcardbackfooter_old,
+        documentcompany_old,
+      } = req.body;
+      // console.log(req.body
+      // );
+      const StringItems = {
+        company,
+        branch,
+        emailformat,
+        fromemail,
+        ccemail: parseSafe(ccemail),
+        bccemail: parseSafe(bccemail),
+        companyurl,
+        companyname,
+        address,
+        sealtype,
+        toCompany: parseSafe(toCompany),
+        qrInfo: parseSafe(qrInfo),
+        updatedby: parseSafe(updatedby),
+        // letterheadbodycontent: parseSafe(letterheadbodycontent),
+        // idcardfrontheader: parseSafe(idcardfrontheader),
+        // idcardfrontfooter: parseSafe(idcardfrontfooter),
+        // idcardbackheader: parseSafe(idcardbackheader),
+        // idcardbackfooter: parseSafe(idcardbackfooter),
+        // documentcompany: parseSafe(documentcompany),
+        templatecontrolpanellog: parseSafe(templatecontrolpanellog),
+      };
+
+      // 🧱 Step 3: Reconstruct complex fields (TODO-type)
+
+      // ✅ Step 4: Construct file data (merged)
+      const FileItems = {
+        letterheadcontentheader: buildTodoArrayEdit("letterheadcontentheader"),
+        letterheadcontentfooter: buildTodoArrayEdit("letterheadcontentfooter"),
+        documentseal: buildTodoArrayEdit("documentseal"),
+        documentsignature: buildTodoArrayEdit("documentsignature"),
+
+        // normal file-only fields (not array)
+        letterheadbodycontent:
+          groupedFiles.letterheadbodycontent ||
+          parseSafe(letterheadbodycontent_old),
+        idcardfrontheader:
+          groupedFiles.idcardfrontheader || parseSafe(idcardfrontheader_old),
+        idcardfrontfooter:
+          groupedFiles.idcardfrontfooter || parseSafe(idcardfrontfooter_old),
+        idcardbackheader:
+          groupedFiles.idcardbackheader || parseSafe(idcardbackheader_old),
+        idcardbackfooter:
+          groupedFiles.idcardbackfooter || parseSafe(idcardbackfooter_old),
+        documentcompany:
+          groupedFiles.documentcompany || parseSafe(documentcompany_old),
+      };
+
+      // ✅ Step 5: Combine
+      const dataToSave = { ...StringItems, ...FileItems };
+
+      const finalDataSave = {
+        ...dataToSave,
+        templatecontrolpanellog: [
+          ...StringItems?.templatecontrolpanellog,
+          dataToSave,
+        ],
+      };
+
+      // 🧩 Step 7: Update DB
+      const updatedDoc = await TemplatecontrolpanelModel.findByIdAndUpdate(
+        id,
+        { $set: finalDataSave },
+        { new: true }
+      );
+
+      if (!finalDataSave) {
+        return next(new ErrorHandler("Template not found!", 404));
       }
 
-      return result.filter(Boolean);
-    };
-
-    // 🧩 Step 5: Merge single-file fields (old vs new)
-    const mergeSingleFile = (key) => {
-      if (groupedFiles[key]) return groupedFiles[key];
-      if (req.body[`${key}_old`]) return parseSafe(req.body[`${key}_old`]);
-      return null;
-    };
-
-    // 🧩 Step 6: Construct final merged object
-    const FileItems = {
-      letterheadcontentheader: buildTodoArray("letterheadcontentheader"),
-      letterheadcontentfooter: buildTodoArray("letterheadcontentfooter"),
-      documentseal: buildTodoArray("documentseal"),
-      documentsignature: buildTodoArray("documentsignature"),
-
-      letterheadbodycontent: mergeSingleFile("letterheadbodycontent"),
-      idcardfrontheader: mergeSingleFile("idcardfrontheader"),
-      idcardfrontfooter: mergeSingleFile("idcardfrontfooter"),
-      idcardbackheader: mergeSingleFile("idcardbackheader"),
-      idcardbackfooter: mergeSingleFile("idcardbackfooter"),
-    };
-
-    const finalData = { ...StringItems, ...FileItems };
-    console.log(finalData, "finalData");
-    // 🧩 Step 7: Update MongoDB
-    // const updatedDoc = await TemplatecontrolpanelModel.findByIdAndUpdate(
-    //   id,
-    //   { $set: finalData },
-    //   { new: true }
-    // );
-
-    // if (!updatedDoc) {
-    //   return next(new ErrorHandler("Id not found!", 404));
-    // }
-
-    res.status(200).json({
-      message: "Updated successfully",
-      //   data: updatedDoc,
-    });
+      res.status(200).json({
+        message: "Updated successfully",
+        data: finalDataSave,
+      });
+    } catch (err) {
+      console.log(err, "err");
+    }
   }
 );
 

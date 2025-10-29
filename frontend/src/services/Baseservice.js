@@ -5538,5 +5538,6 @@ export const SERVICE = {
 
 
   DEPARTMENT_DESIGNATION_BASED_ON_DATE: `${BASE_URL}/api/departmentdesignationbasedondate`,
+  HEADER_FOOTER_FROM_TEMPLATECONTROLPANEL: `${BASE_URL}/api/headerfooterfromtemplatecontrolpanel`,
 
 };

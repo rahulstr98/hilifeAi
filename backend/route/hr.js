@@ -117,9 +117,10 @@ hrmoduleRoute.route("/departmentmonthsetslimitedforleave").post(getAllDepartment
 
 
 //Template Creation backendroute
-const { addTemplate, deleteTemplate, getAccssibleAllTemplate, getCandidateFilteredTemplate, getCandidateTemplateDocumentsAssignBranch, getCandidateTemplateDocuments, getEmployeeAllTemplate, getCompanyAllTemplateFilter, getCompanyAllTemplate, getAllTemplate, getOverallEditTemplate, getOverallEditTemplatedelete, getSingleTemplate, updateTemplate } = require("../controller/modules/TemplateCreationController");
+const { addTemplate, deleteTemplate, getAccssibleAllTemplate,getHeaderFooterFromTemplateControlPanel, getCandidateFilteredTemplate, getCandidateTemplateDocumentsAssignBranch, getCandidateTemplateDocuments, getEmployeeAllTemplate, getCompanyAllTemplateFilter, getCompanyAllTemplate, getAllTemplate, getOverallEditTemplate, getOverallEditTemplatedelete, getSingleTemplate, updateTemplate } = require("../controller/modules/TemplateCreationController");
 hrmoduleRoute.route("/templatecreations").get(getAllTemplate);
 hrmoduleRoute.route("/accessibletemplatecreations").post(getAccssibleAllTemplate);
+hrmoduleRoute.route("/headerfooterfromtemplatecontrolpanel").post(getHeaderFooterFromTemplateControlPanel);
 hrmoduleRoute.route("/employeetemplatecreations").post(getEmployeeAllTemplate);
 hrmoduleRoute.route("/candidatetemplatecreation").post(getCandidateTemplateDocuments);
 hrmoduleRoute.route("/candidatetemplatecreationassignbranch").post(getCandidateTemplateDocumentsAssignBranch);
