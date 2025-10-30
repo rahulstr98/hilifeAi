@@ -12,6 +12,7 @@ exports.getAllCompanyDocumentPreparation = catchAsyncErrors(async (req, res, nex
   try {
     companydocumentPreparation = await CompanyDocumentPreparation.find({},{date:1,
         printingstatus:1,pagesize:1,pageheight:1,pagewidth:1,template:1,templateno:1,
+        header:1,footer:1,
         referenceno:1,employeemode:1,department:1,company:1,issuingauthority:1,branch:1,
         unit:1,team:1,person:1,proption:1,tempcode:1,sign:1,sealing:1,email:1,frommailemail:1,tocompany:1,
         mail:1,addedby:1,issuedpersondetails:1,updatedby:1,createdAt:1,}).lean();
@@ -39,6 +40,7 @@ exports.getAccessibleBranchAllCompanyDocumentPreparation = catchAsyncErrors(asyn
     const filterQuery = { $or: branchFilter };
     companydocumentPreparation = await CompanyDocumentPreparation.find(filterQuery,{
       referenceno:1,templateno:1,template:1,company:1,printedcount:1,issuingauthority:1,branch:1,
+       header:1,footer:1,
       unit:1,team:1,tocompany:1,printingstatus:1, date:1,issuedpersondetails:1,   
       }).lean();
   } catch (err) {

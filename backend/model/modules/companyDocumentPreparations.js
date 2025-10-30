@@ -5,11 +5,19 @@ const companyDocumentPreparationSchema = new Schema({
     type: String,
     required: false,
   },
-   marginQuill: {
+  marginQuill: {
     type: String,
     required: false,
   },
   orientationQuill: {
+    type: String,
+    required: false,
+  },
+  header: {
+    type: String,
+    required: false,
+  },
+  footer: {
     type: String,
     required: false,
   },
@@ -182,4 +190,7 @@ const companyDocumentPreparationSchema = new Schema({
     default: Date.now,
   },
 });
-module.exports = mongoose.model("companyDocumentPreparation", companyDocumentPreparationSchema);
+module.exports = mongoose.model(
+  "companyDocumentPreparation",
+  companyDocumentPreparationSchema
+);

@@ -898,14 +898,14 @@ function CandidateDocumentsPrintedStatusList() {
         setHeadValue(value)
         if (!["Preview Manual", "Print Manual"]?.includes(pagePopeOpen)) {
             if (value?.length === 1 && value?.includes("With Head content")) {
-                setHeader(personId?.letterheadcontentheader[0]?.preview)
+                setHeader(personId?.headerimage)
             }
             else if (value?.length === 1 && value?.includes("With Footer content")) {
-                setfooter(personId?.letterheadcontentfooter[0]?.preview)
+                setfooter(personId?.footerimage)
             }
             else if (value?.length > 1) {
-                setHeader(personId?.letterheadcontentheader[0]?.preview)
-                setfooter(personId?.letterheadcontentfooter[0]?.preview)
+                setHeader(personId?.headerimage)
+                setfooter(personId?.footerimage)
             }
             else {
                 setHeader("")
@@ -952,7 +952,22 @@ function CandidateDocumentsPrintedStatusList() {
         setPageUpdateOpen(false);
     }
 
+  async function convertFileUrlToBase64(fileUrl) {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
 
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result); // This will be data:image/png;base64,xxxx
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error("Error fetching file:", error);
+      return null;
+    }
+  }
     const getCode = async (e, pagename) => {
         setPageName(!pageName)
         try {
@@ -962,11 +977,38 @@ function CandidateDocumentsPrintedStatusList() {
                 },
                 company: e?.company,
                 branch: e?.branch,
+                      template: e?.template?.split("--")[0],
+        pagename:"Candidate"
             });
             if (res?.data?.templatecontrolpanel) {
                 const ans = res?.data?.templatecontrolpanel ?
                     res?.data?.templatecontrolpanel?.templatecontrolpanellog[res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1] : "";
-                setPersonId(ans);
+                
+                 const templateHeaderFooter = res?.data?.headerfooter;
+                
+                        const headerOption = ans?.letterheadcontentheader?.find(
+                          (data) => data?.headername === templateHeaderFooter?.header
+                        );
+                        const footerOption = ans?.letterheadcontentfooter?.find(
+                          (data) => data?.footername === templateHeaderFooter?.footer
+                        );
+                        const header = await convertFileUrlToBase64(
+                          `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
+                        );
+                        const footer = await convertFileUrlToBase64(
+                          `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
+                        );
+                        const backgroundimage = await convertFileUrlToBase64(
+                          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+                        );
+                        const headerFooterBase64 = {
+                          ...ans,
+                          headerimage: header,
+                          footerimage: footer,
+                          backgroundimage: backgroundimage,
+                        };
+                
+                    setPersonId(headerFooterBase64);
                 handleClickOpenLetterHeader(pagename);
                 setDataTableId(e?.id);
                 const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []

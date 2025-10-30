@@ -5,6 +5,14 @@ const candidateDocumentPreparationSchema = new Schema({
     type: String,
     required: false,
   },
+  header: {
+    type: String,
+    required: false,
+  },
+  footer: {
+    type: String,
+    required: false,
+  },
   documentname: {
     type: String,
     required: false,

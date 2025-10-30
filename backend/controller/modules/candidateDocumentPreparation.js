@@ -33,6 +33,7 @@ exports.getAllCandidateDocumentPreparation = catchAsyncErrors(async (req, res, n
       date: 1,
       printingstatus: 1, pagesize: 1, pageheight: 1, pagewidth: 1, template: 1, templateno: 1,
       referenceno: 1, employeemode: 1, department: 1, company: 1, issuingauthority: 1, branch: 1,
+      header:1,footer:1,
       unit: 1, team: 1, person: 1, proption: 1, tempcode: 1, sign: 1, sealing: 1, email: 1, frommailemail: 1, tocompany: 1,
       mail: 1, addedby: 1, issuedpersondetails: 1, updatedby: 1, createdAt: 1,
     }).lean();
@@ -73,7 +74,7 @@ exports.getAccessibleBranchAllCandidateDocumentPreparation = catchAsyncErrors(as
     }));
     const filterQuery = { $or: branchFilter };
     candidatedocumentPreparation = await CandidateDocumentPreparation.find(filterQuery, {
-      referenceno: 1, templateno: 1, template: 1, company: 1, issuingauthority: 1, branch: 1,
+      referenceno: 1, templateno: 1, template: 1, company: 1, issuingauthority: 1, branch: 1,header:1,footer:1,
       unit: 1, team: 1,documentneed:1,rounds:1, tocompany: 1, printingstatus: 1, date: 1, issuedpersondetails: 1, person: 1,
       printedcount: 1, designation: 1, mail: 1
     }).lean();
@@ -343,6 +344,7 @@ exports.getApprovalCandidatesTemplate = catchAsyncErrors(async (req, res, next) 
     templates = await TemplateCreation.find({ company: { $in: company }, branch: { $in: branch }, tempaltemode: "Candidate" }, {
       name: 1,
       company: 1,
+      header:1,footer:1,
       branch: 1,
       documentname: 1,
     }).lean();
@@ -393,6 +395,7 @@ exports.getApprovalCandidateDocumentsPreparations = catchAsyncErrors(async (req,
         approvalenddate: 1,
         department: 1,
         company: 1,
+        header:1,footer:1,
         issuingauthority: 1,
         branch: 1,
         unit: 1,
@@ -473,6 +476,7 @@ console.log(template , 'template')
       approvedfilename: 1,
       department: 1,
       company: 1,
+      header:1,footer:1,
       issuingauthority: 1,
       branch: 1,
       unit: 1,

@@ -139,6 +139,8 @@ exports.getCompanyAllTemplate = catchAsyncErrors(async (req, res, next) => {
         pageformat: 1,
         headvalue: 1,
         tempcode: 1,
+        header:1,
+        footer:1,
         pagemode: 1,
         pagesize: 1,
         seal: 1,

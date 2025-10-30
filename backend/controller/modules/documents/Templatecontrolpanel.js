@@ -3,6 +3,7 @@ const catchAsyncErrors = require("../../../middleware/catchAsyncError");
 const User = require("../../../model/login/auth");
 const TemplatecontrolpanelModel = require("../../../model/modules/documents/Templatecontrolpnael");
 const mongoose = require("mongoose");
+const TemplateCreation = require("../../../model/modules/TemplateCreationModel");
 
 // Get TemplatecontrolpanelModel  => /api/TemplatecontrolpanelModel
 exports.getAllTemplatecontrolpanelModel = catchAsyncErrors(
@@ -64,10 +65,14 @@ exports.getAaccessibleBranchAllTemplatecontrolpanelModel = catchAsyncErrors(
 );
 exports.getAllFilterTemplatecontrolpanelModel = catchAsyncErrors(
   async (req, res, next) => {
-    let templatecontrolpanel;
+    let templatecontrolpanel = [],
+      headerfooter;
+    const { company, branch, template , pagename} = req?.body;
+
+    console.log(company, branch, template,pagename, "company, branch, template");
     try {
       templatecontrolpanel = await TemplatecontrolpanelModel.findOne(
-        { company: req.body.company, branch: req.body.branch },
+        { company, branch },
         {
           _id: 1,
           templatecontrolpanellog: {
@@ -75,12 +80,20 @@ exports.getAllFilterTemplatecontrolpanelModel = catchAsyncErrors(
           },
         }
       ).lean();
+
+      if (template) {
+        headerfooter = await TemplateCreation.findOne(
+          { company, branch, name: template , tempaltemode : pagename },
+          { header: 1, footer: 1 }
+        );
+      }
     } catch (err) {
       console.log(err, "err");
       return next(new ErrorHandler("Records not found!", 404));
     }
     return res.status(200).json({
       templatecontrolpanel,
+      headerfooter,
     });
   }
 );
