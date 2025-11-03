@@ -25,6 +25,8 @@ import {
   Popover,
   Checkbox,
   TextField,
+  Chip,
+  TextareaAutosize,
   IconButton,
 } from "@mui/material";
 import { userStyle, colourStyles } from "../../../pageStyle";
@@ -174,6 +176,22 @@ function DocumentPreparation() {
       try {
         // Get current server time and format it
         const time = await getCurrentServerTime();
+        const dateObj = new Date(time); // ensure it's a Date object
+
+        const hours = dateObj.getHours();
+        const minutes = dateObj.getMinutes();
+        const ampm = hours >= 12 ? "PM" : "AM";
+
+        // Convert 24-hour to 12-hour format
+        const formattedHour = (hours % 12 || 12).toString().padStart(2, "0");
+        const formattedMinute = minutes.toString().padStart(2, "0");
+        console.log(formattedHour, "formatted Hour");
+        setDocumentPrepartion({
+          ...documentPrepartion,
+          fromhour: formattedHour,
+          frommin: formattedMinute,
+          fromtime: ampm,
+        });
         setServerTime(time);
         setSelectMonthName(moment(time).format("MMMM"));
         setSelectedYear(moment(time).year());
@@ -281,6 +299,7 @@ function DocumentPreparation() {
       return response?.data?.finalresult ?? "";
       console.log(response?.data, "259 - document Preparation");
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -512,7 +531,7 @@ function DocumentPreparation() {
     setIsLetterHeadPopup(false);
     setHeaderOptions("Please Select Print Options");
     setHeadValue([]);
-    setPagePopUpOpen("");
+    // setPagePopUpOpen("");
     // setHeader("");
     // setfooter("")
     // setCheckingArray((prevArray) =>
@@ -609,6 +628,7 @@ function DocumentPreparation() {
         setError("Please Enter OTP");
       }
     } catch (err) {
+      console.log(err, "err");
       if (!err?.response?.data?.success) {
         setError(err?.response?.data?.message);
       }
@@ -773,6 +793,7 @@ function DocumentPreparation() {
         res_employee.data.departmentdetails
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -1013,9 +1034,15 @@ function DocumentPreparation() {
   const [sortingStatus, setSortingStatus] = useState("");
   const [documentPrepartion, setDocumentPrepartion] = useState({
     date: "",
+    fromhour: "",
+    frommin: "",
+    fromtime: "",
+    reservedKeywords: false,
     template: "Please Select Template Name",
     referenceno: "",
     documentname: "",
+    headertemplate: "",
+    footertemplate: "",
     templateno: "",
     pagenumberneed: "All Pages",
     signatureneed: "No Need",
@@ -1544,6 +1571,7 @@ function DocumentPreparation() {
         }))
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -1622,6 +1650,7 @@ function DocumentPreparation() {
         handleClickOpenPopupMalert();
       }
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -1686,6 +1715,7 @@ function DocumentPreparation() {
         handleClickOpenPopupMalert();
       }
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -1757,6 +1787,7 @@ function DocumentPreparation() {
         setSealStatus(e.seal);
       }
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -1797,7 +1828,8 @@ function DocumentPreparation() {
   //     return answerDate
 
   //     // setAttendanceDateStatus(answerDate);
-  //   } catch (err) {
+  //   }catch (err) {
+  // console.log(err , 'err')
   //     setLoadingAttDate(false);
   //     handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
   //   }
@@ -1814,6 +1846,7 @@ function DocumentPreparation() {
       });
       setAttStatus(res_vendor?.data?.attendancestatus);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -1861,6 +1894,7 @@ function DocumentPreparation() {
 
       setAttStatusOption(result.map((d) => d.name));
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -1961,6 +1995,7 @@ function DocumentPreparation() {
               monthSets: res_employee.data.departmentdetails,
             };
           } catch (err) {
+            console.log(err, "err");
             console.error(
               "Error fetching API data:",
               err.response?.data?.message || err
@@ -2478,6 +2513,7 @@ function DocumentPreparation() {
               selectedYear: finalSelectedYear,
             };
           } catch (err) {
+            console.log(err, "err");
             // setIsActive(false);
             console.log(err, "err1");
           }
@@ -2492,6 +2528,7 @@ function DocumentPreparation() {
             // console.log(itemsWithSerialNumber, 'itemsWithSerialNumber');
             return await Promise.all(itemsWithSerialNumber);
           } catch (err) {
+            console.log(err, "err");
             console.error("Error processing batch request items:", err);
             // setBankdetail(false);
             const messages = err?.response?.data?.message;
@@ -2524,6 +2561,7 @@ function DocumentPreparation() {
 
             return { allResultsItems };
           } catch (err) {
+            console.log(err, "err");
             console.log(err, "err");
           }
         }
@@ -2589,6 +2627,7 @@ function DocumentPreparation() {
       setViewData(finalSalaryDetails[0]);
       return finalSalaryDetails;
     } catch (err) {
+      console.log(err, "err");
       console.log(err);
       handleApiError(err, setShowAlert, handleClickOpenerr);
     }
@@ -2823,6 +2862,7 @@ function DocumentPreparation() {
 
       return itemsWithSerialNumber;
     } catch (err) {
+      console.log(err, "err");
       setLoader(false);
       handleApiError(
         err,
@@ -3920,6 +3960,7 @@ function DocumentPreparation() {
           return fianlResult;
         } catch (err) {
           console.log(err, "err");
+          console.log(err, "err");
 
           console.error("Error in POST request for batch:", batch.data, err);
         }
@@ -4379,6 +4420,7 @@ function DocumentPreparation() {
       return resultdata;
     } catch (err) {
       console.log(err, "err");
+      console.log(err, "err");
       // setLoader(true);
       handleApiError(
         err,
@@ -4411,6 +4453,7 @@ function DocumentPreparation() {
       return answer;
       // setProductionDateStatus(answer);
     } catch (err) {
+      console.log(err, "err");
       // setLoadingProdDate(false);
       handleApiError(
         err,
@@ -4458,6 +4501,8 @@ function DocumentPreparation() {
       CheckNoticePeriodMulti(ans);
       setEmployeeControlPanel(uniqueEntries[0]);
       setSelectedEmployeeValues(ans);
+      setallPasteNames(ans);
+      setValueEmp(ans);
     }
     setDocumentPrepartion({
       ...documentPrepartion,
@@ -4471,6 +4516,121 @@ function DocumentPreparation() {
     return valueCate.length
       ? valueCate.map(({ label }) => label).join(", ")
       : "Please Select Employee";
+  };
+
+  const [searchInputValue, setSearchInputValue] = useState("");
+
+  const handlePasteForEmp = (e, text) => {
+    console.log(text, "texttttttttttttttt");
+    e.preventDefault();
+    const pastedText = e.clipboardData.getData("text");
+
+    // Process the pasted text
+    const pastedNames = pastedText
+      .split(/[\n,]+/)
+      .map((name) => name.trim())
+      .filter((name) => name !== "");
+
+    if (pastedNames.length > 1 && text === "single") {
+      alert("Please paste only one name at a time.");
+      return;
+    }
+    // Update the state
+    updateEmployees(pastedNames, text);
+
+    // Clear the search input after paste
+    setSearchInputValue("");
+
+    // Refocus the element
+    e.target.focus();
+  };
+  const [allPastename, setallPasteNames] = useState([]);
+  const [valueEmp, setValueEmp] = React.useState([]); // State for employees
+  const [isBoxFocused, setIsBoxFocused] = React.useState(false); // Track focus state
+  // console.log(employeenames , "employeenames")
+  const updateEmployees = (pastedNames, text) => {
+    // Your existing update logic...
+    const namesArray = Array.isArray(pastedNames) ? pastedNames : [];
+
+    setallPasteNames(namesArray);
+
+    const availableOptions = employeenames?.map((data) =>
+      data?.value?.replace(/\s*\.\s*/g, ".").trim()
+    );
+
+    const matchedValues = namesArray.filter((name) =>
+      availableOptions.includes(name.replace(/\s*\.\s*/g, ".").trim())
+    );
+
+    // Update selected options
+    const newOptions = matchedValues.map((value) => ({
+      label: value,
+      value: value,
+    }));
+
+    if (text === "multi") {
+      setSelectedEmployee((prev) => {
+        const newValues = newOptions.filter(
+          (newOpt) => !prev.some((prevOpt) => prevOpt.value === newOpt.value)
+        );
+        return [...prev, ...newValues];
+      });
+      setValueEmp((prev) => [...new Set([...prev, ...matchedValues])]);
+      // Update other states...
+      setSelectedEmployeeValues((prev) => [
+        ...new Set([...prev, ...matchedValues]),
+      ]);
+    }
+    if (text === "single") {
+      console.log(valueEmp, matchedValues, "valueEmp");
+      setValueEmp((prev) => [...new Set([matchedValues[0]])]);
+      setDocumentPrepartion({
+        ...documentPrepartion,
+        person: matchedValues[0],
+      });
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      const boxElement = document.getElementById("paste-box"); // Add an ID to the Box
+      if (boxElement && !boxElement.contains(e.target)) {
+        setIsBoxFocused(false); // Reset focus state if clicking outside the Box
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleDelete = (e, value, page) => {
+    e.preventDefault();
+    console.log(value, "value");
+    setSelectedEmployee((current) =>
+      current.filter((emp) => emp.value !== value)
+    );
+    if (page === "single") {
+      setDocumentPrepartion({
+        ...documentPrepartion,
+        person: "Please Select Person",
+        sign: "Please Select Signature",
+        signature: "Please Select Signature",
+        seal: "Please Select Seal",
+        sealing: "Please Select Seal",
+        sort: "Please Select Sort",
+      });
+    }
+    setValueEmp((current) => current.filter((empValue) => empValue !== value));
+    setSelectedEmployeeValues((current) =>
+      current.filter((empValue) => empValue !== value)
+    );
+    setallPasteNames(
+      selectedEmployee
+        .filter((emp) => emp.value !== value)
+        .map((item) => item.value)
+    );
   };
 
   const [selectedBranch, setSelectedBranch] = useState([]);
@@ -4488,7 +4648,9 @@ function DocumentPreparation() {
       sign: "Please Select Signature",
       sealing: "Please Select Seal",
       person: "Please Select Person",
+      employeemode: "Please Select Employee Mode",
     });
+    setEmployeeModeOptions([]);
   };
   const customValueRendererBranch = (valueCate, _employeename) => {
     return valueCate.length
@@ -4520,6 +4682,7 @@ function DocumentPreparation() {
 
       setManualKeywordOptions(keywords);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4546,6 +4709,7 @@ function DocumentPreparation() {
         setSignature(base64);
       }
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4571,6 +4735,8 @@ function DocumentPreparation() {
 
       setUniqueCode(res?.data?.documentPreparation);
     } catch (err) {
+      console.log(err, "err");
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4601,6 +4767,7 @@ function DocumentPreparation() {
         cateCode;
       setCatCodeValue(value);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4628,6 +4795,7 @@ function DocumentPreparation() {
       setNoticePeriodEmpCheck(answer);
       setNoticePeriodEmpCheckPerson(answerPerson);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4654,6 +4822,7 @@ function DocumentPreparation() {
       setNoticePeriodEmpCheck(answer);
       setNoticePeriodEmpCheckPerson(answerPerson);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4702,6 +4871,7 @@ function DocumentPreparation() {
           : []
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4737,6 +4907,7 @@ function DocumentPreparation() {
           : []
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4762,6 +4933,7 @@ function DocumentPreparation() {
         }))
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4789,6 +4961,7 @@ function DocumentPreparation() {
           })
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4817,6 +4990,7 @@ function DocumentPreparation() {
           })
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4846,6 +5020,7 @@ function DocumentPreparation() {
 
       setUnitOptions(unitall);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4911,6 +5086,7 @@ function DocumentPreparation() {
 
       setTeamOptions(teamall);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -4952,6 +5128,7 @@ function DocumentPreparation() {
         }))
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -5003,6 +5180,7 @@ function DocumentPreparation() {
         }))
       );
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -5107,6 +5285,7 @@ function DocumentPreparation() {
       const response = await QRCode.toDataURL(` ${AllcodedataEdit}`);
       setImageUrlEdit(response);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -5158,15 +5337,14 @@ function DocumentPreparation() {
       let refNo =
         res_queue?.data?.documentPreparation?.length > 0
           ? res_queue?.data?.documentPreparation[0]?.templateno
-          : uniqueCode +
-            employeeControlPanel?.team?.slice(0, 3) +
-            "#" +
-            templateCreationValue?.tempcode +
-            "_" +
-            "0000";
+          : //  uniqueCode +
+            //   employeeControlPanel?.team?.slice(0, 3) +
+            //   "#" +
+            templateCreationValue?.tempcode + "_" + "0000";
       let codenum = refNo.split("_");
       return codenum;
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -5264,14 +5442,12 @@ function DocumentPreparation() {
         : prefixString;
 
     let newval = employeeControlPanel
-      ? uniqueCode +
-        employeeControlPanel?.team?.slice(0, 3) +
-        "#" +
-        templateCreationValue?.tempcode +
-        "_" +
-        postfixLength
-      : "Man" +
-        "#" +
+      ? // uniqueCode +
+        //   employeeControlPanel?.team?.slice(0, 3) +
+        //   "#" +
+        templateCreationValue?.tempcode + "_" + postfixLength
+      : // "Man" +
+        //   "#" +
         (templateCreationValue?.tempcode === "" ||
         templateCreationValue?.tempcode === undefined
           ? ""
@@ -5428,7 +5604,18 @@ function DocumentPreparation() {
       });
 
       // tempElement.appendChild(createFooterElementImage());
+
+      let checkReservedkeyWords = false;
       let texted = tempElement.innerHTML;
+      if (
+        texted.includes("$RSEAL$") ||
+        texted.includes("$FSIGNATURE$") ||
+        texted.includes("$SIGNATURE$")
+      ) {
+        checkReservedkeyWords = true;
+        console.log("Found at least one of the placeholders!");
+      }
+
       // console.log(manualKeywordOptions, "manualKeywordOptions")
       // manualKeywordOptions?.forEach((data) => {
       //   let replacement;
@@ -5506,6 +5693,10 @@ function DocumentPreparation() {
           )
           .replaceAll("$C:TIME$", new Date(NewDatetime).toLocaleTimeString())
           .replaceAll("$C:DATE$", date)
+          .replaceAll(
+            "$M:TIME$",
+            `${documentPrepartion?.fromhour}:${documentPrepartion?.frommin} ${documentPrepartion?.fromtime}`
+          )
           .replaceAll("$MANUALDATE$", documentPrepartion?.manualdate);
 
         setChecking(findMethod);
@@ -5564,6 +5755,10 @@ function DocumentPreparation() {
           .replaceAll(
             "$LEGALNAME$",
             employee?.legalname ? employee?.legalname : ""
+          )
+          .replaceAll(
+            "$M:TIME$",
+            `${documentPrepartion?.fromhour}:${documentPrepartion?.frommin} ${documentPrepartion?.fromtime}`
           )
           .replaceAll(
             "$RECENT_DESIGNATION$",
@@ -5875,6 +6070,7 @@ function DocumentPreparation() {
           documentname: documentPrepartion?.documentname,
           issuingauthority: documentPrepartion?.issuingauthority,
           department: String(documentPrepartion.department),
+          reservedKeywords: checkReservedkeyWords,
           company: employee?.company
             ? String(employee?.company)
             : String(documentPrepartion.company),
@@ -5923,6 +6119,8 @@ function DocumentPreparation() {
           sign: documentPrepartion.signature,
           sealing: documentPrepartion.seal,
           orientation: agendaEditStyles.orientation,
+          headertemplate: documentPrepartion?.header,
+          footertemplate: documentPrepartion?.footer,
         });
         setCheckingArray((prev) => [...answer, ...prev]);
         // console.log(answer, "4009")
@@ -5935,6 +6133,7 @@ function DocumentPreparation() {
         pagenumberneed: "All Pages",
         signatureneed: "No Need",
         qrcodevalue: "All Pages",
+        reservedKeywords: checkReservedkeyWords,
         issuingauthority: "Please Select Issuing Authority",
         attendancesort: "Please Select Attendance Sort",
         productionsort: "Please Select Production Sort",
@@ -5956,7 +6155,9 @@ function DocumentPreparation() {
       setSelectedEmployee([]);
       setIndexViewQuest(1);
       departmentDesigDateBased = "";
+      checkReservedkeyWords = false;
     } catch (err) {
+      console.log(err, "err");
       console.log(err, "err");
       setLoadingGeneratingDatas(false);
       handleApiError(
@@ -6268,10 +6469,11 @@ function DocumentPreparation() {
           // ---------- SIGNATURE & SEAL ----------
           // if (checkingArray[index]?.signatureneed) {
           const signatureNeed = checkingArray[index]?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword = checkingArray[index]?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -6380,6 +6582,17 @@ function DocumentPreparation() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName = checkingArray[index]?.empname || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
           }
@@ -6540,7 +6753,7 @@ function DocumentPreparation() {
             // Convert the watermark image to a base64 string
             const img = new Image();
             img.src = waterMarkText;
-            img.onload = () => {
+            img.onload = (e) => {
               const canvas = document.createElement("canvas");
               canvas.width = img.width;
               canvas.height = img.height;
@@ -6554,7 +6767,7 @@ function DocumentPreparation() {
                 ? checkingArray[index]?.qrcode
                 : ""; // QR code image URL
               if (checkingArray[index]?.qrcodeNeed) {
-                qrImg.onload = () => {
+                qrImg.onload = (e) => {
                   const qrCanvas = document.createElement("canvas");
                   qrCanvas.width = qrImg.width;
                   qrCanvas.height = qrImg.height;
@@ -6571,6 +6784,10 @@ function DocumentPreparation() {
                   pdf.save(
                     `${checkingArray[index]?.template}_${checkingArray[index]?.empname}.pdf`
                   );
+                  console.log(pagePopeOpen, "pagePopeOpen");
+                  if (pagePopeOpen === "Print") {
+                    generatePDFs(e);
+                  }
                   setLoadingPrintData(false);
                   setButtonLoading(false);
                   setHeaderOptionsButton(false);
@@ -6583,6 +6800,10 @@ function DocumentPreparation() {
                 pdf.save(
                   `${checkingArray[index]?.template}_${checkingArray[index]?.empname}.pdf`
                 );
+                console.log(pagePopeOpen, "pagePopeOpen");
+                if (pagePopeOpen === "Print") {
+                  generatePDFs(e);
+                }
                 setLoadingPrintData(false);
                 setButtonLoading(false);
                 setHeaderOptionsButton(false);
@@ -6812,10 +7033,11 @@ function DocumentPreparation() {
           // ---------- SIGNATURE & SEAL ----------
           // if (documentPrepartion?.signatureneed) {
           const signatureNeed = documentPrepartion?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword = documentPrepartion?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -6924,6 +7146,17 @@ function DocumentPreparation() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName = documentPrepartion?.person || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
           }
@@ -7338,9 +7571,12 @@ function DocumentPreparation() {
                 // ---------- SIGNATURE & SEAL ----------
                 // if (checkingArray[index]?.signatureneed) {
                 const signatureNeed = checkingArray[index]?.signatureneed; // "All Pages" or "End Page"
+                const hasReservedKeyword =
+                  checkingArray[index]?.reservedKeywords;
                 if (
-                  signatureNeed === "All Pages" ||
-                  (signatureNeed === "End Page" && i === totalPages)
+                  (signatureNeed === "All Pages" ||
+                    (signatureNeed === "End Page" && i === totalPages)) &&
+                  !(hasReservedKeyword && i === totalPages)
                 ) {
                   // Decide Y position right after content but above footer
                   const imageY = contentEndY;
@@ -7449,6 +7685,17 @@ function DocumentPreparation() {
                         userSigWidth,
                         userSigHeight
                       );
+                      const userName = checkingArray[index]?.empname || "";
+                      const sigX = rightX;
+                      const sigY = yPos - userSigUpShift; // vertical position for signature
+                      const sigWidth = userSigWidth;
+                      const sigHeight = userSigHeight;
+                      const textX = sigX + sigWidth - 17; // center align under signature
+                      const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                      doc.setFont("helvetica", "bold");
+                      doc.setFontSize(6);
+                      doc.text(userName, textX, textY, { align: "right" });
                     }
                   }
                 }
@@ -7991,10 +8238,11 @@ function DocumentPreparation() {
                 // ---------- SIGNATURE & SEAL ----------
                 // if (documentPrepartion?.signatureneed) {
                 const signatureNeed = documentPrepartion?.signatureneed; // "All Pages" or "End Page"
-
+                const hasReservedKeyword = documentPrepartion?.reservedKeywords;
                 if (
-                  signatureNeed === "All Pages" ||
-                  (signatureNeed === "End Page" && i === totalPages)
+                  (signatureNeed === "All Pages" ||
+                    (signatureNeed === "End Page" && i === totalPages)) &&
+                  !(hasReservedKeyword && i === totalPages)
                 ) {
                   // Decide Y position right after content but above footer
                   const imageY = contentEndY;
@@ -8103,6 +8351,17 @@ function DocumentPreparation() {
                         userSigWidth,
                         userSigHeight
                       );
+                      const userName = documentPrepartion?.person || "";
+                      const sigX = rightX;
+                      const sigY = yPos - userSigUpShift; // vertical position for signature
+                      const sigWidth = userSigWidth;
+                      const sigHeight = userSigHeight;
+                      const textX = sigX + sigWidth - 17; // center align under signature
+                      const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                      doc.setFont("helvetica", "bold");
+                      doc.setFontSize(6);
+                      doc.text(userName, textX, textY, { align: "right" });
                     }
                   }
                 }
@@ -8485,10 +8744,11 @@ function DocumentPreparation() {
         // ---------- SIGNATURE & SEAL ----------
         // if (documentPrepartion?.signatureneed) {
         const signatureNeed = documentPrepartion?.signatureneed; // "All Pages" or "End Page"
-
+        const hasReservedKeyword = documentPrepartion?.reservedKeywords;
         if (
-          signatureNeed === "All Pages" ||
-          (signatureNeed === "End Page" && i === totalPages)
+          (signatureNeed === "All Pages" ||
+            (signatureNeed === "End Page" && i === totalPages)) &&
+          !(hasReservedKeyword && i === totalPages)
         ) {
           // Decide Y position right after content but above footer
           const imageY = contentEndY;
@@ -8597,6 +8857,17 @@ function DocumentPreparation() {
                 userSigWidth,
                 userSigHeight
               );
+              const userName = documentPrepartion?.person || "";
+              const sigX = rightX;
+              const sigY = yPos - userSigUpShift; // vertical position for signature
+              const sigWidth = userSigWidth;
+              const sigHeight = userSigHeight;
+              const textX = sigX + sigWidth - 17; // center align under signature
+              const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(6);
+              doc.text(userName, textX, textY, { align: "right" });
             }
           }
         }
@@ -8923,10 +9194,11 @@ function DocumentPreparation() {
           // ---------- SIGNATURE & SEAL ----------
           // if (checkingArray[index]?.signatureneed) {
           const signatureNeed = checkingArray[index]?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword = checkingArray[index]?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -9035,6 +9307,17 @@ function DocumentPreparation() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName = checkingArray[index]?.empname || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
           }
@@ -9409,10 +9692,11 @@ function DocumentPreparation() {
           // ---------- SIGNATURE & SEAL ----------
           // if (documentPrepartion?.signatureneed) {
           const signatureNeed = documentPrepartion?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword = documentPrepartion?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -9521,6 +9805,17 @@ function DocumentPreparation() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName = documentPrepartion?.person || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
           }
@@ -9881,10 +10176,12 @@ function DocumentPreparation() {
               // if (response?.data?.sdocumentPreparation?.signatureneed) {
               const signatureNeed =
                 response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
-
+              const hasReservedKeyword =
+                response?.data?.sdocumentPreparation?.reservedKeywords;
               if (
-                signatureNeed === "All Pages" ||
-                (signatureNeed === "End Page" && i === totalPages)
+                (signatureNeed === "All Pages" ||
+                  (signatureNeed === "End Page" && i === totalPages)) &&
+                !(hasReservedKeyword && i === totalPages)
               ) {
                 // Decide Y position right after content but above footer
                 const imageY = contentEndY;
@@ -9995,6 +10292,18 @@ function DocumentPreparation() {
                       userSigWidth,
                       userSigHeight
                     );
+                    const userName =
+                      response?.data?.sdocumentPreparation?.person || "";
+                    const sigX = rightX;
+                    const sigY = yPos - userSigUpShift; // vertical position for signature
+                    const sigWidth = userSigWidth;
+                    const sigHeight = userSigHeight;
+                    const textX = sigX + sigWidth - 17; // center align under signature
+                    const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                    doc.setFont("helvetica", "bold");
+                    doc.setFontSize(6);
+                    doc.text(userName, textX, textY, { align: "right" });
                   }
                 }
               }
@@ -10218,6 +10527,7 @@ function DocumentPreparation() {
       setDocumentPreparationEdit(res?.data?.sdocumentPreparation);
       handleClickOpen();
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -10244,6 +10554,7 @@ function DocumentPreparation() {
       setPopupSeverity("success");
       handleClickOpenPopup();
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -10279,6 +10590,8 @@ function DocumentPreparation() {
             documentname: String(data.documentname),
             referenceno: data?.referenceno,
             tempcode: data?.tempcode,
+            header: data?.headertemplate,
+            footer: data?.footertemplate,
             termsAndConditons: templateCreationValue?.termsAndConditons,
             templateno: data?.autoid,
             email: data?.email,
@@ -10289,6 +10602,7 @@ function DocumentPreparation() {
             branch: String(data.branch),
             unit: String(data.unit),
             team: String(data.team),
+            reservedKeywords: Boolean(data.reservedKeywords),
             pagenumberneed: String(data.pagenumberneed),
             signatureneed: String(data.signatureneed),
             topcontent: String(data.topcontent),
@@ -10355,6 +10669,7 @@ function DocumentPreparation() {
       setPopupSeverity("success");
       handleClickOpenPopup();
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -10396,14 +10711,12 @@ function DocumentPreparation() {
         : prefixString;
 
     let newval = employeeControlPanel
-      ? uniqueCode +
-        employeeControlPanel?.team?.slice(0, 3) +
-        "#" +
-        templateCreationValue?.tempcode +
-        "_" +
-        postfixLength
-      : "Man" +
-        "#" +
+      ? // uniqueCode +
+        //   employeeControlPanel?.team?.slice(0, 3) +
+        //   "#" +
+        templateCreationValue?.tempcode + "_" + postfixLength
+      : // "Man" +
+        //   "#" +
         (templateCreationValue?.tempcode === "" ||
         templateCreationValue?.tempcode === undefined
           ? ""
@@ -10471,6 +10784,9 @@ function DocumentPreparation() {
         tempcode: templateCreationValue?.tempcode,
         documentneed: documentPrepartion?.documentneed,
         templateno: newval,
+        header: documentPrepartion?.header,
+        footer: documentPrepartion?.footer,
+        reservedKeywords: Boolean(documentPrepartion.reservedKeywords),
         email: emailUser,
         employeemode: String(documentPrepartion.employeemode),
         issuingauthority: String(documentPrepartion.issuingauthority),
@@ -10550,6 +10866,7 @@ function DocumentPreparation() {
       setSearchQuery("");
       setBtnLoad(false);
     } catch (err) {
+      console.log(err, "err");
       setBtnLoad(false);
       handleApiError(
         err,
@@ -11196,6 +11513,8 @@ function DocumentPreparation() {
       signature: "Please Select Signature",
       seal: "Please Select Seal",
     });
+                                setallPasteNames([]);
+                        setValueEmp([]);
     setCheckingArray([]);
     setSelectedEmployeeValues([]);
     setSelectedEmployee([]);
@@ -11211,8 +11530,27 @@ function DocumentPreparation() {
     handleClickOpenPopup();
   };
 
-  const handlecleared = (e) => {
+  const handlecleared = async (e) => {
     e.preventDefault();
+                            setallPasteNames([]);
+                        setValueEmp([]);
+    const time = await getCurrentServerTime();
+    const dateObj = new Date(time); // ensure it's a Date object
+
+    const hours = dateObj.getHours();
+    const minutes = dateObj.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    // Convert 24-hour to 12-hour format
+    const formattedHour = (hours % 12 || 12).toString().padStart(2, "0");
+    const formattedMinute = minutes.toString().padStart(2, "0");
+    console.log(formattedHour, "formatted Hour");
+    setDocumentPrepartion({
+      ...documentPrepartion,
+      fromhour: formattedHour,
+      frommin: formattedMinute,
+      fromtime: ampm,
+    });
     setGenerateData(false);
     setCheckingArray([]);
     setIndexViewQuest(1);
@@ -11223,6 +11561,9 @@ function DocumentPreparation() {
       documentname: "",
       template: "Please Select Template Name",
       referenceno: "",
+      fromhour: formattedHour,
+      frommin: formattedMinute,
+      fromtime: ampm,
       templateno: "",
       pagenumberneed: "All Pages",
       signatureneed: "No Need",
@@ -11290,6 +11631,8 @@ function DocumentPreparation() {
     e.preventDefault();
     setGenerateData(false);
     setSelectedBranch([]);
+                            setallPasteNames([]);
+                        setValueEmp([]);
     setSelectedBranchValues([]);
     setDocumentPrepartion({
       date: "",
@@ -11320,6 +11663,7 @@ function DocumentPreparation() {
       heading: "Please Select Header Option",
       issuedpersondetails: "",
     });
+    
     // setHeadValue([])
     setSelectedHeadOpt([]);
     // setHeader("")
@@ -11403,6 +11747,7 @@ function DocumentPreparation() {
       setChanged("ChangedStatus");
       setLoader(false);
     } catch (err) {
+      console.log(err, "err");
       setLoader(false);
       handleApiError(
         err,
@@ -11466,6 +11811,7 @@ function DocumentPreparation() {
       setChanged("ChangedStatus");
       setLoader(false);
     } catch (err) {
+      console.log(err, "err");
       setLoader(false);
       handleApiError(
         err,
@@ -11508,6 +11854,7 @@ function DocumentPreparation() {
       setPopupSeverity("success");
       handleClickOpenPopup();
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -11572,6 +11919,7 @@ function DocumentPreparation() {
         setChanged(e);
       }
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -11776,10 +12124,12 @@ function DocumentPreparation() {
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
           const signatureNeed =
             response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword =
+            response?.data?.sdocumentPreparation?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -11890,6 +12240,18 @@ function DocumentPreparation() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName =
+                  response?.data?.sdocumentPreparation?.person || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
           }
@@ -12170,6 +12532,7 @@ function DocumentPreparation() {
 
       handleClickOpenview();
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -12191,6 +12554,7 @@ function DocumentPreparation() {
       handleClickOpeninfo();
       setDocumentPreparationEdit(res?.data?.sdocumentPreparation);
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -12358,6 +12722,7 @@ function DocumentPreparation() {
         );
       }
     } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -12799,10 +13164,12 @@ function DocumentPreparation() {
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
           const signatureNeed =
             response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword =
+            response?.data?.sdocumentPreparation?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -12913,6 +13280,18 @@ function DocumentPreparation() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName =
+                  response?.data?.sdocumentPreparation?.empname || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
           }
@@ -13271,10 +13650,12 @@ function DocumentPreparation() {
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
           const signatureNeed =
             response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword =
+            response?.data?.sdocumentPreparation?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -13385,6 +13766,18 @@ function DocumentPreparation() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName =
+                  response?.data?.sdocumentPreparation?.person || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
           }
@@ -13744,19 +14137,6 @@ function DocumentPreparation() {
     </Box>
   );
 
-  let newvalues = employeeControlPanel
-    ? value +
-      "_" +
-      `000${checkingArray?.length === 0 ? 1 : checkingArray?.length + 1}`
-    : "Man" +
-      "#" +
-      (templateCreationValue?.tempcode === "" ||
-      templateCreationValue?.tempcode === undefined
-        ? ""
-        : templateCreationValue?.tempcode) +
-      "_" +
-      "0001";
-
   // let refNo = templateCreationArray[templateCreationArray.length - 1].templateno;
   // let codenum = refNo.split("#");
   // let prefixLength = Number(codenum[1]) + 1;
@@ -13818,6 +14198,155 @@ function DocumentPreparation() {
                     </FormControl>
                   </Box>
                 </Grid>
+                <Grid item lg={3} md={3} sm={6} xs={12}>
+                  <Typography>
+                    Document Time <b style={{ color: "red" }}>*</b>
+                  </Typography>
+                  <Grid container>
+                    <Grid item xs={4} sm={4} md={4}>
+                      <FormControl size="small" fullWidth>
+                        <Select
+                          labelId="demo-select-small"
+                          id="demo-select-small"
+                          value={documentPrepartion.fromhour}
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                maxHeight: 200,
+                                width: 80,
+                              },
+                            },
+                          }}
+                          onChange={(e) => {
+                            setDocumentPrepartion({
+                              ...documentPrepartion,
+                              fromhour: e.target.value,
+                            });
+                            // calculateShiftHours("fromhourvalue", e.target.value);
+                          }}
+                        >
+                          <MenuItem value={"01"}>01</MenuItem>
+                          <MenuItem value={"02"}>02</MenuItem>
+                          <MenuItem value={"03"}>03</MenuItem>
+                          <MenuItem value={"04"}>04</MenuItem>
+                          <MenuItem value={"05"}>05</MenuItem>
+                          <MenuItem value={"06"}>06</MenuItem>
+                          <MenuItem value={"07"}>07</MenuItem>
+                          <MenuItem value={"08"}>08</MenuItem>
+                          <MenuItem value={"09"}>09</MenuItem>
+                          <MenuItem value={"10"}>10</MenuItem>
+                          <MenuItem value={11}>11</MenuItem>
+                          <MenuItem value={12}>12</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={4} sm={4} md={4}>
+                      <FormControl size="small" fullWidth>
+                        <Select
+                          labelId="demo-select-small"
+                          id="demo-select-small"
+                          value={documentPrepartion.frommin}
+                          MenuProps={{
+                            PaperProps: {
+                              style: {
+                                maxHeight: 200,
+                                width: 80,
+                              },
+                            },
+                          }}
+                          onChange={(e) => {
+                            setDocumentPrepartion({
+                              ...documentPrepartion,
+                              frommin: e.target.value,
+                            });
+                            // calculateShiftHours("fromminutesvalue", e.target.value);
+                          }}
+                        >
+                          <MenuItem value={"00"}>00</MenuItem>
+                          <MenuItem value={"01"}>01</MenuItem>
+                          <MenuItem value={"02"}>02</MenuItem>
+                          <MenuItem value={"03"}>03</MenuItem>
+                          <MenuItem value={"04"}>04</MenuItem>
+                          <MenuItem value={"05"}>05</MenuItem>
+                          <MenuItem value={"06"}>06</MenuItem>
+                          <MenuItem value={"07"}>07</MenuItem>
+                          <MenuItem value={"08"}>08</MenuItem>
+                          <MenuItem value={"09"}>09</MenuItem>
+                          <MenuItem value={"10"}>10</MenuItem>
+                          <MenuItem value={11}>11</MenuItem>
+                          <MenuItem value={12}>12</MenuItem>
+                          <MenuItem value={13}>13</MenuItem>
+                          <MenuItem value={14}>14</MenuItem>
+                          <MenuItem value={15}>15</MenuItem>
+                          <MenuItem value={16}>16</MenuItem>
+                          <MenuItem value={17}>17</MenuItem>
+                          <MenuItem value={18}>18</MenuItem>
+                          <MenuItem value={19}>19</MenuItem>
+                          <MenuItem value={20}>20</MenuItem>
+                          <MenuItem value={21}>21</MenuItem>
+                          <MenuItem value={22}>22</MenuItem>
+                          <MenuItem value={23}>23</MenuItem>
+                          <MenuItem value={24}>24</MenuItem>
+                          <MenuItem value={25}>25</MenuItem>
+                          <MenuItem value={26}>26</MenuItem>
+                          <MenuItem value={27}>27</MenuItem>
+                          <MenuItem value={28}>28</MenuItem>
+                          <MenuItem value={29}>29</MenuItem>
+                          <MenuItem value={30}>30</MenuItem>
+                          <MenuItem value={31}>31</MenuItem>
+                          <MenuItem value={32}>32</MenuItem>
+                          <MenuItem value={33}>33</MenuItem>
+                          <MenuItem value={34}>34</MenuItem>
+                          <MenuItem value={35}>35</MenuItem>
+                          <MenuItem value={36}>36</MenuItem>
+                          <MenuItem value={37}>37</MenuItem>
+                          <MenuItem value={38}>38</MenuItem>
+                          <MenuItem value={39}>39</MenuItem>
+                          <MenuItem value={40}>40</MenuItem>
+                          <MenuItem value={41}>41</MenuItem>
+                          <MenuItem value={42}>42</MenuItem>
+                          <MenuItem value={43}>43</MenuItem>
+                          <MenuItem value={44}>44</MenuItem>
+                          <MenuItem value={45}>45</MenuItem>
+                          <MenuItem value={46}>46</MenuItem>
+                          <MenuItem value={47}>47</MenuItem>
+                          <MenuItem value={48}>48</MenuItem>
+                          <MenuItem value={49}>49</MenuItem>
+                          <MenuItem value={50}>50</MenuItem>
+                          <MenuItem value={51}>51</MenuItem>
+                          <MenuItem value={52}>52</MenuItem>
+                          <MenuItem value={53}>53</MenuItem>
+                          <MenuItem value={54}>54</MenuItem>
+                          <MenuItem value={55}>55</MenuItem>
+                          <MenuItem value={56}>56</MenuItem>
+                          <MenuItem value={57}>57</MenuItem>
+                          <MenuItem value={58}>58</MenuItem>
+                          <MenuItem value={59}>59</MenuItem>
+                          <MenuItem value={60}>60</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                    <Grid item xs={4} sm={4} md={4}>
+                      <FormControl size="small" fullWidth>
+                        <Select
+                          labelId="demo-select-small"
+                          id="demo-select-small"
+                          value={documentPrepartion.fromtime}
+                          onChange={(e) => {
+                            setDocumentPrepartion({
+                              ...documentPrepartion,
+                              fromtime: e.target.value,
+                            });
+                            // calculateShiftHours("fromtimevalue", e.target.value);
+                          }}
+                        >
+                          <MenuItem value={"AM"}>AM</MenuItem>
+                          <MenuItem value={"PM"}>PM</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  </Grid>
+                </Grid>
                 <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
@@ -13865,6 +14394,7 @@ function DocumentPreparation() {
                           header: e.header,
                           footer: e.footer,
                           documentname: e.documentname,
+                          employeemode: "Please Select Employee Mode",
                           sign: "Please Select Signature",
                           sealing: "Please Select Seal",
                           person: "Please Select Person",
@@ -13932,42 +14462,6 @@ function DocumentPreparation() {
                     />
                   </FormControl>
                 </Grid>
-                {/* <Grid item md={3} xs={12} sm={12}>
-                  <FormControl fullWidth size="small">
-                    <Typography>Reason</Typography>
-                    <Selects
-                      maxMenuHeight={300}
-                      options={[
-                        { label: 'Document', value: 'Document' },
-                        { label: 'Attendance', value: 'Attendance' },
-                        { label: 'Production', value: 'Production' },
-                        { label: 'Salary', value: 'Salary' },
-                      ]}
-                      value={{ label: documentPrepartion.reason, value: documentPrepartion.reason }}
-                      onChange={(e) => {
-                        setDocumentPrepartion({
-                          ...documentPrepartion,
-                          reason: e.value,
-                          datechoosen: '',
-                          monthchoosen: 'Please Select Month',
-
-                          sort: 'Please Select Sort',
-                          sign: 'Please Select Signature',
-                          sealing: 'Please Select Seal',
-                          person: 'Please Select Person',
-                        });
-                        setProductionDateStatus('');
-                        setAttendanceDateStatus('');
-                        setAttendanceMonthStatus('');
-                        setProductionMonthStatus('');
-                        setChecking('');
-                        setCheckingArray([]);
-                        setSelectedEmployeeValues([]);
-                        setSelectedEmployee([]);
-                      }}
-                    />
-                  </FormControl>
-                </Grid> */}
                 {documentPrepartion.employeemode != "Manual" && (
                   <>
                     <Grid item md={2} xs={12} sm={12}>
@@ -14091,6 +14585,8 @@ function DocumentPreparation() {
                               issuingauthority:
                                 "Please Select Issuing Authority",
                             });
+                            setallPasteNames([]);
+                            setValueEmp([]);
                             setDepartmentCheck(true);
                             fetchTeamNames(
                               e.value,
@@ -14133,6 +14629,8 @@ function DocumentPreparation() {
                         setAllBranch(e.value);
                         setAllBranchValue(true);
                         setTeamOptions([]);
+                        setallPasteNames([]);
+                        setValueEmp([]);
                         setDocumentPrepartion({
                           ...documentPrepartion,
                           company: e.value,
@@ -14167,6 +14665,8 @@ function DocumentPreparation() {
                         UnitDropDowns(e.value);
                         setAllBranch(e.value);
                         setAllBranchValue(true);
+                        setallPasteNames([]);
+                        setValueEmp([]);
                         if (documentPrepartion.employeemode === "Manual") {
                           const headerFooter = {
                             header: documentPrepartion?.header,
@@ -14225,6 +14725,8 @@ function DocumentPreparation() {
                               team: "Please Select Team",
                               person: "Please Select Person",
                             });
+                            setallPasteNames([]);
+                            setValueEmp([]);
                             setEmployeenames([]);
                             setSelectedEmployee([]);
                             setSelectedEmployeeValues([]);
@@ -14256,6 +14758,8 @@ function DocumentPreparation() {
                             fetchAllEmployee(e);
                             fetchIsssuingAuthority(e, "Team");
                             setSelectedEmployee([]);
+                            setallPasteNames([]);
+                            setValueEmp([]);
                             setSelectedEmployeeValues([]);
                           }}
                         />
@@ -14265,68 +14769,267 @@ function DocumentPreparation() {
                 )}
                 {documentPrepartion.employeemode !== "Manual" &&
                   !DocumentNeed && (
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>
-                          Person<b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <Selects
-                          maxMenuHeight={300}
-                          options={employeenames}
-                          value={{
-                            label: documentPrepartion.person,
-                            value: documentPrepartion.person,
-                          }}
-                          onChange={(e) => {
-                            setDocumentPrepartion({
-                              ...documentPrepartion,
-                              person: e.value,
-                              sign: "Please Select Signature",
-                              signature: "Please Select Signature",
-                              seal: "Please Select Seal",
-                              sealing: "Please Select Seal",
-                              sort: "Please Select Sort",
-                            });
+                    <>
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>
+                            Person<b style={{ color: "red" }}>*</b>
+                          </Typography>
+                          <Selects
+                            maxMenuHeight={300}
+                            options={employeenames}
+                            value={{
+                              label: documentPrepartion.person,
+                              value: documentPrepartion.person,
+                            }}
+                            onChange={(e) => {
+                              setDocumentPrepartion({
+                                ...documentPrepartion,
+                                person: e.value,
+                                sign: "Please Select Signature",
+                                signature: "Please Select Signature",
+                                seal: "Please Select Seal",
+                                sealing: "Please Select Seal",
+                                sort: "Please Select Sort",
+                              });
 
-                            setEmployeeValue(e.value);
-                            setEmployeeUserName(e.username);
+                              setEmployeeValue(e.value);
+                              setEmployeeUserName(e.username);
+                              setallPasteNames([e.value]);
+                              setValueEmp([e.value]);
+                              CheckNoticePeriod(e.value);
+                              TemplateDropdownsValue(
+                                templateCreationValue,
+                                e,
+                                documentPrepartion
+                              );
+                              IdentifyUserCode(e);
+                              setEmployeeControlPanel(e);
+                              setChecking("");
+                              setProductionDateStatus("");
+                              setAttendanceDateStatus("");
+                              setAttendanceMonthStatus("");
+                              setProductionMonthStatus("");
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
 
-                            CheckNoticePeriod(e.value);
-                            TemplateDropdownsValue(
-                              templateCreationValue,
-                              e,
-                              documentPrepartion
-                            );
-                            IdentifyUserCode(e);
-                            setEmployeeControlPanel(e);
-                            setChecking("");
-                            setProductionDateStatus("");
-                            setAttendanceDateStatus("");
-                            setAttendanceMonthStatus("");
-                            setProductionMonthStatus("");
-                          }}
-                        />
-                      </FormControl>
-                    </Grid>
+                      <Grid
+                        item
+                        md={6}
+                        sm={12}
+                        xs={12}
+                        sx={{ display: "flex", flexDirection: "row" }}
+                      >
+                        <FormControl fullWidth size="small">
+                          {/* <Typography>Selected Employees</Typography> */}
+                          <Typography>
+                            Selected Employees
+                            &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Employees
+                            Count:{" "}
+                            <Typography
+                              component="span"
+                              fontWeight="bold"
+                              color="primary"
+                              sx={{ fontSize: "1.1rem" }}
+                            >
+                              {documentPrepartion.person !==
+                              "Please Select Person"
+                                ? 1
+                                : 0}
+                            </Typography>
+                          </Typography>
+                          <div
+                            id="paste-box" // Add an ID to the Box
+                            tabIndex={0} // Make the div focusable
+                            style={{
+                              border: "1px solid #ccc",
+                              borderRadius: "3.75px",
+                              height: "110px",
+                              overflow: "auto",
+                            }}
+                            onPaste={(e) =>
+                              handlePasteForEmp(
+                                e,
+                                DocumentNeed ? "multi" : "single"
+                              )
+                            }
+                            onFocus={() => setIsBoxFocused(true)} // Set focus state to true
+                            onBlur={(e) => {
+                              if (isBoxFocused) {
+                                e.target.focus(); // Refocus only if the Box was previously focused
+                              }
+                            }}
+                          >
+                            {valueEmp.map((value) => (
+                              <Chip
+                                key={value}
+                                label={value}
+                                clickable
+                                sx={{ margin: 0.2, backgroundColor: "#FFF" }}
+                                onDelete={(e) =>
+                                  handleDelete(e, value, "single")
+                                }
+                                onClick={() => console.log("clicked chip")}
+                              />
+                            ))}
+                          </div>
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={3} xs={12} sm={6}>
+                        <Typography>Mismatch Employee</Typography>
+                        {allPastename.filter(
+                          (d) =>
+                            ![documentPrepartion.person]?.includes(
+                              d.replace(/\s*\.\s*/g, ".").trim()
+                            )
+                        ).length > 2 ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            onClick={getCode}
+                          >
+                            VIEW
+                          </Button>
+                        ) : (
+                          <TextareaAutosize
+                            aria-label="maximum height"
+                            minRows={5}
+                            style={{ width: "100%" }}
+                            // value={mismatchUsers.map((item, index) => `${index + 1}) ${item}`).join('\n')} />
+                            value={allPastename
+                              .filter(
+                                (d) =>
+                                  ![documentPrepartion.person].includes(
+                                    d.replace(/\s*\.\s*/g, ".").trim()
+                                  )
+                              )
+                              .slice(0, 2)
+                              .join(", ")}
+                          />
+                        )}
+                      </Grid>
+                    </>
                   )}
                 {documentPrepartion.employeemode !== "Manual" &&
                   DocumentNeed && (
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>
-                          Person<b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <MultiSelect
-                          options={employeenames}
-                          value={selectedEmployee}
-                          onChange={(e) => {
-                            handleEmployeeChange(e);
-                          }}
-                          valueRenderer={customValueRendererEmployee}
-                          labelledBy="Please Select Employee"
-                        />
-                      </FormControl>
-                    </Grid>
+                    <>
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>
+                            Person<b style={{ color: "red" }}>*</b>
+                          </Typography>
+                          <MultiSelect
+                            options={employeenames}
+                            value={selectedEmployee}
+                            onChange={(e) => {
+                              handleEmployeeChange(e);
+                            }}
+                            inputValue={searchInputValue}
+                            valueRenderer={customValueRendererEmployee}
+                            labelledBy="Please Select Employee"
+                          />
+                        </FormControl>
+                      </Grid>
+
+                      <Grid
+                        item
+                        md={6}
+                        sm={12}
+                        xs={12}
+                        sx={{ display: "flex", flexDirection: "row" }}
+                      >
+                        <FormControl fullWidth size="small">
+                          {/* <Typography>Selected Employees</Typography> */}
+                          <Typography>
+                            Selected Employees
+                            &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Employees
+                            Count:{" "}
+                            <Typography
+                              component="span"
+                              fontWeight="bold"
+                              color="primary"
+                              sx={{ fontSize: "1.1rem" }}
+                            >
+                              {selectedEmployeeValues?.length
+                                ? selectedEmployeeValues?.length
+                                : 0}
+                            </Typography>
+                          </Typography>
+                          <div
+                            id="paste-box" // Add an ID to the Box
+                            tabIndex={0} // Make the div focusable
+                            style={{
+                              border: "1px solid #ccc",
+                              borderRadius: "3.75px",
+                              height: "110px",
+                              overflow: "auto",
+                            }}
+                            onPaste={(e) =>
+                              handlePasteForEmp(
+                                e,
+                                DocumentNeed ? "multi" : "single"
+                              )
+                            }
+                            onFocus={() => setIsBoxFocused(true)} // Set focus state to true
+                            onBlur={(e) => {
+                              if (isBoxFocused) {
+                                e.target.focus(); // Refocus only if the Box was previously focused
+                              }
+                            }}
+                          >
+                            {valueEmp.map((value) => (
+                              <Chip
+                                key={value}
+                                label={value}
+                                clickable
+                                sx={{ margin: 0.2, backgroundColor: "#FFF" }}
+                                onDelete={(e) =>
+                                  handleDelete(e, value, "multi")
+                                }
+                                onClick={() => console.log("clicked chip")}
+                              />
+                            ))}
+                          </div>
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={3} xs={12} sm={6}>
+                        <Typography>Mismatch Employee</Typography>
+                        {allPastename.filter(
+                          (d) =>
+                            !selectedEmployeeValues?.includes(
+                              d.replace(/\s*\.\s*/g, ".").trim()
+                            )
+                        ).length > 2 ? (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            onClick={getCode}
+                          >
+                            VIEW
+                          </Button>
+                        ) : (
+                          <TextareaAutosize
+                            aria-label="maximum height"
+                            minRows={5}
+                            style={{ width: "100%" }}
+                            // value={mismatchUsers.map((item, index) => `${index + 1}) ${item}`).join('\n')} />
+                            value={allPastename
+                              .filter(
+                                (d) =>
+                                  !selectedEmployeeValues.includes(
+                                    d.replace(/\s*\.\s*/g, ".").trim()
+                                  )
+                              )
+                              .slice(0, 2)
+                              .join(", ")}
+                          />
+                        )}
+                      </Grid>
+                    </>
                   )}
 
                 {AttendanceNeed && (

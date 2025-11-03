@@ -972,7 +972,7 @@ function TempControlPanel() {
     setOption4Edit(selectedOption);
     handleClose4Edit();
     setDocBodyHeader4Edit("Please Select Document");
-    setdocumentFilesDOcumentFrontHeaderEdit([]);
+    setdocumentFilesDOcumentFrontHeaderEdit("");
   };
 
   //5th
@@ -1779,6 +1779,10 @@ function TempControlPanel() {
     setIsTodoQrInfoEdit(Array(qrInfoTodosEdit.length).fill(false));
     setIsTodoEditCCEmailEdit(Array(ccEmailTodoEdit.length).fill(false));
     setIsTodoEditBCCEmailEdit(Array(bccEmailTodoEdit.length).fill(false));
+    setIsEditingHeaderEdit(false)
+    setEditIndexHeaderEdit(null)
+    setIsEditingFooterEdit(false)
+    setEditIndexFooterEdit(null)
   };
 
   // info model
@@ -4364,14 +4368,12 @@ function TempControlPanel() {
       const file = resume[0];
       // reader.readAsDataURL(file);
       // reader.onload = () => {
-      setdocumentFilesDOcumentBodyContentEdit(
-        {
-          name: file.name,
-          file: file,
-          // preview: reader.result,
-          remark: "BAckground Image",
-        },
-      );
+      setdocumentFilesDOcumentBodyContentEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "BAckground Image",
+      });
       // };
     }
   };
@@ -4402,14 +4404,14 @@ function TempControlPanel() {
       const file = resume[0];
       // reader.readAsDataURL(file);
       // reader.onload = () => {
-      setdocumentFilesDOcumentFrontHeaderEdit([
+      setdocumentFilesDOcumentFrontHeaderEdit(
         {
           name: file.name,
           file: file,
           // preview: reader.result,
           remark: "resume file",
         },
-      ]);
+      );
       // };
     }
   };
@@ -4640,7 +4642,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4655,7 +4657,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4670,7 +4672,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4685,7 +4687,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4700,7 +4702,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4715,7 +4717,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4730,7 +4732,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4745,7 +4747,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4760,7 +4762,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4775,7 +4777,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4790,7 +4792,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4805,7 +4807,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4820,7 +4822,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4835,7 +4837,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4851,7 +4853,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4866,7 +4868,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4882,7 +4884,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4898,7 +4900,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4914,7 +4916,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -4929,7 +4931,7 @@ function TempControlPanel() {
     }
     if (file?.path) {
       // Extract filename from the stored path
-      const filename = file.path.split("\\").pop(); // works for Windows paths
+      const filename = file?.name; // works for Windows paths
       const fileUrl = `${BASE_URL}/templatecontrolpanel/${filename}`;
       window.open(fileUrl, "_blank");
       return;
@@ -5092,7 +5094,7 @@ function TempControlPanel() {
                         variant="contained"
                         size="small"
                         component="label"
-                        disabled={isEditingHeaderCreate}
+                        disabled={isEditingHeaderCreate && documentFilesDocumentContentHeader}
                         sx={{
                           ...buttonStyles.buttonsubmit,
                           "@media only screen and (max-width:550px)": {
@@ -5122,7 +5124,7 @@ function TempControlPanel() {
                         !documentFilesDocumentContentHeader && (
                           <Button
                             variant="contained"
-                            disabled={isEditingHeaderCreate}
+                            disabled={isEditingHeaderCreate && documentFilesDocumentContentHeader}
                             size="small"
                             component="label"
                             sx={{
@@ -5150,7 +5152,7 @@ function TempControlPanel() {
                         <FormControl fullWidth sx={{ marginTop: "10px" }}>
                           <Selects
                             options={orgDocuments}
-                            disabled={isEditingHeaderCreate}
+                             disabled={isEditingHeaderCreate && documentFilesDocumentContentHeader}
                             value={{
                               value: docBodyHeader,
                               label: docBodyHeader,
@@ -5369,7 +5371,7 @@ function TempControlPanel() {
                       <div>
                         <Button
                           variant="contained"
-                          disabled={isEditingFooterCreate}
+                          disabled={isEditingFooterCreate && documentFilesDocumentContentFooter}
                           size="small"
                           component="label"
                           onClick={handleClick2}
@@ -5405,7 +5407,7 @@ function TempControlPanel() {
                           !documentFilesDocumentContentFooter && (
                             <Button
                               variant="contained"
-                              disabled={isEditingFooterCreate}
+                             disabled={isEditingFooterCreate && documentFilesDocumentContentFooter}
                               size="small"
                               component="label"
                               sx={{
@@ -5433,7 +5435,7 @@ function TempControlPanel() {
                           <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              disabled={isEditingFooterCreate}
+                             disabled={isEditingFooterCreate && documentFilesDocumentContentFooter}
                               value={{
                                 value: docBodyHeader2,
                                 label: docBodyHeader2,
@@ -7145,9 +7147,7 @@ function TempControlPanel() {
                                     cursor: "pointer",
                                   }}
                                   onClick={() =>
-                                    renderFilePreviewSeal(
-                                      documentFilesSeal
-                                    )
+                                    renderFilePreviewSeal(documentFilesSeal)
                                   }
                                 />
                               </Grid>
@@ -8886,7 +8886,10 @@ function TempControlPanel() {
                         <Button
                           variant="contained"
                           size="small"
-                          disabled={isEditingHeaderEdit}
+                          disabled={
+                            isEditingHeaderEdit &&
+                            documentFilesDocumentContentHeaderEdit
+                          }
                           component="label"
                           sx={{
                             ...buttonStyles.buttonsubmit,
@@ -8918,10 +8921,13 @@ function TempControlPanel() {
                         </Menu>
 
                         {optionEdit === "local" &&
-                          !documentFilesDocumentContentHeaderEdit?.name && (
+                          !documentFilesDocumentContentHeaderEdit && (
                             <Button
                               variant="contained"
-                              disabled={isEditingHeaderEdit}
+                              disabled={
+                                isEditingHeaderEdit &&
+                                documentFilesDocumentContentHeaderEdit
+                              }
                               size="small"
                               component="label"
                               sx={{
@@ -8951,7 +8957,10 @@ function TempControlPanel() {
                           <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                              disabled={isEditingHeaderEdit}
+                              disabled={
+                                isEditingHeaderEdit &&
+                                documentFilesDocumentContentHeaderEdit
+                              }
                               value={{
                                 value: docBodyHeaderEdit,
                                 label: docBodyHeaderEdit,
@@ -8978,7 +8987,7 @@ function TempControlPanel() {
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
                         {
-                          documentFilesDocumentContentHeaderEdit?.file && (
+                          documentFilesDocumentContentHeaderEdit && (
                             // documentFilesDocumentContentHeaderEdit?.map(
                             //   (file, index) => (
                             <>
@@ -9179,7 +9188,10 @@ function TempControlPanel() {
                           <Button
                             variant="contained"
                             size="small"
-                            disabled={isEditingFooterEdit}
+                            disabled={
+                              isEditingFooterEdit &&
+                              documentFilesDocumentContentFooterEdit
+                            }
                             component="label"
                             onClick={handleClick2Edit}
                             sx={{
@@ -9211,9 +9223,12 @@ function TempControlPanel() {
                           </Menu>
 
                           {option2Edit === "local" &&
-                            !documentFilesDocumentContentFooterEdit?.name && (
+                            !documentFilesDocumentContentFooterEdit && (
                               <Button
-                                disabled={isEditingFooterEdit}
+                                disabled={
+                                  isEditingFooterEdit &&
+                                  documentFilesDocumentContentFooterEdit
+                                }
                                 variant="contained"
                                 size="small"
                                 component="label"
@@ -9244,7 +9259,10 @@ function TempControlPanel() {
                             <FormControl fullWidth sx={{ marginTop: "10px" }}>
                               <Selects
                                 options={orgDocuments}
-                                disabled={isEditingFooterEdit}
+                                disabled={
+                                  isEditingFooterEdit &&
+                                  documentFilesDocumentContentFooterEdit
+                                }
                                 value={{
                                   value: docBodyHeader2Edit,
                                   label: docBodyHeader2Edit,
@@ -9271,7 +9289,7 @@ function TempControlPanel() {
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
                         {
-                          documentFilesDocumentContentFooterEdit?.file && (
+                          documentFilesDocumentContentFooterEdit && (
                             // documentFilesDocumentContentFooterEdit?.map(
                             // (file, index) => (
                             <>

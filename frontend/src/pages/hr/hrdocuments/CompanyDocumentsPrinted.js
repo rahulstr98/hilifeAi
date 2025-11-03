@@ -97,7 +97,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
   const [selectedMargin, setSelectedMargin] = useState("normal");
   const [pageSizeQuill, setPageSizeQuill] = useState("A4");
   const [pageOrientation, setPageOrientation] = useState("portrait");
-
+  const [qrCodeInfoDetails, setQrCodeInfoDetails] = useState([]);
   const marginValues = {
     normal: [96, 96, 96, 96],
     narrow: [48, 48, 48, 48],
@@ -137,6 +137,13 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
   };
 
   const [serverTime, setServerTime] = useState(new Date());
+  let today = new Date(serverTime);
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0");
+  var yyyy = today.getFullYear();
+  let formattedDate = yyyy + "-" + mm + "-" + dd;
+  //useStates
+  const [date, setDate] = useState(formattedDate);
   useEffect(() => {
     const fetchTime = async () => {
       try {
@@ -191,6 +198,8 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     "Printed Count",
     "Issued Person Details",
     "Issuing Authority",
+        "Header",
+    "Footer",
   ];
   let exportRowValues = [
     "date",
@@ -204,6 +213,8 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     "printedcount",
     "issuedpersondetails",
     "issuingauthority",
+        "header",
+    "footer",
   ];
 
   const [fromEmail, setFromEmail] = useState("");
@@ -422,6 +433,8 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     issuedpersondetails: true,
     issuingauthority: true,
     actions: true,
+        header: true,
+    footer: true,
   };
   const [columnVisibility, setColumnVisibility] = useState(
     initialColumnVisibility
@@ -864,26 +877,28 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
                     qrCodeWidth,
                     qrCodeHeight
                   );
+                  const statements =
+                    qrCodeInfoDetails?.length > 0
+                      ? qrCodeInfoDetails
+                      : [
+                          "1. Scan to verify the authenticity of this document.",
+                          `2. This document was generated on ${moment(
+                            new Date(serverTime)
+                          ).format("DD-MM-YYYY hh:mm a")}`,
+                          `3. For questions, contact us at ${response?.data?.sdocumentPreparation?.frommailemail}.`,
+                        ];
 
-                  // Add statement on the right of the QR code
-                  const statementX = qrCodeX + qrCodeWidth + 10; // 10 units right of the QR code
-                  const statementY1 = qrCodeY + 10; // Align with the top of the QR code
-                  const statementY2 = statementY1 + 5; // Adjust as needed for spacing
-                  const statementY3 = statementY2 + 5; // Adjust as needed for spacing
-
-                  // Add statements
-                  const statementText1 =
-                    "1. Scan to verify the authenticity of this document.";
-                  const statementText2 = `2. This document was generated on ${moment(
-                    new Date(NewDatetime)
-                  ).format("DD-MM-YYYY hh:mm a")}`;
-                  const statementText3 = `3. For questions, contact us at ${fromEmail}.`;
+                  // starting position
+                  const statementX = qrCodeX + qrCodeWidth + 10;
+                  const statementY1 = qrCodeY + 10;
+                  const lineGap = 5; // vertical spacing between statements
 
                   doc.setFontSize(12);
-                  doc.text(statementText1, statementX, statementY1);
-                  doc.text(statementText2, statementX, statementY2);
-                  doc.text(statementText3, statementX, statementY3);
-                  // doc.text(statementText, statementX, statementY, { maxWidth: lineWidth });
+
+                  statements.forEach((text, idx) => {
+                    const y = statementY1 + idx * lineGap;
+                    doc.text(text, statementX, y);
+                  });
                 }
               }
             }
@@ -1125,26 +1140,28 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
                 qrCodeWidth,
                 qrCodeHeight
               );
+              const statements =
+                qrCodeInfoDetails?.length > 0
+                  ? qrCodeInfoDetails
+                  : [
+                      "1. Scan to verify the authenticity of this document.",
+                      `2. This document was generated on ${moment(
+                        new Date(serverTime)
+                      ).format("DD-MM-YYYY hh:mm a")}`,
+                      `3. For questions, contact us at ${response?.data?.sdocumentPreparation?.frommailemail}.`,
+                    ];
 
-              // Add statement on the right of the QR code
-              const statementX = qrCodeX + qrCodeWidth + 10; // 10 units right of the QR code
-              const statementY1 = qrCodeY + 10; // Align with the top of the QR code
-              const statementY2 = statementY1 + 5; // Adjust as needed for spacing
-              const statementY3 = statementY2 + 5; // Adjust as needed for spacing
-
-              // Add statements
-              const statementText1 =
-                "1. Scan to verify the authenticity of this document.";
-              const statementText2 = `2. This document was generated on ${moment(
-                new Date(NewDatetime)
-              ).format("DD-MM-YYYY hh:mm a")}`;
-              const statementText3 = `3. For questions, contact us at ${fromEmail}.`;
+              // starting position
+              const statementX = qrCodeX + qrCodeWidth + 10;
+              const statementY1 = qrCodeY + 10;
+              const lineGap = 5; // vertical spacing between statements
 
               doc.setFontSize(12);
-              doc.text(statementText1, statementX, statementY1);
-              doc.text(statementText2, statementX, statementY2);
-              doc.text(statementText3, statementX, statementY3);
-              // doc.text(statementText, statementX, statementY, { maxWidth: lineWidth });
+
+              statements.forEach((text, idx) => {
+                const y = statementY1 + idx * lineGap;
+                doc.text(text, statementX, y);
+              });
             }
           }
         }
@@ -1374,25 +1391,28 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
                 qrCodeHeight
               );
 
-              // Add statement on the right of the QR code
-              const statementX = qrCodeX + qrCodeWidth + 10; // 10 units right of the QR code
-              const statementY1 = qrCodeY + 10; // Align with the top of the QR code
-              const statementY2 = statementY1 + 5; // Adjust as needed for spacing
-              const statementY3 = statementY2 + 5; // Adjust as needed for spacing
+              const statements =
+                qrCodeInfoDetails?.length > 0
+                  ? qrCodeInfoDetails
+                  : [
+                      "1. Scan to verify the authenticity of this document.",
+                      `2. This document was generated on ${moment(
+                        new Date(serverTime)
+                      ).format("DD-MM-YYYY hh:mm a")}`,
+                      `3. For questions, contact us at ${response?.data?.sdocumentPreparation?.frommailemail}.`,
+                    ];
 
-              // Add statements
-              const statementText1 =
-                "1. Scan to verify the authenticity of this document.";
-              const statementText2 = `2. This document was generated on ${moment(
-                new Date(NewDatetime)
-              ).format("DD-MM-YYYY hh:mm a")}`;
-              const statementText3 = `3. For questions, contact us at ${fromEmail}.`;
+              // starting position
+              const statementX = qrCodeX + qrCodeWidth + 10;
+              const statementY1 = qrCodeY + 10;
+              const lineGap = 5; // vertical spacing between statements
 
               doc.setFontSize(12);
-              doc.text(statementText1, statementX, statementY1);
-              doc.text(statementText2, statementX, statementY2);
-              doc.text(statementText3, statementX, statementY3);
-              // doc.text(statementText, statementX, statementY, { maxWidth: lineWidth });
+
+              statements.forEach((text, idx) => {
+                const y = statementY1 + idx * lineGap;
+                doc.text(text, statementX, y);
+              });
             }
           }
         }
@@ -1894,6 +1914,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
   const getCode = async (e, pagename) => {
     setPageName(!pageName);
     console.log(e, "e");
+    const NewDatetime = await getCurrentServerTime();
     try {
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
@@ -1902,6 +1923,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
         company: e?.company,
         branch: e?.branch,
         template: e?.template?.split("--")[0],
+        pagename: "Company",
       });
 
       console.log(e, "e");
@@ -1937,6 +1959,22 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
           backgroundimage: backgroundimage,
         };
         setPersonId(headerFooterBase64);
+        const qrInfoDetails =
+          headerFooterBase64?.qrInfo?.length > 0
+            ? headerFooterBase64?.qrInfo
+            : [];
+        setQrCodeInfoDetails(
+          qrInfoDetails?.map(
+            (data, index) =>
+              `${index + 1}. ${data?.details
+                ?.replaceAll(
+                  "$C:TIME$",
+                  new Date(NewDatetime).toLocaleTimeString()
+                )
+                .replaceAll("$C:DATE$", date)
+                .replaceAll("$DOJ$", "")}`
+          )
+        );
         handleClickOpenLetterHeader(pagename);
         setDataTableId(e?.id);
       }
@@ -2100,6 +2138,22 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
       flex: 0,
       width: 100,
       hide: !columnVisibility.issuingauthority,
+      headerClassName: "bold-header",
+    },
+        {
+      field: "header",
+      headerName: "Header",
+      flex: 0,
+      width: 100,
+      hide: !columnVisibility.header,
+      headerClassName: "bold-header",
+    },
+    {
+      field: "footer",
+      headerName: "Footer",
+      flex: 0,
+      width: 100,
+      hide: !columnVisibility.footer,
       headerClassName: "bold-header",
     },
     {

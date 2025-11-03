@@ -2209,6 +2209,30 @@ function CompanyDocuments() {
     break-before: page;
     margin: 20px 0;
   }
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
               `;
 
             pdfElement.appendChild(styleElement);
@@ -4172,7 +4196,7 @@ function CompanyDocuments() {
     try {
       const deletePromises = selectedRows?.map((item) => {
         return axios.delete(
-          `${SERVICE.SINGLE_COMPANY_DELETE_DOCUMENTPREPARATION}/${item}`,
+          `${SERVICE.SINGLE_COMPANY_DOCUMENTPREPARATION}/${item}`,
           {
             headers: {
               Authorization: `Bearer ${auth.APIToken}`,
@@ -4395,7 +4419,7 @@ function CompanyDocuments() {
         company: e?.company,
         branch: e?.branch,
         template: e?.template?.split("--")[0],
-        pagename:"Company"
+        pagename: "Company",
       });
       if (res?.data?.templatecontrolpanel) {
         const ans = res?.data?.templatecontrolpanel

@@ -1,12 +1,27 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
-import ReactQuill from 'react-quill';
-import ImageResize from 'quill-image-resize-module-react';
-import html2pdf from 'html2pdf.js';
-import html2canvas from 'html2canvas';
-import { saveAs } from 'file-saver';
-import { asBlob } from 'html-docx-js-typescript';
-import KeyboardTabIcon from '@mui/icons-material/KeyboardTab';
-import { Dialog, DialogTitle, DialogContent, DialogActions, Grid, useTheme, Stack, Button, FormControl, InputLabel, MenuItem, Select, TextField, Tooltip } from '@mui/material';
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import ReactQuill from "react-quill";
+import ImageResize from "quill-image-resize-module-react";
+import html2pdf from "html2pdf.js";
+import html2canvas from "html2canvas";
+import { saveAs } from "file-saver";
+import { asBlob } from "html-docx-js-typescript";
+import KeyboardTabIcon from "@mui/icons-material/KeyboardTab";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Grid,
+  useTheme,
+  Stack,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import {
   Undo as UndoIcon,
   Redo as RedoIcon,
@@ -19,38 +34,67 @@ import {
   Code as CodeIcon,
   Print as PrintIcon,
   FindReplace as ReplaceIcon,
-} from '@mui/icons-material';
-import InsertPageBreakIcon from '@mui/icons-material/InsertPageBreak';
+} from "@mui/icons-material";
+import InsertPageBreakIcon from "@mui/icons-material/InsertPageBreak";
 // Setup Quill extensions
-import Quill from 'quill';
+import Quill from "quill";
 import Cropper from "react-easy-crop";
 // import ImageInsertGrid from "./ImageInsertGrid";
 import { Rnd } from "react-rnd";
+import Editor from "./Editor";
 
+const Parchment = Quill.import("parchment");
+Quill.register("modules/imageResize", ImageResize);
 
-const Parchment = Quill.import('parchment');
-Quill.register('modules/imageResize', ImageResize);
-
-const LineHeightStyle = new Parchment.Attributor.Style('lineheight', 'line-height', {
+const LineHeightStyle = new Parchment.Attributor.Style(
+  "lineheight",
+  "line-height",
+  {
+    scope: Parchment.Scope.BLOCK,
+    whitelist: ["1", "1.5", "2", "2.5", "3"],
+  }
+);
+const VerticalAlignStyle = new Parchment.Attributor.Style(
+  "verticalalign",
+  "vertical-align",
+  {
+    scope: Parchment.Scope.INLINE,
+    whitelist: ["top", "middle", "bottom"],
+  }
+);
+const MarginClass = new Parchment.Attributor.Class("margin", "ql-margin", {
   scope: Parchment.Scope.BLOCK,
-  whitelist: ['1', '1.5', '2', '2.5', '3'],
 });
-const VerticalAlignStyle = new Parchment.Attributor.Style('verticalalign', 'vertical-align', {
-  scope: Parchment.Scope.INLINE,
-  whitelist: ['top', 'middle', 'bottom'],
-});
-const MarginClass = new Parchment.Attributor.Class('margin', 'ql-margin', {
-  scope: Parchment.Scope.BLOCK,
-});
-const Size = Quill.import('attributors/style/size');
-Size.whitelist = ['10px', '12px', '14px', '16px', '18px', '24px', '32px'];
+const Size = Quill.import("attributors/style/size");
+Size.whitelist = ["10px", "12px", "14px", "16px", "18px", "24px", "32px"];
 
-const PageSizeClass = new Parchment.Attributor.Class('pagesize', 'ql-pagesize', {
-  scope: Parchment.Scope.BLOCK,
-  whitelist: ['a4', 'a3', 'a2'],
-});
-const Font = Quill.import('formats/font');
-Font.whitelist = ['arial', 'arial-black', 'algerian', 'calibri', 'cambria', 'candara', 'comic-sans-ms', 'consolas', 'courier-new', 'georgia', 'palatino', 'segoe-ui', 'tahoma', 'times-new-roman', 'trebuchet-ms', 'verdana'];
+const PageSizeClass = new Parchment.Attributor.Class(
+  "pagesize",
+  "ql-pagesize",
+  {
+    scope: Parchment.Scope.BLOCK,
+    whitelist: ["a4", "a3", "a2"],
+  }
+);
+const Font = Quill.import("formats/font");
+Font.whitelist = [
+  "arial",
+  "arial-black",
+  "algerian",
+  "calibri",
+  "cambria",
+  "candara",
+  "comic-sans-ms",
+  "consolas",
+  "courier-new",
+  "georgia",
+  "palatino",
+  "segoe-ui",
+  "tahoma",
+  "times-new-roman",
+  "trebuchet-ms",
+  "verdana",
+];
 Quill.register(Font, true);
 Quill.register(LineHeightStyle, true);
 Quill.register(VerticalAlignStyle, true);
@@ -58,12 +102,17 @@ Quill.register(MarginClass, true);
 Quill.register(Size, true);
 Quill.register(PageSizeClass, true);
 
-const FileNameDialog = ({ open, onClose, onSave, defaultName = 'document' }) => {
+const FileNameDialog = ({
+  open,
+  onClose,
+  onSave,
+  defaultName = "document",
+}) => {
   const [fileName, setFileName] = useState(defaultName);
   const theme = useTheme();
 
   const handleSave = () => {
-    if (fileName.trim() !== '') {
+    if (fileName.trim() !== "") {
       onSave(fileName.trim());
       setFileName(defaultName);
     }
@@ -83,7 +132,7 @@ const FileNameDialog = ({ open, onClose, onSave, defaultName = 'document' }) => 
       PaperProps={{
         style: {
           padding: theme.spacing(3),
-          borderRadius: '16px',
+          borderRadius: "16px",
           boxShadow: theme.shadows[8],
           backgroundColor: theme.palette.background.paper,
         },
@@ -92,9 +141,9 @@ const FileNameDialog = ({ open, onClose, onSave, defaultName = 'document' }) => 
       <DialogTitle
         sx={{
           fontWeight: 600,
-          fontSize: '1.5rem',
+          fontSize: "1.5rem",
           color: theme.palette.primary.main,
-          textAlign: 'center',
+          textAlign: "center",
           pb: 1,
         }}
       >
@@ -112,15 +161,15 @@ const FileNameDialog = ({ open, onClose, onSave, defaultName = 'document' }) => 
           onChange={(e) => setFileName(e.target.value)}
           InputProps={{
             style: {
-              fontSize: '1rem',
-              padding: '5px',
-              borderRadius: '8px',
+              fontSize: "1rem",
+              padding: "5px",
+              borderRadius: "8px",
             },
           }}
         />
       </DialogContent>
 
-      <DialogActions sx={{ justifyContent: 'flex-end', mt: 2 }}>
+      <DialogActions sx={{ justifyContent: "flex-end", mt: 2 }}>
         <Button onClick={handleClose} color="secondary" variant="outlined">
           Cancel
         </Button>
@@ -134,23 +183,32 @@ const FileNameDialog = ({ open, onClose, onSave, defaultName = 'document' }) => 
 
 const smallSelectStyle = {
   minWidth: 120,
-  '& .MuiInputBase-root': {
-    padding: '2px 8px',
-    fontSize: '0.75rem',
+  "& .MuiInputBase-root": {
+    padding: "2px 8px",
+    fontSize: "0.75rem",
   },
-  '& .MuiInputLabel-root': {
-    fontSize: '0.75rem',
+  "& .MuiInputLabel-root": {
+    fontSize: "0.75rem",
   },
-  '& .MuiSelect-icon': {
-    fontSize: '1rem',
+  "& .MuiSelect-icon": {
+    fontSize: "1rem",
   },
 };
 
-const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargin, setSelectedMargin, pageSize, setPageSize, pageOrientation, setPageOrientation }) => {
+const ReactQuillAdvanced = ({
+  agenda,
+  setAgenda,
+  disabled = false,
+  selectedMargin,
+  setSelectedMargin,
+  pageSize,
+  setPageSize,
+  pageOrientation,
+  setPageOrientation,
+}) => {
   const quillRef = useRef();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [replaceTerm, setReplaceTerm] = useState('');
-
+  const [searchTerm, setSearchTerm] = useState("");
+  const [replaceTerm, setReplaceTerm] = useState("");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -161,18 +219,41 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     const file = e.target.files[0];
     if (!file || !file.type.startsWith("image/")) return;
     const preview = URL.createObjectURL(file);
-    setImageItem({ file, name: file.name, preview, width: 300, height: 200, x: 0, y: 0 });
+    setImageItem({
+      file,
+      name: file.name,
+      preview,
+      width: 300,
+      height: 200,
+      x: 0,
+      y: 0,
+    });
     e.target.value = "";
   };
 
-  const handleDragOver = (e) => { e.preventDefault(); setDragOver(true); };
-  const handleDragLeave = (e) => { e.preventDefault(); setDragOver(false); };
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+  };
   const handleDrop = (e) => {
-    e.preventDefault(); setDragOver(false);
+    e.preventDefault();
+    setDragOver(false);
     const file = e.dataTransfer.files[0];
     if (!file || !file.type.startsWith("image/")) return;
     const preview = URL.createObjectURL(file);
-    setImageItem({ file, name: file.name, preview, width: 300, height: 200, x: 0, y: 0 });
+    setImageItem({
+      file,
+      name: file.name,
+      preview,
+      width: 300,
+      height: 200,
+      x: 0,
+      y: 0,
+    });
   };
 
   const removeImage = () => {
@@ -211,9 +292,6 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     img.src = preview;
   };
 
-
-
-
   const [editorFocused, setEditorFocused] = useState(false);
   const jsPDFPageDimensions = {
     A2: [420, 594],
@@ -230,10 +308,10 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     Office2003: [216, 279],
   };
 
-  function getPageSizeInPx(pageSize, orientation = 'portrait') {
+  function getPageSizeInPx(pageSize, orientation = "portrait") {
     const mmToPx = (mm) => (mm * 96) / 25.4; // Convert mm to px assuming 96 DPI
-    let size = jsPDFPageDimensions[pageSize] || jsPDFPageDimensions['A4'];
-    if (orientation === 'landscape') size = [size[1], size[0]];
+    let size = jsPDFPageDimensions[pageSize] || jsPDFPageDimensions["A4"];
+    if (orientation === "landscape") size = [size[1], size[0]];
     return {
       width: mmToPx(size[0]),
       height: mmToPx(size[1]),
@@ -250,32 +328,53 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
   };
 
   const jsPDFPageSizes = {
-    A2: 'a2',
-    A3: 'a3',
-    A4: 'a4',
-    A5: 'a5',
-    Letter: 'letter',
-    Legal: 'legal',
-    Tabloid: 'tabloid',
-    Executive: 'executive',
-    B4: 'b4',
-    B5: 'b5',
+    A2: "a2",
+    A3: "a3",
+    A4: "a4",
+    A5: "a5",
+    Letter: "letter",
+    Legal: "legal",
+    Tabloid: "tabloid",
+    Executive: "executive",
+    B4: "b4",
+    B5: "b5",
     Statement: [139.7, 215.9],
     Office2003: [215.9, 279.4], // You can define as per your design
   };
 
   const marginOptions = [
-    { label: 'Normal', value: 'normal', tooltip: 'Top: 2.54 cm, Bottom: 2.54 cm, Left: 2.54 cm, Right: 2.54 cm' },
-    { label: 'Narrow', value: 'narrow', tooltip: 'Top: 1.27 cm, Bottom: 1.27 cm, Left: 1.27 cm, Right: 1.27 cm' },
-    { label: 'Moderate', value: 'moderate', tooltip: 'Top: 2.54 cm, Bottom: 2.54 cm, Left/Right: 1.91 cm' },
-    { label: 'Wide', value: 'wide', tooltip: 'Top: 2.54 cm, Bottom: 2.54 cm, Left/Right: 5.08 cm' },
-    { label: 'Mirrored', value: 'mirrored', tooltip: 'Top: 2.54 cm, Bottom: 2.54 cm, Inside: 3.18 cm, Outside: 2.54 cm' },
-    { label: 'Office 2003', value: 'office2003', tooltip: 'Top: 2.54 cm, Bottom: 2.54 cm, Left/Right: 3.18 cm' },
+    {
+      label: "Normal",
+      value: "normal",
+      tooltip: "Top: 2.54 cm, Bottom: 2.54 cm, Left: 2.54 cm, Right: 2.54 cm",
+    },
+    {
+      label: "Narrow",
+      value: "narrow",
+      tooltip: "Top: 1.27 cm, Bottom: 1.27 cm, Left: 1.27 cm, Right: 1.27 cm",
+    },
+    {
+      label: "Moderate",
+      value: "moderate",
+      tooltip: "Top: 2.54 cm, Bottom: 2.54 cm, Left/Right: 1.91 cm",
+    },
+    {
+      label: "Wide",
+      value: "wide",
+      tooltip: "Top: 2.54 cm, Bottom: 2.54 cm, Left/Right: 5.08 cm",
+    },
+    {
+      label: "Mirrored",
+      value: "mirrored",
+      tooltip:
+        "Top: 2.54 cm, Bottom: 2.54 cm, Inside: 3.18 cm, Outside: 2.54 cm",
+    },
+    {
+      label: "Office 2003",
+      value: "office2003",
+      tooltip: "Top: 2.54 cm, Bottom: 2.54 cm, Left/Right: 3.18 cm",
+    },
   ];
-
-
-
-
 
   const handleCopy = () => {
     if (disabled) return;
@@ -289,34 +388,34 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
 
   const fallbackCopy = (text) => {
     // Create a hidden textarea element
-    const textarea = document.createElement('textarea');
+    const textarea = document.createElement("textarea");
     textarea.value = text;
 
     // Prevent scroll and visual disruption
-    textarea.style.position = 'fixed';
-    textarea.style.top = '0';
-    textarea.style.left = '0';
-    textarea.style.width = '1px';
-    textarea.style.height = '1px';
-    textarea.style.padding = '0';
-    textarea.style.border = 'none';
-    textarea.style.outline = 'none';
-    textarea.style.boxShadow = 'none';
-    textarea.style.background = 'transparent';
+    textarea.style.position = "fixed";
+    textarea.style.top = "0";
+    textarea.style.left = "0";
+    textarea.style.width = "1px";
+    textarea.style.height = "1px";
+    textarea.style.padding = "0";
+    textarea.style.border = "none";
+    textarea.style.outline = "none";
+    textarea.style.boxShadow = "none";
+    textarea.style.background = "transparent";
 
     document.body.appendChild(textarea);
     textarea.focus();
     textarea.select();
 
     try {
-      const successful = document.execCommand('copy');
+      const successful = document.execCommand("copy");
       if (successful) {
-        console.log('Fallback: Copying text command was successful');
+        console.log("Fallback: Copying text command was successful");
       } else {
-        console.warn('Fallback: Copying text command was unsuccessful');
+        console.warn("Fallback: Copying text command was unsuccessful");
       }
     } catch (err) {
-      console.error('Fallback: Unable to copy', err);
+      console.error("Fallback: Unable to copy", err);
     }
 
     // Cleanup
@@ -337,16 +436,16 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
       navigator.clipboard
         .writeText(text)
         .then(() => {
-          quill.deleteText(selection.index, selection.length, 'user'); // 👈 Add 'user'
+          quill.deleteText(selection.index, selection.length, "user"); // 👈 Add 'user'
         })
         .catch((err) => {
-          console.error('Clipboard API failed:', err);
+          console.error("Clipboard API failed:", err);
           fallbackCopy(text);
-          quill.deleteText(selection.index, selection.length, 'user'); // 👈 Add 'user'
+          quill.deleteText(selection.index, selection.length, "user"); // 👈 Add 'user'
         });
     } else {
       fallbackCopy(text);
-      quill.deleteText(selection.index, selection.length, 'user'); // 👈 Add 'user'
+      quill.deleteText(selection.index, selection.length, "user"); // 👈 Add 'user'
     }
   };
 
@@ -362,16 +461,16 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     if (!disabled) {
       const quill = quillRef.current.getEditor();
       const content = quill.root.innerHTML;
-      if (!searchTerm) return alert('Enter text to search.');
+      if (!searchTerm) return alert("Enter text to search.");
 
-      const regex = new RegExp(searchTerm, 'gi');
+      const regex = new RegExp(searchTerm, "gi");
       const replacedContent = content.replace(regex, replaceTerm);
       quill.clipboard.dangerouslyPasteHTML(replacedContent);
       setAgenda(replacedContent);
     }
 
-    setSearchTerm('');
-    setReplaceTerm('');
+    setSearchTerm("");
+    setReplaceTerm("");
   };
 
   const handleMarginChange = (event) => {
@@ -384,19 +483,21 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     return parseFloat(px) * 0.264583;
   }
 
-  const exportToPDF = (fileName = 'document') => {
+  const exportToPDF = (fileName = "document") => {
     const elementHTML = agenda;
-    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    const styles = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"], style')
+    )
       .map((style) => style.outerHTML)
-      .join('\n');
+      .join("\n");
 
     const convertPxArrayToMm = (arr) => arr.map((px) => pxToMm(px));
     const selectedMarginPx = marginValues[selectedMargin] || [96, 96, 96, 96];
     const selectedMarginMm = convertPxArrayToMm(selectedMarginPx);
     const pxToIn = (px) => `${px / 96}in`;
     // Create a hidden iframe for rendering
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
     document.body.appendChild(iframe);
     const doc = iframe.contentDocument || iframe.contentWindow.document;
 
@@ -409,7 +510,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                 <style>
                     @page {
                         size: ${pageSize} ${pageOrientation};
-                        margin: ${pxToIn(selectedMarginPx[0])} ${pxToIn(selectedMarginPx[1])} ${pxToIn(selectedMarginPx[2])} ${pxToIn(selectedMarginPx[3])};
+                        margin: ${pxToIn(selectedMarginPx[0])} ${pxToIn(
+      selectedMarginPx[1]
+    )} ${pxToIn(selectedMarginPx[2])} ${pxToIn(selectedMarginPx[3])};
                     }
 
                     body {
@@ -457,13 +560,15 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     `);
     doc.close();
 
-    const marginStr = `${pxToIn(selectedMarginPx[0])} ${pxToIn(selectedMarginPx[1])} ${pxToIn(selectedMarginPx[2])} ${pxToIn(selectedMarginPx[3])}`;
+    const marginStr = `${pxToIn(selectedMarginPx[0])} ${pxToIn(
+      selectedMarginPx[1]
+    )} ${pxToIn(selectedMarginPx[2])} ${pxToIn(selectedMarginPx[3])}`;
     iframe.onload = () => {
       const iframeBody = iframe.contentDocument.body;
 
       // Wait for a short delay to allow rendering
       setTimeout(() => {
-        const contentToPrint = iframeBody.querySelector('.print-content');
+        const contentToPrint = iframeBody.querySelector(".print-content");
         if (!contentToPrint) {
           console.error("'.print-content' not found in iframe");
           return;
@@ -479,7 +584,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               logging: false,
             },
             jsPDF: {
-              unit: 'mm',
+              unit: "mm",
               format: jsPDFPageSizes[pageSize],
               orientation: pageOrientation.toLowerCase(),
             },
@@ -493,8 +598,8 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     };
   };
 
-  const exportToDocx = async (fileName = 'document') => {
-    const content = document.querySelector('.ql-editor')?.innerHTML;
+  const exportToDocx = async (fileName = "document") => {
+    const content = document.querySelector(".ql-editor")?.innerHTML;
     if (!content) return;
 
     const convertPxArrayToMm = (arr) => arr.map((px) => pxToMm(px));
@@ -502,9 +607,11 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     const selectedMarginMm = convertPxArrayToMm(selectedMarginPx);
     const pxToIn = (px) => `${px / 96}in`;
     // Grab the current styles
-    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    const styles = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"], style')
+    )
       .map((style) => style.outerHTML)
-      .join('\n');
+      .join("\n");
 
     const fullHTML = `
         <html>
@@ -542,24 +649,26 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     saveAs(blob, `${fileName}.docx`);
   };
 
-  const exportToJPG = (fileName = 'document') => {
+  const exportToJPG = (fileName = "document") => {
     const selectedMarginPx = marginValues[selectedMargin] || [96, 96, 96, 96];
     const [top, right, bottom, left] = selectedMarginPx;
 
     // Create a hidden iframe for style isolation
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'absolute';
-    iframe.style.left = '-9999px';
-    iframe.style.top = '0';
-    iframe.style.width = '1000px';
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "absolute";
+    iframe.style.left = "-9999px";
+    iframe.style.top = "0";
+    iframe.style.width = "1000px";
     document.body.appendChild(iframe);
 
     const doc = iframe.contentDocument || iframe.contentWindow.document;
 
     // Collect and inject styles
-    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    const styles = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"], style')
+    )
       .map((style) => style.outerHTML)
-      .join('\n');
+      .join("\n");
 
     doc.open();
     doc.write(`
@@ -597,16 +706,17 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     doc.close();
 
     iframe.onload = () => {
-      const contentToCapture = iframe.contentDocument.querySelector('.print-container');
+      const contentToCapture =
+        iframe.contentDocument.querySelector(".print-container");
 
       html2canvas(contentToCapture, {
         useCORS: true,
         scale: 2,
-        backgroundColor: '#ffffff',
+        backgroundColor: "#ffffff",
       }).then((canvas) => {
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.download = `${fileName}.jpg`;
-        link.href = canvas.toDataURL('image/jpeg');
+        link.href = canvas.toDataURL("image/jpeg");
         link.click();
 
         document.body.removeChild(iframe);
@@ -614,8 +724,8 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     };
   };
 
-  const exportToHTML = (fileName = 'document') => {
-    const content = document.querySelector('.ql-editor').innerHTML;
+  const exportToHTML = (fileName = "document") => {
+    const content = document.querySelector(".ql-editor").innerHTML;
     const fullHTML = `
     <html>
       <head>
@@ -628,8 +738,8 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
         </div>
       </body>
     </html>`;
-    const blob = new Blob([fullHTML], { type: 'text/html' });
-    const link = document.createElement('a');
+    const blob = new Blob([fullHTML], { type: "text/html" });
+    const link = document.createElement("a");
     link.download = `${fileName}.html`;
     link.href = URL.createObjectURL(blob);
     link.click();
@@ -638,11 +748,13 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
   const handlePrintPreview = () => {
     const printContent = agenda;
 
-    const newWin = window.open('', '_blank');
+    const newWin = window.open("", "_blank");
     const pxToIn = (px) => `${px / 96}in`;
-    const styles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+    const styles = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"], style')
+    )
       .map((style) => style.outerHTML)
-      .join('\n');
+      .join("\n");
 
     const margin = marginValues[selectedMargin] || [96, 96, 96, 96];
 
@@ -658,7 +770,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                         @media print {
                             @page {
                             size: ${pageSize} ${pageOrientation};
-                           margin: ${pxToIn(margin[0])} ${pxToIn(margin[1])} ${pxToIn(margin[2])} ${pxToIn(margin[3])};
+                           margin: ${pxToIn(margin[0])} ${pxToIn(
+      margin[1]
+    )} ${pxToIn(margin[2])} ${pxToIn(margin[3])};
             }
 
                         body {
@@ -741,16 +855,16 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     setIsDialogOpen(false);
 
     switch (fileTypeToExport) {
-      case 'pdf':
+      case "pdf":
         exportToPDF(fileName);
         break;
-      case 'jpg':
+      case "jpg":
         exportToJPG(fileName);
         break;
-      case 'docx':
+      case "docx":
         exportToDocx(fileName);
         break;
-      case 'html':
+      case "html":
         exportToHTML(fileName);
         break;
       default:
@@ -763,7 +877,7 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
 
     if (range) {
       // Insert 4 spaces as a "tab" (you can replace with '\t' if preferred)
-      quill.insertText(range.index, '\u00A0\u00A0\u00A0\u00A0', "user");
+      quill.insertText(range.index, "\u00A0\u00A0\u00A0\u00A0", "user");
       quill.setSelection(range.index + 4, 0, "user"); // cursor after tab
     }
   };
@@ -782,7 +896,6 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
     }
   };
 
-
   return (
     <>
       <br />
@@ -792,13 +905,13 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
         alignItems="center"
         sx={{
           mb: 2,
-          position: 'sticky',
+          position: "sticky",
           top: 60,
-          zIndex: editorFocused ? 2000 : 'auto',
+          zIndex: editorFocused ? 2000 : "auto",
           // zIndex: 600,
-          backgroundColor: 'white',
-          padding: '8px 12px',
-          cursor: 'pointer'
+          backgroundColor: "white",
+          padding: "8px 12px",
+          cursor: "pointer",
         }}
       >
         <Grid item>
@@ -807,9 +920,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                minWidth: 'auto', // remove default min width
-                padding: '2px 6px', // reduce padding
-                fontSize: '0.65rem', // smaller text
+                minWidth: "auto", // remove default min width
+                padding: "2px 6px", // reduce padding
+                fontSize: "0.65rem", // smaller text
               }}
               color="warning"
               onClick={() => quillRef.current.getEditor().history.undo()}
@@ -826,9 +939,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                minWidth: 'auto', // remove default min width
-                padding: '2px 6px', // reduce padding
-                fontSize: '0.65rem', // smaller text
+                minWidth: "auto", // remove default min width
+                padding: "2px 6px", // reduce padding
+                fontSize: "0.65rem", // smaller text
               }}
               color="warning"
               onClick={() => quillRef.current.getEditor().history.redo()}
@@ -845,9 +958,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                minWidth: 'auto', // remove default min width
-                padding: '2px 6px', // reduce padding
-                fontSize: '0.65rem', // smaller text
+                minWidth: "auto", // remove default min width
+                padding: "2px 6px", // reduce padding
+                fontSize: "0.65rem", // smaller text
               }}
               color="info"
               onClick={handleCopy}
@@ -864,9 +977,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                minWidth: 'auto', // remove default min width
-                padding: '2px 6px', // reduce padding
-                fontSize: '0.65rem', // smaller text
+                minWidth: "auto", // remove default min width
+                padding: "2px 6px", // reduce padding
+                fontSize: "0.65rem", // smaller text
               }}
               color="error"
               onClick={handleCut}
@@ -883,9 +996,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                minWidth: 'auto', // remove default min width
-                padding: '2px 6px', // reduce padding
-                fontSize: '0.65rem', // smaller text
+                minWidth: "auto", // remove default min width
+                padding: "2px 6px", // reduce padding
+                fontSize: "0.65rem", // smaller text
               }}
               color="success"
               onClick={handlePaste}
@@ -902,12 +1015,12 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                minWidth: 'auto', // remove default min width
-                padding: '2px 6px', // reduce padding
-                fontSize: '0.65rem', // smaller text
+                minWidth: "auto", // remove default min width
+                padding: "2px 6px", // reduce padding
+                fontSize: "0.65rem", // smaller text
               }}
               color="secondary"
-              onClick={() => handleOpenDialog('pdf')}
+              onClick={() => handleOpenDialog("pdf")}
               startIcon={<PictureAsPdfIcon />}
             >
               PDF
@@ -921,12 +1034,12 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                minWidth: 'auto', // remove default min width
-                padding: '2px 6px', // reduce padding
-                fontSize: '0.65rem', // smaller text
+                minWidth: "auto", // remove default min width
+                padding: "2px 6px", // reduce padding
+                fontSize: "0.65rem", // smaller text
               }}
               color="primary"
-              onClick={() => handleOpenDialog('docx')}
+              onClick={() => handleOpenDialog("docx")}
               startIcon={<DescriptionIcon />}
             >
               DOCX
@@ -940,13 +1053,13 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                bgcolor: '#f57c00',
-                color: '#fff',
-                minWidth: 'auto',
-                padding: '2px 6px',
-                fontSize: '0.65rem',
+                bgcolor: "#f57c00",
+                color: "#fff",
+                minWidth: "auto",
+                padding: "2px 6px",
+                fontSize: "0.65rem",
               }}
-              onClick={() => handleOpenDialog('jpg')}
+              onClick={() => handleOpenDialog("jpg")}
               startIcon={<ImageIcon />}
             >
               JPG
@@ -960,13 +1073,13 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                bgcolor: '#f57c00',
-                color: '#fff',
-                minWidth: 'auto',
-                padding: '2px 6px',
-                fontSize: '0.65rem',
+                bgcolor: "#f57c00",
+                color: "#fff",
+                minWidth: "auto",
+                padding: "2px 6px",
+                fontSize: "0.65rem",
               }}
-              onClick={() => handleOpenDialog('html')}
+              onClick={() => handleOpenDialog("html")}
               startIcon={<CodeIcon />}
             >
               HTML
@@ -980,11 +1093,11 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                bgcolor: '#f57c00',
-                color: '#fff',
-                minWidth: 'auto',
-                padding: '2px 6px',
-                fontSize: '0.65rem',
+                bgcolor: "#f57c00",
+                color: "#fff",
+                minWidth: "auto",
+                padding: "2px 6px",
+                fontSize: "0.65rem",
               }}
               onClick={handleInsertTab}
               startIcon={<KeyboardTabIcon />}
@@ -1000,11 +1113,11 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               variant="contained"
               size="small"
               sx={{
-                bgcolor: '#f57c00',
-                color: '#fff',
-                minWidth: 'auto',
-                padding: '2px 6px',
-                fontSize: '0.65rem',
+                bgcolor: "#f57c00",
+                color: "#fff",
+                minWidth: "auto",
+                padding: "2px 6px",
+                fontSize: "0.65rem",
               }}
               onClick={handleInsertPageBreak}
               startIcon={<InsertPageBreakIcon />}
@@ -1017,7 +1130,13 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
         <Grid item>
           <FormControl size="small" sx={smallSelectStyle}>
             <InputLabel id="margin-label">Margin</InputLabel>
-            <Select labelId="margin-label" disabled={disabled} value={selectedMargin} onChange={handleMarginChange} label="Margin">
+            <Select
+              labelId="margin-label"
+              disabled={disabled}
+              value={selectedMargin}
+              onChange={handleMarginChange}
+              label="Margin"
+            >
               {marginOptions.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   <Tooltip title={option.tooltip} placement="right" arrow>
@@ -1032,7 +1151,13 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
         <Grid item>
           <FormControl size="small" sx={smallSelectStyle}>
             <InputLabel id="orientation-label">Orientation</InputLabel>
-            <Select labelId="orientation-label" value={pageOrientation} disabled={disabled} onChange={(e) => setPageOrientation(e.target.value)} label="Orientation">
+            <Select
+              labelId="orientation-label"
+              value={pageOrientation}
+              disabled={disabled}
+              onChange={(e) => setPageOrientation(e.target.value)}
+              label="Orientation"
+            >
               <MenuItem value="portrait">Portrait</MenuItem>
               <MenuItem value="landscape">Landscape</MenuItem>
             </Select>
@@ -1042,7 +1167,13 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
         <Grid item>
           <FormControl size="small" sx={smallSelectStyle}>
             <InputLabel id="page-size-label">Page Size</InputLabel>
-            <Select labelId="page-size-label" value={pageSize} disabled={disabled} onChange={(e) => setPageSize(e.target.value)} label="Page Size">
+            <Select
+              labelId="page-size-label"
+              value={pageSize}
+              disabled={disabled}
+              onChange={(e) => setPageSize(e.target.value)}
+              label="Page Size"
+            >
               <MenuItem value="A5">A5</MenuItem>
               <MenuItem value="A4">A4</MenuItem>
               <MenuItem value="A3">A3</MenuItem>
@@ -1064,18 +1195,18 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             label="Search"
             sx={{
               minWidth: 100, // or 'auto' if you want to shrink fully
-              '& .MuiInputBase-root': {
-                padding: '2px 6px',
-                fontSize: '0.7rem',
-                height: '35px', // total height including label padding
+              "& .MuiInputBase-root": {
+                padding: "2px 6px",
+                fontSize: "0.7rem",
+                height: "35px", // total height including label padding
               },
-              '& .MuiInputLabel-root': {
-                fontSize: '0.7rem',
-                top: '-4px',
+              "& .MuiInputLabel-root": {
+                fontSize: "0.7rem",
+                top: "-4px",
               },
-              '& .MuiInputBase-input': {
-                padding: '4px 6px',
-                fontSize: '0.8rem',
+              "& .MuiInputBase-input": {
+                padding: "4px 6px",
+                fontSize: "0.8rem",
               },
             }}
             value={searchTerm}
@@ -1090,18 +1221,18 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             label="Replace"
             sx={{
               minWidth: 100, // or 'auto' if you want to shrink fully
-              '& .MuiInputBase-root': {
-                padding: '2px 6px',
-                fontSize: '0.7rem',
-                height: '35px', // total height including label padding
+              "& .MuiInputBase-root": {
+                padding: "2px 6px",
+                fontSize: "0.7rem",
+                height: "35px", // total height including label padding
               },
-              '& .MuiInputLabel-root': {
-                fontSize: '0.7rem',
-                top: '-4px',
+              "& .MuiInputLabel-root": {
+                fontSize: "0.7rem",
+                top: "-4px",
               },
-              '& .MuiInputBase-input': {
-                padding: '4px 6px',
-                fontSize: '0.8rem',
+              "& .MuiInputBase-input": {
+                padding: "4px 6px",
+                fontSize: "0.8rem",
               },
             }}
             value={replaceTerm}
@@ -1115,9 +1246,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
             variant="contained"
             size="small"
             sx={{
-              minWidth: 'auto', // remove default min width
-              padding: '2px 6px', // reduce padding
-              fontSize: '0.65rem', // smaller text
+              minWidth: "auto", // remove default min width
+              padding: "2px 6px", // reduce padding
+              fontSize: "0.65rem", // smaller text
             }}
             color="inherit"
             startIcon={<ReplaceIcon />}
@@ -1159,16 +1290,18 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                 alignItems: "center",
                 zIndex: 999999,
               }}
-              onClick={(e) => { if (e.target === e.currentTarget) setIsModalOpen(false); }}
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setIsModalOpen(false);
+              }}
             >
               <div
                 style={{
                   background: "#fff",
                   padding: "20px",
                   borderRadius: "8px",
-                  width: "75vw",       // make modal 90% of screen width
-                  maxWidth: "800px",  // max width
-                  height: "70vh",      // modal height 90% of viewport
+                  width: "75vw", // make modal 90% of screen width
+                  maxWidth: "800px", // max width
+                  height: "70vh", // modal height 90% of viewport
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
@@ -1184,7 +1317,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     style={{
-                      border: dragOver ? "2px dashed #1976d2" : "2px dashed #aaa",
+                      border: dragOver
+                        ? "2px dashed #1976d2"
+                        : "2px dashed #aaa",
                       padding: "60px 10px",
                       borderRadius: "8px",
                       marginBottom: "12px",
@@ -1195,7 +1330,9 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                     }}
                     onClick={() => fileInputRef.current.click()}
                   >
-                    <p style={{ color: "#666" }}>Drag & drop image here, or click to browse</p>
+                    <p style={{ color: "#666" }}>
+                      Drag & drop image here, or click to browse
+                    </p>
                   </div>
                 )}
 
@@ -1203,22 +1340,27 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                   <div
                     style={{
                       width: "100%",
-                      height: "80%",        // make image container fill modal
+                      height: "80%", // make image container fill modal
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
                     }}
                   >
                     <Rnd
-                      size={{ width: imageItem.width, height: imageItem.height }}
+                      size={{
+                        width: imageItem.width,
+                        height: imageItem.height,
+                      }}
                       position={{ x: imageItem.x, y: imageItem.y }}
-                      onDragStop={(e, d) => setImageItem((prev) => ({ ...prev, x: d.x, y: d.y }))}
+                      onDragStop={(e, d) =>
+                        setImageItem((prev) => ({ ...prev, x: d.x, y: d.y }))
+                      }
                       onResizeStop={(e, direction, ref, delta, position) => {
                         setImageItem({
                           ...imageItem,
                           width: ref.offsetWidth,
                           height: ref.offsetHeight,
-                          ...position
+                          ...position,
                         });
                       }}
                       bounds="parent"
@@ -1227,7 +1369,11 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                       <img
                         src={imageItem.preview}
                         alt={imageItem.name}
-                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                        }}
                       />
                     </Rnd>
                   </div>
@@ -1246,7 +1392,10 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
                   <Button
                     variant="outlined"
                     size="small"
-                    onClick={() => { removeImage(); setIsModalOpen(false); }}
+                    onClick={() => {
+                      removeImage();
+                      setIsModalOpen(false);
+                    }}
                   >
                     Cancel
                   </Button>
@@ -1254,50 +1403,79 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               </div>
             </div>
           )}
-
         </Grid>
-
-
-
-
-
       </Grid>
       <div
         className={`editor-page margin-${selectedMargin}`}
         style={{
           width: `${width}px`,
           height: `${height}px`,
-          background: 'white',
-
+          background: "white",
         }}
       >
-        <ReactQuill
+        <Editor
+          name="Editor"
+          setContents={agenda} // ✅ sets the editor content
+          onChange={setAgenda} // ✅ updates agenda on change
+          onFocus={() => setEditorFocused(true)}
+          onBlur={() => setEditorFocused(false)}
+          disable={disabled} // ✅ correct prop name for disabling SunEditor
+          setOptions={{
+            spellCheck: true,
+            height: 300,
+          }}
+          style={{ height: "100%" }}
+        />
+
+        {/* <ReactQuill
           ref={quillRef}
           value={agenda}
           onChange={setAgenda}
-          onFocus={() => setEditorFocused(true)}   // raise zIndex
-          onBlur={() => setEditorFocused(false)}   // reset zIndex
+          onFocus={() => setEditorFocused(true)} // raise zIndex
+          onBlur={() => setEditorFocused(false)} // reset zIndex
           readOnly={disabled}
           spellCheck={true}
-          style={{ height: '100%' }}
+          style={{ height: "100%" }}
           modules={{
             toolbar: [
               [
-                { header: '1' },
-                { header: '2' },
+                { header: "1" },
+                { header: "2" },
                 {
-                  font: ['arial', 'arial-black', 'algerian', 'calibri', 'cambria', 'candara', 'comic-sans-ms', 'consolas', 'courier-new', 'georgia', 'palatino', 'segoe-ui', 'tahoma', 'times-new-roman', 'trebuchet-ms', 'verdana'],
+                  font: [
+                    "arial",
+                    "arial-black",
+                    "algerian",
+                    "calibri",
+                    "cambria",
+                    "candara",
+                    "comic-sans-ms",
+                    "consolas",
+                    "courier-new",
+                    "georgia",
+                    "palatino",
+                    "segoe-ui",
+                    "tahoma",
+                    "times-new-roman",
+                    "trebuchet-ms",
+                    "verdana",
+                  ],
                 },
               ],
               [{ size: Size.whitelist }],
-              [{ lineheight: ['1', '1.5', '2', '2.5', '3'] }],
+              [{ lineheight: ["1", "1.5", "2", "2.5", "3"] }],
               [{ color: [] }, { background: [] }],
-              ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-              [{ script: 'sub' }, { script: 'super' }],
+              ["bold", "italic", "underline", "strike", "blockquote"],
+              [{ script: "sub" }, { script: "super" }],
               [{ align: [] }],
-              [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }],
-              ['link', 'video'],
-              ['clean'],
+              [
+                { list: "ordered" },
+                { list: "bullet" },
+                { indent: "-1" },
+                { indent: "+1" },
+              ],
+              ["link", "video"],
+              ["clean"],
             ],
             // imageResize: {
             //   parchment: Quill.import('parchment'),
@@ -1309,10 +1487,34 @@ const ReactQuillAdvanced = ({ agenda, setAgenda, disabled = false, selectedMargi
               userOnly: true,
             },
           }}
-          formats={['header', 'font', 'size', 'lineheight', 'color', 'background', 'bold', 'italic', 'underline', 'strike', 'blockquote', 'script', 'align', 'list', 'bullet', 'indent', 'link', 'image', 'video']}
-        />
+          formats={[
+            "header",
+            "font",
+            "size",
+            "lineheight",
+            "color",
+            "background",
+            "bold",
+            "italic",
+            "underline",
+            "strike",
+            "blockquote",
+            "script",
+            "align",
+            "list",
+            "bullet",
+            "indent",
+            "link",
+            "image",
+            "video",
+          ]}
+        /> */}
       </div>
-      <FileNameDialog open={isDialogOpen} onClose={() => setIsDialogOpen(false)} onSave={handleFileSave} />
+      <FileNameDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSave={handleFileSave}
+      />
     </>
   );
 };

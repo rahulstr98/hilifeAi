@@ -1,5 +1,32 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import { Box, Typography, OutlinedInput, TableBody, TableRow, TableCell, Select, Paper, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, Grid, Table, TableHead, TableContainer, Button, List, ListItem, ListItemText, Popover, Checkbox, TextField, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  OutlinedInput,
+  TableBody,
+  TableRow,
+  TableCell,
+  Select,
+  Paper,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  Grid,
+  Table,
+  TableHead,
+  TableContainer,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Popover,
+  Checkbox,
+  TextField,
+  IconButton,
+} from "@mui/material";
 import { userStyle, colourStyles } from "../../../pageStyle";
 import { FaFileCsv, FaFileExcel, FaPrint, FaFilePdf } from "react-icons/fa";
 import "jspdf-autotable";
@@ -14,7 +41,7 @@ import {
 import { StyledTableRow, StyledTableCell } from "../../../components/Table";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { MultiSelect } from "react-multi-select-component";
-import 'react-quill/dist/quill.snow.css';
+import "react-quill/dist/quill.snow.css";
 import { SERVICE } from "../../../services/Baseservice";
 import { handleApiError } from "../../../components/Errorhandling";
 import { BASE_URL } from "../../../services/Authservice";
@@ -29,9 +56,9 @@ import Switch from "@mui/material/Switch";
 import CloseIcon from "@mui/icons-material/Close";
 import ImageIcon from "@mui/icons-material/Image";
 import { saveAs } from "file-saver";
-import * as FileSaver from 'file-saver';
-import * as XLSX from 'xlsx';
-import CircularProgress from '@mui/material/CircularProgress';
+import * as FileSaver from "file-saver";
+import * as XLSX from "xlsx";
+import CircularProgress from "@mui/material/CircularProgress";
 import PageHeading from "../../../components/PageHeading";
 import AlertDialog from "../../../components/Alert";
 import ExportData from "../../../components/ExportData";
@@ -39,16 +66,19 @@ import InfoPopup from "../../../components/InfoPopup.js";
 import MessageAlert from "../../../components/MessageAlert";
 import AggregatedSearchBar from "../../../components/AggregatedSearchBar";
 import AggridTable from "../../../components/AggridTable";
-import domtoimage from 'dom-to-image';
-import Backdrop from '@mui/material/Backdrop';
-import { getCurrentServerTime } from '../../../components/getCurrentServerTime';
+import domtoimage from "dom-to-image";
+import Backdrop from "@mui/material/Backdrop";
+import { getCurrentServerTime } from "../../../components/getCurrentServerTime";
 
 const Loader = ({ loading, message }) => {
   return (
-    <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
-      <div style={{ textAlign: 'center' }}>
-        <CircularProgress sx={{ color: '#edf1f7' }} />
-        <Typography variant="h6" sx={{ mt: 2, color: '#edf1f7' }}>
+    <Backdrop
+      sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      open={loading}
+    >
+      <div style={{ textAlign: "center" }}>
+        <CircularProgress sx={{ color: "#edf1f7" }} />
+        <Typography variant="h6" sx={{ mt: 2, color: "#edf1f7" }}>
           {message}
         </Typography>
       </div>
@@ -65,7 +95,7 @@ function DocumentsPrintedStatusList() {
         const time = await getCurrentServerTime();
         setServerTime(time);
       } catch (error) {
-        console.error('Failed to fetch server time:', error);
+        console.error("Failed to fetch server time:", error);
       }
     };
 
@@ -78,7 +108,7 @@ function DocumentsPrintedStatusList() {
     moderate: [96, 72, 96, 72],
     wide: [96, 192, 96, 192],
     mirrored: [96, 120, 96, 96],
-    office2003: [96, 120, 96, 120]
+    office2003: [96, 120, 96, 120],
   };
   const pxToMm = (px) => px * 0.264583;
   const convertPxArrayToMm = (arr) => arr.map(pxToMm);
@@ -86,10 +116,10 @@ function DocumentsPrintedStatusList() {
     const base = marginValues[selectedMargin] || marginValues["narrow"];
     let [top, right, bottom, left] = base;
     const footerReservedSpace = 60;
-    top += selectedMargin === 'narrow' ? 80 : 35; // increase space for header image
-    bottom += selectedMargin === 'narrow' ? 80 : 35; // increase space for footer image
+    top += selectedMargin === "narrow" ? 80 : 35; // increase space for header image
+    bottom += selectedMargin === "narrow" ? 80 : 35; // increase space for footer image
 
-    return convertPxArrayToMm([top, right, (bottom + footerReservedSpace), left]);
+    return convertPxArrayToMm([top, right, bottom + footerReservedSpace, left]);
   };
 
   const getPageDimensionsTable = (pagesize, pageorientation) => {
@@ -105,20 +135,29 @@ function DocumentsPrintedStatusList() {
       B4: { portrait: [250, 353], landscape: [353, 250] },
       B5: { portrait: [176, 250], landscape: [250, 176] },
       Statement: { portrait: [139.7, 215.9], landscape: [215.9, 139.7] },
-      Office2003: { portrait: [215.9, 279.4], landscape: [279.4, 215.9] } // same as Letter
+      Office2003: { portrait: [215.9, 279.4], landscape: [279.4, 215.9] }, // same as Letter
     };
 
     return dimensions[pagesize]?.[pageorientation] || [210, 297]; // default A4
   };
   const [filteredRowData, setFilteredRowData] = useState([]);
   const [UserPrintedInfoList, setUserPrintedInfoList] = useState([]);
-  const { isUserRoleCompare, isUserRoleAccess, pageName,
+  const {
+    isUserRoleCompare,
+    isUserRoleAccess,
+    pageName,
     setPageName,
-    buttonStyles, isAssignBranch, allTeam, allUsersData } = useContext(UserRoleAccessContext);
+    buttonStyles,
+    isAssignBranch,
+    allTeam,
+    allUsersData,
+  } = useContext(UserRoleAccessContext);
   const [filteredChanges, setFilteredChanges] = useState(null);
   const [searchedString, setSearchedString] = useState("");
   const [templateName, setTemplateName] = useState("Please Select Template");
-  const [employeeModeValue, setEmployeeModeValue] = useState("Please Select Employee Mode");
+  const [employeeModeValue, setEmployeeModeValue] = useState(
+    "Please Select Employee Mode"
+  );
   const [templateValues, setTemplateValues] = useState([]);
   const [employeeModeOptions, setEmployeeModeOptions] = useState([]);
   const [employeenames, setEmployeenames] = useState([]);
@@ -128,7 +167,12 @@ function DocumentsPrintedStatusList() {
   const [popupContentMalert, setPopupContentMalert] = useState("");
   const [popupSeverityMalert, setPopupSeverityMalert] = useState("");
 
-  const tableHeadCellStyle = { padding: "5px 10px", fontSize: "14px", boxShadow: "none", width: "max-content" };
+  const tableHeadCellStyle = {
+    padding: "5px 10px",
+    fontSize: "14px",
+    boxShadow: "none",
+    width: "max-content",
+  };
   const tableBodyCellStyle = { padding: "5px 10px", width: "max-content" };
 
   const handleClickOpenPopupMalert = () => {
@@ -138,7 +182,7 @@ function DocumentsPrintedStatusList() {
     setOpenPopupMalert(false);
   };
   const [loading, setLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState('Please Wait...!');
+  const [loadingMessage, setLoadingMessage] = useState("Please Wait...!");
   const [HeaderOptionsButton, setHeaderOptionsButton] = useState(false);
   const [openPopup, setOpenPopup] = useState(false);
   const [popupContent, setPopupContent] = useState("");
@@ -160,12 +204,12 @@ function DocumentsPrintedStatusList() {
     { label: "Team", value: "Team" },
   ];
   const TemplateDropdowns = async (branches) => {
-    console.log(branches, "branches")
+    console.log(branches, "branches");
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-        branch: data.branch,
-        company: data.company,
-      }))
+          branch: data.branch,
+          company: data.company,
+        }))
       : [];
     setPageName(!pageName);
     try {
@@ -181,7 +225,9 @@ function DocumentsPrintedStatusList() {
         }
       );
 
-      const tempValues = res?.data?.templatecreation?.filter(data => branches?.includes(data?.branch));
+      const tempValues = res?.data?.templatecreation?.filter((data) =>
+        branches?.includes(data?.branch)
+      );
       const tempOptions = tempValues?.length > 0 ? tempValues : [];
       setTemplateValues(
         tempOptions?.map((data) => ({
@@ -191,75 +237,84 @@ function DocumentsPrintedStatusList() {
         }))
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   const handleEmployeeModeOptions = (e) => {
     const employeeModeOpt =
       e?.employeemode?.length > 0
         ? [
-          ...e?.employeemode?.map((data) => ({
-            label: data,
-            value: data,
-          })),
-          { label: 'Manual', value: 'Manual' },
-        ]
-        : [{ label: 'Manual', value: 'Manual' }];
+            ...e?.employeemode?.map((data) => ({
+              label: data,
+              value: data,
+            })),
+            { label: "Manual", value: "Manual" },
+          ]
+        : [{ label: "Manual", value: "Manual" }];
     setEmployeeModeOptions(employeeModeOpt);
   };
 
   const accessbranch = isUserRoleAccess?.role?.includes("Manager")
     ? isAssignBranch?.map((data) => ({
-      branch: data.branch,
-      company: data.company,
-      unit: data.unit,
-    }))
-    : isAssignBranch
-      ?.filter((data) => {
-        let fetfinalurl = [];
-        if (
-          data?.modulenameurl?.length !== 0 &&
-          data?.submodulenameurl?.length !== 0 &&
-          data?.mainpagenameurl?.length !== 0 &&
-          data?.subpagenameurl?.length !== 0 &&
-          data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)
-        ) {
-          fetfinalurl = data.subsubpagenameurl;
-        } else if (
-          data?.modulenameurl?.length !== 0 &&
-          data?.submodulenameurl?.length !== 0 &&
-          data?.mainpagenameurl?.length !== 0 &&
-          data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)
-        ) {
-          fetfinalurl = data.subpagenameurl;
-        } else if (
-          data?.modulenameurl?.length !== 0 &&
-          data?.submodulenameurl?.length !== 0 &&
-          data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)
-        ) {
-          fetfinalurl = data.mainpagenameurl;
-        } else if (
-          data?.modulenameurl?.length !== 0 &&
-          data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)
-        ) {
-          fetfinalurl = data.submodulenameurl;
-        } else if (data?.modulenameurl?.length !== 0) {
-          fetfinalurl = data.modulenameurl;
-        } else {
-          fetfinalurl = [];
-        }
-
-        const remove = [
-          window.location.pathname?.substring(1),
-          window.location.pathname,
-        ];
-        return fetfinalurl?.some((item) => remove?.includes(item));
-      })
-      ?.map((data) => ({
         branch: data.branch,
         company: data.company,
         unit: data.unit,
-      }));
+      }))
+    : isAssignBranch
+        ?.filter((data) => {
+          let fetfinalurl = [];
+          if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.subsubpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.subpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.mainpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.submodulenameurl;
+          } else if (data?.modulenameurl?.length !== 0) {
+            fetfinalurl = data.modulenameurl;
+          } else {
+            fetfinalurl = [];
+          }
+
+          const remove = [
+            window.location.pathname?.substring(1),
+            window.location.pathname,
+          ];
+          return fetfinalurl?.some((item) => remove?.includes(item));
+        })
+        ?.map((data) => ({
+          branch: data.branch,
+          company: data.company,
+          unit: data.unit,
+        }));
   //MULTISELECT ONCHANGE START
   //company multiselect
   const [selectedOptionsTemplate, setSelectedOptionsTemplate] = useState([]);
@@ -272,7 +327,7 @@ function DocumentsPrintedStatusList() {
     );
     setSelectedOptionsTemplate(options);
     setSelectedOptionsCompany([]);
-    setValueCompanyCat([])
+    setValueCompanyCat([]);
     setValueBranchCat([]);
     setSelectedOptionsBranch([]);
     setValueUnitCat([]);
@@ -299,7 +354,6 @@ function DocumentsPrintedStatusList() {
       })
     );
     setSelectedOptionsStatus(options);
-
   };
   const customValueRendererStatus = (valueCompanyCat, _categoryname) => {
     return valueCompanyCat?.length
@@ -307,9 +361,9 @@ function DocumentsPrintedStatusList() {
       : "Please Select Status";
   };
 
-
   //company multiselect
-  const [selectedOptionsCompanyTemplate, setSelectedOptionsCompanyTemplate] = useState([]);
+  const [selectedOptionsCompanyTemplate, setSelectedOptionsCompanyTemplate] =
+    useState([]);
   let [valueCompanyCatTemplate, setValueCompanyCatTemplate] = useState([]);
   const handleCompanyChangeTemplate = (options) => {
     setValueCompanyCatTemplate(
@@ -321,17 +375,21 @@ function DocumentsPrintedStatusList() {
     setValueBranchCatTemplate([]);
     setSelectedOptionsBranchTemplate([]);
     setEmployeeModeOptions([]);
-    setTemplateValues([])
-    setEmployeeModeValue("Please Select Employee Mode")
-    setTemplateName("Please Select Template")
+    setTemplateValues([]);
+    setEmployeeModeValue("Please Select Employee Mode");
+    setTemplateName("Please Select Template");
   };
-  const customValueRendererCompanyTemplate = (valueCompanyCat, _categoryname) => {
+  const customValueRendererCompanyTemplate = (
+    valueCompanyCat,
+    _categoryname
+  ) => {
     return valueCompanyCat?.length
       ? valueCompanyCat.map(({ label }) => label)?.join(", ")
       : "Please Select Company";
   };
   //branch multiselect
-  const [selectedOptionsBranchTemplate, setSelectedOptionsBranchTemplate] = useState([]);
+  const [selectedOptionsBranchTemplate, setSelectedOptionsBranchTemplate] =
+    useState([]);
   let [valueBranchCatTemplate, setValueBranchCatTemplate] = useState([]);
   const handleBranchChangeTemplate = (options) => {
     setValueBranchCatTemplate(
@@ -340,7 +398,7 @@ function DocumentsPrintedStatusList() {
       })
     );
     setSelectedOptionsBranchTemplate(options);
-    const branches = options?.map(data => data?.value);
+    const branches = options?.map((data) => data?.value);
     TemplateDropdowns(branches);
     setEmployeeModeValue("Please Select Employee Mode");
     setTemplateName("Please Select Template");
@@ -351,11 +409,6 @@ function DocumentsPrintedStatusList() {
       ? valueBranchCat.map(({ label }) => label)?.join(", ")
       : "Please Select Branch";
   };
-
-
-
-
-
 
   //company multiselect
   const [selectedOptionsCompany, setSelectedOptionsCompany] = useState([]);
@@ -443,7 +496,7 @@ function DocumentsPrintedStatusList() {
         return a.value;
       })
     );
-    const values = options.map(a => a.value)
+    const values = options.map((a) => a.value);
     fetchEmployeeDropdownNames(values, employeeModeValue, "Team");
 
     setSelectedOptionsTeam(options);
@@ -471,7 +524,7 @@ function DocumentsPrintedStatusList() {
         return a.value;
       })
     );
-    const values = options.map(a => a.value)
+    const values = options.map((a) => a.value);
     fetchEmployeeDropdownNames(values, employeeModeValue, "Department");
     setSelectedOptionsDepartment(options);
     setValueEmployeeCat([]);
@@ -493,24 +546,29 @@ function DocumentsPrintedStatusList() {
       : "Please Select Department";
   };
 
-
   const fetchEmployeeDropdownNames = async (e, mode, dropdown) => {
     setPageName(!pageName);
     try {
-      let res_type = await axios.post(SERVICE.USERNAMES_EMP_DOCUMENT_PRINTED_LIST, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-        company: valueCompanyCat,
-        branch: valueBranchCat,
-        unit: valueUnitCat,
-        team: dropdown === "Team" ? e : [],
-        department: dropdown === "Department" ? e : [],
-        resonablestatus: mode,
-        pagevalue: dropdown
-      });
+      let res_type = await axios.post(
+        SERVICE.USERNAMES_EMP_DOCUMENT_PRINTED_LIST,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          company: valueCompanyCat,
+          branch: valueBranchCat,
+          unit: valueUnitCat,
+          team: dropdown === "Team" ? e : [],
+          department: dropdown === "Department" ? e : [],
+          resonablestatus: mode,
+          pagevalue: dropdown,
+        }
+      );
 
-      let usersEmployeemode = res_type.data.userteamgroup?.length > 0 ? res_type.data.userteamgroup : [];
+      let usersEmployeemode =
+        res_type.data.userteamgroup?.length > 0
+          ? res_type.data.userteamgroup
+          : [];
       setEmployeenames(
         usersEmployeemode?.map((data) => ({
           // ...data,
@@ -525,7 +583,12 @@ function DocumentsPrintedStatusList() {
         }))
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   //employee multiselect
@@ -577,31 +640,32 @@ function DocumentsPrintedStatusList() {
 
   const [filterLoader, setFilterLoader] = useState(false);
   const handleFilter = () => {
-
     if (selectedOptionsCompanyTemplate?.length === 0) {
       setPopupContentMalert("Please Select Template Company!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    }
-    else if (selectedOptionsBranchTemplate?.length === 0) {
+    } else if (selectedOptionsBranchTemplate?.length === 0) {
       setPopupContentMalert("Please Select Template Branch!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    }
-    else if (
+    } else if (
       templateName === "Please Select Template" ||
       templateName === ""
     ) {
       setPopupContentMalert("Please Select Template!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    }
-    else if (employeeModeValue === "Please Select Employee Mode" || employeeModeValue === "") {
+    } else if (
+      employeeModeValue === "Please Select Employee Mode" ||
+      employeeModeValue === ""
+    ) {
       setPopupContentMalert("Please Select Employee Mode!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    }
-    else if (selectedOptionsDepartment?.length === 0 && selectedOptionsCompany?.length === 0) {
+    } else if (
+      selectedOptionsDepartment?.length === 0 &&
+      selectedOptionsCompany?.length === 0
+    ) {
       setPopupContentMalert("Please Select Department or Company!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
@@ -642,7 +706,7 @@ function DocumentsPrintedStatusList() {
     setValueTeamCat([]);
     setSelectedOptionsTeam([]);
     setValueDepartmentCat([]);
-    setTemplateValues([])
+    setTemplateValues([]);
     setSelectedOptionsDepartment([]);
     setValueEmployeeCat([]);
     setValueStatus([]);
@@ -657,8 +721,8 @@ function DocumentsPrintedStatusList() {
     setEmployeeModeOptions([]);
     setValueCompanyCatTemplate([]);
     setSelectedOptionsCompanyTemplate([]);
-    setEmployeeModeValue("Please Select Employee Mode")
-    setTemplateName("Please Select Template")
+    setEmployeeModeValue("Please Select Employee Mode");
+    setTemplateName("Please Select Template");
     setFilterState({
       type: "Individual",
       employeestatus: "Please Select Employee Status",
@@ -668,7 +732,6 @@ function DocumentsPrintedStatusList() {
     setPopupSeverity("success");
     handleClickOpenPopup();
   };
-
 
   // //auto select all dropdowns
   // const [allAssignCompany, setAllAssignCompany] = useState([]);
@@ -848,48 +911,46 @@ function DocumentsPrintedStatusList() {
   //   handleAutoSelect();
   // }, [isAssignBranch]);
 
-
   let exportColumnNames = [
-    'Document Need',
-    'Date ',
-    'Reference No',
-    'Template No',
-    'Template',
-    'EmployeeMode',
-    'Department',
-    'Company',
-    'Branch',
-    'Unit',
-    'Team',
-    'Person',
-    'Document Need',
-    'Approval Status',
-    'Printed Count',
-    'Printing Status',
-    'Issued Person Details',
-    'Issuing Authority'
+    "Document Need",
+    "Date ",
+    "Reference No",
+    "Template No",
+    "Template",
+    "EmployeeMode",
+    "Department",
+    "Company",
+    "Branch",
+    "Unit",
+    "Team",
+    "Person",
+    "Document Need",
+    "Approval Status",
+    "Printed Count",
+    "Printing Status",
+    "Issued Person Details",
+    "Issuing Authority",
   ];
   let exportRowValues = [
-    'documentneed',
-    'date',
-    'referenceno',
-    'templateno',
-    'template',
-    'employeemode',
-    'department',
-    'company',
-    'branch',
-    'unit',
-    'team',
-    'person',
-    'documentneed',
-    'approval',
-    'printedcount',
-    'printingstatus',
-    'issuedpersondetails',
-    'issuingauthority'
+    "documentneed",
+    "date",
+    "referenceno",
+    "templateno",
+    "template",
+    "employeemode",
+    "department",
+    "company",
+    "branch",
+    "unit",
+    "team",
+    "person",
+    "documentneed",
+    "approval",
+    "printedcount",
+    "printingstatus",
+    "issuedpersondetails",
+    "issuingauthority",
   ];
-
 
   let today = new Date(serverTime);
   var dd = String(today.getDate()).padStart(2, "0");
@@ -904,8 +965,11 @@ function DocumentsPrintedStatusList() {
   const [autoId, setAutoId] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [searchQueryManage, setSearchQueryManage] = useState("");
-  const [documentPreparationEdit, setDocumentPreparationEdit] = useState({ name: "" });
-  const [templateCreationArrayCreate, setTemplateCreationArrayCreate] = useState([]);
+  const [documentPreparationEdit, setDocumentPreparationEdit] = useState({
+    name: "",
+  });
+  const [templateCreationArrayCreate, setTemplateCreationArrayCreate] =
+    useState([]);
 
   const { auth } = useContext(AuthContext);
   const [loader, setLoader] = useState(false);
@@ -922,26 +986,26 @@ function DocumentsPrintedStatusList() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [cateCodeValue, setCatCodeValue] = useState([]);
 
-
   const [items, setItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [copiedData, setCopiedData] = useState("");
   const [isManageColumnsOpen, setManageColumnsOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const [overallExcelDatas, setOverallExcelDatas] = useState([])
+  const [overallExcelDatas, setOverallExcelDatas] = useState([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isPdfFilterOpen, setIsPdfFilterOpen] = useState(false);
-  const [fileFormat, setFormat] = useState('')
-  const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-  const fileExtension = fileFormat === "xl" ? '.xlsx' : '.csv';
+  const [fileFormat, setFormat] = useState("");
+  const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const fileExtension = fileFormat === "xl" ? ".xlsx" : ".csv";
   const exportToCSV = (csvData, fileName) => {
     const ws = XLSX.utils.json_to_sheet(csvData);
-    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: fileType });
     FileSaver.saveAs(data, fileName + fileExtension);
-  }
+  };
 
   // page refersh reload
   const handleCloseFilterMod = () => {
@@ -952,10 +1016,10 @@ function DocumentsPrintedStatusList() {
     setIsPdfFilterOpen(false);
   };
 
-
   function encryptString(str) {
     if (str) {
-      const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+      const characters =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
       const shift = 3; // You can adjust the shift value as per your requirement
       let encrypted = "";
       for (let i = 0; i < str.length; i++) {
@@ -970,11 +1034,9 @@ function DocumentsPrintedStatusList() {
         }
       }
       return encrypted;
+    } else {
+      return "";
     }
-    else {
-      return ""
-    }
-
   }
 
   // Show All Columns & Manage Columns
@@ -1007,13 +1069,13 @@ function DocumentsPrintedStatusList() {
     printedcount: true,
     updatedby: true,
   };
-  const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
-
+  const [columnVisibility, setColumnVisibility] = useState(
+    initialColumnVisibility
+  );
 
   useEffect(() => {
     addSerialNumber(templateCreationArrayCreate);
   }, [templateCreationArrayCreate]);
-
 
   useEffect(() => {
     const beforeUnloadHandler = (event) => handleBeforeUnload(event);
@@ -1023,15 +1085,14 @@ function DocumentsPrintedStatusList() {
     };
   }, []);
 
-
   const handleSelectionChange = (newSelection) => {
     setSelectedRows(newSelection.selectionModel);
   };
   // Error Popup model
   const handleClickOpenerr = () => {
     setIsErrorOpen(true);
-    setBtnLoad(false)
-    setBtnLoadSave(false)
+    setBtnLoad(false);
+    setBtnLoadSave(false);
   };
   // view model
   const handleClickOpenview = () => {
@@ -1102,11 +1163,10 @@ function DocumentsPrintedStatusList() {
     return ""; // Return an empty string for other rows
   };
 
-
   //get all brand master name.
   const fetchBrandMaster = async () => {
     setLoader(true);
-    setFilterLoader(true)
+    setFilterLoader(true);
     const queryParams = {
       assignbranch: accessbranch,
       template: templateName,
@@ -1118,59 +1178,67 @@ function DocumentsPrintedStatusList() {
       team: valueTeamCat,
       department: valueDepartmentCat,
       person: valueEmployeeCat,
-
     };
     setPageName(!pageName);
     try {
-      let res_freq = await axios.post(`${SERVICE.ACCESIBLEBRANCHALL_DOCUMENTPREPARATION_FILTER}`, queryParams, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-      });
+      let res_freq = await axios.post(
+        `${SERVICE.ACCESIBLEBRANCHALL_DOCUMENTPREPARATION_FILTER}`,
+        queryParams,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
       setAutoId(res_freq?.data?.documentPreparation);
-      console.log(res_freq?.data, 'Data Objects')
-      const answer = res_freq?.data?.documentPreparation?.length > 0 ? res_freq?.data?.documentPreparation?.map((item, index) => ({
-        serialNumber: index + 1,
-        date: moment(item.date).format("DD-MM-YYYY"),
-        id: item._id,
-        referenceno: item.referenceno,
-        templateno: item.templateno,
-        printedcount: item.printedcount,
-        template: item.template,
-        mail: item.mail,
-        email: item.email,
-        printingstatus: item.printingstatus,
-        employeemode: item.employeemode,
-        department: item.department === "Please Select Department" ? "" : item.department,
-        company: item.company === "Please Select Company" ? "" : item.company,
-        branch: item.branch === "Please Select Branch" ? "" : item.branch,
-        unit: item.unit === "Please Select Unit" ? "" : item.unit,
-        team: item.team === "Please Select Team" ? "" : item.team,
-        person: item.person,
-        issuedpersondetails: item.issuedpersondetails,
-        issuingauthority: item.issuingauthority,
-        approval: item.approval,
-        documentneed: item.documentneed,
-        updatedby: item.updatedby,
-        approvedfilename: item.approvedfilename,
-        employeedoj: item.employeedoj,
-      })) : [];
-      setTemplateCreationArrayCreate(answer)
-      setFilterLoader(false)
+      console.log(res_freq?.data, "Data Objects");
+      const answer =
+        res_freq?.data?.documentPreparation?.length > 0
+          ? res_freq?.data?.documentPreparation?.map((item, index) => ({
+              serialNumber: index + 1,
+              date: moment(item.date).format("DD-MM-YYYY"),
+              id: item._id,
+              referenceno: item.referenceno,
+              templateno: item.templateno,
+              printedcount: item.printedcount,
+              template: item.template,
+              mail: item.mail,
+              email: item.email,
+              printingstatus: item.printingstatus,
+              employeemode: item.employeemode,
+              department:
+                item.department === "Please Select Department"
+                  ? ""
+                  : item.department,
+              company:
+                item.company === "Please Select Company" ? "" : item.company,
+              branch: item.branch === "Please Select Branch" ? "" : item.branch,
+              unit: item.unit === "Please Select Unit" ? "" : item.unit,
+              team: item.team === "Please Select Team" ? "" : item.team,
+              person: item.person,
+              issuedpersondetails: item.issuedpersondetails,
+              issuingauthority: item.issuingauthority,
+              approval: item.approval,
+              documentneed: item.documentneed,
+              updatedby: item.updatedby,
+              approvedfilename: item.approvedfilename,
+              employeedoj: item.employeedoj,
+            }))
+          : [];
+      setTemplateCreationArrayCreate(answer);
+      setFilterLoader(false);
       setLoader(false);
     } catch (err) {
       setLoader(false);
-      setFilterLoader(false)
+      setFilterLoader(false);
       handleApiError(err, setShowAlert, handleClickOpenerr);
     }
   };
 
-
-
   //get single row to edit....
   const getUpdatePrintingStatus = async (e, updatedby) => {
     setPageName(!pageName);
-    console.log(updatedby, 'console')
+    console.log(updatedby, "console");
     try {
       let response = await axios.post(SERVICE.FILTER_DOCUMENT_USER_LOGIN, {
         headers: {
@@ -1179,37 +1247,45 @@ function DocumentsPrintedStatusList() {
         person: isUserRoleAccess.companyname,
       });
       if (response?.data?.user) {
-        let ans = response?.data?.user?.loginUserStatus?.find(data => data?.status === "Active");
-        let res = await axios.put(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e}`, {
-          headers: {
-            Authorization: `Bearer ${auth.APIToken}`,
-          },
-          printingstatus: "Re-Printed",
-          $inc: { printedcount: 1 },
-          updatedby: updatedby ? [...updatedby, {
-            name: isUserRoleAccess.companyname,
-            localip: ans ? ans?.localip : "",
-            date: new Date(serverTime),
-          }] : []
-        });
+        let ans = response?.data?.user?.loginUserStatus?.find(
+          (data) => data?.status === "Active"
+        );
+        let res = await axios.put(
+          `${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e}`,
+          {
+            headers: {
+              Authorization: `Bearer ${auth.APIToken}`,
+            },
+            printingstatus: "Re-Printed",
+            $inc: { printedcount: 1 },
+            updatedby: updatedby
+              ? [
+                  ...updatedby,
+                  {
+                    name: isUserRoleAccess.companyname,
+                    localip: ans ? ans?.localip : "",
+                    date: new Date(serverTime),
+                  },
+                ]
+              : [],
+          }
+        );
       }
-
-    } catch (err) { console.log(err, 'err'); handleApiError(err, setShowAlert, handleClickOpenerr); }
+    } catch (err) {
+      console.log(err, "err");
+      handleApiError(err, setShowAlert, handleClickOpenerr);
+    }
   };
-
-
 
   //frequency master name updateby edit page...
   let updateby = documentPreparationEdit?.updatedby;
   let addedby = documentPreparationEdit?.addedby;
 
-
-
-
   const gridRefTableImg = useRef(null);
   const handleCaptureImage = () => {
     if (gridRefTableImg.current) {
-      domtoimage.toBlob(gridRefTableImg.current)
+      domtoimage
+        .toBlob(gridRefTableImg.current)
         .then((blob) => {
           saveAs(blob, "Employee Printed Documents List.png");
         })
@@ -1228,7 +1304,6 @@ function DocumentsPrintedStatusList() {
 
   //serial no for listing items
   const addSerialNumber = (data) => {
-
     setItems(data);
   };
   //Datatable
@@ -1249,19 +1324,26 @@ function DocumentsPrintedStatusList() {
     setPage(1);
   };
 
-
   // Split the search query into individual terms
   const searchTerms = searchQuery.toLowerCase().split(" ");
   // Modify the filtering logic to check each term
   const filteredDatas = items?.filter((item) => {
-    return searchTerms.every((term) => Object.values(item).join(" ").toLowerCase().includes(term));
+    return searchTerms.every((term) =>
+      Object.values(item).join(" ").toLowerCase().includes(term)
+    );
   });
 
-  const filteredData = filteredDatas?.slice((page - 1) * pageSize, page * pageSize);
+  const filteredData = filteredDatas?.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
   const totalPages = Math.ceil(filteredDatas?.length / pageSize);
   const visiblePages = Math.min(totalPages, 3);
   const firstVisiblePage = Math.max(1, page - 1);
-  const lastVisiblePage = Math.min(firstVisiblePage + visiblePages - 1, totalPages);
+  const lastVisiblePage = Math.min(
+    firstVisiblePage + visiblePages - 1,
+    totalPages
+  );
   const pageNumbers = [];
   for (let i = firstVisiblePage; i <= lastVisiblePage; i++) {
     pageNumbers.push(i);
@@ -1274,19 +1356,27 @@ function DocumentsPrintedStatusList() {
     </div>
   );
 
-  const [personId, setPersonId] = useState('');
+  const [personId, setPersonId] = useState("");
   // letter headd options
   const [buttonLoadingPreview, setButtonLoadingPreview] = useState(false);
   const [head, setHeader] = useState("");
   const [foot, setfooter] = useState("");
-  const HeaderDropDowns = [{ label: "With Letter Head", value: "With Letter Head" }, { label: "Without Letter Head", value: "Without Letter Head" }];
-  const WithHeaderOptions = [{ value: "With Head content", label: "With Head content" }, { value: "With Footer content", label: "With Footer content" }]
-  const [isOpenLetterHeadPopup, setIsLetterHeadPopup] = useState(false)
-  const [PageMailOpen, setPageMailOpen] = useState(false)
-  const [PageUpdateOpen, setPageUpdateOpen] = useState(false)
-  const [headerOptions, setHeaderOptions] = useState("Please Select Print Options")
-  const [pagePopeOpen, setPagePopUpOpen] = useState("")
-  const [DataTableId, setDataTableId] = useState("")
+  const HeaderDropDowns = [
+    { label: "With Letter Head", value: "With Letter Head" },
+    { label: "Without Letter Head", value: "Without Letter Head" },
+  ];
+  const WithHeaderOptions = [
+    { value: "With Head content", label: "With Head content" },
+    { value: "With Footer content", label: "With Footer content" },
+  ];
+  const [isOpenLetterHeadPopup, setIsLetterHeadPopup] = useState(false);
+  const [PageMailOpen, setPageMailOpen] = useState(false);
+  const [PageUpdateOpen, setPageUpdateOpen] = useState(false);
+  const [headerOptions, setHeaderOptions] = useState(
+    "Please Select Print Options"
+  );
+  const [pagePopeOpen, setPagePopUpOpen] = useState("");
+  const [DataTableId, setDataTableId] = useState("");
   const [selectedHeadOpt, setSelectedHeadOpt] = useState([]);
   const [headvalue, setHeadValue] = useState([]);
   const [emailValuePage, setEmailValuePage] = useState({});
@@ -1297,70 +1387,84 @@ function DocumentsPrintedStatusList() {
   const handleHeadChange = (options) => {
     let value = options.map((a) => {
       return a.value;
-    })
-    setHeadValue(value)
+    });
+    setHeadValue(value);
     if (!["Preview Manual", "Print Manual"]?.includes(pagePopeOpen)) {
       if (value?.length === 1 && value?.includes("With Head content")) {
-        setHeader(personId?.letterheadcontentheader[0]?.preview)
-      }
-      else if (value?.length === 1 && value?.includes("With Footer content")) {
-        setfooter(personId?.letterheadcontentfooter[0]?.preview)
-      }
-      else if (value?.length > 1) {
-        setHeader(personId?.letterheadcontentheader[0]?.preview)
-        setfooter(personId?.letterheadcontentfooter[0]?.preview)
-      }
-      else {
-        setHeader("")
-        setfooter("")
+        setHeader(personId?.headerimage);
+      } else if (
+        value?.length === 1 &&
+        value?.includes("With Footer content")
+      ) {
+        setfooter(personId?.footerimage);
+      } else if (value?.length > 1) {
+        setHeader(personId?.headerimage);
+        setfooter(personId?.footerimage);
+      } else {
+        setHeader("");
+        setfooter("");
       }
     }
 
-
-
-    setSelectedHeadOpt(options)
-  }
+    setSelectedHeadOpt(options);
+  };
   const customValueRenderHeadFrom = (valueCate) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(", ") : "Please Select Letter Head";
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please Select Letter Head";
   };
   const handleClickOpenLetterHeader = (page) => {
-    setPagePopUpOpen(page)
+    setPagePopUpOpen(page);
     setIsLetterHeadPopup(true);
-  }
+  };
 
   const handleClickCloseLetterHead = () => {
     setIsLetterHeadPopup(false);
-    setHeaderOptions("Please Select Print Options")
+    setHeaderOptions("Please Select Print Options");
     setHeadValue([]);
-    setPagePopUpOpen("")
+    setPagePopUpOpen("");
     setHeader("");
     setfooter("");
     setSelectedHeadOpt([]);
-  }
-
+  };
 
   const handleClickOpenMailOpen = (page) => {
     setPageMailOpen(true);
-  }
+  };
 
   const handleClickCloseMail = () => {
     setPageMailOpen(false);
-  }
+  };
 
   const handleClickUpdateOpen = () => {
     setPageUpdateOpen(true);
-  }
+  };
 
   const handleClickUpdateClose = () => {
     setPageUpdateOpen(false);
+  };
+  async function convertFileUrlToBase64(fileUrl) {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result); // This will be data:image/png;base64,xxxx
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error("Error fetching file:", error);
+      return null;
+    }
   }
 
-
   const getCode = async (e, pagename) => {
-    setPageName(!pageName)
+    setPageName(!pageName);
     const NewDatetime = await getCurrentServerTime();
 
-    console.log(pagename, 'pagename')
+    console.log(pagename, "pagename");
     try {
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
@@ -1368,28 +1472,66 @@ function DocumentsPrintedStatusList() {
         },
         company: e?.company,
         branch: e?.branch,
+        template: e?.template?.split("--")[0],
+        pagename: "Employee",
       });
       if (res?.data?.templatecontrolpanel) {
-        const ans = res?.data?.templatecontrolpanel ?
-          res?.data?.templatecontrolpanel?.templatecontrolpanellog[res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1] : "";
-        setPersonId(ans);
+        const ans = res?.data?.templatecontrolpanel
+          ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
+              res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
+                1
+            ]
+          : "";
+        const templateHeaderFooter = res?.data?.headerfooter;
+        console.log(templateHeaderFooter, "templateHeaderFooter");
+        const headerOption = ans?.letterheadcontentheader?.find(
+          (data) => data?.headername === templateHeaderFooter?.header
+        );
+        const footerOption = ans?.letterheadcontentfooter?.find(
+          (data) => data?.footername === templateHeaderFooter?.footer
+        );
+        const header = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
+        );
+        const footer = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+        );
+        const headerFooterBase64 = {
+          ...ans,
+          headerimage: header,
+          footerimage: footer,
+          backgroundimage: backgroundimage,
+        };
+
+        setPersonId(headerFooterBase64);
         handleClickOpenLetterHeader(pagename);
         setDataTableId(e);
       }
-
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert)
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
   const getInfoStatus = async (e) => {
-    setPageName(!pageName)
+    setPageName(!pageName);
     try {
-
       handleClickUpdateOpen();
-      setUserPrintedInfoList(e)
+      setUserPrintedInfoList(e);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert)
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   const extractEmailFormat = async (name, employeedoj, id, email, pagename) => {
@@ -1397,16 +1539,20 @@ function DocumentsPrintedStatusList() {
       headers: {
         Authorization: `Bearer ${auth.APIToken}`,
       },
-      name: name
+      name: name,
     });
 
-    const userFind = suser?.data?.users?.length > 0 ? suser?.data?.users[0] : "none";
-    const tempcontpanel = await axios.post(SERVICE.TEMPLATECONTROLPANEL_USERFIND, {
-      headers: {
-        Authorization: `Bearer ${auth.APIToken}`,
-      },
-      user: userFind
-    });
+    const userFind =
+      suser?.data?.users?.length > 0 ? suser?.data?.users[0] : "none";
+    const tempcontpanel = await axios.post(
+      SERVICE.TEMPLATECONTROLPANEL_USERFIND,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        user: userFind,
+      }
+    );
     let convert = tempcontpanel?.data?.result[0]?.emailformat;
     let fromemail = tempcontpanel?.data?.result[0]?.fromemail;
     let ccemail = tempcontpanel?.data?.result[0]?.ccemail;
@@ -1414,31 +1560,53 @@ function DocumentsPrintedStatusList() {
 
     setPersonId(tempcontpanel?.data?.result[0]);
     if (pagename === "Employee") {
-      setEmailValuePage({ id, convert, fromemail, ccemail, bccemail, email, pagename, employeedoj })
+      setEmailValuePage({
+        id,
+        convert,
+        fromemail,
+        ccemail,
+        bccemail,
+        email,
+        pagename,
+        employeedoj,
+      });
       handleClickOpenMailOpen();
       // await fetchEmailForUser(id, convert, fromemail, ccemail, bccemail, email, pagename)
-
     } else {
-      handleClickOpenLetterHeader('Email');
-      setEmailValuePage({ id, convert, fromemail, ccemail, bccemail, email, pagename, employeedoj })
+      handleClickOpenLetterHeader("Email");
+      setEmailValuePage({
+        id,
+        convert,
+        fromemail,
+        ccemail,
+        bccemail,
+        email,
+        pagename,
+        employeedoj,
+      });
     }
-
-
-  }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    fetchEmailForUser(emailValuePage?.id, emailValuePage?.convert, emailValuePage?.fromemail, emailValuePage?.ccemail, emailValuePage?.bccemail, emailValuePage?.pagename, emailValuePage?.employeedoj)
+    fetchEmailForUser(
+      emailValuePage?.id,
+      emailValuePage?.convert,
+      emailValuePage?.fromemail,
+      emailValuePage?.ccemail,
+      emailValuePage?.bccemail,
+      emailValuePage?.pagename,
+      emailValuePage?.employeedoj
+    );
     handleClickCloseMail();
-
-  }
+  };
   const getViewFile = async (name, details) => {
     const fileUrl = `${BASE_URL}/uploadsDocuments/${name}`;
-    window.open(fileUrl, '_blank');
-    console.log(name, 'id')
-    await getUpdatePrintingStatus(details?.id, details?.updatedby)
-  }
+    window.open(fileUrl, "_blank");
+    console.log(name, "id");
+    await getUpdatePrintingStatus(details?.id, details?.updatedby);
+  };
 
   const downloadFile = async (filename, details) => {
     try {
@@ -1454,35 +1622,42 @@ function DocumentsPrintedStatusList() {
       document.body.appendChild(link);
       link.click();
       link.remove();
-      await getUpdatePrintingStatus(details?.id, details?.updatedby)
+      await getUpdatePrintingStatus(details?.id, details?.updatedby);
     } catch (error) {
       console.error("Error downloading the file", error);
     }
   };
 
-
   // Print Documents
   const downloadPdfTesdtTable = async (e, pagename) => {
     const NewDatetime = await getCurrentServerTime();
-    if (pagename !== "Employee" && headerOptions === "Please Select Print Options") {
+    if (
+      pagename !== "Employee" &&
+      headerOptions === "Please Select Print Options"
+    ) {
       setButtonLoadingPreview(false);
       setPopupContentMalert("Please Select Print Options!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    }
-    else if (pagename !== "Employee" && headerOptions === "With Letter Head" && selectedHeadOpt?.length < 1) {
+    } else if (
+      pagename !== "Employee" &&
+      headerOptions === "With Letter Head" &&
+      selectedHeadOpt?.length < 1
+    ) {
       setPopupContentMalert("Please Select With Letter Head!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    }
-    else {
-      setHeaderOptionsButton(true)
+    } else {
+      setHeaderOptionsButton(true);
       // Create a new div element to hold the Quill content
-      let response = await axios.get(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e?.id}`, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-      });
+      let response = await axios.get(
+        `${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e?.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
       let qrCodeInfoDetails = [];
       if (response.data.sdocumentPreparation) {
         let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
@@ -1491,22 +1666,78 @@ function DocumentsPrintedStatusList() {
           },
           company: response.data.sdocumentPreparation?.company,
           branch: response.data.sdocumentPreparation?.branch,
+          template:
+            response.data.sdocumentPreparation?.template?.split("--")[0],
+          pagename: "Employee",
         });
         if (res?.data?.templatecontrolpanel) {
-          const ans = res?.data?.templatecontrolpanel ?
-            res?.data?.templatecontrolpanel?.templatecontrolpanellog[res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1] : "";
-          const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
-          console.log(qrInfoDetails, 'qrInfoDetails')
-          qrCodeInfoDetails = qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-            .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', e ? e?.employeedoj : "")}`)
+          const ans = res?.data?.templatecontrolpanel
+            ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
+                res?.data?.templatecontrolpanel?.templatecontrolpanellog
+                  ?.length - 1
+              ]
+            : "";
+
+          const templateHeaderFooter = res?.data?.headerfooter;
+
+          const headerOption = ans?.letterheadcontentheader?.find(
+            (data) => data?.headername === templateHeaderFooter?.header
+          );
+          const footerOption = ans?.letterheadcontentfooter?.find(
+            (data) => data?.footername === templateHeaderFooter?.footer
+          );
+          const header = await convertFileUrlToBase64(
+            `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
+          );
+          const footer = await convertFileUrlToBase64(
+            `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
+          );
+          const backgroundimage = await convertFileUrlToBase64(
+            `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+          );
+          const headerFooterBase64 = {
+            ...ans,
+            headerimage: header,
+            footerimage: footer,
+            backgroundimage: backgroundimage,
+          };
+
+          const qrInfoDetails =
+            headerFooterBase64?.qrInfo?.length > 0
+              ? headerFooterBase64?.qrInfo
+              : [];
+          console.log(qrInfoDetails, "qrInfoDetails");
+          qrCodeInfoDetails = qrInfoDetails?.map(
+            (data, index) =>
+              `${index + 1}. ${data?.details
+                ?.replaceAll(
+                  "$C:TIME$",
+                  new Date(NewDatetime).toLocaleTimeString()
+                )
+                .replaceAll("$C:DATE$", date)
+                .replaceAll("$DOJ$", e ? e?.employeedoj : "")}`
+          );
         }
       }
-      await getUpdatePrintingStatus(e?.id, response.data.sdocumentPreparation?.updatedby)
+      await getUpdatePrintingStatus(
+        e?.id,
+        response.data.sdocumentPreparation?.updatedby
+      );
       const pdfElement = document.createElement("div");
-      pdfElement.innerHTML = response.data.sdocumentPreparation.document?.replaceAll('--- Page Break ---', `<p class="page-break-label" data-page-break="true"></p>`);;
+      pdfElement.innerHTML =
+        response.data.sdocumentPreparation.document?.replaceAll(
+          "--- Page Break ---",
+          `<p class="page-break-label" data-page-break="true"></p>`
+        );
 
-      let headerDisp = pagename === "Employee" ? response?.data?.sdocumentPreparation?.head : head;
-      let footerDisp = pagename === "Employee" ? response?.data?.sdocumentPreparation?.foot : foot;
+      let headerDisp =
+        pagename === "Employee"
+          ? response?.data?.sdocumentPreparation?.head
+          : head;
+      let footerDisp =
+        pagename === "Employee"
+          ? response?.data?.sdocumentPreparation?.foot
+          : foot;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
       styleElement.textContent = `
@@ -1532,13 +1763,17 @@ function DocumentsPrintedStatusList() {
       pdfElement.appendChild(styleElement);
 
       // pdfElement.appendChild(styleElement);
-      const addPageNumbersAndHeadersFooters = (doc, watermarkImage, qrCodeImage) => {
+      const addPageNumbersAndHeadersFooters = (
+        doc,
+        watermarkImage,
+        qrCodeImage
+      ) => {
         const totalPages = doc.internal.getNumberOfPages();
         const margin = 15; // Adjust as needed
         const footerHeight = 15; // Adjust as needed
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.visibility = 'hidden';
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "absolute";
+        tempDiv.style.visibility = "hidden";
         tempDiv.innerHTML = pdfElement;
         document.body.appendChild(tempDiv);
         const rect = tempDiv.getBoundingClientRect();
@@ -1546,9 +1781,10 @@ function DocumentsPrintedStatusList() {
         const actualContentHeight = rect.height * (25.4 / 96);
         const pageHeight = doc.internal.pageSize.getHeight();
         // Total usable height for content
-        const usableContentHeight = pageHeight - footerHeight - margin - reservedSealHeight;
+        const usableContentHeight =
+          pageHeight - footerHeight - margin - reservedSealHeight;
         const contentEndY = Math.min(actualContentHeight, usableContentHeight);
-        console.log(contentEndY, "contentEndY")
+        console.log(contentEndY, "contentEndY");
         for (let i = 1; i <= totalPages; i++) {
           doc.setPage(i);
           const pageWidth = doc.internal.pageSize.getWidth();
@@ -1560,41 +1796,79 @@ function DocumentsPrintedStatusList() {
           const headerImgHeight = pageHeight * 0.09;
           const headerX = 5;
           const headerY = 3.5;
-          if (headerDisp !== '') {
-            doc.addImage(headerDisp, 'JPEG', headerX, headerY, headerImgWidth, headerImgHeight, '', 'FAST', 0.1);
+          if (headerDisp !== "") {
+            doc.addImage(
+              headerDisp,
+              "JPEG",
+              headerX,
+              headerY,
+              headerImgWidth,
+              headerImgHeight,
+              "",
+              "FAST",
+              0.1
+            );
           } else {
             doc.setFillColor(255, 255, 255);
-            doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, 'F'); // "F" = filled rectangle
+            doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, "F"); // "F" = filled rectangle
           }
 
-          const imgWidth = pageWidth * 0.50;
+          const imgWidth = pageWidth * 0.5;
           const imgHeight = pageHeight * 0.25;
           const x = (pageWidth - imgWidth) / 2;
           const y = (pageHeight - imgHeight) / 2 - 20;
           doc.setFillColor(0, 0, 0, 0.1);
-          doc.addImage(watermarkImage, 'PNG', x, y, imgWidth, imgHeight, '', 'FAST', 0.01);
+          doc.addImage(
+            watermarkImage,
+            "PNG",
+            x,
+            y,
+            imgWidth,
+            imgHeight,
+            "",
+            "FAST",
+            0.01
+          );
           doc.setFontSize(10);
           const footerImgWidth = pageWidth * 0.95;
           const footerImgHeight = pageHeight * 0.067;
           const footerX = 5;
           const footerY = pageHeight - footerImgHeight - 5;
           if (footerDisp !== "") {
-            doc.addImage(footerDisp, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
+            doc.addImage(
+              footerDisp,
+              "JPEG",
+              footerX,
+              footerY,
+              footerImgWidth,
+              footerImgHeight,
+              "",
+              "FAST",
+              0.1
+            );
           } else {
             doc.setFillColor(255, 255, 255);
-            doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, 'F');
+            doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, "F");
           }
 
           // ---------- SIGNATURE & SEAL ----------
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
-          const signatureNeed = response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
+          const signatureNeed =
+            response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (
+            signatureNeed === "All Pages" ||
+            (signatureNeed === "End Page" && i === totalPages)
+          ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
             // Seal on left
-            if (response?.data?.sdocumentPreparation?.signature || response?.data?.sdocumentPreparation?.seal || response?.data?.sdocumentPreparation?.usersignature) {
+            if (
+              response?.data?.sdocumentPreparation?.signature ||
+              response?.data?.sdocumentPreparation?.seal ||
+              response?.data?.sdocumentPreparation?.usersignature
+            ) {
               const pageWidth = doc.internal.pageSize.getWidth();
               const pageHeight = doc.internal.pageSize.getHeight();
               const margin = 15;
@@ -1602,21 +1876,23 @@ function DocumentsPrintedStatusList() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed
+                  ? pageHeight - footerGap - userSigHeight - 30
+                  : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -1627,17 +1903,36 @@ function DocumentsPrintedStatusList() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (response?.data?.sdocumentPreparation?.signature) {
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.topcontent) {
+                if (
+                  response?.data?.sdocumentPreparation?.signaturetype ===
+                    "For Seal" &&
+                  response?.data?.sdocumentPreparation?.topcontent
+                ) {
                   doc.setFontSize(8);
                   doc.setFont(undefined, "bold");
                   doc.setTextColor(83, 23, 126);
-                  doc.text(response?.data?.sdocumentPreparation.topcontent, leftX, yPos - topTextHeight);
+                  doc.text(
+                    response?.data?.sdocumentPreparation.topcontent,
+                    leftX,
+                    yPos - topTextHeight
+                  );
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(response?.data?.sdocumentPreparation.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(
+                  response?.data?.sdocumentPreparation.signature,
+                  "PNG",
+                  leftX,
+                  yPos,
+                  sigWidth,
+                  sigHeight
+                );
 
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.bottomcontent) {
+                if (
+                  response?.data?.sdocumentPreparation?.signaturetype ===
+                    "For Seal" &&
+                  response?.data?.sdocumentPreparation?.bottomcontent
+                ) {
                   doc.setFontSize(8);
                   doc.setFont(undefined, "bold");
                   doc.setTextColor(83, 23, 126);
@@ -1651,9 +1946,16 @@ function DocumentsPrintedStatusList() {
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (response?.data?.sdocumentPreparation?.seal) {
-                doc.addImage(response?.data?.sdocumentPreparation.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(
+                  response?.data?.sdocumentPreparation.seal,
+                  "PNG",
+                  centerX,
+                  yPos - sealUpShift,
+                  sealWidth,
+                  sealHeight
+                );
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -1667,37 +1969,68 @@ function DocumentsPrintedStatusList() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName =
+                  response?.data?.sdocumentPreparation?.person || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
-
-
-
-
           }
-          if (response?.data?.sdocumentPreparation?.pagenumberneed === "All Pages") {
+          if (
+            response?.data?.sdocumentPreparation?.pagenumberneed === "All Pages"
+          ) {
             const textY = footerY - 3;
-            doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, { align: 'center' });
-          } else if (response?.data?.sdocumentPreparation?.pagenumberneed === "End Page" && i === totalPages) {
+            doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, {
+              align: "center",
+            });
+          } else if (
+            response?.data?.sdocumentPreparation?.pagenumberneed ===
+              "End Page" &&
+            i === totalPages
+          ) {
             const textY = footerY - 3;
-            doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
+            doc.text(`End of the document`, pageWidth / 2, textY, {
+              align: "center",
+            });
           }
 
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "End Page") {
+          if (
+            response?.data?.sdocumentPreparation?.qrCodeNeed &&
+            response?.data?.sdocumentPreparation?.qrcodevalue === "End Page"
+          ) {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
               const qrCodeHeight = 25; // Adjust as needed
               const qrCodeX = footerX; // Left corner
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
-              doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+              doc.addImage(
+                qrCodeImage,
+                "PNG",
+                qrCodeX,
+                qrCodeY,
+                qrCodeWidth,
+                qrCodeHeight
+              );
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements =
+                qrCodeInfoDetails?.length > 0
+                  ? qrCodeInfoDetails
+                  : [
+                      "1. Scan to verify the authenticity of this document.",
+                      `2. This document was generated on ${moment(
+                        new Date(serverTime)
+                      ).format("DD-MM-YYYY hh:mm a")}`,
+                      `3. For questions, contact us at ${fromEmail}.`,
+                    ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -1707,28 +2040,40 @@ function DocumentsPrintedStatusList() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
             }
           }
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages") {
+          if (
+            response?.data?.sdocumentPreparation?.qrCodeNeed &&
+            response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages"
+          ) {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
               const qrCodeHeight = 25; // Adjust as needed
               const qrCodeX = footerX; // Left corner
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
-              doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+              doc.addImage(
+                qrCodeImage,
+                "PNG",
+                qrCodeX,
+                qrCodeY,
+                qrCodeWidth,
+                qrCodeHeight
+              );
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements =
+                qrCodeInfoDetails?.length > 0
+                  ? qrCodeInfoDetails
+                  : [
+                      "1. Scan to verify the authenticity of this document.",
+                      `2. This document was generated on ${moment(
+                        new Date(serverTime)
+                      ).format("DD-MM-YYYY hh:mm a")}`,
+                      `3. For questions, contact us at ${fromEmail}.`,
+                    ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -1738,21 +2083,26 @@ function DocumentsPrintedStatusList() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-            }
-            else {
+            } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
-              doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+              doc.addImage(
+                qrCodeImage,
+                "PNG",
+                qrCodeX,
+                qrCodeY,
+                qrCodeWidth,
+                qrCodeHeight
+              );
             }
           }
         }
@@ -1761,8 +2111,15 @@ function DocumentsPrintedStatusList() {
       const hasHeaderImage = headerDisp !== ""; // assuming head is a base64 src or image URL
       const hasFooterImage = footerDisp !== "";
 
-      const adjustedMargin = getAdjustedMargin(response.data.sdocumentPreparation?.marginQuill, hasHeaderImage, hasFooterImage);
-      const pdfDimensions = getPageDimensionsTable(response.data.sdocumentPreparation?.pagesizeQuill, response.data.sdocumentPreparation?.orientationQuill); // as before
+      const adjustedMargin = getAdjustedMargin(
+        response.data.sdocumentPreparation?.marginQuill,
+        hasHeaderImage,
+        hasFooterImage
+      );
+      const pdfDimensions = getPageDimensionsTable(
+        response.data.sdocumentPreparation?.pagesizeQuill,
+        response.data.sdocumentPreparation?.orientationQuill
+      ); // as before
       // Convert the HTML content to PDF
       // Convert the HTML content to PDF
       html2pdf()
@@ -1774,38 +2131,45 @@ function DocumentsPrintedStatusList() {
           jsPDF: {
             unit: "mm",
             format: pdfDimensions,
-            orientation: response.data.sdocumentPreparation?.orientationQuill
+            orientation: response.data.sdocumentPreparation?.orientationQuill,
           },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        }).toPdf().get('pdf').then((pdf) => {
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        })
+        .toPdf()
+        .get("pdf")
+        .then((pdf) => {
           // Convert the watermark image to a base64 string
           const img = new Image();
           img.src = response?.data?.sdocumentPreparation?.watermark;
           img.onload = () => {
-            const canvas = document.createElement('canvas');
+            const canvas = document.createElement("canvas");
             canvas.width = img.width;
             canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext("2d");
             ctx.globalAlpha = 0.1;
             ctx.drawImage(img, 0, 0);
-            const watermarkImage = canvas.toDataURL('image/png');
+            const watermarkImage = canvas.toDataURL("image/png");
 
             // Add QR code image
             const qrImg = new Image();
             qrImg.src = response.data.sdocumentPreparation?.qrcode; // QR code image URL
             if (response.data.sdocumentPreparation?.qrCodeNeed) {
               qrImg.onload = () => {
-                const qrCanvas = document.createElement('canvas');
+                const qrCanvas = document.createElement("canvas");
                 qrCanvas.width = qrImg.width;
                 qrCanvas.height = qrImg.height;
-                const qrCtx = qrCanvas.getContext('2d');
+                const qrCtx = qrCanvas.getContext("2d");
                 qrCtx.drawImage(qrImg, 0, 0);
-                const qrCodeImage = qrCanvas.toDataURL('image/png');
+                const qrCodeImage = qrCanvas.toDataURL("image/png");
 
                 // Add page numbers and watermark to each page
-                addPageNumbersAndHeadersFooters(pdf, watermarkImage, qrCodeImage);
+                addPageNumbersAndHeadersFooters(
+                  pdf,
+                  watermarkImage,
+                  qrCodeImage
+                );
                 // Save the PDF
-                const pdfBlob = pdf.output('blob');
+                const pdfBlob = pdf.output("blob");
                 const pdfUrl = URL.createObjectURL(pdfBlob);
                 const printWindow = window.open(pdfUrl);
                 // pdf.save(`${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`);
@@ -1813,11 +2177,10 @@ function DocumentsPrintedStatusList() {
                 setHeaderOptionsButton(false);
                 fetchBrandMaster();
               };
-            }
-            else {
+            } else {
               addPageNumbersAndHeadersFooters(pdf, watermarkImage, "");
               // Save the PDF
-              const pdfBlob = pdf.output('blob');
+              const pdfBlob = pdf.output("blob");
               const pdfUrl = URL.createObjectURL(pdfBlob);
               const printWindow = window.open(pdfUrl);
               // pdf.save(`${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`);
@@ -1825,36 +2188,40 @@ function DocumentsPrintedStatusList() {
               setHeaderOptionsButton(false);
               fetchBrandMaster();
             }
-
           };
         });
-
     }
   };
 
-
-
   const downloadPdfPrintTable = async (e, pagename) => {
     const NewDatetime = await getCurrentServerTime();
-    if (pagename !== "Employee" && headerOptions === "Please Select Print Options") {
+    if (
+      pagename !== "Employee" &&
+      headerOptions === "Please Select Print Options"
+    ) {
       setButtonLoadingPreview(false);
       setPopupContentMalert("Please Select Print Options!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    }
-    else if (pagename !== "Employee" && headerOptions === "With Letter Head" && selectedHeadOpt?.length < 1) {
+    } else if (
+      pagename !== "Employee" &&
+      headerOptions === "With Letter Head" &&
+      selectedHeadOpt?.length < 1
+    ) {
       setPopupContentMalert("Please Select With Letter Head!");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    }
-    else {
-      setHeaderOptionsButton(true)
+    } else {
+      setHeaderOptionsButton(true);
       // Create a new div element to hold the Quill content
-      let response = await axios.get(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e?.id}`, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-      });
+      let response = await axios.get(
+        `${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e?.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
       let qrCodeInfoDetails = [];
       if (response.data.sdocumentPreparation) {
         let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
@@ -1865,19 +2232,44 @@ function DocumentsPrintedStatusList() {
           branch: response.data.sdocumentPreparation?.branch,
         });
         if (res?.data?.templatecontrolpanel) {
-          const ans = res?.data?.templatecontrolpanel ?
-            res?.data?.templatecontrolpanel?.templatecontrolpanellog[res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1] : "";
-          const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
-          console.log(qrInfoDetails, 'qrInfoDetails')
-          qrCodeInfoDetails = qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-            .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', e ? e?.employeedoj : "")}`)
+          const ans = res?.data?.templatecontrolpanel
+            ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
+                res?.data?.templatecontrolpanel?.templatecontrolpanellog
+                  ?.length - 1
+              ]
+            : "";
+          const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : [];
+          console.log(qrInfoDetails, "qrInfoDetails");
+          qrCodeInfoDetails = qrInfoDetails?.map(
+            (data, index) =>
+              `${index + 1}. ${data?.details
+                ?.replaceAll(
+                  "$C:TIME$",
+                  new Date(NewDatetime).toLocaleTimeString()
+                )
+                .replaceAll("$C:DATE$", date)
+                .replaceAll("$DOJ$", e ? e?.employeedoj : "")}`
+          );
         }
       }
-      await getUpdatePrintingStatus(e?.id, response.data.sdocumentPreparation?.updatedby)
+      await getUpdatePrintingStatus(
+        e?.id,
+        response.data.sdocumentPreparation?.updatedby
+      );
       const pdfElement = document.createElement("div");
-      pdfElement.innerHTML = response.data.sdocumentPreparation.document?.replaceAll('--- Page Break ---', `<p class="page-break-label" data-page-break="true"></p>`);
-      let headerDisp = pagename === "Employee" ? response?.data?.sdocumentPreparation?.head : head;
-      let footerDisp = pagename === "Employee" ? response?.data?.sdocumentPreparation?.foot : foot;
+      pdfElement.innerHTML =
+        response.data.sdocumentPreparation.document?.replaceAll(
+          "--- Page Break ---",
+          `<p class="page-break-label" data-page-break="true"></p>`
+        );
+      let headerDisp =
+        pagename === "Employee"
+          ? response?.data?.sdocumentPreparation?.head
+          : head;
+      let footerDisp =
+        pagename === "Employee"
+          ? response?.data?.sdocumentPreparation?.foot
+          : foot;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
       styleElement.textContent = `
@@ -1903,13 +2295,17 @@ function DocumentsPrintedStatusList() {
       pdfElement.appendChild(styleElement);
 
       // pdfElement.appendChild(styleElement);
-      const addPageNumbersAndHeadersFooters = (doc, watermarkImage, qrCodeImage) => {
+      const addPageNumbersAndHeadersFooters = (
+        doc,
+        watermarkImage,
+        qrCodeImage
+      ) => {
         const totalPages = doc.internal.getNumberOfPages();
         const margin = 15; // Adjust as needed
         const footerHeight = 15; // Adjust as needed
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.visibility = 'hidden';
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "absolute";
+        tempDiv.style.visibility = "hidden";
         tempDiv.innerHTML = pdfElement;
         document.body.appendChild(tempDiv);
         const rect = tempDiv.getBoundingClientRect();
@@ -1917,7 +2313,8 @@ function DocumentsPrintedStatusList() {
         const actualContentHeight = rect.height * (25.4 / 96);
         const pageHeight = doc.internal.pageSize.getHeight();
         // Total usable height for content
-        const usableContentHeight = pageHeight - footerHeight - margin - reservedSealHeight;
+        const usableContentHeight =
+          pageHeight - footerHeight - margin - reservedSealHeight;
         const contentEndY = Math.min(actualContentHeight, usableContentHeight);
         for (let i = 1; i <= totalPages; i++) {
           doc.setPage(i);
@@ -1930,40 +2327,78 @@ function DocumentsPrintedStatusList() {
           const headerImgHeight = pageHeight * 0.09;
           const headerX = 5;
           const headerY = 3.5;
-          if (headerDisp !== '') {
-            doc.addImage(headerDisp, 'JPEG', headerX, headerY, headerImgWidth, headerImgHeight, '', 'FAST', 0.1);
+          if (headerDisp !== "") {
+            doc.addImage(
+              headerDisp,
+              "JPEG",
+              headerX,
+              headerY,
+              headerImgWidth,
+              headerImgHeight,
+              "",
+              "FAST",
+              0.1
+            );
           } else {
             doc.setFillColor(255, 255, 255);
-            doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, 'F'); // "F" = filled rectangle
+            doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, "F"); // "F" = filled rectangle
           }
-          const imgWidth = pageWidth * 0.50;
+          const imgWidth = pageWidth * 0.5;
           const imgHeight = pageHeight * 0.25;
           const x = (pageWidth - imgWidth) / 2;
           const y = (pageHeight - imgHeight) / 2 - 20;
           doc.setFillColor(0, 0, 0, 0.1);
-          doc.addImage(watermarkImage, 'PNG', x, y, imgWidth, imgHeight, '', 'FAST', 0.01);
+          doc.addImage(
+            watermarkImage,
+            "PNG",
+            x,
+            y,
+            imgWidth,
+            imgHeight,
+            "",
+            "FAST",
+            0.01
+          );
           doc.setFontSize(10);
           const footerImgWidth = pageWidth * 0.95;
           const footerImgHeight = pageHeight * 0.067;
           const footerX = 5;
           const footerY = pageHeight - footerImgHeight - 5;
           if (footerDisp !== "") {
-            doc.addImage(footerDisp, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
+            doc.addImage(
+              footerDisp,
+              "JPEG",
+              footerX,
+              footerY,
+              footerImgWidth,
+              footerImgHeight,
+              "",
+              "FAST",
+              0.1
+            );
           } else {
             doc.setFillColor(255, 255, 255);
-            doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, 'F');
+            doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, "F");
           }
 
           // ---------- SIGNATURE & SEAL ----------
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
-          const signatureNeed = response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
+          const signatureNeed =
+            response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
 
-          if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+          if (
+            signatureNeed === "All Pages" ||
+            (signatureNeed === "End Page" && i === totalPages)
+          ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
 
             // Seal on left
-            if (response?.data?.sdocumentPreparation?.signature || response?.data?.sdocumentPreparation?.seal || response?.data?.sdocumentPreparation?.usersignature) {
+            if (
+              response?.data?.sdocumentPreparation?.signature ||
+              response?.data?.sdocumentPreparation?.seal ||
+              response?.data?.sdocumentPreparation?.usersignature
+            ) {
               const pageWidth = doc.internal.pageSize.getWidth();
               const pageHeight = doc.internal.pageSize.getHeight();
               const margin = 15;
@@ -1971,21 +2406,23 @@ function DocumentsPrintedStatusList() {
 
               // --- Unified Row Position ---
               const rowYOffset = 10; // ✅ Move row slightly lower
-              const sigWidth = 40;    // reduced from 53
-              const sigHeight = 6;    // reduced from 8
+              const sigWidth = 40; // reduced from 53
+              const sigHeight = 6; // reduced from 8
 
-              const sealWidth = 17;   // reduced from 25/35
-              const sealHeight = 17;  // reduced from 25/35
+              const sealWidth = 17; // reduced from 25/35
+              const sealHeight = 17; // reduced from 25/35
               const sealUpShift = 8;
               // ✅ Make user signature a bit wider but slightly shorter
-              const userSigWidth = 47;  // increased width
+              const userSigWidth = 47; // increased width
               const userSigHeight = 20; // reduced height
               const userSigUpShift = 11;
               let yPos;
 
               if (i === totalPages) {
                 // ✅ Use available space from bottom instead of rect.height
-                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+                yPos = response?.data?.sdocumentPreparation?.qrCodeNeed
+                  ? pageHeight - footerGap - userSigHeight - 30
+                  : pageHeight - footerGap - userSigHeight; // stays near bottom
               } else {
                 yPos = contentEndY + rowYOffset;
               }
@@ -1996,17 +2433,36 @@ function DocumentsPrintedStatusList() {
               // --- Left: Main Signature ---
               let leftX = margin;
               if (response?.data?.sdocumentPreparation?.signature) {
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.topcontent) {
+                if (
+                  response?.data?.sdocumentPreparation?.signaturetype ===
+                    "For Seal" &&
+                  response?.data?.sdocumentPreparation?.topcontent
+                ) {
                   doc.setFontSize(8);
                   doc.setFont(undefined, "bold");
                   doc.setTextColor(83, 23, 126);
-                  doc.text(response?.data?.sdocumentPreparation.topcontent, leftX, yPos - topTextHeight);
+                  doc.text(
+                    response?.data?.sdocumentPreparation.topcontent,
+                    leftX,
+                    yPos - topTextHeight
+                  );
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(response?.data?.sdocumentPreparation.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+                doc.addImage(
+                  response?.data?.sdocumentPreparation.signature,
+                  "PNG",
+                  leftX,
+                  yPos,
+                  sigWidth,
+                  sigHeight
+                );
 
-                if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.bottomcontent) {
+                if (
+                  response?.data?.sdocumentPreparation?.signaturetype ===
+                    "For Seal" &&
+                  response?.data?.sdocumentPreparation?.bottomcontent
+                ) {
                   doc.setFontSize(8);
                   doc.setFont(undefined, "bold");
                   doc.setTextColor(83, 23, 126);
@@ -2020,9 +2476,16 @@ function DocumentsPrintedStatusList() {
               }
 
               // --- Center: Seal (align with same yPos) ---
-              const centerX = (pageWidth / 2) - (sealWidth / 2);
+              const centerX = pageWidth / 2 - sealWidth / 2;
               if (response?.data?.sdocumentPreparation?.seal) {
-                doc.addImage(response?.data?.sdocumentPreparation.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+                doc.addImage(
+                  response?.data?.sdocumentPreparation.seal,
+                  "PNG",
+                  centerX,
+                  yPos - sealUpShift,
+                  sealWidth,
+                  sealHeight
+                );
               }
 
               // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -2036,37 +2499,68 @@ function DocumentsPrintedStatusList() {
                   userSigWidth,
                   userSigHeight
                 );
+                const userName =
+                  response?.data?.sdocumentPreparation?.person || "";
+                const sigX = rightX;
+                const sigY = yPos - userSigUpShift; // vertical position for signature
+                const sigWidth = userSigWidth;
+                const sigHeight = userSigHeight;
+                const textX = sigX + sigWidth - 17; // center align under signature
+                const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(6);
+                doc.text(userName, textX, textY, { align: "right" });
               }
             }
-
-
-
-
           }
-          if (response?.data?.sdocumentPreparation?.pagenumberneed === "All Pages") {
+          if (
+            response?.data?.sdocumentPreparation?.pagenumberneed === "All Pages"
+          ) {
             const textY = footerY - 3;
-            doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, { align: 'center' });
-          } else if (response?.data?.sdocumentPreparation?.pagenumberneed === "End Page" && i === totalPages) {
+            doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, {
+              align: "center",
+            });
+          } else if (
+            response?.data?.sdocumentPreparation?.pagenumberneed ===
+              "End Page" &&
+            i === totalPages
+          ) {
             const textY = footerY - 3;
-            doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
+            doc.text(`End of the document`, pageWidth / 2, textY, {
+              align: "center",
+            });
           }
 
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "End Page") {
+          if (
+            response?.data?.sdocumentPreparation?.qrCodeNeed &&
+            response?.data?.sdocumentPreparation?.qrcodevalue === "End Page"
+          ) {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
               const qrCodeHeight = 25; // Adjust as needed
               const qrCodeX = footerX; // Left corner
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
-              doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+              doc.addImage(
+                qrCodeImage,
+                "PNG",
+                qrCodeX,
+                qrCodeY,
+                qrCodeWidth,
+                qrCodeHeight
+              );
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements =
+                qrCodeInfoDetails?.length > 0
+                  ? qrCodeInfoDetails
+                  : [
+                      "1. Scan to verify the authenticity of this document.",
+                      `2. This document was generated on ${moment(
+                        new Date(serverTime)
+                      ).format("DD-MM-YYYY hh:mm a")}`,
+                      `3. For questions, contact us at ${fromEmail}.`,
+                    ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -2076,28 +2570,40 @@ function DocumentsPrintedStatusList() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
             }
           }
-          if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages") {
+          if (
+            response?.data?.sdocumentPreparation?.qrCodeNeed &&
+            response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages"
+          ) {
             if (i === totalPages) {
               // Add QR code in the left corner
               const qrCodeWidth = 25; // Adjust as needed
               const qrCodeHeight = 25; // Adjust as needed
               const qrCodeX = footerX; // Left corner
               const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
-              doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+              doc.addImage(
+                qrCodeImage,
+                "PNG",
+                qrCodeX,
+                qrCodeY,
+                qrCodeWidth,
+                qrCodeHeight
+              );
 
-
-
-              const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-                '1. Scan to verify the authenticity of this document.',
-                `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-                `3. For questions, contact us at ${fromEmail}.`
-              ];
+              const statements =
+                qrCodeInfoDetails?.length > 0
+                  ? qrCodeInfoDetails
+                  : [
+                      "1. Scan to verify the authenticity of this document.",
+                      `2. This document was generated on ${moment(
+                        new Date(serverTime)
+                      ).format("DD-MM-YYYY hh:mm a")}`,
+                      `3. For questions, contact us at ${fromEmail}.`,
+                    ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -2107,21 +2613,26 @@ function DocumentsPrintedStatusList() {
               doc.setFontSize(12);
 
               statements.forEach((text, idx) => {
-                const y = statementY1 + (idx * lineGap);
+                const y = statementY1 + idx * lineGap;
                 doc.text(text, statementX, y);
               });
-
-            }
-            else {
+            } else {
               // ✅ for all other pages → add page number + small QR code on the right
               const textY = footerY - 3;
               // small QR code next to it (bottom-right corner)
-              const qrCodeWidth = 15;   // smaller size
+              const qrCodeWidth = 15; // smaller size
               const qrCodeHeight = 15;
               const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-              const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+              const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
-              doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+              doc.addImage(
+                qrCodeImage,
+                "PNG",
+                qrCodeX,
+                qrCodeY,
+                qrCodeWidth,
+                qrCodeHeight
+              );
             }
           }
         }
@@ -2129,8 +2640,15 @@ function DocumentsPrintedStatusList() {
       const hasHeaderImage = headerDisp !== ""; // assuming head is a base64 src or image URL
       const hasFooterImage = footerDisp !== "";
 
-      const adjustedMargin = getAdjustedMargin(response.data.sdocumentPreparation?.marginQuill, hasHeaderImage, hasFooterImage);
-      const pdfDimensions = getPageDimensionsTable(response.data.sdocumentPreparation?.pagesizeQuill, response.data.sdocumentPreparation?.orientationQuill); // as before
+      const adjustedMargin = getAdjustedMargin(
+        response.data.sdocumentPreparation?.marginQuill,
+        hasHeaderImage,
+        hasFooterImage
+      );
+      const pdfDimensions = getPageDimensionsTable(
+        response.data.sdocumentPreparation?.pagesizeQuill,
+        response.data.sdocumentPreparation?.orientationQuill
+      ); // as before
       // Convert the HTML content to PDF
       html2pdf()
         .from(pdfElement)
@@ -2141,73 +2659,92 @@ function DocumentsPrintedStatusList() {
           jsPDF: {
             unit: "mm",
             format: pdfDimensions,
-            orientation: response.data.sdocumentPreparation?.orientationQuill
+            orientation: response.data.sdocumentPreparation?.orientationQuill,
           },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        }).toPdf().get('pdf').then((pdf) => {
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        })
+        .toPdf()
+        .get("pdf")
+        .then((pdf) => {
           // Convert the watermark image to a base64 string
           const img = new Image();
           img.src = response?.data?.sdocumentPreparation?.watermark;
           img.onload = () => {
-            const canvas = document.createElement('canvas');
+            const canvas = document.createElement("canvas");
             canvas.width = img.width;
             canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext("2d");
             ctx.globalAlpha = 0.1;
             ctx.drawImage(img, 0, 0);
-            const watermarkImage = canvas.toDataURL('image/png');
+            const watermarkImage = canvas.toDataURL("image/png");
 
             // Add QR code image
             const qrImg = new Image();
             qrImg.src = response.data.sdocumentPreparation?.qrcode; // QR code image URL
             if (response.data.sdocumentPreparation?.qrCodeNeed) {
               qrImg.onload = () => {
-                const qrCanvas = document.createElement('canvas');
+                const qrCanvas = document.createElement("canvas");
                 qrCanvas.width = qrImg.width;
                 qrCanvas.height = qrImg.height;
-                const qrCtx = qrCanvas.getContext('2d');
+                const qrCtx = qrCanvas.getContext("2d");
                 qrCtx.drawImage(qrImg, 0, 0);
-                const qrCodeImage = qrCanvas.toDataURL('image/png');
+                const qrCodeImage = qrCanvas.toDataURL("image/png");
 
                 // Add page numbers and watermark to each page
-                addPageNumbersAndHeadersFooters(pdf, watermarkImage, qrCodeImage);
+                addPageNumbersAndHeadersFooters(
+                  pdf,
+                  watermarkImage,
+                  qrCodeImage
+                );
                 // // Save the PDF
                 // const pdfBlob = pdf.output('blob');
                 // const pdfUrl = URL.createObjectURL(pdfBlob);
                 // const printWindow = window.open(pdfUrl);
-                pdf.save(`${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`);
+                pdf.save(
+                  `${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`
+                );
                 handleClickCloseLetterHead();
                 setHeaderOptionsButton(false);
                 fetchBrandMaster();
               };
-            }
-            else {
+            } else {
               addPageNumbersAndHeadersFooters(pdf, watermarkImage, "");
               // Save the PDF
               // const pdfBlob = pdf.output('blob');
               // const pdfUrl = URL.createObjectURL(pdfBlob);
               // const printWindow = window.open(pdfUrl);
-              pdf.save(`${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`);
+              pdf.save(
+                `${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`
+              );
               handleClickCloseLetterHead();
               setHeaderOptionsButton(false);
               fetchBrandMaster();
             }
-
           };
         });
-
     }
   };
-  const fetchEmailForUser = async (e, emailformat, fromemail, ccemail, bccemail, pagename, employeedoj) => {
+  const fetchEmailForUser = async (
+    e,
+    emailformat,
+    fromemail,
+    ccemail,
+    bccemail,
+    pagename,
+    employeedoj
+  ) => {
     setLoading(true);
     const NewDatetime = await getCurrentServerTime();
-    setLoadingMessage('Document is preparing...');
+    setLoadingMessage("Document is preparing...");
 
-    let response = await axios.get(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e}`, {
-      headers: {
-        Authorization: `Bearer ${auth.APIToken}`,
-      },
-    });
+    let response = await axios.get(
+      `${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e}`,
+      {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+      }
+    );
     let qrCodeInfoDetails = [];
     if (response.data.sdocumentPreparation) {
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
@@ -2218,12 +2755,24 @@ function DocumentsPrintedStatusList() {
         branch: response.data.sdocumentPreparation?.branch,
       });
       if (res?.data?.templatecontrolpanel) {
-        const ans = res?.data?.templatecontrolpanel ?
-          res?.data?.templatecontrolpanel?.templatecontrolpanellog[res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1] : "";
-        const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : []
-        console.log(qrInfoDetails, 'qrInfoDetails')
-        qrCodeInfoDetails = qrInfoDetails?.map((data, index) => `${index + 1}. ${data?.details?.replaceAll('$C:TIME$', new Date(NewDatetime).toLocaleTimeString())
-          .replaceAll('$C:DATE$', date).replaceAll('$DOJ$', employeedoj ? employeedoj : "")}`)
+        const ans = res?.data?.templatecontrolpanel
+          ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
+              res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
+                1
+            ]
+          : "";
+        const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : [];
+        console.log(qrInfoDetails, "qrInfoDetails");
+        qrCodeInfoDetails = qrInfoDetails?.map(
+          (data, index) =>
+            `${index + 1}. ${data?.details
+              ?.replaceAll(
+                "$C:TIME$",
+                new Date(NewDatetime).toLocaleTimeString()
+              )
+              .replaceAll("$C:DATE$", date)
+              .replaceAll("$DOJ$", employeedoj ? employeedoj : "")}`
+        );
       }
     }
     if (pagename !== "Employee") {
@@ -2234,18 +2783,51 @@ function DocumentsPrintedStatusList() {
     tempElementEmail.innerHTML = emailformat;
     let textedEmail = tempElementEmail.innerHTML;
     let findMethodEmail = textedEmail
-      .replaceAll("$TEMPLATENAME$", response.data.sdocumentPreparation?.template ? response.data.sdocumentPreparation?.template : "")
-      .replaceAll("$REFERENCEID$", response.data.sdocumentPreparation?.templateno ? response.data.sdocumentPreparation?.templateno : "")
-      .replaceAll("$CANDIDATENAME$", response.data.sdocumentPreparation?.person ? response.data.sdocumentPreparation?.person : "")
-      .replaceAll("$COMPANYNAME$", isUserRoleAccess?.companyname ? isUserRoleAccess?.companyname : "")
-      .replaceAll("$DESIGNATION$", isUserRoleAccess?.designation ? isUserRoleAccess?.designation : "")
-      .replaceAll("$COMPANY$", isUserRoleAccess?.company ? isUserRoleAccess?.company : "");
-
+      .replaceAll(
+        "$TEMPLATENAME$",
+        response.data.sdocumentPreparation?.template
+          ? response.data.sdocumentPreparation?.template
+          : ""
+      )
+      .replaceAll(
+        "$REFERENCEID$",
+        response.data.sdocumentPreparation?.templateno
+          ? response.data.sdocumentPreparation?.templateno
+          : ""
+      )
+      .replaceAll(
+        "$CANDIDATENAME$",
+        response.data.sdocumentPreparation?.person
+          ? response.data.sdocumentPreparation?.person
+          : ""
+      )
+      .replaceAll(
+        "$COMPANYNAME$",
+        isUserRoleAccess?.companyname ? isUserRoleAccess?.companyname : ""
+      )
+      .replaceAll(
+        "$DESIGNATION$",
+        isUserRoleAccess?.designation ? isUserRoleAccess?.designation : ""
+      )
+      .replaceAll(
+        "$COMPANY$",
+        isUserRoleAccess?.company ? isUserRoleAccess?.company : ""
+      );
 
     const pdfElement = document.createElement("div");
-    pdfElement.innerHTML = response.data.sdocumentPreparation.document?.replaceAll('--- Page Break ---', `<p class="page-break-label" data-page-break="true"></p>`);
-    let headerDisp = pagename === "Employee" ? response?.data?.sdocumentPreparation?.head : head;
-    let footerDisp = pagename === "Employee" ? response?.data?.sdocumentPreparation?.foot : foot;
+    pdfElement.innerHTML =
+      response.data.sdocumentPreparation.document?.replaceAll(
+        "--- Page Break ---",
+        `<p class="page-break-label" data-page-break="true"></p>`
+      );
+    let headerDisp =
+      pagename === "Employee"
+        ? response?.data?.sdocumentPreparation?.head
+        : head;
+    let footerDisp =
+      pagename === "Employee"
+        ? response?.data?.sdocumentPreparation?.foot
+        : foot;
 
     const styleElement = document.createElement("style");
     styleElement.textContent = `
@@ -2270,13 +2852,17 @@ function DocumentsPrintedStatusList() {
     pdfElement.appendChild(styleElement);
 
     // pdfElement.appendChild(styleElement);
-    const addPageNumbersAndHeadersFooters = (doc, watermarkImage, qrCodeImage) => {
+    const addPageNumbersAndHeadersFooters = (
+      doc,
+      watermarkImage,
+      qrCodeImage
+    ) => {
       const totalPages = doc.internal.getNumberOfPages();
       const margin = 15; // Adjust as needed
       const footerHeight = 15; // Adjust as needed
-      const tempDiv = document.createElement('div');
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.visibility = 'hidden';
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "absolute";
+      tempDiv.style.visibility = "hidden";
       tempDiv.innerHTML = pdfElement;
       document.body.appendChild(tempDiv);
       const rect = tempDiv.getBoundingClientRect();
@@ -2284,7 +2870,8 @@ function DocumentsPrintedStatusList() {
       const actualContentHeight = rect.height * (25.4 / 96);
       const pageHeight = doc.internal.pageSize.getHeight();
       // Total usable height for content
-      const usableContentHeight = pageHeight - footerHeight - margin - reservedSealHeight;
+      const usableContentHeight =
+        pageHeight - footerHeight - margin - reservedSealHeight;
       const contentEndY = Math.min(actualContentHeight, usableContentHeight);
       for (let i = 1; i <= totalPages; i++) {
         doc.setPage(i);
@@ -2299,18 +2886,38 @@ function DocumentsPrintedStatusList() {
         const headerImgHeight = pageHeight * 0.09;
         const headerX = 5; // Start from the left
         const headerY = 3.5; // Start from the top
-        if (headerDisp !== '') {
-          doc.addImage(headerDisp, 'JPEG', headerX, headerY, headerImgWidth, headerImgHeight, '', 'FAST', 0.1);
+        if (headerDisp !== "") {
+          doc.addImage(
+            headerDisp,
+            "JPEG",
+            headerX,
+            headerY,
+            headerImgWidth,
+            headerImgHeight,
+            "",
+            "FAST",
+            0.1
+          );
         } else {
           doc.setFillColor(255, 255, 255);
-          doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, 'F'); // "F" = filled rectangle
+          doc.rect(headerX, headerY, headerImgWidth, headerImgHeight, "F"); // "F" = filled rectangle
         }
-        const imgWidth = pageWidth * 0.50; // 75% of page width
+        const imgWidth = pageWidth * 0.5; // 75% of page width
         const imgHeight = pageHeight * 0.25; // 50% of page height
         const x = (pageWidth - imgWidth) / 2;
         const y = (pageHeight - imgHeight) / 2 - 20;
         doc.setFillColor(0, 0, 0, 0.1);
-        doc.addImage(watermarkImage, 'PNG', x, y, imgWidth, imgHeight, '', 'FAST', 0.01);
+        doc.addImage(
+          watermarkImage,
+          "PNG",
+          x,
+          y,
+          imgWidth,
+          imgHeight,
+          "",
+          "FAST",
+          0.01
+        );
         // Add footer
         doc.setFontSize(10);
         // doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
@@ -2321,21 +2928,39 @@ function DocumentsPrintedStatusList() {
 
         const footerY = pageHeight - footerImgHeight - 5;
         if (footerDisp !== "") {
-          doc.addImage(footerDisp, 'JPEG', footerX, footerY, footerImgWidth, footerImgHeight, '', 'FAST', 0.1);
+          doc.addImage(
+            footerDisp,
+            "JPEG",
+            footerX,
+            footerY,
+            footerImgWidth,
+            footerImgHeight,
+            "",
+            "FAST",
+            0.1
+          );
         } else {
           doc.setFillColor(255, 255, 255);
-          doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, 'F');
+          doc.rect(footerX, footerY, footerImgWidth, footerImgHeight, "F");
         }
         // ---------- SIGNATURE & SEAL ----------
         // if (response?.data?.sdocumentPreparation?.signatureneed) {
-        const signatureNeed = response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
+        const signatureNeed =
+          response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
 
-        if (signatureNeed === "All Pages" || (signatureNeed === "End Page" && i === totalPages)) {
+        if (
+          signatureNeed === "All Pages" ||
+          (signatureNeed === "End Page" && i === totalPages)
+        ) {
           // Decide Y position right after content but above footer
           const imageY = contentEndY;
 
           // Seal on left
-          if (response?.data?.sdocumentPreparation?.signature || response?.data?.sdocumentPreparation?.seal || response?.data?.sdocumentPreparation?.usersignature) {
+          if (
+            response?.data?.sdocumentPreparation?.signature ||
+            response?.data?.sdocumentPreparation?.seal ||
+            response?.data?.sdocumentPreparation?.usersignature
+          ) {
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             const margin = 15;
@@ -2343,21 +2968,23 @@ function DocumentsPrintedStatusList() {
 
             // --- Unified Row Position ---
             const rowYOffset = 10; // ✅ Move row slightly lower
-            const sigWidth = 40;    // reduced from 53
-            const sigHeight = 6;    // reduced from 8
+            const sigWidth = 40; // reduced from 53
+            const sigHeight = 6; // reduced from 8
 
-            const sealWidth = 17;   // reduced from 25/35
-            const sealHeight = 17;  // reduced from 25/35
+            const sealWidth = 17; // reduced from 25/35
+            const sealHeight = 17; // reduced from 25/35
             const sealUpShift = 8;
             // ✅ Make user signature a bit wider but slightly shorter
-            const userSigWidth = 47;  // increased width
+            const userSigWidth = 47; // increased width
             const userSigHeight = 20; // reduced height
             const userSigUpShift = 11;
             let yPos;
 
             if (i === totalPages) {
               // ✅ Use available space from bottom instead of rect.height
-              yPos = response?.data?.sdocumentPreparation?.qrCodeNeed ? (pageHeight - footerGap - userSigHeight - 30) : (pageHeight - footerGap - userSigHeight); // stays near bottom
+              yPos = response?.data?.sdocumentPreparation?.qrCodeNeed
+                ? pageHeight - footerGap - userSigHeight - 30
+                : pageHeight - footerGap - userSigHeight; // stays near bottom
             } else {
               yPos = contentEndY + rowYOffset;
             }
@@ -2368,17 +2995,36 @@ function DocumentsPrintedStatusList() {
             // --- Left: Main Signature ---
             let leftX = margin;
             if (response?.data?.sdocumentPreparation?.signature) {
-              if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.topcontent) {
+              if (
+                response?.data?.sdocumentPreparation?.signaturetype ===
+                  "For Seal" &&
+                response?.data?.sdocumentPreparation?.topcontent
+              ) {
                 doc.setFontSize(8);
                 doc.setFont(undefined, "bold");
                 doc.setTextColor(83, 23, 126);
-                doc.text(response?.data?.sdocumentPreparation.topcontent, leftX, yPos - topTextHeight);
+                doc.text(
+                  response?.data?.sdocumentPreparation.topcontent,
+                  leftX,
+                  yPos - topTextHeight
+                );
                 doc.setTextColor(0, 0, 0);
               }
 
-              doc.addImage(response?.data?.sdocumentPreparation.signature, "PNG", leftX, yPos, sigWidth, sigHeight);
+              doc.addImage(
+                response?.data?.sdocumentPreparation.signature,
+                "PNG",
+                leftX,
+                yPos,
+                sigWidth,
+                sigHeight
+              );
 
-              if (response?.data?.sdocumentPreparation?.signaturetype === "For Seal" && response?.data?.sdocumentPreparation?.bottomcontent) {
+              if (
+                response?.data?.sdocumentPreparation?.signaturetype ===
+                  "For Seal" &&
+                response?.data?.sdocumentPreparation?.bottomcontent
+              ) {
                 doc.setFontSize(8);
                 doc.setFont(undefined, "bold");
                 doc.setTextColor(83, 23, 126);
@@ -2392,9 +3038,16 @@ function DocumentsPrintedStatusList() {
             }
 
             // --- Center: Seal (align with same yPos) ---
-            const centerX = (pageWidth / 2) - (sealWidth / 2);
+            const centerX = pageWidth / 2 - sealWidth / 2;
             if (response?.data?.sdocumentPreparation?.seal) {
-              doc.addImage(response?.data?.sdocumentPreparation.seal, "PNG", centerX, yPos - sealUpShift, sealWidth, sealHeight);
+              doc.addImage(
+                response?.data?.sdocumentPreparation.seal,
+                "PNG",
+                centerX,
+                yPos - sealUpShift,
+                sealWidth,
+                sealHeight
+              );
             }
 
             // --- Right: Employee Signature (aligned with row, adjusted size) ---
@@ -2408,39 +3061,69 @@ function DocumentsPrintedStatusList() {
                 userSigWidth,
                 userSigHeight
               );
+              const userName =
+                response?.data?.sdocumentPreparation?.person || "";
+              const sigX = rightX;
+              const sigY = yPos - userSigUpShift; // vertical position for signature
+              const sigWidth = userSigWidth;
+              const sigHeight = userSigHeight;
+              const textX = sigX + sigWidth - 17; // center align under signature
+              const textY = sigY + sigHeight + 5; // 5px padding below signature
+
+              doc.setFont("helvetica", "bold");
+              doc.setFontSize(6);
+              doc.text(userName, textX, textY, { align: "right" });
             }
           }
-
-
-
-
         }
 
-        if (response?.data?.sdocumentPreparation?.pagenumberneed === "All Pages") {
+        if (
+          response?.data?.sdocumentPreparation?.pagenumberneed === "All Pages"
+        ) {
           const textY = footerY - 3;
-          doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, { align: 'center' });
-        } else if (response?.data?.sdocumentPreparation?.pagenumberneed === "End Page" && i === totalPages) {
+          doc.text(`Page ${i} of ${totalPages}`, pageWidth / 2, textY, {
+            align: "center",
+          });
+        } else if (
+          response?.data?.sdocumentPreparation?.pagenumberneed === "End Page" &&
+          i === totalPages
+        ) {
           const textY = footerY - 3;
-          doc.text(`End of the document`, pageWidth / 2, textY, { align: 'center' });
+          doc.text(`End of the document`, pageWidth / 2, textY, {
+            align: "center",
+          });
         }
         // Add QR code and statement only on the last page
 
-        if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "End Page") {
+        if (
+          response?.data?.sdocumentPreparation?.qrCodeNeed &&
+          response?.data?.sdocumentPreparation?.qrcodevalue === "End Page"
+        ) {
           if (i === totalPages) {
             // Add QR code in the left corner
             const qrCodeWidth = 25; // Adjust as needed
             const qrCodeHeight = 25; // Adjust as needed
             const qrCodeX = footerX; // Left corner
             const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
-            doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+            doc.addImage(
+              qrCodeImage,
+              "PNG",
+              qrCodeX,
+              qrCodeY,
+              qrCodeWidth,
+              qrCodeHeight
+            );
 
-
-
-            const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-              '1. Scan to verify the authenticity of this document.',
-              `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-              `3. For questions, contact us at ${fromEmail}.`
-            ];
+            const statements =
+              qrCodeInfoDetails?.length > 0
+                ? qrCodeInfoDetails
+                : [
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
             // starting position
             const statementX = qrCodeX + qrCodeWidth + 10;
@@ -2450,28 +3133,40 @@ function DocumentsPrintedStatusList() {
             doc.setFontSize(12);
 
             statements.forEach((text, idx) => {
-              const y = statementY1 + (idx * lineGap);
+              const y = statementY1 + idx * lineGap;
               doc.text(text, statementX, y);
             });
-
           }
         }
-        if (response?.data?.sdocumentPreparation?.qrCodeNeed && response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages") {
+        if (
+          response?.data?.sdocumentPreparation?.qrCodeNeed &&
+          response?.data?.sdocumentPreparation?.qrcodevalue === "All Pages"
+        ) {
           if (i === totalPages) {
             // Add QR code in the left corner
             const qrCodeWidth = 25; // Adjust as needed
             const qrCodeHeight = 25; // Adjust as needed
             const qrCodeX = footerX; // Left corner
             const qrCodeY = footerY - qrCodeHeight - 4; // 15 units above the footer image
-            doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+            doc.addImage(
+              qrCodeImage,
+              "PNG",
+              qrCodeX,
+              qrCodeY,
+              qrCodeWidth,
+              qrCodeHeight
+            );
 
-
-
-            const statements = qrCodeInfoDetails?.length > 0 ? qrCodeInfoDetails : [
-              '1. Scan to verify the authenticity of this document.',
-              `2. This document was generated on ${moment(new Date(serverTime)).format('DD-MM-YYYY hh:mm a')}`,
-              `3. For questions, contact us at ${fromEmail}.`
-            ];
+            const statements =
+              qrCodeInfoDetails?.length > 0
+                ? qrCodeInfoDetails
+                : [
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
             // starting position
             const statementX = qrCodeX + qrCodeWidth + 10;
@@ -2481,21 +3176,26 @@ function DocumentsPrintedStatusList() {
             doc.setFontSize(12);
 
             statements.forEach((text, idx) => {
-              const y = statementY1 + (idx * lineGap);
+              const y = statementY1 + idx * lineGap;
               doc.text(text, statementX, y);
             });
-
-          }
-          else {
+          } else {
             // ✅ for all other pages → add page number + small QR code on the right
             const textY = footerY - 3;
             // small QR code next to it (bottom-right corner)
-            const qrCodeWidth = 15;   // smaller size
+            const qrCodeWidth = 15; // smaller size
             const qrCodeHeight = 15;
             const qrCodeX = pageWidth - qrCodeWidth - 15; // margin from right
-            const qrCodeY = footerY - qrCodeHeight - 3;   // align with page text
+            const qrCodeY = footerY - qrCodeHeight - 3; // align with page text
 
-            doc.addImage(qrCodeImage, 'PNG', qrCodeX, qrCodeY, qrCodeWidth, qrCodeHeight);
+            doc.addImage(
+              qrCodeImage,
+              "PNG",
+              qrCodeX,
+              qrCodeY,
+              qrCodeWidth,
+              qrCodeHeight
+            );
           }
         }
       }
@@ -2503,11 +3203,17 @@ function DocumentsPrintedStatusList() {
     const hasHeaderImage = headerDisp !== ""; // assuming head is a base64 src or image URL
     const hasFooterImage = footerDisp !== "";
 
-    const adjustedMargin = getAdjustedMargin(response.data.sdocumentPreparation?.marginQuill, hasHeaderImage, hasFooterImage);
-    const pdfDimensions = getPageDimensionsTable(response.data.sdocumentPreparation?.pagesizeQuill, response.data.sdocumentPreparation?.orientationQuill); // as before
+    const adjustedMargin = getAdjustedMargin(
+      response.data.sdocumentPreparation?.marginQuill,
+      hasHeaderImage,
+      hasFooterImage
+    );
+    const pdfDimensions = getPageDimensionsTable(
+      response.data.sdocumentPreparation?.pagesizeQuill,
+      response.data.sdocumentPreparation?.orientationQuill
+    ); // as before
 
     return new Promise((resolve, reject) => {
-
       html2pdf()
         .from(pdfElement)
         .set({
@@ -2517,99 +3223,116 @@ function DocumentsPrintedStatusList() {
           jsPDF: {
             unit: "mm",
             format: pdfDimensions,
-            orientation: response.data.sdocumentPreparation?.orientationQuill
+            orientation: response.data.sdocumentPreparation?.orientationQuill,
           },
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-        }).toPdf().get('pdf').then(async (pdf) => {
+          pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+        })
+        .toPdf()
+        .get("pdf")
+        .then(async (pdf) => {
           const img = new Image();
           img.src = response.data.sdocumentPreparation?.watermark;
           img.onload = () => {
-            const canvas = document.createElement('canvas');
+            const canvas = document.createElement("canvas");
             canvas.width = img.width;
             canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
+            const ctx = canvas.getContext("2d");
             ctx.globalAlpha = 0.1;
             ctx.drawImage(img, 0, 0);
-            const watermarkImage = canvas.toDataURL('image/png');
+            const watermarkImage = canvas.toDataURL("image/png");
 
             const qrImg = new Image();
             qrImg.src = response.data.sdocumentPreparation?.qrcode;
             qrImg.onload = () => {
-              const qrCanvas = document.createElement('canvas');
+              const qrCanvas = document.createElement("canvas");
               qrCanvas.width = qrImg.width;
               qrCanvas.height = qrImg.height;
-              const qrCtx = qrCanvas.getContext('2d');
+              const qrCtx = qrCanvas.getContext("2d");
               qrCtx.drawImage(qrImg, 0, 0);
-              const qrCodeImage = qrCanvas.toDataURL('image/png');
+              const qrCodeImage = qrCanvas.toDataURL("image/png");
 
               addPageNumbersAndHeadersFooters(pdf, watermarkImage, qrCodeImage);
 
               // Convert the PDF to a Blob
-              const pdfBlob = pdf.output('blob');
+              const pdfBlob = pdf.output("blob");
 
               // Create FormData and append the PDF Blob
               const formData = new FormData();
-              formData.append('file', pdfBlob, `${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`);
+              formData.append(
+                "file",
+                pdfBlob,
+                `${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`
+              );
 
               // Convert Blob to base64 string
               const reader = new FileReader();
               reader.readAsDataURL(pdfBlob);
               reader.onloadend = async () => {
-                setLoadingMessage('Document is converting to Email format...');
-                const base64String = reader.result.split(',')[1]; // Extract base64 string without data:image/jpeg;base64,
+                setLoadingMessage("Document is converting to Email format...");
+                const base64String = reader.result.split(",")[1]; // Extract base64 string without data:image/jpeg;base64,
 
-                let res_module = await axios.post(SERVICE.DOCUMENT_PREPARATION_MAIL, {
-                  document: response?.data?.sdocumentPreparation?.approval === "approved" ? response?.data?.sdocumentPreparation?.approvedfilename : base64String,
-                  companyname: response?.data?.sdocumentPreparation?.person,
-                  letter: response?.data?.sdocumentPreparation?.template,
-                  email: response?.data?.sdocumentPreparation?.email,
-                  emailformat: findMethodEmail,
-                  fromemail: fromemail,
-                  ccemail: ccemail,
-                  bccemail: bccemail,
-                  tempid: response?.data?.sdocumentPreparation?.templateno,
-                  pagename: pagename,
-                  approval: response?.data?.sdocumentPreparation?.approval
-
-                }, {
-                  headers: {
-                    Authorization: `Bearer ${auth.APIToken}`,
+                let res_module = await axios.post(
+                  SERVICE.DOCUMENT_PREPARATION_MAIL,
+                  {
+                    document:
+                      response?.data?.sdocumentPreparation?.approval ===
+                      "approved"
+                        ? response?.data?.sdocumentPreparation?.approvedfilename
+                        : base64String,
+                    companyname: response?.data?.sdocumentPreparation?.person,
+                    letter: response?.data?.sdocumentPreparation?.template,
+                    email: response?.data?.sdocumentPreparation?.email,
+                    emailformat: findMethodEmail,
+                    fromemail: fromemail,
+                    ccemail: ccemail,
+                    bccemail: bccemail,
+                    tempid: response?.data?.sdocumentPreparation?.templateno,
+                    pagename: pagename,
+                    approval: response?.data?.sdocumentPreparation?.approval,
                   },
-                });
-                setLoadingMessage('Email is Sending...');
+                  {
+                    headers: {
+                      Authorization: `Bearer ${auth.APIToken}`,
+                    },
+                  }
+                );
+                setLoadingMessage("Email is Sending...");
                 if (res_module.status === 200) {
-                  setLoading(false)
-                  NotificationManager.success('Email Sent Successfully 👍', '', 2000);
+                  setLoading(false);
+                  NotificationManager.success(
+                    "Email Sent Successfully 👍",
+                    "",
+                    2000
+                  );
                 } else {
-                  setLoading(false)
+                  setLoading(false);
                 }
 
                 resolve(base64String);
               };
-
-
             };
           };
           if (response?.data?.sdocumentPreparation?.mail === "Send") {
-            let res = await axios.put(`${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e}`, {
-              headers: {
-                Authorization: `Bearer ${auth.APIToken}`,
-              },
-              mail: "Re-send",
-            });
+            let res = await axios.put(
+              `${SERVICE.SINGLE_DOCUMENTPREPARATION}/${e}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${auth.APIToken}`,
+                },
+                mail: "Re-send",
+              }
+            );
             await fetchBrandMaster();
           }
-
-        }).catch(err => {
-          setLoading(false)
-          reject(err)
+        })
+        .catch((err) => {
+          setLoading(false);
+          reject(err);
         });
     });
-
   };
 
   const columnDataTable = [
-
     {
       field: "serialNumber",
       headerName: "SNo",
@@ -2739,16 +3462,16 @@ function DocumentsPrintedStatusList() {
       hide: !columnVisibility.document,
       cellRenderer: (params) => (
         <Grid>
-          {params.data?.documentneed === "Employee Approval" ?
+          {params.data?.documentneed === "Employee Approval" ? (
             <>
               <Button
                 variant="contained"
                 color="primary"
-
                 onClick={() => {
-                  console.log(params?.data?.approval, "2339")
-                  params?.data?.approval === "approved" ? getViewFile(params?.data?.approvedfilename, params?.data) :
-                    downloadPdfTesdtTable(params?.data, "Employee",);
+                  console.log(params?.data?.approval, "2339");
+                  params?.data?.approval === "approved"
+                    ? getViewFile(params?.data?.approvedfilename, params?.data)
+                    : downloadPdfTesdtTable(params?.data, "Employee");
                 }}
                 sx={userStyle.buttonview}
               >
@@ -2758,14 +3481,22 @@ function DocumentsPrintedStatusList() {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: params?.data?.mail === "Send" ? "#4CAF50" : "#F44336", // Green for "Send", Red otherwise
+                  backgroundColor:
+                    params?.data?.mail === "Send" ? "#4CAF50" : "#F44336", // Green for "Send", Red otherwise
                   color: "white",
                   "&:hover": {
-                    backgroundColor: params?.data?.mail === "Send" ? "#45A049" : "#D32F2F",
+                    backgroundColor:
+                      params?.data?.mail === "Send" ? "#45A049" : "#D32F2F",
                   },
                 }}
                 onClick={() => {
-                  extractEmailFormat(params.data.person, params.data.employeedoj, params.data.id, params.data?.email, "Employee")
+                  extractEmailFormat(
+                    params.data.person,
+                    params.data.employeedoj,
+                    params.data.id,
+                    params.data?.email,
+                    "Employee"
+                  );
                 }}
               >
                 {params?.data?.mail}
@@ -2781,22 +3512,21 @@ function DocumentsPrintedStatusList() {
                   },
                 }}
                 onClick={() => {
-                  params?.data?.approval === "approved" ?
-                    downloadFile(params?.data?.approvedfilename, params?.data) :
-                    downloadPdfPrintTable(params?.data, "Employee")
+                  params?.data?.approval === "approved"
+                    ? downloadFile(params?.data?.approvedfilename, params?.data)
+                    : downloadPdfPrintTable(params?.data, "Employee");
                 }}
               >
                 Print
               </Button>
             </>
-            :
+          ) : (
             <>
               <Button
                 variant="contained"
                 color="primary"
-
                 onClick={() => {
-                  getCode(params?.data, "Table View")
+                  getCode(params?.data, "Table View");
                 }}
                 sx={userStyle.buttonview}
               >
@@ -2806,14 +3536,21 @@ function DocumentsPrintedStatusList() {
               <Button
                 variant="contained"
                 sx={{
-                  backgroundColor: params?.data?.mail === "Send" ? "#4CAF50" : "#F44336", // Green for "Send", Red otherwise
+                  backgroundColor:
+                    params?.data?.mail === "Send" ? "#4CAF50" : "#F44336", // Green for "Send", Red otherwise
                   color: "white",
                   "&:hover": {
-                    backgroundColor: params?.data?.mail === "Send" ? "#45A049" : "#D32F2F",
+                    backgroundColor:
+                      params?.data?.mail === "Send" ? "#45A049" : "#D32F2F",
                   },
                 }}
                 onClick={() => {
-                  extractEmailFormat(params.data.person, params.data.employeedoj, params.data.id, params.data?.email)
+                  extractEmailFormat(
+                    params.data.person,
+                    params.data.employeedoj,
+                    params.data.id,
+                    params.data?.email
+                  );
                 }}
               >
                 {params?.data?.mail}
@@ -2829,14 +3566,14 @@ function DocumentsPrintedStatusList() {
                   },
                 }}
                 onClick={() => {
-                  getCode(params?.data, "Table Print")
+                  getCode(params?.data, "Table Print");
                 }}
-              // sx={userStyle.buttonview}
+                // sx={userStyle.buttonview}
               >
                 Print
               </Button>
             </>
-          }
+          )}
         </Grid>
       ),
     },
@@ -2847,7 +3584,6 @@ function DocumentsPrintedStatusList() {
       width: 150,
       minHeight: "40px",
       hide: !columnVisibility.printingstatus,
-
     },
     {
       field: "issuedpersondetails",
@@ -2874,23 +3610,20 @@ function DocumentsPrintedStatusList() {
       headerClassName: "bold-header",
       cellRenderer: (params) => (
         <Grid>
-
           <Button
             variant="contained"
             color="primary"
-
-            onClick={() => { getInfoStatus(params?.data) }}
+            onClick={() => {
+              getInfoStatus(params?.data);
+            }}
             sx={userStyle.buttonview}
           >
             Info
           </Button>
-
         </Grid>
       ),
     },
-
   ];
-
 
   const rowDataTable = filteredData.map((item, index) => {
     return {
@@ -2921,7 +3654,6 @@ function DocumentsPrintedStatusList() {
     };
   });
 
-
   const rowsWithCheckboxes = rowDataTable.map((row) => ({
     ...row,
     // Create a custom field for rendering the checkbox
@@ -2936,7 +3668,9 @@ function DocumentsPrintedStatusList() {
     setColumnVisibility(updatedVisibility);
   };
   // Function to filter columns based on search query
-  const filteredColumns = columnDataTable.filter((column) => column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase()));
+  const filteredColumns = columnDataTable.filter((column) =>
+    column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase())
+  );
   // Manage Columns functionality
   const toggleColumnVisibility = (field) => {
     setColumnVisibility((prevVisibility) => ({
@@ -2967,15 +3701,37 @@ function DocumentsPrintedStatusList() {
         <CloseIcon />
       </IconButton>
       <Box sx={{ position: "relative", margin: "10px" }}>
-        <TextField label="Find column" variant="standard" fullWidth value={searchQueryManage} onChange={(e) => setSearchQueryManage(e.target.value)} sx={{ marginBottom: 5, position: "absolute" }} />
+        <TextField
+          label="Find column"
+          variant="standard"
+          fullWidth
+          value={searchQueryManage}
+          onChange={(e) => setSearchQueryManage(e.target.value)}
+          sx={{ marginBottom: 5, position: "absolute" }}
+        />
       </Box>
       <br />
       <br />
-      <DialogContent sx={{ minWidth: "auto", height: "200px", position: "relative" }}>
+      <DialogContent
+        sx={{ minWidth: "auto", height: "200px", position: "relative" }}
+      >
         <List sx={{ overflow: "auto", height: "100%" }}>
           {filteredColumns.map((column) => (
             <ListItem key={column.field}>
-              <ListItemText sx={{ display: "flex" }} primary={<Switch sx={{ marginTop: "-5px" }} size="small" checked={columnVisibility[column.field]} onChange={() => toggleColumnVisibility(column.field)} />} secondary={column.field === "checkbox" ? "Checkbox" : column.headerName} />
+              <ListItemText
+                sx={{ display: "flex" }}
+                primary={
+                  <Switch
+                    sx={{ marginTop: "-5px" }}
+                    size="small"
+                    checked={columnVisibility[column.field]}
+                    onChange={() => toggleColumnVisibility(column.field)}
+                  />
+                }
+                secondary={
+                  column.field === "checkbox" ? "Checkbox" : column.headerName
+                }
+              />
             </ListItem>
           ))}
         </List>
@@ -2983,7 +3739,11 @@ function DocumentsPrintedStatusList() {
       <DialogActions>
         <Grid container>
           <Grid item md={4}>
-            <Button variant="text" sx={{ textTransform: "none" }} onClick={() => setColumnVisibility(initialColumnVisibility)}>
+            <Button
+              variant="text"
+              sx={{ textTransform: "none" }}
+              onClick={() => setColumnVisibility(initialColumnVisibility)}
+            >
               {" "}
               Show All
             </Button>
@@ -3010,7 +3770,6 @@ function DocumentsPrintedStatusList() {
     </Box>
   );
 
-
   return (
     <Box>
       <Headtitle title={"DOCUMENT PREPARATION"} />
@@ -3031,7 +3790,9 @@ function DocumentsPrintedStatusList() {
             <NotificationContainer />
             {/* ******************************************************EXPORT Buttons****************************************************** */}
             <Grid item xs={8}>
-              <Typography sx={userStyle.importheadtext}>Employee Document Printed Status Filter </Typography>
+              <Typography sx={userStyle.importheadtext}>
+                Employee Document Printed Status Filter{" "}
+              </Typography>
             </Grid>
             <br />
             <Grid container spacing={2}>
@@ -3066,16 +3827,24 @@ function DocumentsPrintedStatusList() {
               <Grid item md={3} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    Template Branch<b style={{ color: 'red' }}>*</b>
+                    Template Branch<b style={{ color: "red" }}>*</b>
                   </Typography>
                   <MultiSelect
-                    options={accessbranch?.filter(data => valueCompanyCatTemplate?.includes(data?.company))
+                    options={accessbranch
+                      ?.filter((data) =>
+                        valueCompanyCatTemplate?.includes(data?.company)
+                      )
                       ?.map((data) => ({
                         label: data.branch,
                         value: data.branch,
                       }))
                       .filter((item, index, self) => {
-                        return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                        return (
+                          self.findIndex(
+                            (i) =>
+                              i.label === item.label && i.value === item.value
+                          ) === index
+                        );
                       })}
                     value={selectedOptionsBranchTemplate}
                     onChange={(e) => {
@@ -3089,7 +3858,7 @@ function DocumentsPrintedStatusList() {
               <Grid item md={3} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    Template <b style={{ color: 'red' }}>*</b>
+                    Template <b style={{ color: "red" }}>*</b>
                   </Typography>
                   <Selects
                     maxMenuHeight={300}
@@ -3097,7 +3866,7 @@ function DocumentsPrintedStatusList() {
                     value={{ label: templateName, value: templateName }}
                     onChange={(e) => {
                       setTemplateName(e.value);
-                      setEmployeeModeValue("Please Select Employee Mode")
+                      setEmployeeModeValue("Please Select Employee Mode");
                       handleEmployeeModeOptions(e);
                       setValueCompanyCat([]);
                       setSelectedOptionsCompany([]);
@@ -3111,7 +3880,7 @@ function DocumentsPrintedStatusList() {
                       setSelectedOptionsDepartment([]);
                       setValueEmployeeCat([]);
                       setSelectedOptionsEmployee([]);
-                      setEmployeenames([])
+                      setEmployeenames([]);
                     }}
                   />
                 </FormControl>
@@ -3119,12 +3888,15 @@ function DocumentsPrintedStatusList() {
               <Grid item md={3} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    Employee Mode <b style={{ color: 'red' }}>*</b>
+                    Employee Mode <b style={{ color: "red" }}>*</b>
                   </Typography>
                   <Selects
                     maxMenuHeight={300}
                     options={employeeModeOptions}
-                    value={{ label: employeeModeValue, value: employeeModeValue }}
+                    value={{
+                      label: employeeModeValue,
+                      value: employeeModeValue,
+                    }}
                     onChange={(e) => {
                       setEmployeeModeValue(e.value);
                       setValueCompanyCat([]);
@@ -3139,13 +3911,13 @@ function DocumentsPrintedStatusList() {
                       setSelectedOptionsDepartment([]);
                       setValueEmployeeCat([]);
                       setSelectedOptionsEmployee([]);
-                      setEmployeenames([])
+                      setEmployeenames([]);
                     }}
                   />
                 </FormControl>
               </Grid>
 
-              {selectedOptionsCompany?.length === 0 &&
+              {selectedOptionsCompany?.length === 0 && (
                 <>
                   {/* Department */}
                   <Grid item md={3} xs={12} sm={6}>
@@ -3165,8 +3937,8 @@ function DocumentsPrintedStatusList() {
                     </FormControl>
                   </Grid>
                 </>
-              }
-              {selectedOptionsDepartment?.length === 0 &&
+              )}
+              {selectedOptionsDepartment?.length === 0 && (
                 <>
                   {/*Company Branch Unit Team */}
                   <Grid item md={3} xs={12} sm={12}>
@@ -3184,7 +3956,8 @@ function DocumentsPrintedStatusList() {
                             return (
                               self.findIndex(
                                 (i) =>
-                                  i.label === item.label && i.value === item.value
+                                  i.label === item.label &&
+                                  i.value === item.value
                               ) === index
                             );
                           })}
@@ -3293,7 +4066,7 @@ function DocumentsPrintedStatusList() {
                     </FormControl>
                   </Grid>
                 </>
-              }
+              )}
               <Grid item md={3} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
@@ -3309,16 +4082,19 @@ function DocumentsPrintedStatusList() {
                     labelledBy="Please Select Employee"
                   />
                 </FormControl>
-
               </Grid>
 
               <Grid item md={3} xs={12} sm={12}>
-                <Typography>
-                  Status Filter
-                </Typography>
+                <Typography>Status Filter</Typography>
                 <FormControl size="small" fullWidth>
                   <MultiSelect
-                    options={[{ label: "Print Document", value: "Print Document" }, { label: "Employee Approval", value: "Employee Approval" }]}
+                    options={[
+                      { label: "Print Document", value: "Print Document" },
+                      {
+                        label: "Employee Approval",
+                        value: "Employee Approval",
+                      },
+                    ]}
                     value={selectedOptionsStatus}
                     onChange={(e) => {
                       handleStatusChange(e);
@@ -3348,7 +4124,6 @@ function DocumentsPrintedStatusList() {
                   </Button>
                 </div>
               </Grid>
-
             </Grid>
           </Box>
           <br />
@@ -3356,7 +4131,9 @@ function DocumentsPrintedStatusList() {
 
           <Box sx={userStyle.selectcontainer}>
             <Grid item xs={8}>
-              <Typography sx={userStyle.importheadtext}>Employee Document Printed Status List</Typography>
+              <Typography sx={userStyle.importheadtext}>
+                Employee Document Printed Status List
+              </Typography>
             </Grid>
             <Grid container spacing={2} style={userStyle.dataTablestyle}>
               <Grid item md={2} xs={12} sm={12}>
@@ -3382,7 +4159,9 @@ function DocumentsPrintedStatusList() {
                     <MenuItem value={25}>25</MenuItem>
                     <MenuItem value={50}>50</MenuItem>
                     <MenuItem value={100}>100</MenuItem>
-                    <MenuItem value={templateCreationArrayCreate?.length}>All</MenuItem>
+                    <MenuItem value={templateCreationArrayCreate?.length}>
+                      All
+                    </MenuItem>
                   </Select>
                 </Box>
               </Grid>
@@ -3398,27 +4177,41 @@ function DocumentsPrintedStatusList() {
                 }}
               >
                 <Box>
-                  {isUserRoleCompare?.includes("excelemployeedocumentprintedstatuslist") && (
-
+                  {isUserRoleCompare?.includes(
+                    "excelemployeedocumentprintedstatuslist"
+                  ) && (
                     <>
-                      <Button onClick={(e) => {
-                        setIsFilterOpen(true)
-                        setFormat("xl")
-                      }} sx={userStyle.buttongrp}><FaFileExcel />&ensp;Export to Excel&ensp;</Button>
-                    </>
-
-                  )}
-                  {isUserRoleCompare?.includes("csvemployeedocumentprintedstatuslist") && (
-
-                    <>
-                      <Button onClick={(e) => {
-                        setIsFilterOpen(true)
-                        setFormat("csv")
-                      }} sx={userStyle.buttongrp}><FaFileCsv />&ensp;Export to CSV&ensp;</Button>
-
+                      <Button
+                        onClick={(e) => {
+                          setIsFilterOpen(true);
+                          setFormat("xl");
+                        }}
+                        sx={userStyle.buttongrp}
+                      >
+                        <FaFileExcel />
+                        &ensp;Export to Excel&ensp;
+                      </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes("printemployeedocumentprintedstatuslist") && (
+                  {isUserRoleCompare?.includes(
+                    "csvemployeedocumentprintedstatuslist"
+                  ) && (
+                    <>
+                      <Button
+                        onClick={(e) => {
+                          setIsFilterOpen(true);
+                          setFormat("csv");
+                        }}
+                        sx={userStyle.buttongrp}
+                      >
+                        <FaFileCsv />
+                        &ensp;Export to CSV&ensp;
+                      </Button>
+                    </>
+                  )}
+                  {isUserRoleCompare?.includes(
+                    "printemployeedocumentprintedstatuslist"
+                  ) && (
                     <>
                       <Button sx={userStyle.buttongrp} onClick={handleprint}>
                         &ensp;
@@ -3427,20 +4220,32 @@ function DocumentsPrintedStatusList() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes("pdfemployeedocumentprintedstatuslist") && (
+                  {isUserRoleCompare?.includes(
+                    "pdfemployeedocumentprintedstatuslist"
+                  ) && (
                     <>
-                      <Button sx={userStyle.buttongrp}
+                      <Button
+                        sx={userStyle.buttongrp}
                         onClick={() => {
-                          setIsPdfFilterOpen(true)
-                        }}>
+                          setIsPdfFilterOpen(true);
+                        }}
+                      >
                         <FaFilePdf />
-                        &ensp;Export to PDF&ensp;</Button>
+                        &ensp;Export to PDF&ensp;
+                      </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes("imageemployeedocumentprintedstatuslist") && (
-                    <Button sx={userStyle.buttongrp} onClick={handleCaptureImage}>
+                  {isUserRoleCompare?.includes(
+                    "imageemployeedocumentprintedstatuslist"
+                  ) && (
+                    <Button
+                      sx={userStyle.buttongrp}
+                      onClick={handleCaptureImage}
+                    >
                       {" "}
-                      <ImageIcon sx={{ fontSize: "15px" }} /> &ensp;Image&ensp;{" "}
+                      <ImageIcon
+                        sx={{ fontSize: "15px" }}
+                      /> &ensp;Image&ensp;{" "}
                     </Button>
                   )}
                 </Box>
@@ -3471,14 +4276,28 @@ function DocumentsPrintedStatusList() {
             &ensp;
             <br />
             <br />
-            {loader ?
+            {loader ? (
               <>
-
-                <Box sx={{ display: 'flex', justifyContent: 'center', minHeight: '350px' }}>
-                  <ThreeDots height="80" width="80" radius="9" color="#1976d2" ariaLabel="three-dots-loading" wrapperStyle={{}} wrapperClassName="" visible={true} />
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    minHeight: "350px",
+                  }}
+                >
+                  <ThreeDots
+                    height="80"
+                    width="80"
+                    radius="9"
+                    color="#1976d2"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClassName=""
+                    visible={true}
+                  />
                 </Box>
               </>
-              :
+            ) : (
               <>
                 <Box
                   style={{
@@ -3514,10 +4333,9 @@ function DocumentsPrintedStatusList() {
                   />
                 </Box>
               </>
-            }
+            )}
           </Box>
           {/* ****** Table End ****** */}
-
         </>
       )}
 
@@ -3537,7 +4355,12 @@ function DocumentsPrintedStatusList() {
       </Popover>
       {/* print layout */}
       <TableContainer component={Paper} sx={userStyle.printcls}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table" id="usertable" ref={componentRef}>
+        <Table
+          sx={{ minWidth: 700 }}
+          aria-label="customized table"
+          id="usertable"
+          ref={componentRef}
+        >
           <TableHead>
             <TableRow>
               <TableCell> SI.No</TableCell>
@@ -3581,12 +4404,17 @@ function DocumentsPrintedStatusList() {
         </Table>
       </TableContainer>
 
-
-
       {/* ALERT DIALOG */}
       <Box>
-        <Dialog open={isErrorOpen} onClose={handleCloseerr} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: "350px", textAlign: "center", alignItems: "center" }}>
+        <Dialog
+          open={isErrorOpen}
+          onClose={handleCloseerr}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
             <Typography variant="h6">{showAlert}</Typography>
           </DialogContent>
           <DialogActions>
@@ -3605,15 +4433,29 @@ function DocumentsPrintedStatusList() {
         </Dialog>
       </Box>
       {/* Bulk delete ALERT DIALOG */}
-      <Dialog open={isDeleteOpenalert} onClose={handleCloseModalert} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-        <DialogContent sx={{ width: "350px", textAlign: "center", alignItems: "center" }}>
-          <ErrorOutlineOutlinedIcon sx={{ fontSize: "70px", color: "orange" }} />
+      <Dialog
+        open={isDeleteOpenalert}
+        onClose={handleCloseModalert}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogContent
+          sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+        >
+          <ErrorOutlineOutlinedIcon
+            sx={{ fontSize: "70px", color: "orange" }}
+          />
           <Typography variant="h6" sx={{ color: "black", textAlign: "center" }}>
             Please Select any Row
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button autoFocus variant="contained" sx={buttonStyles.buttonsubmit} onClick={handleCloseModalert}>
+          <Button
+            autoFocus
+            variant="contained"
+            sx={buttonStyles.buttonsubmit}
+            onClick={handleCloseModalert}
+          >
             {" "}
             OK{" "}
           </Button>
@@ -3621,7 +4463,8 @@ function DocumentsPrintedStatusList() {
       </Dialog>
       <br />
       <Box>
-        <Dialog open={isOpenLetterHeadPopup}
+        <Dialog
+          open={isOpenLetterHeadPopup}
           onClose={handleClickCloseLetterHead}
           maxWidth="md"
           fullWidth={true}
@@ -3630,13 +4473,16 @@ function DocumentsPrintedStatusList() {
             "& .MuiPaper-root": {
               overflow: "visible",
             },
-            marginTop: "50px"
+            marginTop: "50px",
           }}
           aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
+          aria-describedby="alert-dialog-description"
+        >
           <Box sx={{ padding: "20px 50px" }}>
             <>
-              <Typography sx={userStyle.HeaderText}>View Letter Header Options</Typography>
+              <Typography sx={userStyle.HeaderText}>
+                View Letter Header Options
+              </Typography>
               <br /> <br />
               <Grid container spacing={2}>
                 <Grid item md={4} xs={12} sm={12}>
@@ -3650,17 +4496,21 @@ function DocumentsPrintedStatusList() {
                       value={{ label: headerOptions, value: headerOptions }}
                       onChange={(e) => {
                         setHeaderOptions(e.value);
-                        setSelectedHeadOpt([])
-                        setHeadValue([])
-                        setHeader("")
-                        setfooter("")
-
+                        setSelectedHeadOpt([]);
+                        setHeadValue([]);
+                        setHeader("");
+                        setfooter("");
                       }}
                     />
                   </FormControl>
                 </Grid>
                 {headerOptions === "With Letter Head" && (
-                  <Grid item md={headerOptions === "With Letter Head" ? 4 : 3} xs={12} sm={12}>
+                  <Grid
+                    item
+                    md={headerOptions === "With Letter Head" ? 4 : 3}
+                    xs={12}
+                    sm={12}
+                  >
                     <FormControl fullWidth size="small">
                       <Typography>
                         With Letter Head <b style={{ color: "red" }}>*</b>
@@ -3673,56 +4523,65 @@ function DocumentsPrintedStatusList() {
                         valueRenderer={customValueRenderHeadFrom}
                       />
                     </FormControl>
-                  </Grid>)}
-
+                  </Grid>
+                )}
               </Grid>
               <br />
               <br /> <br />
               <br />
               <Grid container spacing={2} sx={{ marginLeft: "3px" }}>
                 <Grid item md={4} xs={12} sm={12}>
-                  <LoadingButton loading={HeaderOptionsButton} sx={buttonStyles.buttonsubmit} autoFocus variant="contained" onClick={(e) => {
-                    if (pagePopeOpen === "Table View") {
-                      downloadPdfTesdtTable(DataTableId, "Print")
-                    }
-                    else if (pagePopeOpen === "Table Print") {
-                      downloadPdfPrintTable(DataTableId, "Print")
-                    }
-                    else if (pagePopeOpen === "Email") {
-                      if (headerOptions === "Please Select Print Options") {
-                        setButtonLoadingPreview(false);
-                        setPopupContentMalert("Please Select Print Options!");
-                        setPopupSeverityMalert("info");
-                        handleClickOpenPopupMalert();
+                  <LoadingButton
+                    loading={HeaderOptionsButton}
+                    sx={buttonStyles.buttonsubmit}
+                    autoFocus
+                    variant="contained"
+                    onClick={(e) => {
+                      if (pagePopeOpen === "Table View") {
+                        downloadPdfTesdtTable(DataTableId, "Print");
+                      } else if (pagePopeOpen === "Table Print") {
+                        downloadPdfPrintTable(DataTableId, "Print");
+                      } else if (pagePopeOpen === "Email") {
+                        if (headerOptions === "Please Select Print Options") {
+                          setButtonLoadingPreview(false);
+                          setPopupContentMalert("Please Select Print Options!");
+                          setPopupSeverityMalert("info");
+                          handleClickOpenPopupMalert();
+                        } else if (
+                          headerOptions === "With Letter Head" &&
+                          selectedHeadOpt?.length < 1
+                        ) {
+                          setPopupContentMalert(
+                            "Please Select With Letter Head!"
+                          );
+                          setPopupSeverityMalert("info");
+                          handleClickOpenPopupMalert();
+                        } else {
+                          handleClickOpenMailOpen();
+                        }
                       }
-                      else if (headerOptions === "With Letter Head" && selectedHeadOpt?.length < 1) {
-                        setPopupContentMalert("Please Select With Letter Head!");
-                        setPopupSeverityMalert("info");
-                        handleClickOpenPopupMalert();
-                      }
-                      else {
-                        handleClickOpenMailOpen();
-                      }
-                    }
-                  }
-                  }>
+                    }}
+                  >
                     {" "}
                     OK{" "}
                   </LoadingButton>
                 </Grid>
                 <Grid item md={4} xs={12} sm={12}>
-                  <Button onClick={handleClickCloseLetterHead} sx={buttonStyles.btncancel}>
+                  <Button
+                    onClick={handleClickCloseLetterHead}
+                    sx={buttonStyles.btncancel}
+                  >
                     Cancel
                   </Button>
                 </Grid>
-
               </Grid>
             </>
           </Box>
         </Dialog>
       </Box>
       <Box>
-        <Dialog open={PageMailOpen}
+        <Dialog
+          open={PageMailOpen}
           onClose={handleClickCloseMail}
           maxWidth="md"
           fullWidth={true}
@@ -3731,12 +4590,12 @@ function DocumentsPrintedStatusList() {
             "& .MuiPaper-root": {
               overflow: "hidden",
             },
-            marginTop: "50px"
+            marginTop: "50px",
           }}
           aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
+          aria-describedby="alert-dialog-description"
+        >
           <Box sx={{ padding: "20px 50px" }}>
-
             <Typography sx={userStyle.HeaderText}>Email Information</Typography>
             <br />
             <br />
@@ -3752,13 +4611,17 @@ function DocumentsPrintedStatusList() {
               <Grid item md={4} xs={12} sm={12}>
                 <Typography>CC Mail</Typography>
                 {emailValuePage?.ccemail?.map((data, index) => (
-                  <Typography key={index}>{index + 1}. {data}</Typography>
+                  <Typography key={index}>
+                    {index + 1}. {data}
+                  </Typography>
                 ))}
               </Grid>
               <Grid item md={4} xs={12} sm={12}>
                 <Typography>BCC Mail</Typography>
                 {emailValuePage?.bccemail?.map((data, index) => (
-                  <Typography key={index}>{index + 1}. {data}</Typography>
+                  <Typography key={index}>
+                    {index + 1}. {data}
+                  </Typography>
                 ))}
               </Grid>
               <Grid item md={4} xs={12} sm={12}>
@@ -3770,12 +4633,18 @@ function DocumentsPrintedStatusList() {
               </Grid>
             </Grid>
             <DialogActions>
-              <Button variant="contained" color="primary"
+              <Button
+                variant="contained"
+                color="primary"
                 onClick={(e) => handleSubmit(e)}
               >
                 Send
               </Button>
-              <Button variant="outlined" color="secondary" onClick={handleClickCloseMail}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleClickCloseMail}
+              >
                 Cancel
               </Button>
             </DialogActions>
@@ -3785,7 +4654,8 @@ function DocumentsPrintedStatusList() {
 
       {/* Pop up for Viewing info */}
       <Box>
-        <Dialog open={PageUpdateOpen}
+        <Dialog
+          open={PageUpdateOpen}
           onClose={handleClickUpdateClose}
           maxWidth="md"
           fullWidth={true}
@@ -3794,10 +4664,11 @@ function DocumentsPrintedStatusList() {
             "& .MuiPaper-root": {
               overflow: "hidden",
             },
-            marginTop: "50px"
+            marginTop: "50px",
           }}
           aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
+          aria-describedby="alert-dialog-description"
+        >
           <Box sx={{ padding: "20px 50px" }}>
             <Typography sx={userStyle.HeaderText}>Printed Info</Typography>
             <br />
@@ -3807,33 +4678,51 @@ function DocumentsPrintedStatusList() {
               <Table>
                 <TableHead>
                   <StyledTableRow>
-                    <StyledTableCell style={tableHeadCellStyle}>{"Sno"}.</StyledTableCell>
-                    <StyledTableCell style={tableHeadCellStyle}> {"Name"}</StyledTableCell>
-                    <StyledTableCell style={tableHeadCellStyle}> {"Date"}</StyledTableCell>
-                    <StyledTableCell style={tableHeadCellStyle}> {"Local Ip"}</StyledTableCell>
+                    <StyledTableCell style={tableHeadCellStyle}>
+                      {"Sno"}.
+                    </StyledTableCell>
+                    <StyledTableCell style={tableHeadCellStyle}>
+                      {" "}
+                      {"Name"}
+                    </StyledTableCell>
+                    <StyledTableCell style={tableHeadCellStyle}>
+                      {" "}
+                      {"Date"}
+                    </StyledTableCell>
+                    <StyledTableCell style={tableHeadCellStyle}>
+                      {" "}
+                      {"Local Ip"}
+                    </StyledTableCell>
                   </StyledTableRow>
                 </TableHead>
                 <TableBody>
                   {UserPrintedInfoList?.updatedby?.map((item, i) => {
-
-
                     return (
                       <StyledTableRow key={i}>
-                        <StyledTableCell style={tableBodyCellStyle}>{i + 1}.</StyledTableCell>
-                        <StyledTableCell style={tableBodyCellStyle}>{item.name}</StyledTableCell>
+                        <StyledTableCell style={tableBodyCellStyle}>
+                          {i + 1}.
+                        </StyledTableCell>
+                        <StyledTableCell style={tableBodyCellStyle}>
+                          {item.name}
+                        </StyledTableCell>
                         <StyledTableCell style={tableBodyCellStyle}>
                           {moment(item.date).format("DD-MM-YYYY hh:mm:ss a")}
                         </StyledTableCell>
-                        <StyledTableCell style={tableBodyCellStyle}>{item.localip}</StyledTableCell>
+                        <StyledTableCell style={tableBodyCellStyle}>
+                          {item.localip}
+                        </StyledTableCell>
                       </StyledTableRow>
                     );
                   })}
-
                 </TableBody>
               </Table>
             </Grid>
             <DialogActions>
-              <Button variant="outlined" color="secondary" onClick={handleClickUpdateClose}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleClickUpdateClose}
+              >
                 Back
               </Button>
             </DialogActions>
@@ -3872,7 +4761,9 @@ function DocumentsPrintedStatusList() {
         isPdfFilterOpen={isPdfFilterOpen}
         setIsPdfFilterOpen={setIsPdfFilterOpen}
         handleClosePdfFilterMod={handleClosePdfFilterMod}
-        filteredDataTwo={(filteredChanges !== null ? filteredRowData : rowDataTable) ?? []}
+        filteredDataTwo={
+          (filteredChanges !== null ? filteredRowData : rowDataTable) ?? []
+        }
         itemsTwo={items ?? []}
         filename={"Employee Printed Documents List"}
         exportColumnNames={exportColumnNames}

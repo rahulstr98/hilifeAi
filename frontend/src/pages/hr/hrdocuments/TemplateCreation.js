@@ -1331,7 +1331,7 @@ function TemplateCreation() {
       templateCreation?.footer === "Please Select Footer" ||
       !templateCreation?.footer
     ) {
-      setPopupContentMalert("Please Enter Footer!");
+      setPopupContentMalert("Please Select Footer!");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     }
@@ -1383,7 +1383,10 @@ function TemplateCreation() {
       pagemode: "Single Page",
     });
     setValueBranchCat([]);
+    setBranchOptions([]);
     setSelectedOptionsBranch([]);
+    setSelectedTermsAndCondtionOptions([]);
+    setSelectedEmpModeOptions([]);
     setAgenda("");
     setHeader("");
     setfooter("");
@@ -2281,6 +2284,7 @@ function TemplateCreation() {
                       });
                       setSelectedEmpModeOptions([]);
                       setValueEmpModeOptions([]);
+                      setSelectedTermsAndCondtionOptions([])
                     }}
                   />
                 </FormControl>

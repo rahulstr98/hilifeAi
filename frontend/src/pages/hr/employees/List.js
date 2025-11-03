@@ -10,9 +10,8 @@ import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Box, Button, Checkbox, Dialog, Chip, DialogActions, DialogContent, FormControl, Grid, IconButton, List, ListItem, ListItemText, MenuItem, OutlinedInput, Popover, Select, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Dialog, TextareaAutosize, Chip, DialogActions, DialogContent, FormControl, Grid, IconButton, List, ListItem, ListItemText, MenuItem, OutlinedInput, Popover, Select, TextField, Tooltip, Typography } from '@mui/material';
 import Switch from '@mui/material/Switch';
-
 import axios from '../../../axiosInstance';
 import { saveAs } from 'file-saver';
 import html2canvas from 'html2canvas';
@@ -33,6 +32,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { MultiSelect } from 'react-multi-select-component';
 import Selects from 'react-select';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ErrorIcon from '@mui/icons-material/Error';
 import InfoIcon from '@mui/icons-material/Info';
 import PauseCircleOutlineIcon from '@mui/icons-material/PauseCircleOutline';
@@ -79,6 +79,16 @@ const LoadingBackdrop = ({ open }) => {
 
 function EmployeeList() {
   // Copied fields Name
+
+  // view model
+  const [openview, setOpenview] = useState(false);
+
+  const handleClickOpenview = () => {
+    setOpenview(true);
+  };
+  const handleCloseview = () => {
+    setOpenview(false);
+  };
 
   const [filteredRowData, setFilteredRowData] = useState([]);
   const [filteredChanges, setFilteredChanges] = useState(null);
@@ -411,10 +421,12 @@ function EmployeeList() {
   // };
 
   // Handle clicks outside the Box
-
+  const [allPastename, setallPasteNames] = useState([]);
   const updateEmployees = (pastedNames) => {
     // Your existing update logic...
     const namesArray = Array.isArray(pastedNames) ? pastedNames : [];
+
+    setallPasteNames(namesArray);
 
     const availableOptions = allUsersData
       ?.filter((comp) => valueCompanyCat?.includes(comp.company) && valueBranchCat?.includes(comp.branch) && valueUnitCat?.includes(comp.unit) && valueTeamCat?.includes(comp.team) && comp.workmode !== 'Internship')
@@ -457,6 +469,7 @@ function EmployeeList() {
     setSelectedOptionsEmployee((current) => current.filter((emp) => emp.value !== value));
     setValueEmp((current) => current.filter((empValue) => empValue !== value));
     setValueEmployeeCat((current) => current.filter((empValue) => empValue !== value));
+    setallPasteNames(selectedOptionsEmployee.filter((emp) => emp.value !== value).map((item) => item.value));
   };
 
   let userid = deleteuser?._id;
@@ -775,6 +788,11 @@ function EmployeeList() {
         icon = <CheckCircleIcon {...iconProps} />;
         color = '#4caf50'; // Green
         break;
+      case 'Probation':
+        icon = <AccessTimeIcon {...iconProps} />; // 🕑 clock icon
+        color = '#ff9800'; // Orange
+        break;
+
       default:
         icon = <InfoIcon {...iconProps} />;
         color = '#ccc'; // Default gray
@@ -1633,6 +1651,11 @@ function EmployeeList() {
       })
     );
     setSelectedOptionsEmployee(options);
+    setallPasteNames(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
   };
 
   const customValueRendererEmployee = (valueEmployeeCat, _categoryname) => {
@@ -1650,13 +1673,15 @@ function EmployeeList() {
     setValueTeamCat([]);
     setSelectedOptionsTeam([]);
     setValueDepartmentCat([]);
+
     setSelectedOptionsDepartment([]);
     setValueEmployeeCat([]);
     setSelectedOptionsEmployee([]);
     setValueEmp([]);
     setEmployeeOptions([]);
     setEmployees([]);
-
+    setMismatchusers([]);
+    setallPasteNames([]);
     setFilterState({
       type: 'Individual',
       employeestatus: 'Please Select Employee Status',
@@ -1851,6 +1876,31 @@ function EmployeeList() {
 
   //FILTER END
 
+  const [mismatchUsers, setMismatchusers] = useState([]);
+  //get single row to edit....
+  const getCode = (e, name) => {
+    try {
+      const data = allPastename.filter((d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, '.').trim()));
+      console.log(data, allPastename, valueEmployeeCat, 'data');
+
+      setMismatchusers([...new Set(data)]);
+      handleClickOpenview();
+    } catch (err) {
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+    }
+  };
+
+  useEffect(() => {
+    const data = allPastename.filter((d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, '.').trim()));
+
+    setMismatchusers([...new Set(data)]);
+  }, []);
+
+  console.log(
+    mismatchUsers.length,
+    allPastename.filter((d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, '.').trim())),
+    'mismatchUsers'
+  );
   return (
     <>
       <Box>
@@ -2203,32 +2253,59 @@ function EmployeeList() {
                   )}
 
                   {['Individual']?.includes(filterState.type) && (
-                    <Grid item md={6} sm={12} xs={12} sx={{ display: 'flex', flexDirection: 'row' }}>
-                      <FormControl fullWidth size="small">
-                        <Typography>Selected Employees</Typography>
-                        <div
-                          id="paste-box" // Add an ID to the Box
-                          tabIndex={0} // Make the div focusable
-                          style={{
-                            border: '1px solid #ccc',
-                            borderRadius: '3.75px',
-                            height: '110px',
-                            overflow: 'auto',
-                          }}
-                          onPaste={handlePasteForEmp}
-                          onFocus={() => setIsBoxFocused(true)} // Set focus state to true
-                          onBlur={(e) => {
-                            if (isBoxFocused) {
-                              e.target.focus(); // Refocus only if the Box was previously focused
-                            }
-                          }}
-                        >
-                          {valueEmp.map((value) => (
-                            <Chip key={value} label={value} clickable sx={{ margin: 0.2, backgroundColor: '#FFF' }} onDelete={(e) => handleDelete(e, value)} onClick={() => console.log('clicked chip')} />
-                          ))}
-                        </div>
-                      </FormControl>
-                    </Grid>
+                    <>
+                      <Grid item md={6} sm={12} xs={12} sx={{ display: 'flex', flexDirection: 'row' }}>
+                        <FormControl fullWidth size="small">
+                          {/* <Typography>Selected Employees</Typography> */}
+                          <Typography>
+                            Selected Employees &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Employees Count:{' '}
+                            <Typography component="span" fontWeight="bold" color="primary" sx={{ fontSize: '1.1rem' }}>
+                              {valueEmployeeCat.length ? valueEmployeeCat.length : 0}
+                            </Typography>
+                          </Typography>
+                          <div
+                            id="paste-box" // Add an ID to the Box
+                            tabIndex={0} // Make the div focusable
+                            style={{
+                              border: '1px solid #ccc',
+                              borderRadius: '3.75px',
+                              height: '110px',
+                              overflow: 'auto',
+                            }}
+                            onPaste={handlePasteForEmp}
+                            onFocus={() => setIsBoxFocused(true)} // Set focus state to true
+                            onBlur={(e) => {
+                              if (isBoxFocused) {
+                                e.target.focus(); // Refocus only if the Box was previously focused
+                              }
+                            }}
+                          >
+                            {valueEmp.map((value) => (
+                              <Chip key={value} label={value} clickable sx={{ margin: 0.2, backgroundColor: '#FFF' }} onDelete={(e) => handleDelete(e, value)} onClick={() => console.log('clicked chip')} />
+                            ))}
+                          </div>
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={3} xs={12} sm={6}>
+                        <Typography>Mismatch Employee</Typography>
+                        {allPastename.filter((d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, '.').trim())).length > 2 ? (
+                          <Button variant="contained" color="primary" size="small" onClick={getCode}>
+                            VIEW
+                          </Button>
+                        ) : (
+                          <TextareaAutosize
+                            aria-label="maximum height"
+                            minRows={5}
+                            style={{ width: '100%' }}
+                            // value={mismatchUsers.map((item, index) => `${index + 1}) ${item}`).join('\n')} />
+                            value={allPastename
+                              .filter((d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, '.').trim()))
+                              .slice(0, 2)
+                              .join(', ')}
+                          />
+                        )}
+                      </Grid>
+                    </>
                   )}
                   <Grid item md={3} xs={12} sm={6} mt={3}>
                     <div style={{ display: 'flex', gap: '20px' }}>
@@ -2503,6 +2580,26 @@ function EmployeeList() {
           setIsLoading={setIsLoading}
           isLoading={isLoading}
         />
+        <Dialog open={openview} onClose={handleClickOpenview} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg" sx={{ marginTop: '95px' }}>
+          <Box sx={{ width: '550px', padding: '20px 50px' }}>
+            <>
+              <Typography sx={userStyle.HeaderText}>Mismatched Employee</Typography>
+              <br /> <br />
+              {mismatchUsers.map((item, index) => (
+                <Box>
+                  <Typography>{`${index + 1}) ${item}`}</Typography> <br />
+                </Box>
+              ))}
+              <br /> <br /> <br />
+              <Grid container spacing={2}>
+                <Button variant="contained" sx={buttonStyles.btncancel} onClick={handleCloseview}>
+                  {' '}
+                  Back{' '}
+                </Button>
+              </Grid>
+            </>
+          </Box>
+        </Dialog>
         <InfoPopup openInfo={openInfo} handleCloseinfo={handleCloseinfo} heading="Employee Details Info" addedby={addedby} updateby={updateby} />
       </Box>
       <LoadingBackdrop open={isLoading} />

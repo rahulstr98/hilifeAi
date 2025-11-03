@@ -5,6 +5,10 @@ const documentPreparationSchema = new Schema({
     type: String,
     required: false,
   },
+  reservedKeywords: {
+    type: Boolean,
+    required: false,
+  },
   marginQuill: {
     type: String,
     required: false,
@@ -198,6 +202,14 @@ const documentPreparationSchema = new Schema({
     required: false,
   },
   foot: {
+    type: String,
+    required: false,
+  },
+  header: {
+    type: String,
+    required: false,
+  },
+  footer: {
     type: String,
     required: false,
   },

@@ -5556,6 +5556,7 @@ function CandidateDocuments() {
                         setDesignationOptions([]);
                         setRoundNames([]);
                         setEmployeeNameOptions([]);
+                        setIssuingAutholrity([]);
                         setSelectedEmployee([]);
                         setSelectedEmployeeValues([]);
                         setSelectedRounds([]);

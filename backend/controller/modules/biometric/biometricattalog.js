@@ -3539,43 +3539,43 @@ exports.getUsersBranchWiseExitReportsCheck = catchAsyncErrors(async (req, res, n
                 // console.log(matchedUsers  , "matchedUsers")
                 const shiftStart = shiftdate?.startTime ? new Date(shiftdate.startTime) : null;
                 let lastAvailableDateRecords = [];
-                if (shiftStart) {
-                    // Step 1: Filter all past records for the user with inoutdevice = true
-                    const pastInoutRecords = usersCollection.filter(user => user.staffNameC === rowusername)
-                        .map(user => {
-                            const [datePart, timePart] = user?.clockDateTimeD.split(" ");
-                            const [day, month, year] = datePart.split("-");
-                            const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
-                            return {
-                                ...user,
-                                clockTime,
-                                dateKey: `${year}-${month}-${day}`, // for grouping by date
-                            };
-                        })
-                        .filter(user => user.clockTime < shiftStart);
-                    // });
+                // if (shiftStart) {
+                //     // Step 1: Filter all past records for the user with inoutdevice = true
+                //     const pastInoutRecords = usersCollection.filter(user => user.staffNameC === rowusername)
+                //         .map(user => {
+                //             const [datePart, timePart] = user?.clockDateTimeD.split(" ");
+                //             const [day, month, year] = datePart.split("-");
+                //             const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
+                //             return {
+                //                 ...user,
+                //                 clockTime,
+                //                 dateKey: `${year}-${month}-${day}`, // for grouping by date
+                //             };
+                //         })
+                //         .filter(user => user.clockTime < shiftStart);
+                //     // });
 
-                    // Step 2: Group by date
-                    const groupedByDate = {};
-                    for (const record of pastInoutRecords) {
-                        if (!groupedByDate[record.dateKey]) {
-                            groupedByDate[record.dateKey] = [];
-                        }
-                        groupedByDate[record.dateKey].push(record);
-                    }
+                //     // Step 2: Group by date
+                //     const groupedByDate = {};
+                //     for (const record of pastInoutRecords) {
+                //         if (!groupedByDate[record.dateKey]) {
+                //             groupedByDate[record.dateKey] = [];
+                //         }
+                //         groupedByDate[record.dateKey].push(record);
+                //     }
 
-                    // Step 3: Find the latest dateKey with records
-                    const availableDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
-                    const lastAvailableDateKey = availableDates[0];
-                    lastAvailableDateRecords = lastAvailableDateKey ? groupedByDate[lastAvailableDateKey] : [];
+                //     // Step 3: Find the latest dateKey with records
+                //     const availableDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
+                //     const lastAvailableDateKey = availableDates[0];
+                //     lastAvailableDateRecords = lastAvailableDateKey ? groupedByDate[lastAvailableDateKey] : [];
 
-                }
-                if (lastAvailableDateRecords[lastAvailableDateRecords?.length - 1]?.verifyC == "FACE" && matchedUsers.length > 0) {
-                    const firstInoutIndex = matchedUsers.findIndex(user => user.inoutdevice === true);
-                    if (firstInoutIndex !== -1) {
-                        const firstEntry = matchedUsers.splice(firstInoutIndex, 1)[0];
-                    }
-                }
+                // }
+                // if (lastAvailableDateRecords[lastAvailableDateRecords?.length - 1]?.verifyC == "FACE" && matchedUsers.length > 0) {
+                //     const firstInoutIndex = matchedUsers.findIndex(user => user.inoutdevice === true);
+                //     if (firstInoutIndex !== -1) {
+                //         const firstEntry = matchedUsers.splice(firstInoutIndex, 1)[0];
+                //     }
+                // }
 
                 let inTime = null;
                 let outTime = null;
@@ -5154,7 +5154,7 @@ exports.getUsersAttendanceTotalHoursReportsCheck = catchAsyncErrors(async (req, 
                 }
             }
         ]);
-        console.log(biometricUsersGrouping, "biometricUsersGrouping");
+        // console.log(biometricUsersGrouping, "biometricUsersGrouping");
 
 
         // 1. Create a map of device serials to grouped biometric user data by username and type
@@ -5202,11 +5202,11 @@ exports.getUsersAttendanceTotalHoursReportsCheck = catchAsyncErrors(async (req, 
                 $nin: pairedSerials
             };
         }
-        console.log(biometricGroupingMap, pairedSerials, "biometricGroupingMap")
+
 
 
         answer = await getUserClockinAndClockoutStatus({ employee: usernamesFilter, userDates: userDates });
-
+        console.log(matchQuery, pairedSerials,answer, "biometricGroupingMap")
         usersCollection = await Biometricattlog.aggregate([
             { $match: matchQuery },
             {
@@ -5348,7 +5348,7 @@ exports.getUsersAttendanceTotalHoursReportsCheck = catchAsyncErrors(async (req, 
         });
 
 
-
+// console.log(filteredUsers , "filteredUsers")
 
         filteredData = answer?.finaluser?.flatMap(({ rowusername, shiftdate, shift, shifttype }) => {
             const matchedUsers = filteredUsers
@@ -5372,53 +5372,53 @@ exports.getUsersAttendanceTotalHoursReportsCheck = catchAsyncErrors(async (req, 
                 .filter(Boolean);
 
 
-            // console.log(matchedUsers?.length , 'matchedUsers1')
+            console.log(matchedUsers , 'matchedUsers1')
             const shiftStart = shiftdate?.startTime ? new Date(shiftdate.startTime) : null;
             let lastAvailableDateRecords = [];
             if (shiftStart) {
                 // Step 1: Filter all past records for the user with inoutdevice = true
-                const pastInoutRecords = filteredUsers
-                    .filter(user =>
-                        user.staffNameC === rowusername &&
-                        user.inoutdevice === true
-                    )
-                    .map(user => {
-                        const [datePart, timePart] = user?.clockDateTimeD.split(" ");
-                        const [day, month, year] = datePart.split("-");
-                        const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
-                        return {
-                            ...user,
-                            clockTime,
-                            dateKey: `${year}-${month}-${day}`, // for grouping by date
-                        };
-                    })
-                    .filter(user => user.clockTime < shiftStart); // only before today's shift
+            //     const pastInoutRecords = filteredUsers
+            //         .filter(user =>
+            //             user.staffNameC === rowusername &&
+            //             user.inoutdevice === true
+            //         )
+            //         .map(user => {
+            //             const [datePart, timePart] = user?.clockDateTimeD.split(" ");
+            //             const [day, month, year] = datePart.split("-");
+            //             const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
+            //             return {
+            //                 ...user,
+            //                 clockTime,
+            //                 dateKey: `${year}-${month}-${day}`, // for grouping by date
+            //             };
+            //         })
+            //         .filter(user => user.clockTime < shiftStart); // only before today's shift
 
-                // Step 2: Group by date
-                const groupedByDate = {};
-                for (const record of pastInoutRecords) {
-                    if (!groupedByDate[record.dateKey]) {
-                        groupedByDate[record.dateKey] = [];
-                    }
-                    groupedByDate[record.dateKey].push(record);
-                }
+            //     // Step 2: Group by date
+            //     const groupedByDate = {};
+            //     for (const record of pastInoutRecords) {
+            //         if (!groupedByDate[record.dateKey]) {
+            //             groupedByDate[record.dateKey] = [];
+            //         }
+            //         groupedByDate[record.dateKey].push(record);
+            //     }
 
-                // Step 3: Find the latest dateKey with records
-                const availableDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
-                const lastAvailableDateKey = availableDates[0];
-                lastAvailableDateRecords = lastAvailableDateKey ? groupedByDate[lastAvailableDateKey] : [];
+            //     // Step 3: Find the latest dateKey with records
+            //     const availableDates = Object.keys(groupedByDate).sort((a, b) => new Date(b) - new Date(a));
+            //     const lastAvailableDateKey = availableDates[0];
+            //     lastAvailableDateRecords = lastAvailableDateKey ? groupedByDate[lastAvailableDateKey] : [];
 
-                // // Step 4: If odd, remove first entry
-                // if (lastAvailableDateRecords.length % 2 !== 0) {
-                //     lastAvailableDateRecords.shift(); // Remove first inoutdevice record
-                // }
+            //     // // Step 4: If odd, remove first entry
+            //     // if (lastAvailableDateRecords.length % 2 !== 0) {
+            //     //     lastAvailableDateRecords.shift(); // Remove first inoutdevice record
+            //     // }
 
-            }
-            if (lastAvailableDateRecords[lastAvailableDateRecords?.length - 1]?.verifyC === "FACE" && matchedUsers.length > 0) {
-                const firstInoutIndex = matchedUsers.findIndex(user => user.inoutdevice === true);
-                if (firstInoutIndex !== -1) {
-                    const firstEntry = matchedUsers.splice(firstInoutIndex, 1)[0];
-                }
+            // }
+            // if (lastAvailableDateRecords[lastAvailableDateRecords?.length - 1]?.verifyC === "FACE" && matchedUsers.length > 0) {
+            //     const firstInoutIndex = matchedUsers.findIndex(user => user.inoutdevice === true);
+            //     if (firstInoutIndex !== -1) {
+            //         const firstEntry = matchedUsers.splice(firstInoutIndex, 1)[0];
+            //     }
             }
             const inDevices = matchedUsers.filter(u => u.indevice);
             const outDevices = matchedUsers.filter(u => u.outdevice);
