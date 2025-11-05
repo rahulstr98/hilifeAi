@@ -1680,7 +1680,7 @@ function DocumentPreparation() {
                 1
             ]
           : "";
-
+console.log(headerfooter , "headerfooter")
         const templateHeaderFooter = headerfooter;
 
         const headerOption = ans?.letterheadcontentheader?.find(
@@ -6126,7 +6126,8 @@ function DocumentPreparation() {
         // console.log(answer, "4009")
         setIndexViewQuest(1);
       }
-
+                setallPasteNames([]);
+                setValueEmp([]);
       setDocumentPrepartion({
         ...documentPrepartion,
         person: "Please Select Person",
@@ -6794,6 +6795,8 @@ function DocumentPreparation() {
                   handleCloseInfoImagePrint();
                   handleClickCloseLetterHead();
                 };
+                setallPasteNames([]);
+                setValueEmp([]);
               } else {
                 addPageNumbersAndHeadersFooters(pdf, watermarkImage, "");
                 // Save the PDF
@@ -6804,6 +6807,8 @@ function DocumentPreparation() {
                 if (pagePopeOpen === "Print") {
                   generatePDFs(e);
                 }
+                setallPasteNames([]);
+                setValueEmp([]);
                 setLoadingPrintData(false);
                 setButtonLoading(false);
                 setHeaderOptionsButton(false);
@@ -7327,6 +7332,8 @@ function DocumentPreparation() {
                 setLoadingPrintManualData(false);
                 setButtonLoading(false);
                 handleCloseInfoImagePrint();
+                setallPasteNames([]);
+                setValueEmp([]);
               };
             } else {
               // Add page numbers, watermark, and QR code to each page
@@ -7339,6 +7346,8 @@ function DocumentPreparation() {
               setLoadingPrintManualData(false);
               setButtonLoading(false);
               handleCloseInfoImagePrint();
+              setallPasteNames([]);
+              setValueEmp([]);
             }
           };
         });
@@ -7399,6 +7408,8 @@ function DocumentPreparation() {
             setLoadingPreviewData(true);
             setPreviewManual(false);
             setButtonLoadingPreview(true);
+            setValueEmp([]);
+            setallPasteNames([]);
             // Create a new div element to hold the Quill content
             const pdfElement = document.createElement("div");
             // console.log(checkingArray[index]?.data, "checkingArray[index]?.data")
@@ -8046,6 +8057,8 @@ function DocumentPreparation() {
           } else {
             setPreviewManual(false);
             setButtonLoadingPreview(true);
+            setValueEmp([]);
+            setallPasteNames([]);
             // Create a new div element to hold the Quill content
             const pdfElement = document.createElement("div");
             pdfElement.innerHTML = checking;
@@ -10646,6 +10659,8 @@ function DocumentPreparation() {
         // Wait for the current batch to complete before proceeding to the next
         await Promise.all(batchRequests);
       }
+      setallPasteNames([]);
+      setValueEmp([]);
       setSavingDatas(false);
       await fetchBrandMaster();
       handleCloseInfoImage();
@@ -11513,8 +11528,8 @@ function DocumentPreparation() {
       signature: "Please Select Signature",
       seal: "Please Select Seal",
     });
-                                setallPasteNames([]);
-                        setValueEmp([]);
+    setallPasteNames([]);
+    setValueEmp([]);
     setCheckingArray([]);
     setSelectedEmployeeValues([]);
     setSelectedEmployee([]);
@@ -11532,8 +11547,8 @@ function DocumentPreparation() {
 
   const handlecleared = async (e) => {
     e.preventDefault();
-                            setallPasteNames([]);
-                        setValueEmp([]);
+    setallPasteNames([]);
+    setValueEmp([]);
     const time = await getCurrentServerTime();
     const dateObj = new Date(time); // ensure it's a Date object
 
@@ -11551,6 +11566,8 @@ function DocumentPreparation() {
       frommin: formattedMinute,
       fromtime: ampm,
     });
+       setTemplateValues([])
+    setEmployeeModeOptions([])
     setGenerateData(false);
     setCheckingArray([]);
     setIndexViewQuest(1);
@@ -11631,8 +11648,8 @@ function DocumentPreparation() {
     e.preventDefault();
     setGenerateData(false);
     setSelectedBranch([]);
-                            setallPasteNames([]);
-                        setValueEmp([]);
+    setallPasteNames([]);
+    setValueEmp([]);
     setSelectedBranchValues([]);
     setDocumentPrepartion({
       date: "",
@@ -11663,7 +11680,7 @@ function DocumentPreparation() {
       heading: "Please Select Header Option",
       issuedpersondetails: "",
     });
-    
+
     // setHeadValue([])
     setSelectedHeadOpt([]);
     // setHeader("")
@@ -13487,6 +13504,8 @@ function DocumentPreparation() {
                 const printWindow = window.open(pdfUrl);
                 // pdf.save(`${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`);
                 handleClickCloseLetterHead();
+                setallPasteNames([]);
+                setValueEmp([]);
               };
             } else {
               addPageNumbersAndHeadersFooters(pdf, watermarkImage, "");
@@ -13496,6 +13515,8 @@ function DocumentPreparation() {
               const printWindow = window.open(pdfUrl);
               // pdf.save(`${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`);
               handleClickCloseLetterHead();
+              setallPasteNames([]);
+              setValueEmp([]);
             }
           };
         });
@@ -13975,6 +13996,8 @@ function DocumentPreparation() {
                   `${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`
                 );
                 handleClickCloseLetterHead();
+                setallPasteNames([]);
+                setValueEmp([]);
               };
             } else {
               addPageNumbersAndHeadersFooters(pdf, watermarkImage, "");
@@ -13986,6 +14009,8 @@ function DocumentPreparation() {
                 `${response.data.sdocumentPreparation?.template}_${response.data.sdocumentPreparation?.person}.pdf`
               );
               handleClickCloseLetterHead();
+              setallPasteNames([]);
+              setValueEmp([]);
             }
           };
         });
@@ -14003,6 +14028,8 @@ function DocumentPreparation() {
       template: item.template,
       documentname: item.documentname,
       mail: item.mail,
+      header: item.header,
+      footer: item.footer,
       printingstatus: item.printingstatus,
       employeemode: item.employeemode,
       department:
@@ -14481,6 +14508,11 @@ function DocumentPreparation() {
                                 setAttendanceNeed(false);
                                 setProductionNeed(false);
                                 setSalaryNeed(false);
+                                setValueEmp([])
+                                  setallPasteNames([]);
+                            setValueEmp([]);
+                                
+
                               }}
                               color="primary"
                             />
@@ -14775,43 +14807,53 @@ function DocumentPreparation() {
                           <Typography>
                             Person<b style={{ color: "red" }}>*</b>
                           </Typography>
-                          <Selects
-                            maxMenuHeight={300}
-                            options={employeenames}
-                            value={{
-                              label: documentPrepartion.person,
-                              value: documentPrepartion.person,
-                            }}
-                            onChange={(e) => {
-                              setDocumentPrepartion({
-                                ...documentPrepartion,
-                                person: e.value,
-                                sign: "Please Select Signature",
-                                signature: "Please Select Signature",
-                                seal: "Please Select Seal",
-                                sealing: "Please Select Seal",
-                                sort: "Please Select Sort",
-                              });
-
-                              setEmployeeValue(e.value);
-                              setEmployeeUserName(e.username);
-                              setallPasteNames([e.value]);
-                              setValueEmp([e.value]);
-                              CheckNoticePeriod(e.value);
-                              TemplateDropdownsValue(
-                                templateCreationValue,
+                          <div
+                            onPaste={(e) =>
+                              handlePasteForEmp(
                                 e,
-                                documentPrepartion
-                              );
-                              IdentifyUserCode(e);
-                              setEmployeeControlPanel(e);
-                              setChecking("");
-                              setProductionDateStatus("");
-                              setAttendanceDateStatus("");
-                              setAttendanceMonthStatus("");
-                              setProductionMonthStatus("");
-                            }}
-                          />
+                                DocumentNeed ? "multi" : "single"
+                              )
+                            }
+                            style={{ position: "relative" }}
+                          >
+                            <Selects
+                              maxMenuHeight={300}
+                              options={employeenames}
+                              value={{
+                                label: documentPrepartion.person,
+                                value: documentPrepartion.person,
+                              }}
+                              onChange={(e) => {
+                                setDocumentPrepartion({
+                                  ...documentPrepartion,
+                                  person: e.value,
+                                  sign: "Please Select Signature",
+                                  signature: "Please Select Signature",
+                                  seal: "Please Select Seal",
+                                  sealing: "Please Select Seal",
+                                  sort: "Please Select Sort",
+                                });
+
+                                setEmployeeValue(e.value);
+                                setEmployeeUserName(e.username);
+                                setallPasteNames([e.value]);
+                                setValueEmp([e.value]);
+                                CheckNoticePeriod(e.value);
+                                TemplateDropdownsValue(
+                                  templateCreationValue,
+                                  e,
+                                  documentPrepartion
+                                );
+                                IdentifyUserCode(e);
+                                setEmployeeControlPanel(e);
+                                setChecking("");
+                                setProductionDateStatus("");
+                                setAttendanceDateStatus("");
+                                setAttendanceMonthStatus("");
+                                setProductionMonthStatus("");
+                              }}
+                            />
+                          </div>
                         </FormControl>
                       </Grid>
 
@@ -14921,16 +14963,29 @@ function DocumentPreparation() {
                           <Typography>
                             Person<b style={{ color: "red" }}>*</b>
                           </Typography>
-                          <MultiSelect
-                            options={employeenames}
-                            value={selectedEmployee}
-                            onChange={(e) => {
-                              handleEmployeeChange(e);
-                            }}
-                            inputValue={searchInputValue}
-                            valueRenderer={customValueRendererEmployee}
-                            labelledBy="Please Select Employee"
-                          />
+                          <div
+                            onPaste={(e) =>
+                              handlePasteForEmp(
+                                e,
+                                DocumentNeed ? "multi" : "single"
+                              )
+                            }
+                            style={{ position: "relative" }}
+                          >
+                            <MultiSelect
+                              options={employeenames}
+                              value={selectedEmployee}
+                              onChange={(e) => {
+                                handleEmployeeChange(e);
+                              }}
+                              inputValue={searchInputValue}
+                              valueRenderer={customValueRendererEmployee}
+                              labelledBy="Please Select Employee"
+                              onInputChange={(newValue) =>
+                                setSearchInputValue(newValue)
+                              }
+                            />
+                          </div>
                         </FormControl>
                       </Grid>
 
@@ -16348,7 +16403,7 @@ function DocumentPreparation() {
             <Button onClick={handleClosePreviewManual} sx={userStyle.btncancel}>
               Change
             </Button>
-            <LoadingButton
+            {/* <LoadingButton
               loading={buttonLoading}
               autoFocus
               variant="contained"
@@ -16357,7 +16412,7 @@ function DocumentPreparation() {
             >
               {" "}
               View{" "}
-            </LoadingButton>
+            </LoadingButton> */}
           </DialogActions>
         </Dialog>
       </Box>

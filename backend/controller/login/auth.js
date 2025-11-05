@@ -37603,6 +37603,8 @@ exports.getAllUserstatusAnswerDefine = catchAsyncErrors(async (req, res, next) =
     let usersstatus;
 
     try {
+        if(req?.body?.employeename){
+
         usersstatus = await User.findOne(
             { companyname: req?.body?.employeename },
             {
@@ -37697,6 +37699,8 @@ exports.getAllUserstatusAnswerDefine = catchAsyncErrors(async (req, res, next) =
 
             }
         );
+        
+        }
     } catch (err) {
         return next(new ErrorHandler("Records not found!", 404));
     }

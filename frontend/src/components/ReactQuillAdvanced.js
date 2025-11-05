@@ -376,99 +376,130 @@ const ReactQuillAdvanced = ({
     },
   ];
 
-  const handleCopy = () => {
-    if (disabled) return;
-    const quill = quillRef.current.getEditor();
-    const selection = quill.getSelection();
-    if (selection) {
-      const text = quill.getText(selection.index, selection.length);
-      navigator.clipboard.writeText(text);
-    }
-  };
+  // const handleCopy = () => {
+  //   if (disabled) return;
+  //   const quill = quillRef.current.getEditor();
+  //   const selection = quill.getSelection();
+  //   if (selection) {
+  //     const text = quill.getText(selection.index, selection.length);
+  //     navigator.clipboard.writeText(text);
+  //   }
+  // };
 
+  const editorRef = useRef();
+  /** ✅ Fallback copy for older browsers */
   const fallbackCopy = (text) => {
-    // Create a hidden textarea element
     const textarea = document.createElement("textarea");
     textarea.value = text;
-
-    // Prevent scroll and visual disruption
     textarea.style.position = "fixed";
     textarea.style.top = "0";
     textarea.style.left = "0";
     textarea.style.width = "1px";
     textarea.style.height = "1px";
-    textarea.style.padding = "0";
-    textarea.style.border = "none";
-    textarea.style.outline = "none";
-    textarea.style.boxShadow = "none";
-    textarea.style.background = "transparent";
-
+    textarea.style.opacity = "0";
     document.body.appendChild(textarea);
     textarea.focus();
     textarea.select();
 
     try {
-      const successful = document.execCommand("copy");
-      if (successful) {
-        console.log("Fallback: Copying text command was successful");
-      } else {
-        console.warn("Fallback: Copying text command was unsuccessful");
-      }
+      document.execCommand("copy");
+      console.log("Fallback: Copying text command was successful");
     } catch (err) {
       console.error("Fallback: Unable to copy", err);
     }
 
-    // Cleanup
     document.body.removeChild(textarea);
   };
 
-  const handleCut = () => {
+  /** ✅ Copy selected text */
+  const handleCopy = () => {
     if (disabled) return;
-    const quill = quillRef.current.getEditor();
-    const selection = quill.getSelection();
+    const editor = editorRef.current?.editor;
+    if (!editor) return;
 
-    if (!selection || selection.length === 0) return;
+    const selectedText = editor.getSelectedText();
+    if (!selectedText) return;
 
-    const text = quill.getText(selection.index, selection.length);
-
-    // Try Clipboard API
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard
-        .writeText(text)
-        .then(() => {
-          quill.deleteText(selection.index, selection.length, "user"); // 👈 Add 'user'
-        })
-        .catch((err) => {
-          console.error("Clipboard API failed:", err);
-          fallbackCopy(text);
-          quill.deleteText(selection.index, selection.length, "user"); // 👈 Add 'user'
-        });
+        .writeText(selectedText)
+        .catch(() => fallbackCopy(selectedText));
     } else {
-      fallbackCopy(text);
-      quill.deleteText(selection.index, selection.length, "user"); // 👈 Add 'user'
+      fallbackCopy(selectedText);
     }
   };
 
+  /** ✅ Cut selected text */
+  const handleCut = () => {
+    if (disabled) return;
+    const editor = editorRef.current?.editor;
+    if (!editor) return;
+
+    const selectedText = editor.getSelectedText();
+    if (!selectedText) return;
+
+    const copyThenDelete = () => {
+      // Remove selected text (preserve formatting cleanup)
+      document.execCommand("delete");
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(selectedText)
+        .then(copyThenDelete)
+        .catch((err) => {
+          console.error("Clipboard API failed:", err);
+          fallbackCopy(selectedText);
+          copyThenDelete();
+        });
+    } else {
+      fallbackCopy(selectedText);
+      copyThenDelete();
+    }
+  };
+
+  /** ✅ Paste clipboard text at cursor */
   const handlePaste = async () => {
     if (disabled) return;
-    const quill = quillRef.current.getEditor();
-    const clipboardText = await navigator.clipboard.readText();
-    const range = quill.getSelection(true);
-    quill.insertText(range.index, clipboardText);
+    const editor = editorRef.current?.editor;
+    if (!editor) return;
+
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (clipboardText) {
+        // Insert text at the cursor position
+        document.execCommand("insertText", false, clipboardText);
+      }
+    } catch (err) {
+      console.error("Clipboard paste failed:", err);
+    }
   };
 
   const handleReplace = () => {
-    if (!disabled) {
-      const quill = quillRef.current.getEditor();
-      const content = quill.root.innerHTML;
-      if (!searchTerm) return alert("Enter text to search.");
+    if (disabled) return;
 
-      const regex = new RegExp(searchTerm, "gi");
-      const replacedContent = content.replace(regex, replaceTerm);
-      quill.clipboard.dangerouslyPasteHTML(replacedContent);
-      setAgenda(replacedContent);
+    const editor = editorRef.current?.editor; // ✅ Get SunEditor instance
+    console.log(editor, "editor");
+    if (!editor) return;
+
+    const content = editor.getContents(); // ✅ Get full HTML content
+    console.log(content, "content");
+    if (!searchTerm) {
+      alert("Enter text to search.");
+      return;
     }
 
+    // Replace all case-insensitive matches
+    const regex = new RegExp(searchTerm, "gi");
+    const replacedContent = content.replace(regex, replaceTerm);
+
+    // ✅ Update SunEditor content
+    editor.setContents(replacedContent);
+
+    // ✅ Update your state if needed
+    setAgenda(replacedContent);
+
+    // ✅ Reset input fields
     setSearchTerm("");
     setReplaceTerm("");
   };
@@ -844,7 +875,7 @@ const ReactQuillAdvanced = ({
 
     newWin.document.close();
   };
-
+console.log(agenda , "editor Ref")
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [fileTypeToExport, setFileTypeToExport] = useState(null);
   const handleOpenDialog = (type) => {
@@ -883,17 +914,14 @@ const ReactQuillAdvanced = ({
   };
 
   const handleInsertPageBreak = () => {
-    const quill = quillRef.current?.getEditor();
-    const range = quill?.getSelection();
+    const pageBreakHtml = `
+    <p data-page-break="true"
+       style="text-align:center; border-top:1px dashed #999; margin:20px 0; color:#999;">
+       --- Page Break ---
+    </p><p><br/></p>
+  `;
 
-    if (range) {
-      const pageBreakHtml =
-        '<p data-page-break="true" style="text-align:center; border-top:1px dashed #999; margin:20px 0; color:#999;">--- Page Break ---</p><p><br/></p>';
-
-      quill.clipboard.dangerouslyPasteHTML(range.index, pageBreakHtml, "user");
-
-      quill.setSelection(range.index + 1);
-    }
+    setAgenda((prev) => `${prev || ""}${pageBreakHtml}`);
   };
 
   return (
@@ -1424,6 +1452,7 @@ const ReactQuillAdvanced = ({
             spellCheck: true,
             height: 300,
           }}
+          ref={editorRef}
           style={{ height: "100%" }}
         />
 

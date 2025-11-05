@@ -1206,6 +1206,8 @@ function DocumentsPrintedStatusList() {
               email: item.email,
               printingstatus: item.printingstatus,
               employeemode: item.employeemode,
+              header: item.header,
+              footer: item.footer,
               department:
                 item.department === "Please Select Department"
                   ? ""
@@ -3634,6 +3636,8 @@ function DocumentsPrintedStatusList() {
       email: item.email,
       referenceno: item.referenceno,
       templateno: item.templateno,
+      header: item.header,
+      footer: item.footer,
       template: item.template,
       printingstatus: item.printingstatus,
       employeemode: item.employeemode,

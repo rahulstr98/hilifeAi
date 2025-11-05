@@ -1713,7 +1713,7 @@ function TemplateCreation() {
       sendEditRequest();
     }
   };
-  console.log(agendaEdit, "agendaEdit");
+  console.log(agenda, "agendaEdit");
   //get all brand master name.
   const fetchBrandMaster = async () => {
     const accessbranchs = accessbranch

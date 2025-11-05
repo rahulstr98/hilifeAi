@@ -29,10 +29,7 @@ const templatecontrolpanelSchema = new Schema({
     },
   ],
 
-  letterheadcontentfooter: {
-    footername: String,
-    footerimage: fileSchema,
-  },
+  letterheadcontentfooter: [{ footername: String, footerimage: fileSchema }],
 
   qrInfo: [{ details: String }],
 
