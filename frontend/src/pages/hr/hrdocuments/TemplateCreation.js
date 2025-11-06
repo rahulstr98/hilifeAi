@@ -63,7 +63,7 @@ import ImageResize from "quill-image-resize-module-react";
 import html2pdf from "html2pdf.js";
 import { asBlob } from "html-docx-js-typescript";
 import html2canvas from "html2canvas";
-import ReactQuillAdvanced from "../../../components/ReactQuillAdvanced.js";
+import ReactNewtextEditor from "../../../components/ReactNewtextEditor.js";
 import { getCurrentServerTime } from "../../../components/getCurrentServerTime";
 
 function TemplateCreation() {
@@ -2284,7 +2284,7 @@ function TemplateCreation() {
                       });
                       setSelectedEmpModeOptions([]);
                       setValueEmpModeOptions([]);
-                      setSelectedTermsAndCondtionOptions([])
+                      setSelectedTermsAndCondtionOptions([]);
                     }}
                   />
                 </FormControl>
@@ -2592,7 +2592,7 @@ function TemplateCreation() {
                   <Typography>
                     Page Format <b style={{ color: "red" }}>*</b>
                   </Typography>
-                  <ReactQuillAdvanced
+                  <ReactNewtextEditor
                     agenda={agenda}
                     setAgenda={setAgenda}
                     disabled={false}
@@ -3127,7 +3127,7 @@ function TemplateCreation() {
               <Grid item md={12} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography variant="h6">Page Format</Typography>
-                  <ReactQuillAdvanced
+                  <ReactNewtextEditor
                     agenda={agendaEdit}
                     setAgenda={undefined}
                     disabled={true}
@@ -3707,8 +3707,8 @@ function TemplateCreation() {
                     <Typography>
                       Page Format <b style={{ color: "red" }}>*</b>
                     </Typography>
-                    {/* <ReactQuillAdvanced agenda={agendaEdit} setAgenda={setAgendaEdit} /> */}
-                    <ReactQuillAdvanced
+                    {/* <ReactNewtextEditor agenda={agendaEdit} setAgenda={setAgendaEdit} /> */}
+                    <ReactNewtextEditor
                       agenda={agendaEdit}
                       setAgenda={setAgendaEdit}
                       disabled={false}

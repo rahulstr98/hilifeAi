@@ -195,7 +195,7 @@ const smallSelectStyle = {
   },
 };
 
-const ReactQuillAdvanced = ({
+const ReactNewtextEditor = ({
   agenda,
   setAgenda,
   disabled = false,
@@ -1562,4 +1562,4 @@ const ReactQuillAdvanced = ({
   );
 };
 
-export default ReactQuillAdvanced;
+export default ReactNewtextEditor;

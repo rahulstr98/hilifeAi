@@ -100,6 +100,7 @@ const keywordData = [
   { id: 64, keyword: "$USER_NOTICE_PERIOD_ENDDATE$", instruction: "It denotes endDate of user's notice period for Employee Document at Date of Joining." },
   { id: 65, keyword: "$USER_NOTICE_PERIOD_STATUS$", instruction: "It denotes status of user's notice period for Employee Document at Date of Joining." },
   { id: 66, keyword: "$M:TIME$", instruction: "It denotes Manual Time for Employee Document." },
+  { id: 67, keyword: "$PAGE_BREAK$", instruction: "It makes content to the next page for Employee Document." },
 ];
 
 

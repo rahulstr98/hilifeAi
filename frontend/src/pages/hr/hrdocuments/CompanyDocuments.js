@@ -79,7 +79,7 @@ import MessageAlert from "../../../components/MessageAlert";
 import AggregatedSearchBar from "../../../components/AggregatedSearchBar";
 import AggridTable from "../../../components/AggridTable";
 import domtoimage from "dom-to-image";
-import ReactQuillAdvanced from "../../../components/ReactQuillAdvanced.js";
+import ReactNewtextEditor from "../../../components/ReactNewtextEditor.js";
 import { getCurrentServerTime } from "../../../components/getCurrentServerTime";
 
 const Loader = ({ loading, message }) => {
@@ -1492,6 +1492,7 @@ function CompanyDocuments() {
           "$T.COMPANY$",
           documentPrepartion?.tocompany ? documentPrepartion?.tocompany : ""
         )
+        .replaceAll("$PAGE_BREAK$", "--- Page Break ---")
         .replaceAll(
           "$T.COMPANYADDRESS$",
           toCompanyAddressData ? toCompanyAddressData : ""
@@ -1626,24 +1627,48 @@ function CompanyDocuments() {
     // Add custom styles to the PDF content
     const styleElement = document.createElement("style");
     styleElement.textContent = `
-      .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-      .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-      .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-      .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-      .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-      .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-      .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-      .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-      .ql-align-right { text-align: right; } 
-      .ql-align-left { text-align: left; } 
-      .ql-align-center { text-align: center; } 
-      .ql-align-justify { text-align: justify; } 
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
       .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-    `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
     pdfElement.appendChild(styleElement);
 
@@ -1878,24 +1903,48 @@ function CompanyDocuments() {
     // Add custom styles to the PDF content
     const styleElement = document.createElement("style");
     styleElement.textContent = `
-      .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-      .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-      .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-      .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-      .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-      .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-      .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-      .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-      .ql-align-right { text-align: right; } 
-      .ql-align-left { text-align: left; } 
-      .ql-align-center { text-align: center; } 
-      .ql-align-justify { text-align: justify; } 
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
       .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-    `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
     pdfElement.appendChild(styleElement);
 
@@ -2464,15 +2513,15 @@ function CompanyDocuments() {
     // Add custom styles to the PDF content
     const styleElement = document.createElement("style");
     styleElement.textContent = `
-      .ql-indent-1 { margin-left: 75px; }
-      .ql-indent-2 { margin-left: 150px; }
-      .ql-indent-3 { margin-left: 225px; }
-      .ql-indent-4 { margin-left: 275px; }
-      .ql-indent-5 { margin-left: 325px; }
-      .ql-indent-6 { margin-left: 375px; }
-      .ql-indent-7 { margin-left: 425px; }
-      .ql-indent-8 { margin-left: 475px; }
-      .ql-align-right { text-align: right; }
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+                  .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
       .ql-align-justify { text-align: justify; }
@@ -2481,7 +2530,31 @@ function CompanyDocuments() {
     break-before: page;
     margin: 20px 0;
   }
-    `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
     pdfElement.appendChild(styleElement);
 
@@ -2700,24 +2773,48 @@ function CompanyDocuments() {
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
       styleElement.textContent = `
-        .ql-indent-1 { margin-left: 75px; }
-        .ql-indent-2 { margin-left: 150px; }
-        .ql-indent-3 { margin-left: 225px; }
-        .ql-indent-4 { margin-left: 275px; }
-        .ql-indent-5 { margin-left: 325px; }
-        .ql-indent-6 { margin-left: 375px; }
-        .ql-indent-7 { margin-left: 425px; }
-        .ql-indent-8 { margin-left: 475px; }
-      .ql-align-right { text-align: right; } 
-      .ql-align-left { text-align: left; } 
-      .ql-align-center { text-align: center; } 
-      .ql-align-justify { text-align: justify; } 
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
       .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-      `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
       pdfElement.appendChild(styleElement);
 
       // Create a watermark element
@@ -2972,24 +3069,48 @@ function CompanyDocuments() {
           // Add custom styles to the PDF content
           const styleElement = document.createElement("style");
           styleElement.textContent = `
-   .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-   .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-   .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-   .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-   .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-   .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-   .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-   .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-   .ql-align-right { text-align: right; } 
-   .ql-align-left { text-align: left; } 
-   .ql-align-center { text-align: center; } 
-   .ql-align-justify { text-align: justify; } 
-   .page-break-label {
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
- `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
           pdfElement.appendChild(styleElement);
 
@@ -3258,24 +3379,48 @@ function CompanyDocuments() {
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
       styleElement.textContent = `
-     .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-     .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-     .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-     .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-     .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-     .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-     .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-     .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-     .ql-align-right { text-align: right; } 
-     .ql-align-left { text-align: left; } 
-     .ql-align-center { text-align: center; } 
-     .ql-align-justify { text-align: justify; } 
-     .page-break-label {
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-   `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
       pdfElement.appendChild(styleElement);
 
@@ -3519,24 +3664,48 @@ function CompanyDocuments() {
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
       styleElement.textContent = `
-         .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-         .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-         .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-         .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-         .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-         .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-         .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-         .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-         .ql-align-right { text-align: right; } 
-         .ql-align-left { text-align: left; } 
-         .ql-align-center { text-align: center; } 
-         .ql-align-justify { text-align: justify; } 
-         .page-break-label {
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-       `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
       pdfElement.appendChild(styleElement);
 
@@ -5198,7 +5367,7 @@ function CompanyDocuments() {
                                             formats={["header", "font", "size", "bold", "italic", "underline", "strike", "align", "blockquote", "list", "bullet", "indent", "link", "image", "video"]}
                                         /> */}
 
-                    <ReactQuillAdvanced
+                    <ReactNewtextEditor
                       agenda={checking}
                       setAgenda={undefined}
                       disabled={true}
@@ -5790,7 +5959,7 @@ function CompanyDocuments() {
                                         formats={["header", "font", "size", "bold", "italic", "underline", "strike", "blockquote", "align", "list", "bullet", "indent", "link", "image", "video"]} 
                                         /> */}
 
-                  <ReactQuillAdvanced
+                  <ReactNewtextEditor
                     agenda={documentPreparationEdit.document}
                     setAgenda={undefined}
                     disabled={true}

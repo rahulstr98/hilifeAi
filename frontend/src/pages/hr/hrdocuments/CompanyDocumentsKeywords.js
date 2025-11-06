@@ -1,10 +1,37 @@
-import React, { useContext, useState, useRef, useEffect } from 'react';
-import { userStyle } from '../../../pageStyle';
-import { Box, Typography, OutlinedInput, TableBody, TableRow, TableCell, Select, Paper, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, FormControl, Grid, Table, TableHead, TableContainer, Button, List, ListItem, ListItemText, Popover, Checkbox, TextField, IconButton } from "@mui/material";
-import { StyledTableRow, StyledTableCell } from '../../../components/Table';
-import 'jspdf-autotable';
-import Headtitle from '../../../components/Headtitle';
-import { UserRoleAccessContext } from '../../../context/Appcontext';
+import React, { useContext, useState, useRef, useEffect } from "react";
+import { userStyle } from "../../../pageStyle";
+import {
+  Box,
+  Typography,
+  OutlinedInput,
+  TableBody,
+  TableRow,
+  TableCell,
+  Select,
+  Paper,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  Grid,
+  Table,
+  TableHead,
+  TableContainer,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  Popover,
+  Checkbox,
+  TextField,
+  IconButton,
+} from "@mui/material";
+import { StyledTableRow, StyledTableCell } from "../../../components/Table";
+import "jspdf-autotable";
+import Headtitle from "../../../components/Headtitle";
+import { UserRoleAccessContext } from "../../../context/Appcontext";
 import AggregatedSearchBar from "../../../components/AggregatedSearchBar";
 import AggridTable from "../../../components/AggridTable";
 import CloseIcon from "@mui/icons-material/Close";
@@ -32,25 +59,85 @@ function CompanyDocumentsKeywords() {
     return ""; // Return an empty string for other rows
   };
 
-const keywordData = [
-  { id: 1, keyword: "$F.COMPANY$", instruction: "It denotes the From Company Name of Company Document." },
-  { id: 2, keyword: "$F.BRANCH$", instruction: "It denotes the From Branch Name of Company Document." },
-  { id: 3, keyword: "$F.BRANCHADDRESS$", instruction: "It denotes the From Branch Address of Company Document." },
-  { id: 4, keyword: "$T.COMPANY$", instruction: "It denotes the To Company Name of Company Document." },
-  { id: 5, keyword: "$T.COMPANYADDRESS$", instruction: "It denotes the To Company Address of Company Document." },
-  { id: 6, keyword: "$C:DATE$", instruction: "It denotes the Current Date" },
-  { id: 7, keyword: "$C:TIME$", instruction: "It denotes the Current Time" },
-  { id: 8, keyword: "$SIGNATURE$", instruction: "It denotes the Signature of the person" },
-  { id: 9, keyword: "$FSIGNATURE$", instruction: "It denotes the For Seal with an Signature of the Document" },
-  { id: 10, keyword: "$RSEAL$", instruction: "It denotes the Round Seal of the Document" },
-  { id: 11, keyword: "$UNIID$", instruction: "It denotes the Unique id of the Document" },
-  { id: 12, keyword: "$TEMPLATENAME$", instruction: "It denotes the Template Name for the Email format" },
-  { id: 13, keyword: "$REFERENCEID$", instruction: "It denotes the Reference ID for the Email format" },
-  { id: 14, keyword: "$COMPANYTITLE$", instruction: "It denotes the Company's title." },
-  { id: 15, keyword: "$V.BRANCHADDRESS$", instruction: "It denotes the Branch's Address that aligned vertical." },
-  { id: 16, keyword: "$H.BRANCHADDRESS$", instruction: "It denotes the Branch's Address that aligned horizontal." },
-];
-
+  const keywordData = [
+    {
+      id: 1,
+      keyword: "$F.COMPANY$",
+      instruction: "It denotes the From Company Name of Company Document.",
+    },
+    {
+      id: 2,
+      keyword: "$F.BRANCH$",
+      instruction: "It denotes the From Branch Name of Company Document.",
+    },
+    {
+      id: 3,
+      keyword: "$F.BRANCHADDRESS$",
+      instruction: "It denotes the From Branch Address of Company Document.",
+    },
+    {
+      id: 4,
+      keyword: "$T.COMPANY$",
+      instruction: "It denotes the To Company Name of Company Document.",
+    },
+    {
+      id: 5,
+      keyword: "$T.COMPANYADDRESS$",
+      instruction: "It denotes the To Company Address of Company Document.",
+    },
+    { id: 6, keyword: "$C:DATE$", instruction: "It denotes the Current Date" },
+    { id: 7, keyword: "$C:TIME$", instruction: "It denotes the Current Time" },
+    {
+      id: 8,
+      keyword: "$SIGNATURE$",
+      instruction: "It denotes the Signature of the person",
+    },
+    {
+      id: 9,
+      keyword: "$FSIGNATURE$",
+      instruction: "It denotes the For Seal with an Signature of the Document",
+    },
+    {
+      id: 10,
+      keyword: "$RSEAL$",
+      instruction: "It denotes the Round Seal of the Document",
+    },
+    {
+      id: 11,
+      keyword: "$UNIID$",
+      instruction: "It denotes the Unique id of the Document",
+    },
+    {
+      id: 12,
+      keyword: "$TEMPLATENAME$",
+      instruction: "It denotes the Template Name for the Email format",
+    },
+    {
+      id: 13,
+      keyword: "$REFERENCEID$",
+      instruction: "It denotes the Reference ID for the Email format",
+    },
+    {
+      id: 14,
+      keyword: "$COMPANYTITLE$",
+      instruction: "It denotes the Company's title.",
+    },
+    {
+      id: 15,
+      keyword: "$V.BRANCHADDRESS$",
+      instruction: "It denotes the Branch's Address that aligned vertical.",
+    },
+    {
+      id: 16,
+      keyword: "$H.BRANCHADDRESS$",
+      instruction: "It denotes the Branch's Address that aligned horizontal.",
+    },
+    {
+      id: 17,
+      keyword: "$PAGE_BREAK$",
+      instruction: "It makes content to the next page for Company Document.",
+    },
+  ];
 
   const [items, setItems] = useState(keywordData);
 
@@ -76,9 +163,10 @@ const keywordData = [
     keyword: true,
     instruction: true,
   };
-  const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
+  const [columnVisibility, setColumnVisibility] = useState(
+    initialColumnVisibility
+  );
   const columnDataTable = [
-
     {
       field: "serialNumber",
       headerName: "SNo",
@@ -103,29 +191,32 @@ const keywordData = [
       hide: !columnVisibility.instruction,
       headerClassName: "bold-header",
     },
-
-
   ];
-
 
   // Split the search query into individual terms
   const searchTerms = searchQuery.toLowerCase().split(" ");
   // Modify the filtering logic to check each term
   const filteredDatas = items?.filter((item) => {
-    return searchTerms.every((term) => Object.values(item).join(" ").toLowerCase().includes(term));
+    return searchTerms.every((term) =>
+      Object.values(item).join(" ").toLowerCase().includes(term)
+    );
   });
 
-  const filteredData = filteredDatas?.slice((page - 1) * pageSize, page * pageSize);
+  const filteredData = filteredDatas?.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
   const totalPages = Math.ceil(filteredDatas?.length / pageSize);
   const visiblePages = Math.min(totalPages, 3);
   const firstVisiblePage = Math.max(1, page - 1);
-  const lastVisiblePage = Math.min(firstVisiblePage + visiblePages - 1, totalPages);
+  const lastVisiblePage = Math.min(
+    firstVisiblePage + visiblePages - 1,
+    totalPages
+  );
   const pageNumbers = [];
   for (let i = firstVisiblePage; i <= lastVisiblePage; i++) {
     pageNumbers.push(i);
   }
-
-
 
   const rowDataTable = filteredData.map((item, index) => {
     return {
@@ -135,7 +226,7 @@ const keywordData = [
       instruction: item.instruction,
     };
   });
-    console.log(rowDataTable , 'RowData')
+  console.log(rowDataTable, "RowData");
   // Manage Columns
   const handleOpenManageColumns = (event) => {
     setAnchorEl(event.currentTarget);
@@ -154,7 +245,9 @@ const keywordData = [
     setColumnVisibility(updatedVisibility);
   };
   // Function to filter columns based on search query
-  const filteredColumns = columnDataTable.filter((column) => column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase()));
+  const filteredColumns = columnDataTable.filter((column) =>
+    column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase())
+  );
   // Manage Columns functionality
   const toggleColumnVisibility = (field) => {
     setColumnVisibility((prevVisibility) => ({
@@ -184,15 +277,37 @@ const keywordData = [
         <CloseIcon />
       </IconButton>
       <Box sx={{ position: "relative", margin: "10px" }}>
-        <TextField label="Find column" variant="standard" fullWidth value={searchQueryManage} onChange={(e) => setSearchQueryManage(e.target.value)} sx={{ marginBottom: 5, position: "absolute" }} />
+        <TextField
+          label="Find column"
+          variant="standard"
+          fullWidth
+          value={searchQueryManage}
+          onChange={(e) => setSearchQueryManage(e.target.value)}
+          sx={{ marginBottom: 5, position: "absolute" }}
+        />
       </Box>
       <br />
       <br />
-      <DialogContent sx={{ minWidth: "auto", height: "200px", position: "relative" }}>
+      <DialogContent
+        sx={{ minWidth: "auto", height: "200px", position: "relative" }}
+      >
         <List sx={{ overflow: "auto", height: "100%" }}>
           {filteredColumns.map((column) => (
             <ListItem key={column.field}>
-              <ListItemText sx={{ display: "flex" }} primary={<Switch sx={{ marginTop: "-5px" }} size="small" checked={columnVisibility[column.field]} onChange={() => toggleColumnVisibility(column.field)} />} secondary={column.field === "checkbox" ? "Checkbox" : column.headerName} />
+              <ListItemText
+                sx={{ display: "flex" }}
+                primary={
+                  <Switch
+                    sx={{ marginTop: "-5px" }}
+                    size="small"
+                    checked={columnVisibility[column.field]}
+                    onChange={() => toggleColumnVisibility(column.field)}
+                  />
+                }
+                secondary={
+                  column.field === "checkbox" ? "Checkbox" : column.headerName
+                }
+              />
             </ListItem>
           ))}
         </List>
@@ -200,7 +315,11 @@ const keywordData = [
       <DialogActions>
         <Grid container>
           <Grid item md={4}>
-            <Button variant="text" sx={{ textTransform: "none" }} onClick={() => setColumnVisibility(initialColumnVisibility)}>
+            <Button
+              variant="text"
+              sx={{ textTransform: "none" }}
+              onClick={() => setColumnVisibility(initialColumnVisibility)}
+            >
               {" "}
               Show All
             </Button>
@@ -228,13 +347,17 @@ const keywordData = [
   );
   return (
     <Box>
-      <Headtitle title={'COMPANY DOCUMENTS KEYWORDS'} />
-      <Typography sx={userStyle.HeaderText}>Company Documents Keyword Instructions</Typography>
+      <Headtitle title={"COMPANY DOCUMENTS KEYWORDS"} />
+      <Typography sx={userStyle.HeaderText}>
+        Company Documents Keyword Instructions
+      </Typography>
       {/* ****** Instructions Box ****** */}
-      {isUserRoleCompare?.includes('lcompanydocumentskeywords') && (
+      {isUserRoleCompare?.includes("lcompanydocumentskeywords") && (
         <Box sx={userStyle.selectcontainer}>
           <Grid item xs={8}>
-            <Typography sx={userStyle.importheadtext}>Company Documents keywords List</Typography>
+            <Typography sx={userStyle.importheadtext}>
+              Company Documents keywords List
+            </Typography>
           </Grid>
           <Grid container spacing={2} style={userStyle.dataTablestyle}>
             <Grid item md={2} xs={12} sm={12}>
