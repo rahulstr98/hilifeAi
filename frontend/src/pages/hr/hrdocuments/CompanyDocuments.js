@@ -1635,6 +1635,26 @@ function CompanyDocuments() {
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
                   .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
@@ -1911,6 +1931,26 @@ function CompanyDocuments() {
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
                   .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
@@ -2249,6 +2289,26 @@ function CompanyDocuments() {
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
                   .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
@@ -2521,6 +2581,26 @@ function CompanyDocuments() {
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
+              /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
                   .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
@@ -2781,6 +2861,26 @@ function CompanyDocuments() {
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
                   .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
@@ -3077,6 +3177,26 @@ function CompanyDocuments() {
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
+              /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
                   .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
@@ -3387,6 +3507,26 @@ function CompanyDocuments() {
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
+              /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
                   .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
@@ -3672,6 +3812,26 @@ function CompanyDocuments() {
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
+                /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
                   .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
@@ -5136,6 +5296,9 @@ function CompanyDocuments() {
                         setSignature("");
                         setChecking("");
                         setTemplateCreationValue(e);
+                        setSelectedMargin(e.marginQuill);
+                        setPageSizeQuill(e.pagesizeQuill);
+                        setPageOrientation(e.orientationQuill);
                         TemplateDropdownsValue(
                           documentPrepartion?.company,
                           documentPrepartion?.branch,

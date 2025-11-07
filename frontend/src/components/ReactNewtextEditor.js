@@ -195,6 +195,97 @@ const smallSelectStyle = {
   },
 };
 
+// Common CSS for all export types
+const globalExportStyles = `
+  /* --- Indentation --- */
+  .ql-indent-1 { margin-left: 75px; }
+  .ql-indent-2 { margin-left: 150px; }
+  .ql-indent-3 { margin-left: 225px; }
+  .ql-indent-4 { margin-left: 275px; }
+  .ql-indent-5 { margin-left: 325px; }
+  .ql-indent-6 { margin-left: 375px; }
+  .ql-indent-7 { margin-left: 425px; }
+  .ql-indent-8 { margin-left: 475px; }
+
+  /* --- Alignment --- */
+  .ql-align-right { text-align: right; }
+  .ql-align-left { text-align: left; }
+  .ql-align-center { text-align: center; }
+  .ql-align-justify { text-align: justify; }
+
+  /* --- Page break --- */
+  .page-break-label {
+    page-break-before: always;
+    break-before: page;
+    margin: 20px 0;
+  }
+
+  /* --- Code badge look --- */
+  .__se__t-code {
+    display: inline-block;
+    background: #f3f3f3;
+    color: #222;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+  }
+
+  /* --- Shadow text --- */
+  .__se__t-shadow {
+    font-weight: 600;
+    color: #000;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  }
+
+  /* --- Table formatting --- */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+    vertical-align: top;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+  /* --- Lists --- */
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  /* --- Text decorations --- */
+  s, del {
+    text-decoration: line-through;
+    color: #555;
+  }
+
+  u {
+    text-decoration: underline;
+  }
+
+  strong {
+    font-weight: bold;
+  }
+
+  em {
+    font-style: italic;
+  }
+`;
+
 const ReactNewtextEditor = ({
   agenda,
   setAgenda,
@@ -214,83 +305,6 @@ const ReactNewtextEditor = ({
   const [dragOver, setDragOver] = useState(false);
   const [imageItem, setImageItem] = useState(null);
   const fileInputRef = useRef(null);
-
-  const handleSelectImage = (e) => {
-    const file = e.target.files[0];
-    if (!file || !file.type.startsWith("image/")) return;
-    const preview = URL.createObjectURL(file);
-    setImageItem({
-      file,
-      name: file.name,
-      preview,
-      width: 300,
-      height: 200,
-      x: 0,
-      y: 0,
-    });
-    e.target.value = "";
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setDragOver(true);
-  };
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    setDragOver(false);
-  };
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragOver(false);
-    const file = e.dataTransfer.files[0];
-    if (!file || !file.type.startsWith("image/")) return;
-    const preview = URL.createObjectURL(file);
-    setImageItem({
-      file,
-      name: file.name,
-      preview,
-      width: 300,
-      height: 200,
-      x: 0,
-      y: 0,
-    });
-  };
-
-  const removeImage = () => {
-    if (imageItem?.preview) URL.revokeObjectURL(imageItem.preview);
-    setImageItem(null);
-  };
-
-  // -------------------------
-  // Insert into Quill
-  // -------------------------
-  const handleInsertImage = () => {
-    if (!imageItem) return;
-
-    const { width, height, preview } = imageItem;
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext("2d");
-
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, width, height);
-      const dataUrl = canvas.toDataURL("image/png");
-
-      const quill = quillRef?.current?.getEditor?.();
-      if (quill) {
-        const range = quill.getSelection(true) || { index: quill.getLength() };
-        quill.insertEmbed(range.index, "image", dataUrl, "user");
-        quill.setSelection((range.index || 0) + 1, 0);
-      }
-
-      setIsModalOpen(false);
-      removeImage();
-    };
-    img.src = preview;
-  };
 
   const [editorFocused, setEditorFocused] = useState(false);
   const jsPDFPageDimensions = {
@@ -387,122 +401,6 @@ const ReactNewtextEditor = ({
   // };
 
   const editorRef = useRef();
-  /** ✅ Fallback copy for older browsers */
-  const fallbackCopy = (text) => {
-    const textarea = document.createElement("textarea");
-    textarea.value = text;
-    textarea.style.position = "fixed";
-    textarea.style.top = "0";
-    textarea.style.left = "0";
-    textarea.style.width = "1px";
-    textarea.style.height = "1px";
-    textarea.style.opacity = "0";
-    document.body.appendChild(textarea);
-    textarea.focus();
-    textarea.select();
-
-    try {
-      document.execCommand("copy");
-      console.log("Fallback: Copying text command was successful");
-    } catch (err) {
-      console.error("Fallback: Unable to copy", err);
-    }
-
-    document.body.removeChild(textarea);
-  };
-
-  /** ✅ Copy selected text */
-  const handleCopy = () => {
-    if (disabled) return;
-    const editor = editorRef.current?.editor;
-    if (!editor) return;
-
-    const selectedText = editor.getSelectedText();
-    if (!selectedText) return;
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard
-        .writeText(selectedText)
-        .catch(() => fallbackCopy(selectedText));
-    } else {
-      fallbackCopy(selectedText);
-    }
-  };
-
-  /** ✅ Cut selected text */
-  const handleCut = () => {
-    if (disabled) return;
-    const editor = editorRef.current?.editor;
-    if (!editor) return;
-
-    const selectedText = editor.getSelectedText();
-    if (!selectedText) return;
-
-    const copyThenDelete = () => {
-      // Remove selected text (preserve formatting cleanup)
-      document.execCommand("delete");
-    };
-
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard
-        .writeText(selectedText)
-        .then(copyThenDelete)
-        .catch((err) => {
-          console.error("Clipboard API failed:", err);
-          fallbackCopy(selectedText);
-          copyThenDelete();
-        });
-    } else {
-      fallbackCopy(selectedText);
-      copyThenDelete();
-    }
-  };
-
-  /** ✅ Paste clipboard text at cursor */
-  const handlePaste = async () => {
-    if (disabled) return;
-    const editor = editorRef.current?.editor;
-    if (!editor) return;
-
-    try {
-      const clipboardText = await navigator.clipboard.readText();
-      if (clipboardText) {
-        // Insert text at the cursor position
-        document.execCommand("insertText", false, clipboardText);
-      }
-    } catch (err) {
-      console.error("Clipboard paste failed:", err);
-    }
-  };
-
-  const handleReplace = () => {
-    if (disabled) return;
-
-    const editor = editorRef.current?.editor; // ✅ Get SunEditor instance
-    console.log(editor, "editor");
-    if (!editor) return;
-
-    const content = editor.getContents(); // ✅ Get full HTML content
-    console.log(content, "content");
-    if (!searchTerm) {
-      alert("Enter text to search.");
-      return;
-    }
-
-    // Replace all case-insensitive matches
-    const regex = new RegExp(searchTerm, "gi");
-    const replacedContent = content.replace(regex, replaceTerm);
-
-    // ✅ Update SunEditor content
-    editor.setContents(replacedContent);
-
-    // ✅ Update your state if needed
-    setAgenda(replacedContent);
-
-    // ✅ Reset input fields
-    setSearchTerm("");
-    setReplaceTerm("");
-  };
 
   const handleMarginChange = (event) => {
     if (disabled) return;
@@ -514,8 +412,10 @@ const ReactNewtextEditor = ({
     return parseFloat(px) * 0.264583;
   }
 
+  /* ---------------------------- EXPORT TO PDF ---------------------------- */
   const exportToPDF = (fileName = "document") => {
     const elementHTML = agenda;
+
     const styles = Array.from(
       document.querySelectorAll('link[rel="stylesheet"], style')
     )
@@ -526,7 +426,7 @@ const ReactNewtextEditor = ({
     const selectedMarginPx = marginValues[selectedMargin] || [96, 96, 96, 96];
     const selectedMarginMm = convertPxArrayToMm(selectedMarginPx);
     const pxToIn = (px) => `${px / 96}in`;
-    // Create a hidden iframe for rendering
+
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
     document.body.appendChild(iframe);
@@ -534,86 +434,107 @@ const ReactNewtextEditor = ({
 
     doc.open();
     doc.write(`
-        <html>
-            <head>
-                <title>Export PDF</title>
-                ${styles}
-                <style>
-                    @page {
-                        size: ${pageSize} ${pageOrientation};
-                        margin: ${pxToIn(selectedMarginPx[0])} ${pxToIn(
-      selectedMarginPx[1]
-    )} ${pxToIn(selectedMarginPx[2])} ${pxToIn(selectedMarginPx[3])};
-                    }
+    <html>
+      <head>
+        <title>Export PDF</title>
+        ${styles}
+        <style>
+  ${globalExportStyles}
 
-                    body {
-                        margin: 0;
-                        padding: 0;
-                        box-sizing: border-box;
-                        background: white;
-                    }
+  @page {
+    size: ${pageSize} ${pageOrientation};
+    margin: ${pxToIn(selectedMarginPx[0])} ${pxToIn(selectedMarginPx[1])}
+            ${pxToIn(selectedMarginPx[2])} ${pxToIn(selectedMarginPx[3])};
+  }
 
-                    * {
-                        -webkit-print-color-adjust: exact;
-                        print-color-adjust: exact;
-                    }
+  body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: white;
+    font-family: Arial, sans-serif;
+  }
 
-                    .print-content {
-                        width: 100%;
-                        box-sizing: border-box;
-                        background: white;
-                    }
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
-                    .page-footer {
-                        position: fixed;
-                        bottom: 0;
-                        width: 100%;
-                        text-align: center;
-                        font-size: 12px;
-                        color: #555;
-                    }
+  .print-content {
+    width: 100%;
+    box-sizing: border-box;
+    background: white;
+  }
 
-                    .page-break {
-                        page-break-after: always;
-                    }
+  /* ✅ TABLE FIX START */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin: 8px 0;
+  }
 
-                    header, footer {
-                        display: none;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="print-content">
-                    ${elementHTML}
-                </div>
-            </body>
-        </html>
-    `);
+  th, td {
+    border: 1px solid #444;
+    padding: 8px;
+    text-align: left;
+    vertical-align: middle;
+    background: white;
+  }
+
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+  tr:nth-child(even) td {
+    background-color: #fafafa;
+  }
+
+  tr:hover td {
+    background-color: #f5f5f5;
+  }
+  /* ✅ TABLE FIX END */
+
+  .page-footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 12px;
+    color: #555;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  header, footer {
+    display: none;
+  }
+</style>
+
+      </head>
+      <body>
+        <div class="print-content">${elementHTML}</div>
+      </body>
+    </html>
+  `);
     doc.close();
 
-    const marginStr = `${pxToIn(selectedMarginPx[0])} ${pxToIn(
-      selectedMarginPx[1]
-    )} ${pxToIn(selectedMarginPx[2])} ${pxToIn(selectedMarginPx[3])}`;
     iframe.onload = () => {
       const iframeBody = iframe.contentDocument.body;
-
-      // Wait for a short delay to allow rendering
       setTimeout(() => {
         const contentToPrint = iframeBody.querySelector(".print-content");
         if (!contentToPrint) {
           console.error("'.print-content' not found in iframe");
           return;
         }
-
         html2pdf()
           .set({
             margin: selectedMarginMm,
             filename: `${fileName}.pdf`,
-            html2canvas: {
-              scale: 2,
-              useCORS: true,
-              logging: false,
-            },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
             jsPDF: {
               unit: "mm",
               format: jsPDFPageSizes[pageSize],
@@ -622,33 +543,31 @@ const ReactNewtextEditor = ({
           })
           .from(contentToPrint)
           .save()
-          .then(() => {
-            document.body.removeChild(iframe);
-          });
-      }, 300); // delay to ensure iframe is fully rendered
+          .then(() => document.body.removeChild(iframe));
+      }, 300);
     };
   };
 
+  /* ---------------------------- EXPORT TO DOCX ---------------------------- */
   const exportToDocx = async (fileName = "document") => {
     if (!agenda) {
       alert("No content to export!");
       return;
     }
 
-    // Capture any global or inline styles
     const styles = Array.from(
       document.querySelectorAll("link[rel='stylesheet'], style")
     )
       .map((style) => style.outerHTML)
       .join("\n");
 
-    // Build a full HTML structure
     const fullHTML = `
   <html>
     <head>
       <meta charset="utf-8" />
       ${styles}
       <style>
+        ${globalExportStyles}
         body {
           font-family: Arial, sans-serif;
           background: #fff;
@@ -669,24 +588,21 @@ const ReactNewtextEditor = ({
         ${agenda}
       </div>
     </body>
-  </html>
-  `;
+  </html>`;
 
-    // Convert HTML → DOCX blob
     const blob = await asBlob(fullHTML, {
       orientation: "portrait",
-      margins: [25.4, 25.4, 25.4, 25.4], // 1 inch margins
+      margins: [25.4, 25.4, 25.4, 25.4],
     });
 
-    // Trigger download
     saveAs(blob, `${fileName}.docx`);
   };
 
+  /* ---------------------------- EXPORT TO JPG ---------------------------- */
   const exportToJPG = (fileName = "document") => {
     const selectedMarginPx = marginValues[selectedMargin] || [96, 96, 96, 96];
     const [top, right, bottom, left] = selectedMarginPx;
 
-    // Create a hidden iframe for style isolation
     const iframe = document.createElement("iframe");
     iframe.style.position = "absolute";
     iframe.style.left = "-9999px";
@@ -695,8 +611,6 @@ const ReactNewtextEditor = ({
     document.body.appendChild(iframe);
 
     const doc = iframe.contentDocument || iframe.contentWindow.document;
-
-    // Collect and inject styles
     const styles = Array.from(
       document.querySelectorAll('link[rel="stylesheet"], style')
     )
@@ -710,6 +624,7 @@ const ReactNewtextEditor = ({
         <title>Export to JPG</title>
         ${styles}
         <style>
+          ${globalExportStyles}
           * {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -722,7 +637,7 @@ const ReactNewtextEditor = ({
             font-family: 'Calibri', Arial, sans-serif;
           }
           .print-container {
-            width: 794px; /* A4 width at 96 DPI */
+            width: 794px;
             padding: ${top}px ${right}px ${bottom}px ${left}px;
             background: white;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
@@ -741,7 +656,6 @@ const ReactNewtextEditor = ({
     iframe.onload = () => {
       const contentToCapture =
         iframe.contentDocument.querySelector(".print-container");
-
       html2canvas(contentToCapture, {
         useCORS: true,
         scale: 2,
@@ -751,12 +665,12 @@ const ReactNewtextEditor = ({
         link.download = `${fileName}.jpg`;
         link.href = canvas.toDataURL("image/jpeg");
         link.click();
-
         document.body.removeChild(iframe);
       });
     };
   };
 
+  /* ---------------------------- EXPORT TO HTML ---------------------------- */
   const exportToHTML = (fileName = "document") => {
     if (!agenda) {
       alert("No content to export!");
@@ -768,6 +682,7 @@ const ReactNewtextEditor = ({
     <head>
       <meta charset="UTF-8">
       <style>
+        ${globalExportStyles}
         body {
           font-family: Arial, sans-serif;
           padding: 20mm;
@@ -789,7 +704,6 @@ const ReactNewtextEditor = ({
     link.href = URL.createObjectURL(blob);
     link.click();
   };
-
   const handlePrintPreview = () => {
     const printContent = agenda;
 
