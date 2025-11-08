@@ -81,7 +81,7 @@ import MessageAlert from "../../../components/MessageAlert";
 import AggregatedSearchBar from "../../../components/AggregatedSearchBar";
 import AggridTable from "../../../components/AggridTable";
 import domtoimage from "dom-to-image";
-import ReactQuillAdvanced from "../../../components/ReactQuillAdvanced.js";
+import ReactNewtextEditor from "../../../components/ReactNewtextEditor.js";
 import { getCurrentServerTime } from "../../../components/getCurrentServerTime";
 const progressDialogStyles = {
   dialogPaper: {
@@ -6329,25 +6329,69 @@ console.log(headerfooter , "headerfooter")
       pdfElementHead.innerHTML = checkingArray[index]?.header;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-      styleElement.textContent = `
-        .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-        .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-        .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-        .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-        .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-        .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-        .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-        .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-        .ql-align-right { text-align: right; }
-        .ql-align-left { text-align: left; }
-        .ql-align-center { text-align: center; }
-        .ql-align-justify { text-align: justify; }
-                          .page-break-label {
+       styleElement.textContent = `
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-      `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
       pdfElement.appendChild(styleElement);
 
@@ -6889,25 +6933,69 @@ console.log(headerfooter , "headerfooter")
 
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-      styleElement.textContent = `
-        .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-        .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-        .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-        .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-        .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-        .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-        .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-        .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-        .ql-align-right { text-align: right; } 
-        .ql-align-left { text-align: left; } 
-        .ql-align-center { text-align: center; } 
-        .ql-align-justify { text-align: justify; } 
-                          .page-break-label {
+       styleElement.textContent = `
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-      `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
       pdfElement.appendChild(styleElement);
 
@@ -7422,7 +7510,7 @@ console.log(headerfooter , "headerfooter")
 
             // Add custom styles to the PDF content
             const styleElement = document.createElement("style");
-            styleElement.textContent = `
+              styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -7431,15 +7519,59 @@ console.log(headerfooter , "headerfooter")
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
-                .ql-align-right { text-align: right; }
-                .ql-align-left { text-align: left; }
-                .ql-align-center { text-align: center; }
-                .ql-align-justify { text-align: justify; }
-                                  .page-break-label {
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
               `;
 
             pdfElement.appendChild(styleElement);
@@ -8102,7 +8234,7 @@ console.log(headerfooter , "headerfooter")
 
             // Add custom styles to the PDF content
             const styleElement = document.createElement("style");
-            styleElement.textContent = `
+             styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -8111,15 +8243,59 @@ console.log(headerfooter , "headerfooter")
                 .ql-indent-6 { margin-left: 375px; }
                 .ql-indent-7 { margin-left: 425px; }
                 .ql-indent-8 { margin-left: 475px; }
-                .ql-align-right { text-align: right; }
-                .ql-align-left { text-align: left; }
-                .ql-align-center { text-align: center; }
-                .ql-align-justify { text-align: justify; }
-                                  .page-break-label {
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
               `;
 
             pdfElement.appendChild(styleElement);
@@ -8624,24 +8800,68 @@ console.log(headerfooter , "headerfooter")
     // Add custom styles to the PDF content
     const styleElement = document.createElement("style");
     styleElement.textContent = `
-      .ql-indent-1 { margin-left: 75px; }
-      .ql-indent-2 { margin-left: 150px; }
-      .ql-indent-3 { margin-left: 225px; }
-      .ql-indent-4 { margin-left: 275px; }
-      .ql-indent-5 { margin-left: 325px; }
-      .ql-indent-6 { margin-left: 375px; }
-      .ql-indent-7 { margin-left: 425px; }
-      .ql-indent-8 { margin-left: 475px; }
-      .ql-align-right { text-align: right; }
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
       .ql-align-left { text-align: left; }
       .ql-align-center { text-align: center; }
       .ql-align-justify { text-align: justify; }
-                        .page-break-label {
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-    `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
     pdfElement.appendChild(styleElement);
 
@@ -9070,25 +9290,69 @@ console.log(headerfooter , "headerfooter")
       pdfElementHead.innerHTML = checkingArray[index]?.header;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-      styleElement.textContent = `
-        .ql-indent-1 { margin-left: 75px; }
-        .ql-indent-2 { margin-left: 150px; }
-        .ql-indent-3 { margin-left: 225px; }
-        .ql-indent-4 { margin-left: 275px; }
-        .ql-indent-5 { margin-left: 325px; }
-        .ql-indent-6 { margin-left: 375px; }
-        .ql-indent-7 { margin-left: 425px; }
-        .ql-indent-8 { margin-left: 475px; }
-        .ql-align-right { text-align: right; }
-        .ql-align-left { text-align: left; }
-        .ql-align-center { text-align: center; }
-        .ql-align-justify { text-align: justify; }
-                          .page-break-label {
+        styleElement.textContent = `
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-      `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
       pdfElement.appendChild(styleElement);
 
       // Create a watermark element
@@ -9572,25 +9836,69 @@ console.log(headerfooter , "headerfooter")
       pdfElementHead.innerHTML = head;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-      styleElement.textContent = `
-        .ql-indent-1 { margin-left: 75px; }
-        .ql-indent-2 { margin-left: 150px; }
-        .ql-indent-3 { margin-left: 225px; }
-        .ql-indent-4 { margin-left: 275px; }
-        .ql-indent-5 { margin-left: 325px; }
-        .ql-indent-6 { margin-left: 375px; }
-        .ql-indent-7 { margin-left: 425px; }
-        .ql-indent-8 { margin-left: 475px; }
-        .ql-align-right { text-align: right; }
-        .ql-align-left { text-align: left; }
-        .ql-align-center { text-align: center; }
-        .ql-align-justify { text-align: justify; }
-                          .page-break-label {
+        styleElement.textContent = `
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-      `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
       pdfElement.appendChild(styleElement);
 
       // Create a watermark element
@@ -10053,25 +10361,69 @@ console.log(headerfooter , "headerfooter")
 
           // Add custom styles to the PDF content
           const styleElement = document.createElement("style");
-          styleElement.textContent = `
-    .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-    .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-    .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-    .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-    .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-    .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-    .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-    .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-    .ql-align-right { text-align: right; } 
-    .ql-align-left { text-align: left; } 
-    .ql-align-center { text-align: center; } 
-    .ql-align-justify { text-align: justify; } 
-                      .page-break-label {
+    styleElement.textContent = `
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-  `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
           pdfElement.appendChild(styleElement);
 
@@ -12021,25 +12373,69 @@ console.log(headerfooter , "headerfooter")
         );
 
       const styleElement = document.createElement("style");
-      styleElement.textContent = `
-           .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-           .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-           .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-           .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-           .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-           .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-           .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-           .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-           .ql-align-right { text-align: right; } 
-           .ql-align-left { text-align: left; } 
-           .ql-align-center { text-align: center; } 
-           .ql-align-justify { text-align: justify; } 
-                             .page-break-label {
+        styleElement.textContent = `
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-         `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
       pdfElement.appendChild(styleElement);
 
       // pdfElement.appendChild(styleElement);
@@ -13067,25 +13463,69 @@ console.log(headerfooter , "headerfooter")
         );
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-      styleElement.textContent = `
-     .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-     .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-     .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-     .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-     .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-     .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-     .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-     .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-     .ql-align-right { text-align: right; } 
-     .ql-align-left { text-align: left; } 
-     .ql-align-center { text-align: center; } 
-     .ql-align-justify { text-align: justify; } 
-                       .page-break-label {
+    styleElement.textContent = `
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-   `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
       pdfElement.appendChild(styleElement);
 
@@ -13557,25 +13997,69 @@ console.log(headerfooter , "headerfooter")
         );
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-      styleElement.textContent = `
-     .ql-indent-1 { margin-left: 75px; } /* Adjust margin for indent-1 class */
-     .ql-indent-2 { margin-left: 150px; } /* Adjust margin for indent-2 class */
-     .ql-indent-3 { margin-left: 225px; } /* Adjust margin for indent-3 class */
-     .ql-indent-4 { margin-left: 275px; } /* Adjust margin for indent-4 class */
-     .ql-indent-5 { margin-left: 325px; } /* Adjust margin for indent-5 class */
-     .ql-indent-6 { margin-left: 375px; } /* Adjust margin for indent-6 class */
-     .ql-indent-7 { margin-left: 425px; } /* Adjust margin for indent-7 class */
-     .ql-indent-8 { margin-left: 475px; } /* Adjust margin for indent-8 class */
-     .ql-align-right { text-align: right; } 
-     .ql-align-left { text-align: left; } 
-     .ql-align-center { text-align: center; } 
-     .ql-align-justify { text-align: justify; } 
-                       .page-break-label {
+    styleElement.textContent = `
+                .ql-indent-1 { margin-left: 75px; }
+                .ql-indent-2 { margin-left: 150px; }
+                .ql-indent-3 { margin-left: 225px; }
+                .ql-indent-4 { margin-left: 275px; }
+                .ql-indent-5 { margin-left: 325px; }
+                .ql-indent-6 { margin-left: 375px; }
+                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-8 { margin-left: 475px; }
+               /* Light badge look (like TEST 1 - top) */
+.__se__t-code {
+  display: inline-block;
+  background: #f3f3f3; /* light gray background */
+  color: #222; /* dark text */
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Shadowed text (like TEST 1 - bottom) */
+.__se__t-shadow {
+  font-weight: 600;
+  color: #000;
+  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+
+                  .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+      .page-break-label {
     page-break-before: always;
     break-before: page;
     margin: 20px 0;
   }
-   `;
+     table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  td, th {
+    border: 1px solid #000;
+    padding: 6px;
+  }
+
+  ol {
+    padding-left: 20px;
+    list-style-type: decimal;
+  }
+
+  ul {
+    padding-left: 20px;
+    list-style-type: disc;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f9f9f9;
+  }
+
+              `;
 
       pdfElement.appendChild(styleElement);
 
@@ -15688,7 +16172,7 @@ console.log(headerfooter , "headerfooter")
                       Document <b style={{ color: "red" }}>*</b>
                     </Typography>
                     {documentPrepartion?.employeemode === "Manual" ? (
-                      <ReactQuillAdvanced
+                      <ReactNewtextEditor
                         agenda={checking}
                         setAgenda={
                           documentPrepartion?.employeemode === "Manual"
@@ -15730,7 +16214,7 @@ console.log(headerfooter , "headerfooter")
                                   </Typography>
                                   <Grid container spacing={2}>
                                     <Grid item md={11} sm={12} xs={12}>
-                                      <ReactQuillAdvanced
+                                      <ReactNewtextEditor
                                         agenda={text.data}
                                         setAgenda={undefined}
                                         disabled={
@@ -16673,7 +17157,7 @@ console.log(headerfooter , "headerfooter")
                 <FormControl fullWidth size="small">
                   <Typography variant="h6">Document</Typography>
 
-                  <ReactQuillAdvanced
+                  <ReactNewtextEditor
                     agenda={documentPreparationEdit.document}
                     setAgenda={undefined}
                     disabled={true}

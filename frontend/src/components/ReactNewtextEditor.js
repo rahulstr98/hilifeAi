@@ -42,6 +42,7 @@ import Cropper from "react-easy-crop";
 // import ImageInsertGrid from "./ImageInsertGrid";
 import { Rnd } from "react-rnd";
 import Editor from "./Editor";
+import PagePreview from "./Preview";
 
 const Parchment = Quill.import("parchment");
 Quill.register("modules/imageResize", ImageResize);
@@ -1383,7 +1384,7 @@ const ReactNewtextEditor = ({
           ref={editorRef}
           style={{ height: "100%" }}
         />
-
+<PagePreview agenda={agenda} width={width} height={height} margins={selectedMargin} />
         {/* <ReactQuill
           ref={quillRef}
           value={agenda}
