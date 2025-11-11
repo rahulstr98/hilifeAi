@@ -2602,6 +2602,7 @@ function TemplateCreation() {
                     setPageSize={setPageSizeQuill}
                     pageOrientation={pageOrientation}
                     setPageOrientation={setPageOrientation}
+                    pageName={"templateCreation"}
                   />
                   {/* <div style={{ marginBottom: "10px", display: "flex", flexWrap: "wrap", gap: "8px" }}>
                     <Button variant="contained" color="warning" startIcon={<UndoIcon />} onClick={() => quillRef.current.getEditor().history.undo()}>
@@ -3718,6 +3719,7 @@ function TemplateCreation() {
                       setPageSize={setPageSizeQuillEdit}
                       pageOrientation={pageOrientationEdit}
                       setPageOrientation={setPageOrientationEdit}
+                      pageName={"templateCreation"}
                     />
                     {/* <ReactQuill style={{ maxHeight: "750px", height: "750px" }} value={agendaEdit}
                       onChange={setAgendaEdit}

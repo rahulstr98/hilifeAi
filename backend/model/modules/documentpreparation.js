@@ -5,6 +5,10 @@ const documentPreparationSchema = new Schema({
     type: String,
     required: false,
   },
+  legalname: {
+    type: String,
+    required: false,
+  },
   reservedKeywords: {
     type: Boolean,
     required: false,
@@ -18,6 +22,10 @@ const documentPreparationSchema = new Schema({
     required: false,
   },
   manualdate: {
+    type: String,
+    required: false,
+  },
+  manualtime: {
     type: String,
     required: false,
   },

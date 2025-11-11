@@ -5,6 +5,14 @@ const companyDocumentPreparationSchema = new Schema({
     type: String,
     required: false,
   },
+    manualdate: {
+    type: String,
+    required: false,
+  },
+  manualtime: {
+    type: String,
+    required: false,
+  },
   marginQuill: {
     type: String,
     required: false,

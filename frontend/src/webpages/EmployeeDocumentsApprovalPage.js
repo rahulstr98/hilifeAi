@@ -47,6 +47,18 @@ function EmployeeDocumentsApprovalPage() {
     office2003: [96, 120, 96, 120],
   };
   const [serverTime, setServerTime] = useState(new Date());
+    function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-");
+    return `${day}-${month}-${year}`;
+  }
+  function formatTime(datetime) {
+    return new Date(datetime).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
   useEffect(() => {
     const fetchTime = async () => {
       try {
@@ -214,11 +226,13 @@ function EmployeeDocumentsApprovalPage() {
             qrInfoDetails?.map(
               (data, index) =>
                 `${index + 1}. ${data?.details
-                  ?.replaceAll(
-                    "$C:TIME$",
-                    new Date(NewDatetime).toLocaleTimeString()
-                  )
-                  .replaceAll("$C:DATE$", date)
+                ?.replaceAll("$C:TIME$", formatTime(new Date(NewDatetime)))
+                .replaceAll("$C:DATE$", formatDate(date))
+                .replaceAll(
+                  "$MANUALDATE$",
+                  formatDate(res?.data?.sdocumentPreparation?.manualdate)
+                )
+                .replaceAll("$M:TIME$", res?.data?.sdocumentPreparation?.manualtime)
                   .replaceAll(
                     "$DOJ$",
                     response?.data?.users ? response?.data?.users?.doj : ""

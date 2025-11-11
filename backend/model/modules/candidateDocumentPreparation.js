@@ -9,6 +9,14 @@ const candidateDocumentPreparationSchema = new Schema({
     type: String,
     required: false,
   },
+  manualdate: {
+    type: String,
+    required: false,
+  },
+  manualtime: {
+    type: String,
+    required: false,
+  },
   footer: {
     type: String,
     required: false,
@@ -17,7 +25,7 @@ const candidateDocumentPreparationSchema = new Schema({
     type: String,
     required: false,
   },
-   marginQuill: {
+  marginQuill: {
     type: String,
     required: false,
   },
@@ -250,4 +258,7 @@ const candidateDocumentPreparationSchema = new Schema({
     default: Date.now,
   },
 });
-module.exports = mongoose.model("candidateDocumentPreparation", candidateDocumentPreparationSchema);
+module.exports = mongoose.model(
+  "candidateDocumentPreparation",
+  candidateDocumentPreparationSchema
+);

@@ -101,7 +101,18 @@ function DocumentsPrintedStatusList() {
 
     fetchTime();
   }, []);
-
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-");
+    return `${day}-${month}-${year}`;
+  }
+  function formatTime(datetime) {
+    return new Date(datetime).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
   const marginValues = {
     normal: [96, 96, 96, 96],
     narrow: [48, 48, 48, 48],
@@ -1207,6 +1218,8 @@ function DocumentsPrintedStatusList() {
               printingstatus: item.printingstatus,
               employeemode: item.employeemode,
               header: item.header,
+              manualdate: item.manualdate,
+              manualtime: item.manualtime,
               footer: item.footer,
               department:
                 item.department === "Please Select Department"
@@ -1630,6 +1643,7 @@ function DocumentsPrintedStatusList() {
     }
   };
 
+  
   // Print Documents
   const downloadPdfTesdtTable = async (e, pagename) => {
     const NewDatetime = await getCurrentServerTime();
@@ -1712,11 +1726,13 @@ function DocumentsPrintedStatusList() {
           qrCodeInfoDetails = qrInfoDetails?.map(
             (data, index) =>
               `${index + 1}. ${data?.details
-                ?.replaceAll(
-                  "$C:TIME$",
-                  new Date(NewDatetime).toLocaleTimeString()
+                ?.replaceAll("$C:TIME$", formatTime(new Date(NewDatetime)))
+                .replaceAll("$C:DATE$", formatDate(date))
+                .replaceAll(
+                  "$MANUALDATE$",
+                  formatDate(e?.manualdate)
                 )
-                .replaceAll("$C:DATE$", date)
+                .replaceAll("$M:TIME$", e?.manualtime)
                 .replaceAll("$DOJ$", e ? e?.employeedoj : "")}`
           );
         }
@@ -1742,7 +1758,7 @@ function DocumentsPrintedStatusList() {
           : foot;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-        styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -2016,13 +2032,13 @@ function DocumentsPrintedStatusList() {
                   userSigHeight
                 );
                 const userName =
-                  response?.data?.sdocumentPreparation?.person || "";
+                  response?.data?.sdocumentPreparation?.legalname || "";
                 const sigX = rightX;
                 const sigY = yPos - userSigUpShift; // vertical position for signature
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -2590,13 +2606,13 @@ function DocumentsPrintedStatusList() {
                   userSigHeight
                 );
                 const userName =
-                  response?.data?.sdocumentPreparation?.person || "";
+                  response?.data?.sdocumentPreparation?.legalname || "";
                 const sigX = rightX;
                 const sigY = yPos - userSigUpShift; // vertical position for signature
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -2920,7 +2936,7 @@ function DocumentsPrintedStatusList() {
         : foot;
 
     const styleElement = document.createElement("style");
-       styleElement.textContent = `
+    styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -3196,13 +3212,13 @@ function DocumentsPrintedStatusList() {
                 userSigHeight
               );
               const userName =
-                response?.data?.sdocumentPreparation?.person || "";
+                response?.data?.sdocumentPreparation?.legalname || "";
               const sigX = rightX;
               const sigY = yPos - userSigUpShift; // vertical position for signature
               const sigWidth = userSigWidth;
               const sigHeight = userSigHeight;
               const textX = sigX + sigWidth - 17; // center align under signature
-              const textY = sigY + sigHeight + 5; // 5px padding below signature
+              const textY = sigY + sigHeight + 3; // 5px padding below signature
 
               doc.setFont("helvetica", "bold");
               doc.setFontSize(6);
@@ -3770,6 +3786,8 @@ function DocumentsPrintedStatusList() {
       templateno: item.templateno,
       header: item.header,
       footer: item.footer,
+      manualdate: item.manualdate,
+      manualtime: item.manualtime,
       template: item.template,
       printingstatus: item.printingstatus,
       employeemode: item.employeemode,

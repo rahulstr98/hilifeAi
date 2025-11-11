@@ -4,6 +4,124 @@
   font-weight: 200 !important;
 }
 
+.sun-editor-editable {
+  font-family: 'Montserrat', 'Mukta Malar', 'Noto Sans Tamil', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+/* Tamil font mappings */
+.sun-editor .se-toolbar select option[value="முக்த மலர்"],
+.sun-editor .se-wrapper [style*="font-family:முக்த மலர்"] {
+  font-family: 'Mukta Malar', sans-serif !important;
+}
+
+.sun-editor .se-toolbar select option[value="நோட்டோ சான்ஸ் தமிழ்"],
+.sun-editor .se-wrapper [style*="font-family:நோட்டோ சான்ஸ் தமிழ்"] {
+  font-family: 'Noto Sans Tamil', sans-serif !important;
+}
+
+.sun-editor .se-toolbar select option[value="கட்டமரன்"],
+.sun-editor .se-wrapper [style*="font-family:கட்டமரன்"] {
+  font-family: 'Catamaran', sans-serif !important;
+}
+
+.sun-editor .se-toolbar select option[value="பாலூ தம்பி 2"],
+.sun-editor .se-wrapper [style*="font-family:பாலூ தம்பி 2"] {
+  font-family: 'Baloo Thambi 2', sans-serif !important;
+}
+
+
+/* ------------------- MONTSERRAT ------------------- */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../src/components/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../src/components/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../src/components/fonts/Montserrat-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../src/components/fonts/Montserrat-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ------------------- MUKTA MALAR ------------------- */
+@font-face {
+  font-family: 'Mukta Malar';
+  src: url('../src/components/fonts/MuktaMalar-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Mukta Malar';
+  src: url('../src/components/fonts/MuktaMalar-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Mukta Malar';
+  src: url('../src/components/fonts/MuktaMalar-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Mukta Malar';
+  src: url('../src/components/fonts/MuktaMalar-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+/* ------------------- NOTO SANS TAMIL ------------------- */
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('../src/components/fonts/NotoSansTamil-Thin.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('../src/components/fonts/NotoSansTamil-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('../src/components/fonts/NotoSansTamil-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('../src/components/fonts/NotoSansTamil-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('../src/components/fonts/NotoSansTamil-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* ------------------- NEUROPOL X ------------------- */
+@font-face {
+  font-family: 'Neuropol X';
+  src: url('../src/components/fonts/Neuropol X Rg.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+
 @font-face {
   font-family: "JostMedium";
   src: url("../src/images/font/Jost-Medium.ttf") format("truetype");
@@ -36,9 +154,6 @@
   z-index: 10;
   /* enough to sit above editor, but below dropdowns */
 }
-
-
-
 
 /*----------------------------- React Qull Editor Styles Start------------------------ */
 
@@ -188,7 +303,6 @@
   font-family: Verdana, Geneva, sans-serif;
 }
 
-
 .ql-toolbar .ql-undo::before {
   content: "↺";
 }
@@ -210,7 +324,6 @@
 .ql-editor [style*="letter-spacing"] {
   display: inline-block;
 }
-
 
 .ql-editor [style*="margin-bottom"] {
   display: block;
@@ -246,9 +359,6 @@
   text-align: left;
 }
 
-
-
-
 .ql-editor .page-break {
   page-break-before: always;
   break-before: page;
@@ -256,8 +366,6 @@
   margin: 0;
   padding: 0;
 }
-
-
 
 /* Center content */
 .ql-editor .align-center {
@@ -276,11 +384,6 @@
 .ql-editor .justify-ends span {
   display: inline-block;
 }
-
-
-
-
-
 
 .ql-align-right img {
   display: block;
@@ -327,7 +430,6 @@
   content: "32px";
 }
 
-
 .ql-editor ol[type="A"] {
   list-style-type: upper-alpha;
 }
@@ -343,7 +445,6 @@
 .ql-editor ol[type="I"] {
   list-style-type: upper-roman;
 }
-
 
 .ql-editor ul {
   list-style: none;
@@ -406,8 +507,6 @@
 .margin-office2003 .ql-editor {
   padding: 96px 120px;
 }
-
-
 
 .ql-editor.ql-pagesize-letter {
   width: 215.9mm;
@@ -476,8 +575,6 @@
   overflow: hidden;
 }
 
-
-
 /*----------------------------- React Qull Editor Styles End------------------------ */
 
 /* .page {
@@ -540,8 +637,6 @@
   box-sizing: border-box;
 } */
 
-
-
 /* And so on... */
 
 /* .ag-theme-quartz .ag-paging-panel .ag-page-size,
@@ -558,11 +653,11 @@
   display: none !important;
 } */
 
-.ag-paging-panel>.ag-paging-page-size .ag-wrapper {
+.ag-paging-panel > .ag-paging-page-size .ag-wrapper {
   display: none !important;
 }
 
-.ag-paging-panel>.ag-paging-page-size .ag-label {
+.ag-paging-panel > .ag-paging-page-size .ag-label {
   display: none !important;
 }
 
@@ -772,7 +867,7 @@ button span {
   margin-left: 3px;
 }
 
-.menu-items>a,
+.menu-items > a,
 .menu-items button {
   text-align: left;
   /* padding: 0.7rem 1rem; */

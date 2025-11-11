@@ -518,6 +518,8 @@ function TempControlPanel() {
       keyword: "$DOJ$",
       instruction: "It denotes the Date Of Joining of the user",
     },
+     { keyword: "$MANUALDATE$", instruction: "It denotes the Manual Date" },
+      { keyword: "$M:TIME$", instruction: "It denotes the Manual Time" },
   ];
 
   const handleMenuItemClick = (selectedOption) => {

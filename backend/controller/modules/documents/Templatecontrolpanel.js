@@ -68,8 +68,6 @@ exports.getAllFilterTemplatecontrolpanelModel = catchAsyncErrors(
     let templatecontrolpanel = [],
       headerfooter;
     const { company, branch, template , pagename} = req?.body;
-
-    console.log(company, branch, template,pagename, "company, branch, template");
     try {
       templatecontrolpanel = await TemplatecontrolpanelModel.findOne(
         { company, branch },

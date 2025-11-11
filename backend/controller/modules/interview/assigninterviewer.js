@@ -147,7 +147,7 @@ exports.getAssignInterviewFilter = catchAsyncErrors(async (req, res, next) => {
       assigninterview?.includes(data?.companyname)
     );
 
-      console.log(result?.length, assigninterview ,userresult?.length, user,"query")
+      // console.log(result?.length, assigninterview ,userresult?.length, user,"query")
 
 
   } catch (err) { }

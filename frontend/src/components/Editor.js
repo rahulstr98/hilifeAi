@@ -24,6 +24,23 @@ const Editor = ({ name, onChange, ...props }) => {
     katex: katex,
     lang: en,
     font: [
+      "Montserrat",
+      "முக்த மலர்",
+      "நோட்டோ சான்ஸ் தமிழ்",
+      "Neuropol X",
+      // Google fonts
+      "Lato",
+      "Libre Baskerville",
+      "Merriweather",
+      "Raleway",
+      // System fonts
+      "Baskerville",
+      "Bodoni",
+      "Futura",
+      "Cambria",
+      "Tahoma",
+      "Trebuchet MS",
+      "Helvetica",
       "Arial",
       "Calibri",
       "Comic Sans MS",
@@ -42,8 +59,8 @@ const Editor = ({ name, onChange, ...props }) => {
       "Noto Sans Tamil",
       "Noto Serif Tamil",
       "Mukta Malar",
-      "Catamaran",
-      "Baloo Thambi 2",
+      "கட்டமரன்",
+      "பாலூ தம்பி 2",
     ],
 
     buttonList: [
@@ -81,70 +98,6 @@ const Editor = ({ name, onChange, ...props }) => {
       ],
     ],
   };
-  const handlePageBreak = () => {
-    const editor = editorRef.current?.editor;
-    if (!editor) return;
-
-    // Insert a visible marker
-    editor.insertHTML(
-      `<p class="page-break-label" data-page-break="true" style="
-        border-top: 2px dashed #999;
-        text-align: center;
-        color: #666;
-        margin: 16px 0;
-        padding: 6px 0;
-        font-weight: bold;
-      ">--- Page Break ---</p><br/>`
-    );
-  };
-  // ✅ After SunEditor mounts, inject custom button
-  useEffect(() => {
-    const editor = editorRef.current?.editor;
-    if (!editor) return;
-
-    // Add custom button dynamically
-    const button = editor.util.createElement("button");
-    button.className = "se-btn se-tooltip";
-    button.type = "button";
-    button.title = "Insert Page Break";
-    button.innerHTML = "📄"; // You can use an SVG or icon
-    button.style.fontSize = "18px";
-
-    // Handle click
-    button.addEventListener("click", () => handlePageBreak(editor));
-
-    // Add to toolbar (e.g., after preview)
-    const previewBtn = editor.context.tool.btns.preview?.parentNode;
-    if (previewBtn) {
-      previewBtn.parentNode.insertBefore(button, previewBtn.nextSibling);
-    }
-  }, []);
-
-  const handleImageUploadBefore = async (files, info, uploadHandler) => {
-    const KEY = "docs_upload_example_us_preset";
-    const Data = new FormData();
-    Data.append("file", files[0]);
-    Data.append("upload_preset", KEY);
-
-    try {
-      const response = await axios.post(
-        "https://api.cloudinary.com/v1_1/demo/image/upload",
-        Data
-      );
-      const res = {
-        result: [
-          {
-            url: response.data.secure_url,
-            size: response.data.bytes,
-            name: response.data.public_id,
-          },
-        ],
-      };
-      uploadHandler(res);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <SunEditor
@@ -153,7 +106,15 @@ const Editor = ({ name, onChange, ...props }) => {
       placeholder="Please type here..."
       name={name}
       lang="en"
-      setDefaultStyle="font-family: Arial; font-size: 14px;"
+      setDefaultStyle="font-family: 'Helvetica Neue', Arial, sans-serif;"
+      onPaste={(event, cleanData, maxCharCount, core) => {
+        event.preventDefault(); // stop default paste
+        const text = (event.clipboardData || window.clipboardData).getData(
+          "text"
+        );
+        // paste only plain text — no styles
+        core.insertHTML(text.replace(/\n/g, "<br>"));
+      }}
       setOptions={options}
       // onImageUploadBefore={handleImageUploadBefore}
       onChange={onChange}

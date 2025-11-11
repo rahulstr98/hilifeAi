@@ -1,0 +1,91 @@
+/* ------------------- MONTSERRAT ------------------- */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/Montserrat-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/Montserrat-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ------------------- MUKTA MALAR ------------------- */
+@font-face {
+  font-family: 'Mukta Malar';
+  src: url('./fonts/MuktaMalar-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Mukta Malar';
+  src: url('./fonts/MuktaMalar-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Mukta Malar';
+  src: url('./fonts/MuktaMalar-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Mukta Malar';
+  src: url('./fonts/MuktaMalar-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+}
+
+/* ------------------- NOTO SANS TAMIL ------------------- */
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('./fonts/NotoSansTamil-Thin.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('./fonts/NotoSansTamil-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('./fonts/NotoSansTamil-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('./fonts/NotoSansTamil-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Noto Sans Tamil';
+  src: url('./fonts/NotoSansTamil-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* ------------------- NEUROPOL X ------------------- */
+@font-face {
+  font-family: 'Neuropol X';
+  src: url('./fonts/Neuropol X Rg.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}

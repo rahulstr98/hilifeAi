@@ -204,6 +204,18 @@ function DocumentPreparation() {
   }, []);
 
   const [qrCodeInfoDetails, setQrCodeInfoDetails] = useState([]);
+  function formatDate(dateStr) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-");
+    return `${day}-${month}-${year}`;
+  }
+  function formatTime(datetime) {
+    return new Date(datetime).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  }
   const [selectedMargin, setSelectedMargin] = useState("normal");
   const [pageSizeQuill, setPageSizeQuill] = useState("A4");
   const [pageOrientation, setPageOrientation] = useState("portrait");
@@ -594,6 +606,7 @@ function DocumentPreparation() {
   const [AttendanceNeed, setAttendanceNeed] = useState(false);
   const [DocumentNeed, setDocumentNeed] = useState(false);
   const [ProductionNeed, setProductionNeed] = useState(false);
+  const [allSupervisor, setAllSupervisor] = useState(false);
   const [SalaryNeed, setSalaryNeed] = useState(false);
 
   const [otp, setOtp] = useState("");
@@ -1045,7 +1058,7 @@ function DocumentPreparation() {
     footertemplate: "",
     templateno: "",
     pagenumberneed: "All Pages",
-    signatureneed: "No Need",
+    signatureneed: "All Pages",
     qrcodevalue: "All Pages",
     employeemode: "Please Select Employee Mode",
     department: "Please Select Department",
@@ -1680,7 +1693,7 @@ function DocumentPreparation() {
                 1
             ]
           : "";
-console.log(headerfooter , "headerfooter")
+        console.log(headerfooter, "headerfooter");
         const templateHeaderFooter = headerfooter;
 
         const headerOption = ans?.letterheadcontentheader?.find(
@@ -4475,6 +4488,7 @@ console.log(headerfooter , "headerfooter")
           (t) => t.company === item.company && t.branch === item.branch
         )
     );
+
     if (uniqueEntries?.length > 1) {
       setSelectedEmployee([]);
 
@@ -4486,6 +4500,27 @@ console.log(headerfooter , "headerfooter")
     } else if (uniqueEntries?.length === 0) {
       setSelectedEmployee([]);
     } else if (uniqueEntries?.length === 1) {
+      let ans = options?.flatMap((a, index) => {
+        return a.value;
+      });
+
+      const checkIssuingAuthority = issuingauthority
+        ?.filter((data) => ans?.includes(data?.value))
+        ?.map((data) => data?.value);
+      console.log(
+        checkIssuingAuthority,
+        selectedEmployeeValues,
+        "checkIssuingAuthority"
+      );
+      if (checkIssuingAuthority?.length > 0) {
+        setPopupContentMalert(
+          `${checkIssuingAuthority?.join(
+            ","
+          )} these names are in issuing Authority`
+        );
+        setPopupSeverityMalert("warning");
+        handleClickOpenPopupMalert();
+      }
       TemplateDropdownsValue(
         templateCreationValue,
         uniqueEntries[0],
@@ -4494,16 +4529,19 @@ console.log(headerfooter , "headerfooter")
       IdentifyUserCode(uniqueEntries[0]);
 
       setSelectedEmployee(options);
-      let ans = options?.flatMap((a, index) => {
-        return a.value;
-      });
-
       CheckNoticePeriodMulti(ans);
       setEmployeeControlPanel(uniqueEntries[0]);
       setSelectedEmployeeValues(ans);
       setallPasteNames(ans);
       setValueEmp(ans);
     }
+    let ans = options?.flatMap((a, index) => {
+      return a.value;
+    });
+    setallPasteNames(ans);
+    setValueEmp(ans);
+    setSelectedEmployeeValues(ans);
+    setSelectedEmployee(options);
     setDocumentPrepartion({
       ...documentPrepartion,
       issuingauthority: "Please Select Issuing Authority",
@@ -5498,16 +5536,19 @@ console.log(headerfooter , "headerfooter")
         ]);
 
       let employee = res_emp?.data?.usersstatus;
+      const manualTime = `${documentPrepartion?.fromhour}:${documentPrepartion?.frommin} ${documentPrepartion?.fromtime}`;
       if (companyName?.qrInfo?.length > 0) {
         setQrCodeInfoDetails(
           companyName?.qrInfo?.map(
             (data, index) =>
               `${index + 1}. ${data?.details
-                ?.replaceAll(
-                  "$C:TIME$",
-                  new Date(NewDatetime).toLocaleTimeString()
+                ?.replaceAll("$C:TIME$", formatTime(new Date(NewDatetime)))
+                .replaceAll("$C:DATE$", formatDate(date))
+                .replaceAll(
+                  "$MANUALDATE$",
+                  formatDate(documentPrepartion?.manualdate)
                 )
-                .replaceAll("$C:DATE$", date)
+                .replaceAll("$M:TIME$", manualTime)
                 .replaceAll("$DOJ$", employee ? employee?.doj : "")}`
           )
         );
@@ -5550,6 +5591,14 @@ console.log(headerfooter , "headerfooter")
       const userESignature = userDetails?.data?.semployeesignature
         ? userDetails?.data?.semployeesignature?.signatureimage
         : "";
+      const userprofileImage = userDetails?.data?.userimage?.profileimage
+        ? `<span><img 
+    src="${userDetails?.data?.userimage?.profileimage}" 
+    alt="User Profile Image" 
+    style="max-width:180px; max-height:180px; object-fit:contain;" 
+  /></span>`
+        : "";
+      console.log(userESignature, "userESignature");
       setUserESignature(userESignature);
       let matches = documentPrepartion?.template
         ?.replaceAll("(", "")
@@ -5573,7 +5622,7 @@ console.log(headerfooter , "headerfooter")
         );
       }
       await new Promise((resolve) => setTimeout(resolve, 0));
-      const htmlImg = await renderRefToBase64Image(hiddenRef);
+      const htmlImg = SalaryNeed && (await renderRefToBase64Image(hiddenRef));
 
       const ProductionDetails =
         documentPrepartion?.employeemode !== "Manual"
@@ -5693,10 +5742,7 @@ console.log(headerfooter , "headerfooter")
           )
           .replaceAll("$C:TIME$", new Date(NewDatetime).toLocaleTimeString())
           .replaceAll("$C:DATE$", date)
-          .replaceAll(
-            "$M:TIME$",
-            `${documentPrepartion?.fromhour}:${documentPrepartion?.frommin} ${documentPrepartion?.fromtime}`
-          )
+          .replaceAll("$M:TIME$", manualTime)
           .replaceAll("$MANUALDATE$", documentPrepartion?.manualdate);
 
         setChecking(findMethod);
@@ -5757,9 +5803,10 @@ console.log(headerfooter , "headerfooter")
             employee?.legalname ? employee?.legalname : ""
           )
           .replaceAll(
-            "$M:TIME$",
-            `${documentPrepartion?.fromhour}:${documentPrepartion?.frommin} ${documentPrepartion?.fromtime}`
+            "$EMPLOYEE_PHOTO$",
+            userprofileImage ? userprofileImage : ""
           )
+          .replaceAll("$M:TIME$", manualTime)
           .replaceAll(
             "$RECENT_DESIGNATION$",
             departmentDesigDateBased
@@ -6054,6 +6101,7 @@ console.log(headerfooter , "headerfooter")
               : ""
           );
 
+        await new Promise((resolve) => setTimeout(resolve, 150));
         // .replaceAll("$SIGNATURE$", signatureContent?.seal === "None" ? `
         // <img src="${signature}" alt="Signature" style="position:absolute; z-index:-1; width: 200px; height: 30px;" />
         //      ` : "")
@@ -6089,6 +6137,8 @@ console.log(headerfooter , "headerfooter")
           data: findMethod,
           referenceno: newvalRefNo,
           pagenumberneed: String(documentPrepartion.pagenumberneed),
+          manualdate: String(documentPrepartion.manualdate),
+          manualtime: manualTime,
           signatureneed: String(documentPrepartion.signatureneed),
           qrcodevalue: String(documentPrepartion.qrcodevalue),
           documentneed: String(documentPrepartion.documentneed),
@@ -6107,6 +6157,7 @@ console.log(headerfooter , "headerfooter")
             ? signatureContent?.bottomcontent
             : "",
           usersignature: userESignature ? userESignature : "",
+          legalname: employee ? employee?.legalname : "",
           seal: sealPlacement,
           frommailemail: fromEmail,
           pageheight: agendaEditStyles.height,
@@ -6126,13 +6177,13 @@ console.log(headerfooter , "headerfooter")
         // console.log(answer, "4009")
         setIndexViewQuest(1);
       }
-                setallPasteNames([]);
-                setValueEmp([]);
+      setallPasteNames([]);
+      setValueEmp([]);
       setDocumentPrepartion({
         ...documentPrepartion,
         person: "Please Select Person",
         pagenumberneed: "All Pages",
-        signatureneed: "No Need",
+        signatureneed: "All Pages",
         qrcodevalue: "All Pages",
         reservedKeywords: checkReservedkeyWords,
         issuingauthority: "Please Select Issuing Authority",
@@ -6329,7 +6380,7 @@ console.log(headerfooter , "headerfooter")
       pdfElementHead.innerHTML = checkingArray[index]?.header;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-       styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -6627,13 +6678,13 @@ console.log(headerfooter , "headerfooter")
                   userSigWidth,
                   userSigHeight
                 );
-                const userName = checkingArray[index]?.empname || "";
+                const userName = checkingArray[index]?.legalname || "";
                 const sigX = rightX;
                 const sigY = yPos - userSigUpShift; // vertical position for signature
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -6933,7 +6984,7 @@ console.log(headerfooter , "headerfooter")
 
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-       styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -7239,13 +7290,13 @@ console.log(headerfooter , "headerfooter")
                   userSigWidth,
                   userSigHeight
                 );
-                const userName = documentPrepartion?.person || "";
+                const userName = documentPrepartion?.legalname || "";
                 const sigX = rightX;
                 const sigY = yPos - userSigUpShift; // vertical position for signature
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -7510,7 +7561,7 @@ console.log(headerfooter , "headerfooter")
 
             // Add custom styles to the PDF content
             const styleElement = document.createElement("style");
-              styleElement.textContent = `
+            styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -7828,13 +7879,13 @@ console.log(headerfooter , "headerfooter")
                         userSigWidth,
                         userSigHeight
                       );
-                      const userName = checkingArray[index]?.empname || "";
+                      const userName = checkingArray[index]?.legalname || "";
                       const sigX = rightX;
                       const sigY = yPos - userSigUpShift; // vertical position for signature
                       const sigWidth = userSigWidth;
                       const sigHeight = userSigHeight;
                       const textX = sigX + sigWidth - 17; // center align under signature
-                      const textY = sigY + sigHeight + 5; // 5px padding below signature
+                      const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                       doc.setFont("helvetica", "bold");
                       doc.setFontSize(6);
@@ -8234,7 +8285,7 @@ console.log(headerfooter , "headerfooter")
 
             // Add custom styles to the PDF content
             const styleElement = document.createElement("style");
-             styleElement.textContent = `
+            styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -8540,13 +8591,13 @@ console.log(headerfooter , "headerfooter")
                         userSigWidth,
                         userSigHeight
                       );
-                      const userName = documentPrepartion?.person || "";
+                      const userName = documentPrepartion?.legalname || "";
                       const sigX = rightX;
                       const sigY = yPos - userSigUpShift; // vertical position for signature
                       const sigWidth = userSigWidth;
                       const sigHeight = userSigHeight;
                       const textX = sigX + sigWidth - 17; // center align under signature
-                      const textY = sigY + sigHeight + 5; // 5px padding below signature
+                      const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                       doc.setFont("helvetica", "bold");
                       doc.setFontSize(6);
@@ -9090,13 +9141,13 @@ console.log(headerfooter , "headerfooter")
                 userSigWidth,
                 userSigHeight
               );
-              const userName = documentPrepartion?.person || "";
+              const userName = documentPrepartion?.legalname || "";
               const sigX = rightX;
               const sigY = yPos - userSigUpShift; // vertical position for signature
               const sigWidth = userSigWidth;
               const sigHeight = userSigHeight;
               const textX = sigX + sigWidth - 17; // center align under signature
-              const textY = sigY + sigHeight + 5; // 5px padding below signature
+              const textY = sigY + sigHeight + 3; // 5px padding below signature
 
               doc.setFont("helvetica", "bold");
               doc.setFontSize(6);
@@ -9290,7 +9341,7 @@ console.log(headerfooter , "headerfooter")
       pdfElementHead.innerHTML = checkingArray[index]?.header;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-        styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -9584,13 +9635,13 @@ console.log(headerfooter , "headerfooter")
                   userSigWidth,
                   userSigHeight
                 );
-                const userName = checkingArray[index]?.empname || "";
+                const userName = checkingArray[index]?.legalname || "";
                 const sigX = rightX;
                 const sigY = yPos - userSigUpShift; // vertical position for signature
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -9836,7 +9887,7 @@ console.log(headerfooter , "headerfooter")
       pdfElementHead.innerHTML = head;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-        styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -10126,13 +10177,13 @@ console.log(headerfooter , "headerfooter")
                   userSigWidth,
                   userSigHeight
                 );
-                const userName = documentPrepartion?.person || "";
+                const userName = documentPrepartion?.legalname || "";
                 const sigX = rightX;
                 const sigY = yPos - userSigUpShift; // vertical position for signature
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -10361,7 +10412,7 @@ console.log(headerfooter , "headerfooter")
 
           // Add custom styles to the PDF content
           const styleElement = document.createElement("style");
-    styleElement.textContent = `
+          styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -10658,13 +10709,13 @@ console.log(headerfooter , "headerfooter")
                       userSigHeight
                     );
                     const userName =
-                      response?.data?.sdocumentPreparation?.person || "";
+                      response?.data?.sdocumentPreparation?.legalname || "";
                     const sigX = rightX;
                     const sigY = yPos - userSigUpShift; // vertical position for signature
                     const sigWidth = userSigWidth;
                     const sigHeight = userSigHeight;
                     const textX = sigX + sigWidth - 17; // center align under signature
-                    const textY = sigY + sigHeight + 5; // 5px padding below signature
+                    const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(6);
@@ -10955,6 +11006,7 @@ console.log(headerfooter , "headerfooter")
             documentname: String(data.documentname),
             referenceno: data?.referenceno,
             tempcode: data?.tempcode,
+            legalname: data.legalname,
             header: data?.headertemplate,
             footer: data?.footertemplate,
             termsAndConditons: templateCreationValue?.termsAndConditons,
@@ -10966,7 +11018,8 @@ console.log(headerfooter , "headerfooter")
             company: String(data.company),
             branch: String(data.branch),
             unit: String(data.unit),
-            team: String(data.team),
+            mandualdate: String(data.mandualdate),
+            manualtime: String(data.manualtime),
             reservedKeywords: Boolean(data.reservedKeywords),
             pagenumberneed: String(data.pagenumberneed),
             signatureneed: String(data.signatureneed),
@@ -11153,6 +11206,7 @@ console.log(headerfooter , "headerfooter")
         templateno: newval,
         header: documentPrepartion?.header,
         footer: documentPrepartion?.footer,
+        legalname: "",
         reservedKeywords: Boolean(documentPrepartion.reservedKeywords),
         email: emailUser,
         employeemode: String(documentPrepartion.employeemode),
@@ -11160,6 +11214,8 @@ console.log(headerfooter , "headerfooter")
         department: String(documentPrepartion.department),
         pagenumberneed: String(documentPrepartion.pagenumberneed),
         signatureneed: String(documentPrepartion.signatureneed),
+        mandualdate: String(documentPrepartion?.mandualdate),
+        manualtime: `${documentPrepartion?.fromhour}:${documentPrepartion?.frommin} ${documentPrepartion?.fromtime}`,
         signaturetype: signatureContent?.seal ? signatureContent?.seal : "",
         topcontent: signatureContent?.topcontent
           ? String(signatureContent?.topcontent)
@@ -11861,7 +11917,7 @@ console.log(headerfooter , "headerfooter")
       team: "Please Select Team",
       person: "Please Select Person",
       pagenumberneed: "All Pages",
-      signatureneed: "No Need",
+      signatureneed: "All Pages",
       qrcodevalue: "All Pages",
       issuingauthority: "Please Select Issuing Authority",
       attendancesort: "Please Select Attendance Sort",
@@ -11918,8 +11974,8 @@ console.log(headerfooter , "headerfooter")
       frommin: formattedMinute,
       fromtime: ampm,
     });
-       setTemplateValues([])
-    setEmployeeModeOptions([])
+    setTemplateValues([]);
+    setEmployeeModeOptions([]);
     setGenerateData(false);
     setCheckingArray([]);
     setIndexViewQuest(1);
@@ -11935,7 +11991,7 @@ console.log(headerfooter , "headerfooter")
       fromtime: ampm,
       templateno: "",
       pagenumberneed: "All Pages",
-      signatureneed: "No Need",
+      signatureneed: "All Pages",
       qrcodevalue: "All Pages",
       employeemode: "Please Select Employee Mode",
       reason: "Document",
@@ -12010,7 +12066,7 @@ console.log(headerfooter , "headerfooter")
       referenceno: "",
       templateno: "",
       pagenumberneed: "All Pages",
-      signatureneed: "No Need",
+      signatureneed: "All Pages",
       qrcodevalue: "All Pages",
       employeemode: "Please Select Employee Mode",
       department: "Please Select Department",
@@ -12373,7 +12429,7 @@ console.log(headerfooter , "headerfooter")
         );
 
       const styleElement = document.createElement("style");
-        styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -12654,13 +12710,13 @@ console.log(headerfooter , "headerfooter")
                   userSigHeight
                 );
                 const userName =
-                  response?.data?.sdocumentPreparation?.person || "";
+                  response?.data?.sdocumentPreparation?.legalname || "";
                 const sigX = rightX;
                 const sigY = yPos - userSigUpShift; // vertical position for signature
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -13125,11 +13181,10 @@ console.log(headerfooter , "headerfooter")
           qrInfoDetails?.map(
             (data, index) =>
               `${index + 1}. ${data?.details
-                ?.replaceAll(
-                  "$C:TIME$",
-                  new Date(NewDatetime).toLocaleTimeString()
-                )
-                .replaceAll("$C:DATE$", date)
+                ?.replaceAll("$C:TIME$", formatTime(new Date(NewDatetime)))
+                .replaceAll("$C:DATE$", formatDate(date))
+                .replaceAll("$MANUALDATE$", formatDate(e?.manualdate))
+                .replaceAll("$M:TIME$", e.manualtime)
                 .replaceAll("$DOJ$", e ? e?.employeedoj : "")}`
           )
         );
@@ -13463,7 +13518,7 @@ console.log(headerfooter , "headerfooter")
         );
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-    styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -13738,13 +13793,13 @@ console.log(headerfooter , "headerfooter")
                   userSigHeight
                 );
                 const userName =
-                  response?.data?.sdocumentPreparation?.empname || "";
+                  response?.data?.sdocumentPreparation?.legalname || "";
                 const sigX = rightX;
                 const sigY = yPos - userSigUpShift; // vertical position for signature
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -13997,7 +14052,7 @@ console.log(headerfooter , "headerfooter")
         );
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-    styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -14278,7 +14333,7 @@ console.log(headerfooter , "headerfooter")
                 const sigWidth = userSigWidth;
                 const sigHeight = userSigHeight;
                 const textX = sigX + sigWidth - 17; // center align under signature
-                const textY = sigY + sigHeight + 5; // 5px padding below signature
+                const textY = sigY + sigHeight + 3; // 5px padding below signature
 
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(6);
@@ -14509,6 +14564,8 @@ console.log(headerfooter , "headerfooter")
       approval: item.approval,
       referenceno: item.referenceno,
       templateno: item.templateno,
+      manualdate: item.manualdate,
+      manualtime: item.manualtime,
       template: item.template,
       documentname: item.documentname,
       mail: item.mail,
@@ -14992,11 +15049,9 @@ console.log(headerfooter , "headerfooter")
                                 setAttendanceNeed(false);
                                 setProductionNeed(false);
                                 setSalaryNeed(false);
-                                setValueEmp([])
-                                  setallPasteNames([]);
-                            setValueEmp([]);
-                                
-
+                                setValueEmp([]);
+                                setallPasteNames([]);
+                                setValueEmp([]);
                               }}
                               color="primary"
                             />
@@ -15308,10 +15363,29 @@ console.log(headerfooter , "headerfooter")
                                 value: documentPrepartion.person,
                               }}
                               onChange={(e) => {
+                                const checkIssuingAuthority = issuingauthority
+                                  ?.filter((data) => e.value === data?.value)
+                                  ?.map((data) => data?.value);
+                                console.log(
+                                  checkIssuingAuthority,
+                                  selectedEmployeeValues,
+                                  "checkIssuingAuthority"
+                                );
+                                if (checkIssuingAuthority?.length > 0) {
+                                  setPopupContentMalert(
+                                    `${checkIssuingAuthority?.join(
+                                      ","
+                                    )} these name is in issuing Authority`
+                                  );
+                                  setPopupSeverityMalert("warning");
+                                  handleClickOpenPopupMalert();
+                                }
                                 setDocumentPrepartion({
                                   ...documentPrepartion,
                                   person: e.value,
                                   sign: "Please Select Signature",
+                                  issuingauthority:
+                                    "Please Select Issuing Authority",
                                   signature: "Please Select Signature",
                                   seal: "Please Select Seal",
                                   sealing: "Please Select Seal",
@@ -15849,7 +15923,36 @@ console.log(headerfooter , "headerfooter")
                     )}
                   </>
                 )}
-
+                <Grid item md={2} xs={12} sm={12}>
+                  <FormControl fullWidth size="small">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 40,
+                              marginTop: 1,
+                            },
+                          }}
+                          checked={allSupervisor}
+                          onChange={() => {
+                            setAllSupervisor((val) => !val);
+                            setDocumentPrepartion({
+                              ...documentPrepartion,
+                              issuingauthority:
+                                "Please Select Issuing Authority",
+                              signature: "Please Select Signature",
+                              seal: "Please Select Seal",
+                            });
+                          }}
+                          color="primary"
+                        />
+                      }
+                      // sx={{marginTop: 1}}
+                      label="All Supervisor"
+                    />
+                  </FormControl>
+                </Grid>
                 <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
@@ -15857,20 +15960,53 @@ console.log(headerfooter , "headerfooter")
                     </Typography>
                     <Selects
                       maxMenuHeight={300}
-                      options={issuingauthority?.filter((data) =>
-                        DocumentNeed
-                          ? !selectedEmployeeValues?.includes(data?.value)
-                          : documentPrepartion?.person !== data?.value
-                      )}
+                      options={
+                        allSupervisor
+                          ? issuingauthority
+                          : issuingauthority?.filter((name) =>
+                              DocumentNeed
+                                ? !selectedEmployeeValues?.includes(name?.value)
+                                : name?.value !== documentPrepartion?.person
+                            )
+                      }
                       value={{
                         label: documentPrepartion.issuingauthority,
                         value: documentPrepartion.issuingauthority,
                       }}
                       onChange={(e) => {
+                        const checkIssuingAuthority = DocumentNeed
+                          ? selectedEmployeeValues?.includes(e.value)
+                          : documentPrepartion?.person === e.value;
+                        console.log(
+                          checkIssuingAuthority,
+                          selectedEmployeeValues,
+                          "checkIssuingAuthority"
+                        );
+                        if (checkIssuingAuthority) {
+                          setPopupContentMalert(
+                            `${e.value} these name chosen in Persons.Choose Another`
+                          );
+                          setPopupSeverityMalert("warning");
+                          handleClickOpenPopupMalert();
+                          return;
+                        }
+                        const signatureValue =
+                          companyName?.documentsignature?.find(
+                            (data) =>
+                              (DocumentNeed
+                                ? !selectedEmployeeValues?.includes(
+                                    data?.employee
+                                  )
+                                : documentPrepartion?.person !==
+                                  data?.employee) && e.value === data?.employee
+                          );
                         setDocumentPrepartion({
                           ...documentPrepartion,
                           issuingauthority: e.value,
-                          signature: "Please Select Signature",
+
+                          signature: signatureValue
+                            ? `${signatureValue?.signaturename} -- ${signatureValue?.employee}`
+                            : "Please Select Signature",
                           seal: "Please Select Seal",
                         });
                       }}

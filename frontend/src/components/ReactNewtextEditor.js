@@ -297,6 +297,7 @@ const ReactNewtextEditor = ({
   setPageSize,
   pageOrientation,
   setPageOrientation,
+  pageName,
 }) => {
   const quillRef = useRef();
   const [searchTerm, setSearchTerm] = useState("");
@@ -718,8 +719,6 @@ const ReactNewtextEditor = ({
 
     const margin = marginValues[selectedMargin] || [96, 96, 96, 96];
 
-    console.log(marginValues[selectedMargin], margin, selectedMargin);
-
     newWin.document.write(`
             <html>
                 <head>
@@ -804,7 +803,6 @@ const ReactNewtextEditor = ({
 
     newWin.document.close();
   };
-  console.log(agenda, "editor Ref");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [fileTypeToExport, setFileTypeToExport] = useState(null);
   const handleOpenDialog = (type) => {
@@ -1381,10 +1379,17 @@ const ReactNewtextEditor = ({
             spellCheck: true,
             height: 300,
           }}
-          ref={editorRef}
           style={{ height: "100%" }}
         />
-<PagePreview agenda={agenda} width={width} height={height} margins={selectedMargin} />
+
+        {pageName === "templateCreation" && (
+          <PagePreview
+            agenda={agenda}
+            width={width}
+            height={height}
+            margins={selectedMargin}
+          />
+        )}
         {/* <ReactQuill
           ref={quillRef}
           value={agenda}
