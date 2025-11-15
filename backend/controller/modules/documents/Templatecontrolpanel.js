@@ -238,6 +238,38 @@ exports.createTemplatecontrolpanelModel = catchAsyncErrors(
         addedby: parseSafe(addedby),
       };
 
+
+      //       const buildTodoArray = (prefix) => {
+      //   const result = [];
+
+      //   // Parse normal fields (only for non-file arrays)
+      //   if (prefix !== "documentcompany") {
+      //     Object.keys(req.body).forEach((key) => {
+      //       if (key.startsWith(prefix + "_")) {
+      //         const [_, index, field] = key.split("_");
+      //         if (!result[index]) result[index] = {};
+      //         result[index][field] = req.body[key];
+      //       }
+      //     });
+      //   }
+
+      //   // Merge file data
+      //   if (groupedFiles[prefix]) {
+      //     Object.keys(groupedFiles[prefix]).forEach((index) => {
+      //       const fileObj = groupedFiles[prefix][index];
+
+      //       if (prefix === "documentcompany") {
+      //         // ⚠️ Only file object allowed
+      //         result[index] = fileObj.file; // not { file: {...} }
+      //       } else {
+      //         // Normal case → merge fields + file
+      //         result[index] = { ...(result[index] || {}), ...fileObj };
+      //       }
+      //     });
+      //   }
+
+      //   return result.filter(Boolean);
+      // };
       // 🧱 Step 3: Reconstruct complex fields (TODO-type)
       const buildTodoArray = (prefix) => {
         const result = [];
@@ -268,14 +300,16 @@ exports.createTemplatecontrolpanelModel = catchAsyncErrors(
         letterheadcontentfooter: buildTodoArray("letterheadcontentfooter"),
         documentseal: buildTodoArray("documentseal"),
         documentsignature: buildTodoArray("documentsignature"),
+        letterheadbodycontent: buildTodoArray("letterheadbodycontent"),
+        documentcompany: buildTodoArray("documentcompany"),
 
         // normal file-only fields (not array)
-        letterheadbodycontent: groupedFiles.letterheadbodycontent || {},
+        // letterheadbodycontent: groupedFiles.letterheadbodycontent || {},
         idcardfrontheader: groupedFiles.idcardfrontheader || {},
         idcardfrontfooter: groupedFiles.idcardfrontfooter || {},
         idcardbackheader: groupedFiles.idcardbackheader || {},
         idcardbackfooter: groupedFiles.idcardbackfooter || {},
-        documentcompany: groupedFiles.documentcompany || {},
+        // documentcompany: groupedFiles.documentcompany || {},
       };
 
       // ✅ Step 5: Combine
@@ -423,6 +457,27 @@ exports.updateTemplatecontrolpanelModel = catchAsyncErrors(
             }
           }
 
+           if (
+            prefix === "letterheadbodycontent" &&
+            typeof item.backgroundimage === "string"
+          ) {
+            try {
+              item.backgroundimage = JSON.parse(item.backgroundimage);
+            } catch {
+              item.backgroundimage = { name: item.backgroundimage };
+            }
+          }
+          if (
+            prefix === "documentcompany" &&
+            typeof item.file === "string"
+          ) {
+            try {
+              item.file = JSON.parse(item.file);
+            } catch {
+              item.file = { name: item.file };
+            }
+          }
+
           if (
             prefix === "letterheadcontentfooter" &&
             typeof item.footerimage === "string"
@@ -505,11 +560,14 @@ exports.updateTemplatecontrolpanelModel = catchAsyncErrors(
         letterheadcontentfooter: buildTodoArrayEdit("letterheadcontentfooter"),
         documentseal: buildTodoArrayEdit("documentseal"),
         documentsignature: buildTodoArrayEdit("documentsignature"),
+        documentsignature: buildTodoArrayEdit("documentsignature"),
+        documentcompany: buildTodoArrayEdit("documentcompany"),
+        letterheadbodycontent: buildTodoArrayEdit("letterheadbodycontent"),
 
         // normal file-only fields (not array)
-        letterheadbodycontent:
-          groupedFiles.letterheadbodycontent ||
-          parseSafe(letterheadbodycontent_old),
+        // letterheadbodycontent:
+        //   groupedFiles.letterheadbodycontent ||
+        //   parseSafe(letterheadbodycontent_old),
         idcardfrontheader:
           groupedFiles.idcardfrontheader || parseSafe(idcardfrontheader_old),
         idcardfrontfooter:
@@ -518,8 +576,8 @@ exports.updateTemplatecontrolpanelModel = catchAsyncErrors(
           groupedFiles.idcardbackheader || parseSafe(idcardbackheader_old),
         idcardbackfooter:
           groupedFiles.idcardbackfooter || parseSafe(idcardbackfooter_old),
-        documentcompany:
-          groupedFiles.documentcompany || parseSafe(documentcompany_old),
+        // documentcompany:
+        //   groupedFiles.documentcompany || parseSafe(documentcompany_old),
       };
 
       // ✅ Step 5: Combine

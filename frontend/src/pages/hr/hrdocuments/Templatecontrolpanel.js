@@ -126,6 +126,8 @@ function TempControlPanel() {
     buttonStyles,
   } = useContext(UserRoleAccessContext);
   const [openPopupMalert, setOpenPopupMalert] = useState(false);
+  const [editingLogoIndex, setEditingLogoIndex] = useState(-1);
+  const [editingLogoIndexEdit, setEditingLogoIndexEdit] = useState(-1);
   const [popupContentMalert, setPopupContentMalert] = useState("");
   const [popupSeverityMalert, setPopupSeverityMalert] = useState("");
   const handleClickOpenPopupMalert = () => {
@@ -476,11 +478,11 @@ function TempControlPanel() {
     documentFilesDocumentBackFooterView,
     setdocumentFilesDOcumentBackFooterView,
   ] = useState([]);
-  const [documentFiles, setdocumentFiles] = useState("");
+  const [documentFiles, setdocumentFiles] = useState([]);
   const [documentFilesView, setdocumentFilesVIew] = useState([]);
   const [documentFilesSeal, setdocumentFilesSeal] = useState("");
   const [documentFilesSignature, setdocumentFilesSignature] = useState("");
-
+  console.log(documentFiles, "documentFiles");
   const [companyname, setCompanyname] = useState("");
   const [anchorElDoc, setAnchorElDoc] = useState(null);
   const [anchorElDoc2, setAnchorElDoc2] = useState(null);
@@ -518,8 +520,8 @@ function TempControlPanel() {
       keyword: "$DOJ$",
       instruction: "It denotes the Date Of Joining of the user",
     },
-     { keyword: "$MANUALDATE$", instruction: "It denotes the Manual Date" },
-      { keyword: "$M:TIME$", instruction: "It denotes the Manual Time" },
+    { keyword: "$MANUALDATE$", instruction: "It denotes the Manual Date" },
+    { keyword: "$M:TIME$", instruction: "It denotes the Manual Time" },
   ];
 
   const handleMenuItemClick = (selectedOption) => {
@@ -629,7 +631,7 @@ function TempControlPanel() {
     setOption8(selectedOption);
     handleClose8();
     setDocBodyHeader8("Please Select Document");
-    setdocumentFiles("");
+    // setdocumentFiles([]);
   };
 
   const handleClick9 = (event) => {
@@ -764,7 +766,7 @@ function TempControlPanel() {
     documentFilesDocumentBackFooterEdit,
     setdocumentFilesDOcumentBackFooterEdit,
   ] = useState("");
-  const [documentFilesEdit, setdocumentFilesEdit] = useState("");
+  const [documentFilesEdit, setdocumentFilesEdit] = useState([]);
   const [documentFilesSealEdit, setdocumentFilesSealEdit] = useState("");
   const [documentFilesSignatureEdit, setdocumentFilesSignatureEdit] =
     useState("");
@@ -1032,7 +1034,7 @@ function TempControlPanel() {
     setOption8Edit(selectedOption);
     handleClose8Edit();
     setDocBodyHeader8Edit("Please Select Document");
-    setdocumentFilesEdit("");
+    // setdocumentFilesEdit("");
   };
 
   const handleClick9Edit = (event) => {
@@ -1302,6 +1304,9 @@ function TempControlPanel() {
                   subKey === "headerimage") ||
                 (key === "letterheadcontentfooter" &&
                   subKey === "footerimage") ||
+                (key === "letterheadbodycontent" &&
+                  subKey === "backgroundimage") ||
+                (key === "documentcompany" && subKey === "file") ||
                 ((key === "documentseal" || key === "documentsignature") &&
                   subKey === "document");
 
@@ -1326,15 +1331,17 @@ function TempControlPanel() {
       // ✅ Apply for each TODO field
       appendTodoArray(headerTodoCreate, "letterheadcontentheader");
       appendTodoArray(footerTodoCreate, "letterheadcontentfooter");
+      appendTodoArray(backgroundImageTodoCreate, "letterheadbodycontent");
       appendTodoArray(todoscheckSeal, "documentseal");
+      appendTodoArray(documentFiles, "documentcompany");
       appendTodoArray(todoscheckSignature, "documentsignature");
 
       // 🔹 Append normal single-file fields
-      if (documentFilesDocumentBodyContent?.file)
-        formData.append(
-          "letterheadbodycontent",
-          documentFilesDocumentBodyContent.file
-        );
+      // if (documentFilesDocumentBodyContent?.file)
+      //   formData.append(
+      //     "letterheadbodycontent",
+      //     documentFilesDocumentBodyContent.file
+      //   );
       if (documentFilesDocumentFrontHeader?.file)
         formData.append(
           "idcardfrontheader",
@@ -1355,8 +1362,10 @@ function TempControlPanel() {
           "idcardbackfooter",
           documentFilesDocumentBackFooter.file
         );
-      if (documentFiles?.file)
-        formData.append("documentcompany", documentFiles?.file);
+      // if (documentFiles?.length > 0)
+      //   documentFiles.forEach((item, index) => {
+      //     formData.append(`documentcompany_${index}_file`, item.file);
+      //   });
       const res = await axios.post(
         `${SERVICE.TEMPLATECONTROLPANEL_CREATE}`,
         formData,
@@ -1440,10 +1449,8 @@ function TempControlPanel() {
       setPopupContentMalert("Please Add Footer Todo");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (!documentFilesDocumentBodyContent.name) {
-      setPopupContentMalert(
-        "Please Upload Document Letter Head Body Content(Background)"
-      );
+    } else if (backgroundImageTodoCreate.length === 0) {
+      setPopupContentMalert("Please Add Background Image Todo");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (companyurl === "") {
@@ -1472,6 +1479,10 @@ function TempControlPanel() {
       handleClickOpenPopupMalert();
     } else if (address === "") {
       setPopupContentMalert("Please Enter Address");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (documentFiles?.length < 1) {
+      setPopupContentMalert("Please Add Company Logo");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (todoscheckToCompany?.length < 1) {
@@ -1533,7 +1544,7 @@ function TempControlPanel() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
-      handleClickOpenInfoImage();
+    handleClickOpenInfoImage();
     }
   };
   // console.log(qrInfoTodos, 'qrInfoTodos');
@@ -1720,10 +1731,15 @@ function TempControlPanel() {
     setdocumentFilesDOcumentBackHeader("");
     setdocumentFilesDOcumentBackFooter("");
     setHeaderNameCreate("");
+    setDefaultHeaderNameCreate("default");
     setHeaderTodoCreate([]);
     setFooterNameCreate("");
+    setDefaultFooterNameCreate("default");
     setFooterTodoCreate([]);
-    setdocumentFiles("");
+    setBackgroundImageNameCreate("");
+    setDefaultBackgroundImageNameCreate("default");
+    setBackgroundImageTodoCreate([]);
+    setdocumentFiles([]);
     setdocumentFilesVIew([]);
     setdocumentFilesSeal("");
     setdocumentFilesSignature("");
@@ -1781,10 +1797,15 @@ function TempControlPanel() {
     setIsTodoQrInfoEdit(Array(qrInfoTodosEdit.length).fill(false));
     setIsTodoEditCCEmailEdit(Array(ccEmailTodoEdit.length).fill(false));
     setIsTodoEditBCCEmailEdit(Array(bccEmailTodoEdit.length).fill(false));
-    setIsEditingHeaderEdit(false)
-    setEditIndexHeaderEdit(null)
-    setIsEditingFooterEdit(false)
-    setEditIndexFooterEdit(null)
+    setIsEditingHeaderEdit(false);
+    setEditIndexHeaderEdit(null);
+    setIsEditingFooterEdit(false);
+    setIsEditingBackgroundImageEdit(false);
+    setEditIndexFooterEdit(null);
+    setEditIndexBackgroundImageEdit(null);
+    setDefaultHeaderNameEdit("default");
+    setDefaultFooterNameEdit("default");
+    setDefaultBackgroundImageNameEdit("default");
   };
 
   // info model
@@ -1931,6 +1952,7 @@ function TempControlPanel() {
       setTemplateControlPanelEdit(lastupdatedata);
       setHeaderTodoEdit(lastupdatedata?.letterheadcontentheader);
       setFooterTodoEdit(lastupdatedata?.letterheadcontentfooter);
+      setBackgroundImageTodoEdit(lastupdatedata?.letterheadbodycontent);
       setCompanyEdit(lastupdatedata?.company);
       fetchBranchAllEdit(lastupdatedata?.company);
       setBranchEdit(lastupdatedata?.branch);
@@ -1940,9 +1962,9 @@ function TempControlPanel() {
       setdocumentFilesEdit(lastupdatedata?.documentcompany);
       // setdocumentFilesDOcumentContentHeaderEdit(lastupdatedata?.letterheadcontentheader);
       // setdocumentFilesDOcumentContentFooterEdit(lastupdatedata?.letterheadcontentfooter);
-      setdocumentFilesDOcumentBodyContentEdit(
-        lastupdatedata?.letterheadbodycontent
-      );
+      // setdocumentFilesDOcumentBodyContentEdit(
+      //   lastupdatedata?.letterheadbodycontent
+      // );
       setdocumentFilesDOcumentFrontHeaderEdit(
         lastupdatedata?.idcardfrontheader
       );
@@ -2177,6 +2199,9 @@ function TempControlPanel() {
                   subKey === "headerimage") ||
                 (key === "letterheadcontentfooter" &&
                   subKey === "footerimage") ||
+                (key === "letterheadbodycontent" &&
+                  subKey === "backgroundimage") ||
+                (key === "documentcompany" && subKey === "file") ||
                 ((key === "documentseal" || key === "documentsignature") &&
                   subKey === "document");
 
@@ -2204,6 +2229,8 @@ function TempControlPanel() {
 
       appendTodoArray(headerTodoEdit, "letterheadcontentheader");
       appendTodoArray(footerTodoEdit, "letterheadcontentfooter");
+      appendTodoArray(backgroundImageTodoEdit, "letterheadbodycontent");
+      appendTodoArray(documentFilesEdit, "documentcompany");
       appendTodoArray(todoscheckSealEdit, "documentseal");
       appendTodoArray(todoscheckSignatureEdit, "documentsignature");
 
@@ -2230,7 +2257,21 @@ function TempControlPanel() {
       );
       appendSingleFile("idcardbackheader", documentFilesDocumentBackHeaderEdit);
       appendSingleFile("idcardbackfooter", documentFilesDocumentBackFooterEdit);
-      appendSingleFile("documentcompany", documentFilesEdit);
+
+      // if (Array.isArray(documentFilesEdit)) {
+      //   documentFilesEdit.forEach((item, index) => {
+      //     if (item.file instanceof File) {
+      //       // NEW FILE
+      //       formData.append(`documentcompany_new_${index}`, item.file);
+      //     } else {
+      //       // OLD FILE OBJECT → send as JSON
+      //       formData.append(
+      //         `documentcompany_old_${index}`,
+      //         JSON.stringify(item)
+      //       );
+      //     }
+      //   });
+      // }
 
       // 🔹 Send request
       const res = await axios.put(
@@ -2338,6 +2379,9 @@ function TempControlPanel() {
       setEditingIndexSeal(-1);
       setSealTodo(false);
       setSignTodo(false);
+      setDefaultHeaderNameEdit("default");
+      setDefaultFooterNameEdit("default");
+      setDefaultBackgroundImageNameEdit("default");
     } catch (err) {
       setBtnSubmitEdit(false);
 
@@ -2374,10 +2418,8 @@ function TempControlPanel() {
       setPopupContentMalert("Please Add Footer Todo");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (!documentFilesDocumentBodyContentEdit) {
-      setPopupContentMalert(
-        "Please Upload Document Letter Head Body Content(Background)"
-      );
+    } else if (backgroundImageTodoEdit?.length === 0) {
+      setPopupContentMalert("Please Add Background Image Todo");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (!documentFilesDocumentFrontHeaderEdit) {
@@ -2406,6 +2448,10 @@ function TempControlPanel() {
       handleClickOpenPopupMalert();
     } else if (addressEdit === "") {
       setPopupContentMalert("Please Enter Address");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (documentFilesEdit?.length < 1) {
+      setPopupContentMalert("Please Add Company Logo");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (todoscheckToCompanyEdit?.length < 1) {
@@ -2463,7 +2509,7 @@ function TempControlPanel() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
-      handleClickOpenInfoImageEdit();
+    handleClickOpenInfoImageEdit();
     }
   };
 
@@ -3959,10 +4005,11 @@ function TempControlPanel() {
   };
 
   const handleFileDelete = (index) => {
-    setdocumentFiles("");
+    setdocumentFiles((prev) => prev.filter((_, i) => i !== index));
   };
+
   const handleFileDeleteEdit = (index) => {
-    setdocumentFilesEdit("");
+    setdocumentFilesEdit((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleFileDeleteSeal = (index) => {
@@ -3981,15 +4028,43 @@ function TempControlPanel() {
   };
 
   const [headerNameCreate, setHeaderNameCreate] = useState("");
+  const [DefaultHeaderNameCreate, setDefaultHeaderNameCreate] =
+    useState("default");
+  const [DefaultLogoNameCreate, setDefaultLogoNameCreate] = useState("default");
   const [headerTodoCreate, setHeaderTodoCreate] = useState([]);
   const [isEditingHeaderCreate, setIsEditingHeaderCreate] = useState(false);
   const [editIndexHeaderCreate, setEditIndexHeaderCreate] = useState(null);
+  const [DefaultFooterNameCreate, setDefaultFooterNameCreate] =
+    useState("default");
   const [footerNameCreate, setFooterNameCreate] = useState("");
   const [footerTodoCreate, setFooterTodoCreate] = useState([]);
   const [isEditingFooterCreate, setIsEditingFooterCreate] = useState(false);
   const [editIndexFooterCreate, setEditIndexFooterCreate] = useState(null);
   const [headerTodoView, setHeaderTodoView] = useState([]);
   const [footerTodoView, setFooterTodoView] = useState([]);
+
+  const [backgroundImageNameCreate, setBackgroundImageNameCreate] =
+    useState("");
+  const [
+    DefaultBackgroundImageNameCreate,
+    setDefaultBackgroundImageNameCreate,
+  ] = useState("default");
+  const [backgroundImageTodoCreate, setBackgroundImageTodoCreate] = useState(
+    []
+  );
+  const [isEditingBackgroundImageCreate, setIsEditingBackgroundImageCreate] =
+    useState(false);
+  const [editIndexBackgroundImageCreate, setEditIndexBackgroundImageCreate] =
+    useState(null);
+
+  const [backgroundImageNameEdit, setBackgroundImageNameEdit] = useState("");
+  const [DefaultBackgroundImageNameEdit, setDefaultBackgroundImageNameEdit] =
+    useState("");
+  const [backgroundImageTodoEdit, setBackgroundImageTodoEdit] = useState([]);
+  const [isEditingBackgroundImageEdit, setIsEditingBackgroundImageEdit] =
+    useState(false);
+  const [editIndexBackgroundImageEdit, setEditIndexBackgroundImageEdit] =
+    useState(null);
   console.log(
     documentFilesDocumentContentHeader,
     "documentFilesDocumentContentHeader"
@@ -4013,6 +4088,20 @@ function TempControlPanel() {
       isEditingHeaderCreate
         ? headerTodoCreate?.some(
             (data, index) =>
+              editIndexHeaderCreate !== index && data?.default === "default"
+          ) && DefaultHeaderNameCreate === "default"
+        : headerTodoCreate?.some((data) => data?.default === "default") &&
+          DefaultHeaderNameCreate === "default"
+    ) {
+      setPopupContentMalert("Can't set more than one default status");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+    if (
+      isEditingHeaderCreate
+        ? headerTodoCreate?.some(
+            (data, index) =>
               editIndexHeaderCreate !== index &&
               data?.headername === headerNameCreate.trim()
           )
@@ -4028,6 +4117,7 @@ function TempControlPanel() {
 
     const header = {
       headername: headerNameCreate.trim(),
+      default: DefaultHeaderNameCreate,
       headerimage: documentFilesDocumentContentHeader,
     };
 
@@ -4045,6 +4135,7 @@ function TempControlPanel() {
 
     // 🧹 Reset fields
     setHeaderNameCreate("");
+    setDefaultHeaderNameCreate("default");
     setdocumentFilesDOcumentContentHeader("");
     handleClose();
     setOption("");
@@ -4052,6 +4143,7 @@ function TempControlPanel() {
   const handleEditHeaderCreate = (index) => {
     const selected = headerTodoCreate[index];
     setHeaderNameCreate(selected.headername);
+    setDefaultHeaderNameCreate(selected.default);
     setdocumentFilesDOcumentContentHeader(selected.headerimage);
     setIsEditingHeaderCreate(true);
     setEditIndexHeaderCreate(index);
@@ -4113,9 +4205,24 @@ function TempControlPanel() {
       handleClickOpenPopupMalert();
       return;
     }
+    if (
+      isEditingFooterCreate
+        ? footerTodoCreate?.some(
+            (data, index) =>
+              editIndexFooterCreate !== index && data?.default === "default"
+          ) && DefaultFooterNameCreate === "default"
+        : footerTodoCreate?.some((data) => data?.default === "default") &&
+          DefaultFooterNameCreate === "default"
+    ) {
+      setPopupContentMalert("Can't set more than one default status");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
 
     const footer = {
       footername: footerNameCreate.trim(),
+      default: DefaultFooterNameCreate,
       footerimage: documentFilesDocumentContentFooter,
     };
 
@@ -4133,6 +4240,7 @@ function TempControlPanel() {
 
     // 🧹 Reset fields
     setFooterNameCreate("");
+    setDefaultFooterNameCreate("default");
     handleClose2();
     setOption2("");
     setdocumentFilesDOcumentContentFooter("");
@@ -4141,6 +4249,7 @@ function TempControlPanel() {
   const handleEditFooterCreate = (index) => {
     const selected = footerTodoCreate[index];
     setFooterNameCreate(selected.footername);
+    setDefaultFooterNameCreate(selected.default);
     setdocumentFilesDOcumentContentFooter(selected.footerimage);
     setIsEditingFooterCreate(true);
     setEditIndexFooterCreate(index);
@@ -4171,10 +4280,12 @@ function TempControlPanel() {
   };
 
   const [headerNameEdit, setHeaderNameEdit] = useState("");
+  const [DefaultHeaderNameEdit, setDefaultHeaderNameEdit] = useState("");
   const [headerTodoEdit, setHeaderTodoEdit] = useState([]);
   const [isEditingHeaderEdit, setIsEditingHeaderEdit] = useState(false);
   const [editIndexHeaderEdit, setEditIndexHeaderEdit] = useState(null);
   const [footerNameEdit, setFooterNameEdit] = useState("");
+  const [DefaultFooterNameEdit, setDefaultFooterNameEdit] = useState("");
   const [footerTodoEdit, setFooterTodoEdit] = useState([]);
   const [isEditingFooterEdit, setIsEditingFooterEdit] = useState(false);
   const [editIndexFooterEdit, setEditIndexFooterEdit] = useState(null);
@@ -4211,8 +4322,23 @@ function TempControlPanel() {
       return;
     }
 
+    if (
+      isEditingHeaderEdit
+        ? headerTodoEdit?.some(
+            (data, index) =>
+              editIndexHeaderEdit !== index && data?.default === "default"
+          ) && DefaultHeaderNameEdit === "default"
+        : headerTodoEdit?.some((data) => data?.default === "default") &&
+          DefaultHeaderNameEdit === "default"
+    ) {
+      setPopupContentMalert("Can't set more than one default status");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
     const header = {
       headername: headerNameEdit.trim(),
+      default: DefaultHeaderNameEdit,
       headerimage: documentFilesDocumentContentHeaderEdit,
     };
 
@@ -4231,11 +4357,13 @@ function TempControlPanel() {
     setOptionEdit("");
     // 🧹 Reset fields
     setHeaderNameEdit("");
+    setDefaultHeaderNameEdit("default");
     setdocumentFilesDOcumentContentHeaderEdit("");
   };
   const handleEditHeaderEdit = (index) => {
     const selected = headerTodoEdit[index];
     setHeaderNameEdit(selected.headername);
+    setDefaultHeaderNameEdit(selected.default);
     setdocumentFilesDOcumentContentHeaderEdit(selected.headerimage);
     setIsEditingHeaderEdit(true);
     setEditIndexHeaderEdit(index);
@@ -4292,8 +4420,23 @@ function TempControlPanel() {
       return;
     }
 
+    if (
+      isEditingFooterEdit
+        ? footerTodoEdit?.some(
+            (data, index) =>
+              editIndexFooterEdit !== index && data?.default === "default"
+          ) && DefaultFooterNameEdit === "default"
+        : footerTodoEdit?.some((data) => data?.default === "default") &&
+          DefaultFooterNameEdit === "default"
+    ) {
+      setPopupContentMalert("Can't set more than one default status");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
     const footer = {
       footername: footerNameEdit.trim(),
+      default: DefaultFooterNameEdit,
       footerimage: documentFilesDocumentContentFooterEdit,
     };
 
@@ -4313,6 +4456,7 @@ function TempControlPanel() {
     setFooterNameEdit("");
     handleClose2Edit();
     setOption2Edit("");
+    setDefaultFooterNameEdit("default");
     setdocumentFilesDOcumentContentFooterEdit("");
   };
 
@@ -4321,6 +4465,7 @@ function TempControlPanel() {
     setFooterNameEdit(selected.footername);
     setdocumentFilesDOcumentContentFooterEdit(selected.footerimage);
     setIsEditingFooterEdit(true);
+    setDefaultFooterNameEdit(selected.default);
     setEditIndexFooterEdit(index);
   };
 
@@ -4344,6 +4489,91 @@ function TempControlPanel() {
     }
   };
 
+  const handleCreateTodoBackgroundImage = () => {
+    if (!backgroundImageNameCreate.trim()) {
+      setPopupContentMalert("Please enter a Background Image name");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    if (!documentFilesDocumentBodyContent) {
+      setPopupContentMalert("Please upload a Background Image file");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+    if (
+      isEditingBackgroundImageCreate
+        ? backgroundImageTodoCreate?.some(
+            (data, index) =>
+              editIndexBackgroundImageCreate !== index &&
+              data?.headername === backgroundImageNameCreate.trim()
+          )
+        : backgroundImageTodoCreate?.some(
+            (data) => data?.headername === backgroundImageNameCreate.trim()
+          )
+    ) {
+      setPopupContentMalert("Please enter different Background image name");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    if (
+      isEditingBackgroundImageCreate
+        ? backgroundImageTodoCreate?.some(
+            (data, index) =>
+              editIndexBackgroundImageCreate !== index &&
+              data?.default === "default"
+          ) && DefaultBackgroundImageNameCreate === "default"
+        : backgroundImageTodoCreate?.some(
+            (data) => data?.default === "default"
+          ) && DefaultBackgroundImageNameCreate === "default"
+    ) {
+      setPopupContentMalert("Can't set more than one default status");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+    const BackgroundImage = {
+      backgroundname: backgroundImageNameCreate.trim(),
+      default: DefaultBackgroundImageNameCreate,
+      backgroundimage: documentFilesDocumentBodyContent,
+    };
+
+    if (isEditingBackgroundImageCreate) {
+      // ✏️ Update existing header
+      const updated = [...backgroundImageTodoCreate];
+      updated[editIndexBackgroundImageCreate] = BackgroundImage;
+      setBackgroundImageTodoCreate(updated);
+      setIsEditingBackgroundImageCreate(false);
+      setEditIndexBackgroundImageCreate(null);
+    } else {
+      // ➕ Add new Background Image
+      setBackgroundImageTodoCreate((prev) => [...prev, BackgroundImage]);
+    }
+
+    // 🧹 Reset fields
+    setBackgroundImageNameCreate("");
+    setDefaultBackgroundImageNameCreate("default");
+    setdocumentFilesDOcumentBodyContent("");
+    handleClose3();
+    setOption3("");
+  };
+  const handleEditBackgroundImageCreate = (index) => {
+    const selected = backgroundImageTodoCreate[index];
+    setBackgroundImageNameCreate(selected.backgroundname);
+    setDefaultBackgroundImageNameCreate(selected.default);
+    setdocumentFilesDOcumentBodyContent(selected.backgroundimage);
+    setIsEditingBackgroundImageCreate(true);
+    setEditIndexBackgroundImageCreate(index);
+  };
+  const handleDeleteBackgroundImageCreate = (index) => {
+    setBackgroundImageTodoCreate((prevFiles) =>
+      prevFiles.filter((_, i) => i !== index)
+    );
+  };
   const handleResumeUploadDocumentBodyContent = (event) => {
     const resume = event.target.files;
     if (resume.length > 0) {
@@ -4362,6 +4592,93 @@ function TempControlPanel() {
       });
       // };
     }
+  };
+
+  const handleCreateTodoBackgroundImageEdit = () => {
+    if (!backgroundImageNameEdit.trim()) {
+      setPopupContentMalert("Please enter a Background Image name");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    if (!documentFilesDocumentBodyContentEdit) {
+      setPopupContentMalert("Please upload a Background Image file");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+    if (
+      isEditingBackgroundImageEdit
+        ? backgroundImageTodoEdit?.some(
+            (data, index) =>
+              editIndexBackgroundImageEdit !== index &&
+              data?.headername === backgroundImageNameEdit.trim()
+          )
+        : backgroundImageTodoEdit?.some(
+            (data) => data?.headername === backgroundImageNameEdit.trim()
+          )
+    ) {
+      setPopupContentMalert("Please enter different Background image name");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+    if (
+      isEditingBackgroundImageEdit
+        ? backgroundImageTodoEdit?.some(
+            (data, index) =>
+              editIndexBackgroundImageEdit !== index &&
+              data?.default === "default"
+          ) && DefaultBackgroundImageNameEdit === "default"
+        : backgroundImageTodoEdit?.some(
+            (data) => data?.default === "default"
+          ) && DefaultBackgroundImageNameEdit === "default"
+    ) {
+      console.log(isEditingBackgroundImageEdit ,editIndexBackgroundImageEdit, "isEditingBackgroundImageEdit")
+      setPopupContentMalert("Can't set more than one default status");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+      return;
+    }
+
+    const BackgroundImage = {
+      backgroundname: backgroundImageNameEdit.trim(),
+      default: DefaultBackgroundImageNameEdit,
+      backgroundimage: documentFilesDocumentBodyContentEdit,
+    };
+
+    if (isEditingBackgroundImageEdit) {
+      // ✏️ Update existing header
+      const updated = [...backgroundImageTodoEdit];
+      updated[editIndexBackgroundImageEdit] = BackgroundImage;
+      setBackgroundImageTodoEdit(updated);
+      setDefaultBackgroundImageNameEdit("default");
+      setIsEditingBackgroundImageEdit(false);
+      setEditIndexBackgroundImageEdit(null);
+    } else {
+      // ➕ Add new Background Image
+      setBackgroundImageTodoEdit((prev) => [...prev, BackgroundImage]);
+    }
+
+    // 🧹 Reset fields
+    setBackgroundImageNameEdit("");
+    setdocumentFilesDOcumentBodyContentEdit("");
+    handleClose3Edit();
+    setOption3Edit("");
+  };
+  const handleEditBackgroundImageEdit = (index) => {
+    const selected = backgroundImageTodoEdit[index];
+    setBackgroundImageNameEdit(selected.backgroundname);
+    setdocumentFilesDOcumentBodyContentEdit(selected.backgroundimage);
+    setIsEditingBackgroundImageEdit(true);
+    setDefaultBackgroundImageNameEdit(selected.default);
+    setEditIndexBackgroundImageEdit(index);
+  };
+  const handleDeleteBackgroundImageEdit = (index) => {
+    setBackgroundImageTodoEdit((prevFiles) =>
+      prevFiles.filter((_, i) => i !== index)
+    );
   };
   const handleResumeUploadDocumentBodyContentEdit = (event) => {
     const resume = event.target.files;
@@ -4406,14 +4723,12 @@ function TempControlPanel() {
       const file = resume[0];
       // reader.readAsDataURL(file);
       // reader.onload = () => {
-      setdocumentFilesDOcumentFrontHeaderEdit(
-        {
-          name: file.name,
-          file: file,
-          // preview: reader.result,
-          remark: "resume file",
-        },
-      );
+      setdocumentFilesDOcumentFrontHeaderEdit({
+        name: file.name,
+        file: file,
+        // preview: reader.result,
+        remark: "resume file",
+      });
       // };
     }
   };
@@ -4538,7 +4853,18 @@ function TempControlPanel() {
       }
       // reader.readAsDataURL(file);
       // reader.onload = () => {
-      setdocumentFiles({ name: file.name, file: file, remark: "Company Logo" });
+      setdocumentFiles((prev) => [
+        ...prev,
+        {
+          name: file.name,
+          file: file,
+          remark: "Company Logo",
+          default: prev?.some((data) => data?.default === "default")
+            ? "none"
+            : "default",
+        },
+      ]);
+
       // };
     }
   };
@@ -4549,12 +4875,18 @@ function TempControlPanel() {
       const file = resume[0];
       // reader.readAsDataURL(file);
       // reader.onload = () => {
-      setdocumentFilesEdit({
-        name: file.name,
-        file: file,
-        // preview: reader.result,
-        remark: "resume file",
-      });
+      setdocumentFilesEdit((prev) => [
+        ...prev,
+        {
+          name: file.name,
+          file: file,
+          remark: "Company Logo",
+          default: prev?.some((data) => data?.default === "default")
+            ? "none"
+            : "default",
+        },
+      ]);;
+      handleClose8Edit();
       // };
     }
   };
@@ -5085,6 +5417,29 @@ function TempControlPanel() {
                       />
                     </FormControl>
                   </Grid>
+                  <Grid item md={2} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Default Name <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        options={[
+                          { label: "default", value: "default" },
+                          { label: "none", value: "none" },
+                        ]}
+                        value={{
+                          value: DefaultHeaderNameCreate,
+                          label: DefaultHeaderNameCreate,
+                        }}
+                        // isDisabled={headerTodoCreate?.some(
+                        //   (data) => data?.default === "default"
+                        // )}
+                        onChange={(e) => {
+                          setDefaultHeaderNameCreate(e.value);
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
                       {" "}
@@ -5096,7 +5451,10 @@ function TempControlPanel() {
                         variant="contained"
                         size="small"
                         component="label"
-                        disabled={isEditingHeaderCreate && documentFilesDocumentContentHeader}
+                        disabled={
+                          isEditingHeaderCreate &&
+                          documentFilesDocumentContentHeader
+                        }
                         sx={{
                           ...buttonStyles.buttonsubmit,
                           "@media only screen and (max-width:550px)": {
@@ -5126,7 +5484,10 @@ function TempControlPanel() {
                         !documentFilesDocumentContentHeader && (
                           <Button
                             variant="contained"
-                            disabled={isEditingHeaderCreate && documentFilesDocumentContentHeader}
+                            disabled={
+                              isEditingHeaderCreate &&
+                              documentFilesDocumentContentHeader
+                            }
                             size="small"
                             component="label"
                             sx={{
@@ -5154,7 +5515,10 @@ function TempControlPanel() {
                         <FormControl fullWidth sx={{ marginTop: "10px" }}>
                           <Selects
                             options={orgDocuments}
-                             disabled={isEditingHeaderCreate && documentFilesDocumentContentHeader}
+                            disabled={
+                              isEditingHeaderCreate &&
+                              documentFilesDocumentContentHeader
+                            }
                             value={{
                               value: docBodyHeader,
                               label: docBodyHeader,
@@ -5248,8 +5612,11 @@ function TempControlPanel() {
                             <Grid item md={2} sm={6} xs={6}>
                               <Typography>{file?.headername}</Typography>
                             </Grid>
+                            <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.default}</Typography>
+                            </Grid>
                             <Grid item md={6} sm={6} xs={6}>
-                              <Typography>{file?.headerimage?.name}</Typography>
+                              <Typography>{file?.headerimage?.originalname ? file?.headerimage?.originalname : file?.headerimage?.name }</Typography>
                             </Grid>
                             <Grid></Grid>
                             <Grid item md={2} sm={6} xs={6}>
@@ -5287,6 +5654,7 @@ function TempControlPanel() {
                                       setIsEditingHeaderCreate(false);
                                       setEditIndexHeaderCreate(null);
                                       setHeaderNameCreate("");
+                                      setDefaultHeaderNameCreate("default");
                                       setdocumentFilesDOcumentContentHeader("");
                                     }}
                                   >
@@ -5363,6 +5731,29 @@ function TempControlPanel() {
                       />
                     </FormControl>
                   </Grid>
+                  <Grid item md={2} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Default Name <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        options={[
+                          { label: "default", value: "default" },
+                          { label: "none", value: "none" },
+                        ]}
+                        value={{
+                          value: DefaultFooterNameCreate,
+                          label: DefaultFooterNameCreate,
+                        }}
+                        // isDisabled={footerTodoCreate?.some(
+                        //   (data) => data?.default === "default"
+                        // )}
+                        onChange={(e) => {
+                          setDefaultFooterNameCreate(e.value);
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
                   <Grid item md={4} sm={12} xs={12}>
                     <InputLabel>
                       {" "}
@@ -5373,7 +5764,10 @@ function TempControlPanel() {
                       <div>
                         <Button
                           variant="contained"
-                          disabled={isEditingFooterCreate && documentFilesDocumentContentFooter}
+                          disabled={
+                            isEditingFooterCreate &&
+                            documentFilesDocumentContentFooter
+                          }
                           size="small"
                           component="label"
                           onClick={handleClick2}
@@ -5409,7 +5803,10 @@ function TempControlPanel() {
                           !documentFilesDocumentContentFooter && (
                             <Button
                               variant="contained"
-                             disabled={isEditingFooterCreate && documentFilesDocumentContentFooter}
+                              disabled={
+                                isEditingFooterCreate &&
+                                documentFilesDocumentContentFooter
+                              }
                               size="small"
                               component="label"
                               sx={{
@@ -5437,7 +5834,10 @@ function TempControlPanel() {
                           <FormControl fullWidth sx={{ marginTop: "10px" }}>
                             <Selects
                               options={orgDocuments}
-                             disabled={isEditingFooterCreate && documentFilesDocumentContentFooter}
+                              disabled={
+                                isEditingFooterCreate &&
+                                documentFilesDocumentContentFooter
+                              }
                               value={{
                                 value: docBodyHeader2,
                                 label: docBodyHeader2,
@@ -5532,8 +5932,13 @@ function TempControlPanel() {
                             <Grid item md={2} sm={6} xs={6}>
                               <Typography>{file?.footername}</Typography>
                             </Grid>
+                            <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.default}</Typography>
+                            </Grid>
                             <Grid item md={6} sm={6} xs={6}>
-                              <Typography>{file?.footerimage?.name}</Typography>
+                                                            <Typography>{file?.footerimage?.originalname ? file?.footerimage?.originalname : file?.footerimage?.name }</Typography>
+
+                              {/* <Typography>{file?.footerimage?.name}</Typography> */}
                             </Grid>
                             <Grid></Grid>
                             <Grid item md={2} sm={6} xs={6}>
@@ -5571,6 +5976,7 @@ function TempControlPanel() {
                                       setIsEditingFooterCreate(false);
                                       setEditIndexFooterCreate(null);
                                       setFooterNameCreate("");
+                                      setDefaultFooterNameCreate("default");
                                       setdocumentFilesDOcumentContentFooter("");
                                     }}
                                   >
@@ -5622,7 +6028,333 @@ function TempControlPanel() {
                       ))}
                   </Grid>
                 </Grid>
+
                 <Grid container spacing={2}>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>Background Image Name</b>
+                        <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter Background Image Name"
+                        value={backgroundImageNameCreate}
+                        disabled={
+                          !isEditingBackgroundImageCreate &&
+                          documentFilesDocumentBodyContent?.file
+                            ? false
+                            : false
+                        }
+                        onChange={(e) => {
+                          setBackgroundImageNameCreate(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={2} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Default Name <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        options={[
+                          { label: "default", value: "default" },
+                          { label: "none", value: "none" },
+                        ]}
+                        value={{
+                          value: DefaultBackgroundImageNameCreate,
+                          label: DefaultBackgroundImageNameCreate,
+                        }}
+                        // isDisabled={backgroundImageTodoCreate?.some(
+                        //   (data) => data?.default === "default"
+                        // )}
+                        onChange={(e) => {
+                          setDefaultBackgroundImageNameCreate(e.value);
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} sm={12} xs={12}>
+                    <InputLabel>
+                      {" "}
+                      <b>Document Letter Head Body Content(Background)</b>
+                      <b style={{ color: "red" }}>*</b>
+                    </InputLabel>
+                    <div>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        component="label"
+                        disabled={
+                          isEditingBackgroundImageCreate &&
+                          documentFilesDocumentBodyContent
+                        }
+                        sx={{
+                          ...buttonStyles.buttonsubmit,
+                          "@media only screen and (max-width:550px)": {
+                            marginY: "5px",
+                          },
+                        }}
+                        onClick={handleClick3}
+                      >
+                        Upload
+                      </Button>
+                      <Menu
+                        anchorEl={anchorElDoc3}
+                        open={Boolean(anchorElDoc3)}
+                        onClose={handleClose3}
+                      >
+                        <MenuItem onClick={() => handleMenuItemClick3("local")}>
+                          Upload Local
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => handleMenuItemClick3("organizational")}
+                        >
+                          Organizational Document
+                        </MenuItem>
+                      </Menu>
+
+                      {option3 === "local" &&
+                        !documentFilesDocumentBodyContent && (
+                          <Button
+                            variant="contained"
+                            disabled={
+                              isEditingBackgroundImageCreate &&
+                              documentFilesDocumentBodyContent
+                            }
+                            size="small"
+                            component="label"
+                            sx={{
+                              ...buttonStyles.buttonsubmit,
+                              "@media only screen and (max-width:550px)": {
+                                marginY: "5px",
+                              },
+                            }}
+                          >
+                            Upload Local
+                            <input
+                              type="file"
+                              id="resume"
+                              accept=".png"
+                              name="file"
+                              hidden
+                              onChange={(e) => {
+                                handleResumeUploadDocumentBodyContent(e);
+                              }}
+                            />
+                          </Button>
+                        )}
+
+                      {option3 === "organizational" && (
+                        <FormControl fullWidth sx={{ marginTop: "10px" }}>
+                          <Selects
+                            options={orgDocuments}
+                            disabled={
+                              isEditingBackgroundImageCreate &&
+                              documentFilesDocumentBodyContent
+                            }
+                            value={{
+                              value: docBodyHeader3,
+                              label: docBodyHeader3,
+                            }}
+                            onChange={async (e) => {
+                              setDocBodyHeader3(e.value);
+                              const resume = e?.document[0];
+                              const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
+                              const base64 = await getFileObjectFromMulterPath(
+                                filePath,
+                                resume?.name
+                              );
+                              setdocumentFilesDOcumentBodyContent({
+                                name: resume?.name,
+                                file: base64,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      )}
+                    </div>
+
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {
+                        documentFilesDocumentBodyContent && (
+                          // documentFilesDocumentContentHeader?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={8} sm={6} xs={6}>
+                                <Typography>
+                                  {documentFilesDocumentBodyContent.name}
+                                </Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentBodyContent(
+                                      documentFilesDocumentBodyContent
+                                    )
+                                  }
+                                />
+                              </Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <Button
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                    marginTop: "-5px",
+                                  }}
+                                  onClick={() =>
+                                    handleFileDeleteDocumentBodyContent()
+                                  }
+                                >
+                                  <DeleteIcon />
+                                </Button>
+                              </Grid>
+                            </Grid>
+                          </>
+                        )
+                        // ))
+                      }
+                    </Grid>
+                  </Grid>
+                  <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
+                    <Button
+                      variant="contained"
+                      sx={{ minWidth: "35px" }}
+                      onClick={handleCreateTodoBackgroundImage}
+                    >
+                      {isEditingBackgroundImageCreate ? (
+                        <EditIcon />
+                      ) : (
+                        <FaPlus />
+                      )}
+                    </Button>
+                  </Grid>
+
+                  <Grid item md={12} xs={12} sm={12}>
+                    {backgroundImageTodoCreate?.length > 0 && (
+                      <Typography variant="h6">
+                        {"Background Image List"}
+                      </Typography>
+                    )}
+                    <br />
+                    {backgroundImageTodoCreate?.length > 0 &&
+                      backgroundImageTodoCreate?.map((file, index) => (
+                        <>
+                          <Grid container spacing={1}>
+                            <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.backgroundname}</Typography>
+                            </Grid>
+                            <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.default}</Typography>
+                            </Grid>
+                            <Grid item md={6} sm={6} xs={6}>
+                              <Typography>
+                                {file?.backgroundimage?.name}
+                                                                                            <Typography>{file?.backgroundimage?.originalname ? file?.backgroundimage?.originalname : file?.backgroundimage?.name }</Typography>
+
+                              </Typography>
+                            </Grid>
+                            <Grid></Grid>
+                            <Grid item md={2} sm={6} xs={6}>
+                              {isEditingBackgroundImageCreate &&
+                              editIndexBackgroundImageCreate === index ? (
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  {/* ✅ Save Button */}
+                                  <Button
+                                    sx={{
+                                      color: "#4CAF50",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
+                                    }}
+                                    onClick={handleCreateTodoBackgroundImage}
+                                  >
+                                    <CheckIcon />
+                                  </Button>
+
+                                  {/* ❌ Cancel Button */}
+                                  <Button
+                                    sx={{
+                                      color: "#F44336",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
+                                    }}
+                                    onClick={() => {
+                                      setIsEditingBackgroundImageCreate(false);
+                                      setEditIndexBackgroundImageCreate(null);
+                                      setBackgroundImageNameCreate("");
+                                      setDefaultBackgroundImageNameCreate(
+                                        "default"
+                                      );
+                                      setdocumentFilesDOcumentBodyContent("");
+                                    }}
+                                  >
+                                    <CloseIcon />
+                                  </Button>
+                                </Box>
+                              ) : (
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    gap: 1,
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  {/* ✏️ Edit Button */}
+                                  <Button
+                                    sx={{
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
+                                    }}
+                                    onClick={() =>
+                                      handleEditBackgroundImageCreate(index)
+                                    }
+                                  >
+                                    <EditIcon />
+                                  </Button>
+
+                                  {/* 🗑️ Delete Button */}
+                                  <Button
+                                    sx={{
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                      minWidth: "30px",
+                                      p: "4px",
+                                    }}
+                                    onClick={() =>
+                                      handleDeleteBackgroundImageCreate(index)
+                                    }
+                                  >
+                                    <DeleteIcon />
+                                  </Button>
+                                </Box>
+                              )}
+                            </Grid>
+                          </Grid>
+                        </>
+                      ))}
+                  </Grid>
+                </Grid>
+                {/* <Grid container spacing={2}>
                   <Grid item md={4} xs={12} sm={12}>
                     <Typography>
                       <b>Document Letter Head Body Content(Background)</b>
@@ -5767,7 +6499,7 @@ function TempControlPanel() {
                       }
                     </Grid>
                   </Grid>
-                </Grid>
+                </Grid> */}
 
                 <Grid item lg={12} md={12} sm={12} xs={12} marginTop={5}>
                   <br /> <br />
@@ -6038,7 +6770,7 @@ function TempControlPanel() {
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
                                 <Typography>
-                                  {documentFilesDocumentFrontFooter.name}
+                                  {documentFilesDocumentFrontFooter?.originalname ? documentFilesDocumentFrontFooter?.originalname : documentFilesDocumentFrontFooter?.name}
                                 </Typography>
                               </Grid>
                               <Grid></Grid>
@@ -6413,10 +7145,7 @@ function TempControlPanel() {
                       </FormControl>
                     </Grid>
                   </>
-
-                  <br />
-
-                  <Grid item md={4} xs={12} sm={12}>
+                  <Grid item md={6} xs={12} sm={12}>
                     <Typography>
                       <b>Logo</b>
                     </Typography>
@@ -6455,7 +7184,7 @@ function TempControlPanel() {
                           </MenuItem>
                         </Menu>
 
-                        {option8 === "local" && !documentFiles?.file && (
+                        {option8 === "local" && (
                           <Button
                             variant="contained"
                             size="small"
@@ -6498,10 +7227,19 @@ function TempControlPanel() {
                                     filePath,
                                     resume?.name
                                   );
-                                setdocumentFiles({
-                                  name: resume?.name,
-                                  file: base64,
-                                });
+
+                                setdocumentFiles((prev) => [
+                                  ...prev,
+                                  {
+                                    name: resume?.name,
+                                    file: base64,
+                                    default: prev?.some(
+                                      (data) => data?.default === "default"
+                                    )
+                                      ? "none"
+                                      : "default",
+                                  },
+                                ]);
                               }}
                             />
                           </FormControl>
@@ -6515,14 +7253,62 @@ function TempControlPanel() {
                                         </Button> */}
                     </Box>
                     <Grid item md={12} xs={12} sm={12}>
-                      {
-                        documentFiles?.file && (
-                          // documentFiles.map((file, index) => (
+                      {documentFiles?.length > 0 &&
+                        documentFiles.map((file, index) => (
                           <>
                             <Grid container spacing={2}>
-                              <Grid item md={8} sm={6} xs={6}>
-                                <Typography>{documentFiles?.name}</Typography>
+                              <Grid item md={6} sm={6} xs={6}>
+                                <Typography>{file?.file?.name}</Typography>
                               </Grid>
+                              <Grid item md={4} sm={6} xs={6}>
+                                {editingLogoIndex === index ? (
+                                  <Selects
+                                    autoFocus
+                                    options={[
+                                      { label: "default", value: "default" },
+                                      { label: "none", value: "none" },
+                                    ]}
+                                    value={{
+                                      value: file.default,
+                                      label: file.default,
+                                    }}
+                                    onChange={(e) => {
+                                      const value = e.value;
+
+                                      // update documentFiles
+                                      setdocumentFiles((prev) =>
+                                        prev.map((item, i) => {
+                                          if (i === index) {
+                                            return { ...item, default: value };
+                                          }
+                                          // only one can be default
+                                          return value === "default"
+                                            ? { ...item, default: "none" }
+                                            : item;
+                                        })
+                                      );
+
+                                      // stop editing mode
+                                      setEditingLogoIndex(null);
+                                    }}
+                                    onBlur={() => setEditingLogoIndex(null)} // close if clicked outside
+                                  />
+                                ) : (
+                                  <Typography
+                                    style={{
+                                      cursor: "pointer",
+                                      color:
+                                        file.default === "default"
+                                          ? "#357AE8"
+                                          : "black",
+                                    }}
+                                    onClick={() => setEditingLogoIndex(index)}
+                                  >
+                                    {file.default}
+                                  </Typography>
+                                )}
+                              </Grid>
+
                               <Grid></Grid>
                               <Grid item md={1} sm={6} xs={6}>
                                 <VisibilityOutlinedIcon
@@ -6531,9 +7317,7 @@ function TempControlPanel() {
                                     color: "#357AE8",
                                     cursor: "pointer",
                                   }}
-                                  onClick={() =>
-                                    renderFilePreview(documentFiles)
-                                  }
+                                  onClick={() => renderFilePreview(file)}
                                 />
                               </Grid>
                               <Grid item md={1} sm={6} xs={6}>
@@ -6544,16 +7328,14 @@ function TempControlPanel() {
                                     cursor: "pointer",
                                     marginTop: "-5px",
                                   }}
-                                  onClick={() => handleFileDelete()}
+                                  onClick={() => handleFileDelete(index)}
                                 >
                                   <DeleteIcon />
                                 </Button>
                               </Grid>
                             </Grid>
                           </>
-                        )
-                        // ))
-                      }
+                        ))}
                     </Grid>
                   </Grid>
                 </Grid>
@@ -8878,6 +9660,29 @@ function TempControlPanel() {
                         />
                       </FormControl>
                     </Grid>
+                    <Grid item md={2} xs={12} sm={6}>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          Default Name <b style={{ color: "red" }}>*</b>
+                        </Typography>
+                        <Selects
+                          options={[
+                            { label: "default", value: "default" },
+                            { label: "none", value: "none" },
+                          ]}
+                          value={{
+                            value: DefaultHeaderNameEdit,
+                            label: DefaultHeaderNameEdit,
+                          }}
+                          // isDisabled={headerTodoCreate?.some(
+                          //   (data) => data?.default === "default"
+                          // )}
+                          onChange={(e) => {
+                            setDefaultHeaderNameEdit(e.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
                     <Grid item md={4} sm={12} xs={12}>
                       <InputLabel>
                         {" "}
@@ -8997,7 +9802,7 @@ function TempControlPanel() {
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
                                     {
-                                      documentFilesDocumentContentHeaderEdit?.name
+                                      documentFilesDocumentContentHeaderEdit?.originalname
                                     }
                                   </Typography>
                                 </Grid>
@@ -9060,9 +9865,12 @@ function TempControlPanel() {
                               <Grid item md={2} sm={6} xs={6}>
                                 <Typography>{file?.headername}</Typography>
                               </Grid>
+                               <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.default}</Typography>
+                            </Grid>
                               <Grid item md={6} sm={6} xs={6}>
                                 <Typography>
-                                  {file?.headerimage?.name}
+                                  {file?.headerimage?.originalname ? file?.headerimage?.originalname  : file?.headerimage?.name }
                                 </Typography>
                               </Grid>
                               <Grid></Grid>
@@ -9159,7 +9967,7 @@ function TempControlPanel() {
                     <Grid item md={4} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          <b>Footer Name</b>
+                          Edit
                           <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <OutlinedInput
@@ -9175,6 +9983,29 @@ function TempControlPanel() {
                           }
                           onChange={(e) => {
                             setFooterNameEdit(e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={2} xs={12} sm={6}>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          Default Name <b style={{ color: "red" }}>*</b>
+                        </Typography>
+                        <Selects
+                          options={[
+                            { label: "default", value: "default" },
+                            { label: "none", value: "none" },
+                          ]}
+                          value={{
+                            value: DefaultFooterNameEdit,
+                            label: DefaultFooterNameEdit,
+                          }}
+                          // isDisabled={footerTodoCreate?.some(
+                          //   (data) => data?.default === "default"
+                          // )}
+                          onChange={(e) => {
+                            setDefaultFooterNameEdit(e.value);
                           }}
                         />
                       </FormControl>
@@ -9299,7 +10130,7 @@ function TempControlPanel() {
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
                                     {
-                                      documentFilesDocumentContentFooterEdit?.name
+                                      documentFilesDocumentContentFooterEdit?.originalname
                                     }
                                   </Typography>
                                 </Grid>
@@ -9364,9 +10195,12 @@ function TempControlPanel() {
                               <Grid item md={2} sm={6} xs={6}>
                                 <Typography>{file?.footername}</Typography>
                               </Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.default}</Typography>
+                            </Grid>
                               <Grid item md={6} sm={6} xs={6}>
                                 <Typography>
-                                  {file?.footerimage?.name}
+                                  {file?.footerimage?.originalname ? file?.footerimage?.originalname : file?.footerimage?.name}
                                 </Typography>
                               </Grid>
                               <Grid></Grid>
@@ -9461,113 +10295,169 @@ function TempControlPanel() {
 
                   <Grid container spacing={2}>
                     <Grid item md={4} xs={12} sm={12}>
-                      <Typography>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          <b>Background Image Name</b>
+                          <b style={{ color: "red" }}>*</b>
+                        </Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          placeholder="Please Enter Background Image Name"
+                          value={backgroundImageNameEdit}
+                          disabled={
+                            !isEditingBackgroundImageEdit &&
+                            documentFilesDocumentBodyContentEdit?.file
+                              ? false
+                              : false
+                          }
+                          onChange={(e) => {
+                            setBackgroundImageNameEdit(e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={2} xs={12} sm={6}>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          Default Name <b style={{ color: "red" }}>*</b>
+                        </Typography>
+                        <Selects
+                          options={[
+                            { label: "default", value: "default" },
+                            { label: "none", value: "none" },
+                          ]}
+                          value={{
+                            value: DefaultBackgroundImageNameEdit,
+                            label: DefaultBackgroundImageNameEdit,
+                          }}
+                          // isDisabled={backgroundImageTodoCreate?.some(
+                          //   (data) => data?.default === "default"
+                          // )}
+                          onChange={(e) => {
+                            setDefaultBackgroundImageNameEdit(e.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={4} sm={12} xs={12}>
+                      <InputLabel>
+                        {" "}
                         <b>Document Letter Head Body Content(Background)</b>
                         <b style={{ color: "red" }}>*</b>
-                      </Typography>
-                      <Box sx={{ display: "flex", justifyContent: "left" }}>
-                        <div>
-                          <Button
-                            variant="contained"
-                            onClick={handleClick3Edit}
-                            size="small"
-                            component="label"
-                            sx={{
-                              ...buttonStyles.buttonsubmit,
-                              "@media only screen and (max-width:550px)": {
-                                marginY: "5px",
-                              },
-                            }}
+                      </InputLabel>
+                      <div>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          component="label"
+                          disabled={
+                            isEditingBackgroundImageEdit &&
+                            documentFilesDocumentBodyContentEdit
+                          }
+                          sx={{
+                            ...buttonStyles.buttonsubmit,
+                            "@media only screen and (max-width:550px)": {
+                              marginY: "5px",
+                            },
+                          }}
+                          onClick={handleClick3Edit}
+                        >
+                          Upload
+                        </Button>
+                        <Menu
+                          anchorEl={anchorElDoc3Edit}
+                          open={Boolean(anchorElDoc3Edit)}
+                          onClose={handleClose3Edit}
+                        >
+                          <MenuItem
+                            onClick={() => handleMenuItemClick3Edit("local")}
                           >
-                            Upload
-                          </Button>
+                            Upload Local
+                          </MenuItem>
+                          <MenuItem
+                            onClick={() =>
+                              handleMenuItemClick3Edit("organizational")
+                            }
+                          >
+                            Organizational Document
+                          </MenuItem>
+                        </Menu>
 
-                          <Menu
-                            anchorEl={anchorElDoc3Edit}
-                            open={Boolean(anchorElDoc3Edit)}
-                            onClose={handleClose3Edit}
-                          >
-                            <MenuItem
-                              onClick={() => handleMenuItemClick3Edit("local")}
+                        {option3Edit === "local" &&
+                          !documentFilesDocumentBodyContentEdit && (
+                            <Button
+                              variant="contained"
+                              disabled={
+                                isEditingBackgroundImageEdit &&
+                                documentFilesDocumentBodyContentEdit
+                              }
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
+                              }}
                             >
                               Upload Local
-                            </MenuItem>
-                            <MenuItem
-                              onClick={() =>
-                                handleMenuItemClick3Edit("organizational")
-                              }
-                            >
-                              Organizational Document
-                            </MenuItem>
-                          </Menu>
-
-                          {option3Edit === "local" &&
-                            !documentFilesDocumentBodyContentEdit?.name && (
-                              <Button
-                                variant="contained"
-                                size="small"
-                                component="label"
-                                sx={{
-                                  ...buttonStyles.buttonsubmit,
-                                  "@media only screen and (max-width:550px)": {
-                                    marginY: "5px",
-                                  },
-                                }}
-                              >
-                                Upload Local
-                                <input
-                                  type="file"
-                                  id="resume"
-                                  accept=".png"
-                                  name="file"
-                                  hidden
-                                  onChange={(e) => {
-                                    handleResumeUploadDocumentBodyContentEdit(
-                                      e
-                                    );
-                                  }}
-                                />
-                              </Button>
-                            )}
-
-                          {option3Edit === "organizational" && (
-                            <FormControl fullWidth sx={{ marginTop: "10px" }}>
-                              <Selects
-                                options={orgDocuments}
-                                value={{
-                                  value: docBodyHeader3Edit,
-                                  label: docBodyHeader3Edit,
-                                }}
-                                onChange={async (e) => {
-                                  setDocBodyHeader3Edit(e.value);
-                                  const resume = e?.document[0];
-                                  const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
-                                  const base64 =
-                                    await getFileObjectFromMulterPath(
-                                      filePath,
-                                      resume?.name
-                                    );
-                                  setdocumentFilesDOcumentBodyContentEdit({
-                                    name: resume?.name,
-                                    file: base64,
-                                  });
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadDocumentBodyContentEdit(e);
                                 }}
                               />
-                            </FormControl>
+                            </Button>
                           )}
-                        </div>
-                      </Box>
+
+                        {option3Edit === "organizational" && (
+                          <FormControl fullWidth sx={{ marginTop: "10px" }}>
+                            <Selects
+                              options={orgDocuments}
+                              disabled={
+                                isEditingBackgroundImageEdit &&
+                                documentFilesDocumentBodyContentEdit
+                              }
+                              value={{
+                                value: docBodyHeader3Edit,
+                                label: docBodyHeader3Edit,
+                              }}
+                              onChange={async (e) => {
+                                setDocBodyHeader3Edit(e.value);
+                                const resume = e?.document[0];
+                                const filePath = `${BASE_URL}/api/organizationdocumentfiles/${resume?.filename}`;
+                                const base64 =
+                                  await getFileObjectFromMulterPath(
+                                    filePath,
+                                    resume?.name
+                                  );
+                                setdocumentFilesDOcumentBodyContentEdit({
+                                  name: resume?.name,
+                                  file: base64,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        )}
+                      </div>
+
                       <br></br>
                       <Grid item md={12} xs={12} sm={12}>
                         {
                           documentFilesDocumentBodyContentEdit && (
-                            // documentFilesDocumentBodyContentEdit?.map(
-                            //   (file, index) => (
+                            // documentFilesDocumentContentHeader?.map((file, index) => (
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {documentFilesDocumentBodyContentEdit?.name}
+                                    {
+                                      documentFilesDocumentBodyContentEdit.originalname ?  documentFilesDocumentBodyContentEdit.originalname :  documentFilesDocumentBodyContentEdit.name
+                                    }
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -9594,9 +10484,7 @@ function TempControlPanel() {
                                       marginTop: "-5px",
                                     }}
                                     onClick={() =>
-                                      handleFileDeleteDocumentBodyContentEdit(
-                                        ""
-                                      )
+                                      handleFileDeleteDocumentBodyContentEdit()
                                     }
                                   >
                                     <DeleteIcon />
@@ -9605,10 +10493,135 @@ function TempControlPanel() {
                               </Grid>
                             </>
                           )
-                          //   )
-                          // )
+                          // ))
                         }
                       </Grid>
+                    </Grid>
+                    <Grid item md={1} sm={2} xs={12} marginTop={3.5}>
+                      <Button
+                        variant="contained"
+                        sx={{ minWidth: "35px" }}
+                        onClick={handleCreateTodoBackgroundImageEdit}
+                      >
+                        {isEditingBackgroundImageEdit ? (
+                          <EditIcon />
+                        ) : (
+                          <FaPlus />
+                        )}
+                      </Button>
+                    </Grid>
+
+                    <Grid item md={12} xs={12} sm={12}>
+                      {backgroundImageTodoEdit?.length > 0 && (
+                        <Typography variant="h6">
+                          {"Background Image List"}
+                        </Typography>
+                      )}
+                      <br />
+                      {backgroundImageTodoEdit?.length > 0 &&
+                        backgroundImageTodoEdit?.map((file, index) => (
+                          <>
+                            <Grid container spacing={1}>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file?.backgroundname}</Typography>
+                              </Grid>
+                               <Grid item md={2} sm={6} xs={6}>
+                              <Typography>{file?.default}</Typography>
+                            </Grid>
+                              <Grid item md={6} sm={6} xs={6}>
+                                <Typography>
+                                  {file?.backgroundimage?.originalname ? file?.backgroundimage?.originalname :file?.backgroundimage?.name}
+                                </Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                                {isEditingBackgroundImageEdit &&
+                                editIndexBackgroundImageEdit === index ? (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {/* ✅ Save Button */}
+                                    <Button
+                                      sx={{
+                                        color: "#4CAF50",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
+                                      }}
+                                      onClick={
+                                        handleCreateTodoBackgroundImageEdit
+                                      }
+                                    >
+                                      <CheckIcon />
+                                    </Button>
+
+                                    {/* ❌ Cancel Button */}
+                                    <Button
+                                      sx={{
+                                        color: "#F44336",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
+                                      }}
+                                      onClick={() => {
+                                        setIsEditingBackgroundImageEdit(false);
+                                        setEditIndexBackgroundImageEdit(null);
+                                        setBackgroundImageNameEdit("");
+                                        setdocumentFilesDOcumentBodyContentEdit(
+                                          ""
+                                        );
+                                      }}
+                                    >
+                                      <CloseIcon />
+                                    </Button>
+                                  </Box>
+                                ) : (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {/* ✏️ Edit Button */}
+                                    <Button
+                                      sx={{
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
+                                      }}
+                                      onClick={() =>
+                                        handleEditBackgroundImageEdit(index)
+                                      }
+                                    >
+                                      <EditIcon />
+                                    </Button>
+
+                                    {/* 🗑️ Delete Button */}
+                                    <Button
+                                      sx={{
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                        minWidth: "30px",
+                                        p: "4px",
+                                      }}
+                                      onClick={() =>
+                                        handleDeleteBackgroundImageEdit(index)
+                                      }
+                                    >
+                                      <DeleteIcon />
+                                    </Button>
+                                  </Box>
+                                )}
+                              </Grid>
+                            </Grid>
+                          </>
+                        ))}
                     </Grid>
                   </Grid>
 
@@ -9742,7 +10755,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {documentFilesDocumentFrontHeaderEdit?.name}
+                                    {
+                                      documentFilesDocumentFrontHeaderEdit?.originalname ? documentFilesDocumentFrontHeaderEdit?.originalname : documentFilesDocumentFrontHeaderEdit?.name
+                                    }
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -9891,7 +10906,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {documentFilesDocumentFrontFooterEdit?.name}
+                                    {
+                                      documentFilesDocumentFrontFooterEdit?.originalname ? documentFilesDocumentFrontFooterEdit?.originalname : documentFilesDocumentFrontFooterEdit?.name
+                                    }
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -10045,7 +11062,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {documentFilesDocumentBackHeaderEdit?.name}
+                                    {
+                                      documentFilesDocumentBackHeaderEdit?.originalname ?  documentFilesDocumentBackHeaderEdit?.originalname :  documentFilesDocumentBackHeaderEdit?.name
+                                    }
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -10190,7 +11209,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {documentFilesDocumentBackFooterEdit?.name}
+                                    {
+                                      documentFilesDocumentBackFooterEdit?.originalname ? documentFilesDocumentBackFooterEdit?.originalname : documentFilesDocumentBackFooterEdit?.name
+                                    }
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -10277,6 +11298,7 @@ function TempControlPanel() {
                     <Grid item md={4} xs={12} sm={12}>
                       <Typography>
                         <b>Logo</b>
+                        <b style={{ color: "red" }}>*</b>
                       </Typography>
                       <Box sx={{ display: "flex", justifyContent: "left" }}>
                         <div>
@@ -10313,32 +11335,31 @@ function TempControlPanel() {
                             </MenuItem>
                           </Menu>
 
-                          {option8Edit === "local" &&
-                            !documentFilesEdit?.name && (
-                              <Button
-                                variant="contained"
-                                size="small"
-                                component="label"
-                                sx={{
-                                  ...buttonStyles.buttonsubmit,
-                                  "@media only screen and (max-width:550px)": {
-                                    marginY: "5px",
-                                  },
+                          {option8Edit === "local" && (
+                            <Button
+                              variant="contained"
+                              size="small"
+                              component="label"
+                              sx={{
+                                ...buttonStyles.buttonsubmit,
+                                "@media only screen and (max-width:550px)": {
+                                  marginY: "5px",
+                                },
+                              }}
+                            >
+                              Upload Local
+                              <input
+                                type="file"
+                                id="resume"
+                                accept=".png"
+                                name="file"
+                                hidden
+                                onChange={(e) => {
+                                  handleResumeUploadEdit(e);
                                 }}
-                              >
-                                Upload Local
-                                <input
-                                  type="file"
-                                  id="resume"
-                                  accept=".png"
-                                  name="file"
-                                  hidden
-                                  onChange={(e) => {
-                                    handleResumeUploadEdit(e);
-                                  }}
-                                />
-                              </Button>
-                            )}
+                              />
+                            </Button>
+                          )}
 
                           {option8Edit === "organizational" && (
                             <FormControl fullWidth sx={{ marginTop: "10px" }}>
@@ -10357,10 +11378,18 @@ function TempControlPanel() {
                                       filePath,
                                       resume?.name
                                     );
-                                  setdocumentFilesEdit({
+                                setdocumentFilesEdit((prev) => [
+                                  ...prev,
+                                  {
                                     name: resume?.name,
                                     file: base64,
-                                  });
+                                    default: prev?.some(
+                                      (data) => data?.default === "default"
+                                    )
+                                      ? "none"
+                                      : "default",
+                                  },
+                                ]);
                                 }}
                               />
                             </FormControl>
@@ -10374,15 +11403,67 @@ function TempControlPanel() {
                                         </Button> */}
                       </Box>
                       <Grid item md={12} xs={12} sm={12}>
-                        {
-                          documentFilesEdit?.name && (
-                            // documentFilesEdit.map((file, index) => (
+                        {documentFilesEdit?.length > 0 &&
+                          documentFilesEdit.map((file, index) => (
                             <>
                               <Grid container spacing={2}>
-                                <Grid item md={8} sm={6} xs={6}>
-                                  <Typography>
-                                    {documentFilesEdit?.name}
-                                  </Typography>
+                                <Grid item md={6} sm={6} xs={6}>
+                                   <Typography>{file?.file?.originalname ?  file?.file?.originalname : file?.file?.name}</Typography>
+                                </Grid>
+                                <Grid item md={4} sm={6} xs={6}>
+                                  {editingLogoIndexEdit === index ? (
+                                    <Selects
+                                      autoFocus
+                                      options={[
+                                        { label: "default", value: "default" },
+                                        { label: "none", value: "none" },
+                                      ]}
+                                      value={{
+                                        value: file.default,
+                                        label: file.default,
+                                      }}
+                                      onChange={(e) => {
+                                        const value = e.value;
+
+                                        // update documentFiles
+                                        setdocumentFilesEdit((prev) =>
+                                          prev.map((item, i) => {
+                                            if (i === index) {
+                                              return {
+                                                ...item,
+                                                default: value,
+                                              };
+                                            }
+                                            // only one can be default
+                                            return value === "default"
+                                              ? { ...item, default: "none" }
+                                              : item;
+                                          })
+                                        );
+
+                                        // stop editing mode
+                                        setEditingLogoIndexEdit(null);
+                                      }}
+                                      onBlur={() =>
+                                        setEditingLogoIndexEdit(null)
+                                      } // close if clicked outside
+                                    />
+                                  ) : (
+                                    <Typography
+                                      style={{
+                                        cursor: "pointer",
+                                        color:
+                                          file.default === "default"
+                                            ? "#357AE8"
+                                            : "black",
+                                      }}
+                                      onClick={() =>
+                                        setEditingLogoIndexEdit(index)
+                                      }
+                                    >
+                                      {file.default}
+                                    </Typography>
+                                  )}
                                 </Grid>
                                 <Grid></Grid>
                                 <Grid item md={1} sm={6} xs={6}>
@@ -10392,9 +11473,7 @@ function TempControlPanel() {
                                       color: "#357AE8",
                                       cursor: "pointer",
                                     }}
-                                    onClick={() =>
-                                      renderFilePreviewEdit(documentFilesEdit)
-                                    }
+                                    onClick={() => renderFilePreview(file)}
                                   />
                                 </Grid>
                                 <Grid item md={1} sm={6} xs={6}>
@@ -10405,16 +11484,14 @@ function TempControlPanel() {
                                       cursor: "pointer",
                                       marginTop: "-5px",
                                     }}
-                                    onClick={() => handleFileDeleteEdit()}
+                                    onClick={() => handleFileDeleteEdit(index)}
                                   >
                                     <DeleteIcon />
                                   </Button>
                                 </Grid>
                               </Grid>
                             </>
-                          )
-                          // ))
-                        }
+                          ))}
                       </Grid>
                     </Grid>
                     <br /> <br />
@@ -11003,7 +12080,7 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {documentFilesSealEdit?.name}
+                                    {documentFilesSealEdit?.originalname}
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -11117,7 +12194,7 @@ function TempControlPanel() {
                                           <Grid container spacing={2}>
                                             <Grid item md={8} sm={6} xs={6}>
                                               <Typography>
-                                                {todo?.document?.name}
+                                                {todo?.document?.originalname}
                                               </Typography>
                                             </Grid>
                                             <Grid></Grid>
@@ -11254,7 +12331,7 @@ function TempControlPanel() {
                                           <Grid container spacing={2}>
                                             <Grid item md={8} sm={6} xs={6}>
                                               <Typography>
-                                                {todo?.document?.name}
+                                                {todo?.document?.originalname}
                                               </Typography>
                                             </Grid>
                                             <Grid></Grid>
@@ -11639,7 +12716,7 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {documentFilesSignatureEdit?.name}
+                                    {documentFilesSignatureEdit?.originalname ? documentFilesSignatureEdit?.originalname : documentFilesSignatureEdit?.name}
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -11937,7 +13014,7 @@ function TempControlPanel() {
                                           <Grid container spacing={2}>
                                             <Grid item md={10} sm={6} xs={6}>
                                               <Typography>
-                                                {todo.document?.name}
+                                                {todo.document?.originalname ? todo.document?.originalname : todo.document?.name}
                                               </Typography>
                                             </Grid>
                                             <Grid></Grid>
@@ -12129,7 +13206,7 @@ function TempControlPanel() {
                                           <Grid container spacing={2}>
                                             <Grid item md={10} sm={6} xs={6}>
                                               <Typography>
-                                                {todo?.document?.name}
+                                                {todo?.document?.originalname ? todo?.document?.originalname : todo?.document?.name}
                                               </Typography>
                                             </Grid>
                                             <Grid></Grid>
@@ -13047,9 +14124,17 @@ function TempControlPanel() {
                           <Grid item md={2} sm={6} xs={6}>
                             <Typography>{file.headername}</Typography>
                           </Grid>
-                          <Grid item md={6} sm={6} xs={6}>
-                            <Typography>{file?.headerimage?.name}</Typography>
+                                <Grid item md={2} sm={6} xs={6}>
+                            <Typography>
+                              {file?.default}
+                            </Typography>
                           </Grid>
+                          <Grid item md={4} sm={6} xs={6}>
+                            <Typography>
+                              {file?.headerimage?.originalname}
+                            </Typography>
+                          </Grid>
+                    
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
                             <VisibilityOutlinedIcon
@@ -13083,8 +14168,15 @@ function TempControlPanel() {
                           <Grid item md={2} sm={6} xs={6}>
                             <Typography>{file.footername}</Typography>
                           </Grid>
+                                <Grid item md={2} sm={6} xs={6}>
+                            <Typography>
+                              {file?.default}
+                            </Typography>
+                          </Grid>
                           <Grid item md={6} sm={6} xs={6}>
-                            <Typography>{file?.footerimage?.name}</Typography>
+                            <Typography>
+                              {file?.footerimage?.originalname}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -13112,14 +14204,21 @@ function TempControlPanel() {
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {
-                    documentFilesDocumentBodyContentView && (
-                      // documentFilesDocumentBodyContentView?.map((file, index) => (
+                  {documentFilesDocumentBodyContentView?.length &&
+                    documentFilesDocumentBodyContentView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
-                          <Grid item md={8} sm={6} xs={6}>
+                          <Grid item md={2} sm={6} xs={6}>
+                            <Typography>{file.backgroundname}</Typography>
+                          </Grid>
+                          <Grid item md={2} sm={6} xs={6}>
                             <Typography>
-                              {documentFilesDocumentBodyContentView?.name}
+                              {file?.default}
+                            </Typography>
+                          </Grid>
+                          <Grid item md={6} sm={6} xs={6}>
+                            <Typography>
+                              {file?.backgroundimage?.originalname}
                             </Typography>
                           </Grid>
                           <Grid></Grid>
@@ -13132,16 +14231,14 @@ function TempControlPanel() {
                               }}
                               onClick={() =>
                                 renderFilePreviewDocumentBodyContent(
-                                  documentFilesDocumentBodyContentView
+                                  file?.backgroundimage
                                 )
                               }
                             />
                           </Grid>
                         </Grid>
                       </>
-                    )
-                    // ))
-                  }
+                    ))}
                 </Grid>
               </Grid>
               <Grid item md={6} xs={12} sm={12}>
@@ -13165,7 +14262,9 @@ function TempControlPanel() {
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
                             <Typography>
-                              {documentFilesDocumentFrontHeaderView?.name}
+                              {
+                                documentFilesDocumentFrontHeaderView?.originalname
+                              }
                             </Typography>
                           </Grid>
                           <Grid></Grid>
@@ -13203,7 +14302,9 @@ function TempControlPanel() {
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
                             <Typography>
-                              {documentFilesDocumentFrontFooterView?.name}
+                              {
+                                documentFilesDocumentFrontFooterView?.originalname
+                              }
                             </Typography>
                           </Grid>
                           <Grid></Grid>
@@ -13241,7 +14342,9 @@ function TempControlPanel() {
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
                             <Typography>
-                              {documentFilesDocumentBackHeaderView?.name}
+                              {
+                                documentFilesDocumentBackHeaderView?.originalname
+                              }
                             </Typography>
                           </Grid>
                           <Grid></Grid>
@@ -13279,7 +14382,9 @@ function TempControlPanel() {
                         <Grid container spacing={2}>
                           <Grid item md={8} sm={6} xs={6}>
                             <Typography>
-                              {documentFilesDocumentBackFooterView?.name}
+                              {
+                                documentFilesDocumentBackFooterView?.originalname
+                              }
                             </Typography>
                           </Grid>
                           <Grid></Grid>
@@ -13322,17 +14427,21 @@ function TempControlPanel() {
               </Grid>
               <Grid item md={6} sm={12} xs={12}>
                 <Typography>
-                  <b>Logo</b>{" "}
+                  <b>Logo</b> <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <br></br>
                 <Grid item md={12} xs={12} sm={12}>
-                  {
-                    documentFilesView && (
-                      // documentFilesView?.map((file, index) => (
+                  {documentFilesView?.length > 0 &&
+                    documentFilesView?.map((file, index) => (
                       <>
                         <Grid container spacing={2}>
-                          <Grid item md={8} sm={6} xs={6}>
-                            <Typography>{documentFilesView?.name}</Typography>
+                          <Grid item md={6} sm={6} xs={6}>
+                            <Typography>{file?.file?.originalname}</Typography>
+                          </Grid>
+                          <Grid item md={2} sm={6} xs={6}>
+                            <Typography>
+                              {file?.default}
+                            </Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -13343,17 +14452,13 @@ function TempControlPanel() {
                                 cursor: "pointer",
                               }}
                               onClick={() =>
-                                renderFilePreviewDocumentBackFooter(
-                                  documentFilesView
-                                )
+                                renderFilePreviewDocumentBackFooter(file?.file)
                               }
                             />
                           </Grid>
                         </Grid>
                       </>
-                    )
-                    // ))
-                  }
+                    ))}
                 </Grid>
               </Grid>
 
@@ -13446,7 +14551,7 @@ function TempControlPanel() {
                                       <Grid container spacing={2}>
                                         <Grid item md={8} sm={6} xs={6}>
                                           <Typography>
-                                            {todo?.document?.name}
+                                            {todo?.document?.originalname}
                                           </Typography>
                                         </Grid>
                                         <Grid></Grid>
@@ -13560,7 +14665,7 @@ function TempControlPanel() {
                                       <Grid container spacing={2}>
                                         <Grid item md={8} sm={6} xs={6}>
                                           <Typography>
-                                            {todo?.document?.name}
+                                            {todo?.document?.originalname}
                                           </Typography>
                                         </Grid>
                                         <Grid></Grid>

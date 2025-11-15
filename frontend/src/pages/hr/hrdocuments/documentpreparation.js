@@ -488,9 +488,18 @@ function DocumentPreparation() {
       const footer = await convertFileUrlToBase64(
         `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
       );
-      const backgroundimage = await convertFileUrlToBase64(
-        `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+
+      const backGroundCondition = ans?.letterheadbodycontent?.find(
+        (data) => data?.default === "default"
       );
+      const backgroundimage = await convertFileUrlToBase64(
+        `${BASE_URL}/templatecontrolpanel/${
+          backGroundCondition
+            ? backGroundCondition?.backgroundimage?.name
+            : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+        }`
+      );
+      console.log(backgroundimage, "494");
       const headerFooterBase64 = {
         ...ans,
         headerimage: header,
@@ -1631,9 +1640,17 @@ function DocumentPreparation() {
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-        const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
         );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
+        console.log(backgroundimage, "1638");
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -1708,9 +1725,17 @@ function DocumentPreparation() {
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-        const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
         );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
+        console.log(backgroundimage, "1715");
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -1781,8 +1806,15 @@ function DocumentPreparation() {
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
         const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
         );
         const headerFooterBase64 = {
           ...ans,
@@ -5591,13 +5623,70 @@ function DocumentPreparation() {
       const userESignature = userDetails?.data?.semployeesignature
         ? userDetails?.data?.semployeesignature?.signatureimage
         : "";
-      const userprofileImage = userDetails?.data?.userimage?.profileimage
-        ? `<span><img 
-    src="${userDetails?.data?.userimage?.profileimage}" 
-    alt="User Profile Image" 
-    style="max-width:180px; max-height:180px; object-fit:contain;" 
-  /></span>`
+      const userprofileImageRight = userDetails?.data?.userimage?.profileimage
+        ? `<img 
+      src="${userDetails?.data?.userimage?.profileimage}" 
+      alt="User Profile Image"
+      style="
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        float: right;
+        margin-left: 20px;
+        margin-top: -40px;
+        
+      "
+    />`
         : "";
+      const userprofileImageLeft = userDetails?.data?.userimage?.profileimage
+        ? `<img 
+      src="${userDetails?.data?.userimage?.profileimage}" 
+      alt="User Profile Image"
+      style="
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        float: left;
+          display: block;
+        margin-right: 20px;
+        margin-top: -40px;
+      "
+    />`
+        : "";
+
+      const userprofileImageCenter = userDetails?.data?.userimage?.profileimage
+        ? `<img 
+       src="${userDetails?.data?.userimage?.profileimage}" 
+       alt="User Profile Image"
+       style="
+         width: 180px;
+         height: 180px;
+         object-fit: cover;
+         border-radius: 10px;
+         display: block;
+         margin-left: auto;
+         margin-right: auto;
+         margin-top: -40px;
+       "
+     />`
+        : "";
+
+      const userprofileImage = userDetails?.data?.userimage?.profileimage
+        ? `<img 
+      src="${userDetails?.data?.userimage?.profileimage}" 
+      alt="User Profile Image"
+      style="
+        width: 180px;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-top: -40px;
+      "
+    />`
+        : "";
+
       console.log(userESignature, "userESignature");
       setUserESignature(userESignature);
       let matches = documentPrepartion?.template
@@ -5803,6 +5892,18 @@ function DocumentPreparation() {
             employee?.legalname ? employee?.legalname : ""
           )
           .replaceAll(
+            "$EMPLOYEE_PHOTO_RIGHT$",
+            userprofileImageRight ? userprofileImageRight : ""
+          )
+          .replaceAll(
+            "$EMPLOYEE_PHOTO_LEFT$",
+            userprofileImageLeft ? userprofileImageLeft : ""
+          )
+          .replaceAll(
+            "$EMPLOYEE_PHOTO_CENTER$",
+            userprofileImageCenter ? userprofileImageCenter : ""
+          )
+          .replaceAll(
             "$EMPLOYEE_PHOTO$",
             userprofileImage ? userprofileImage : ""
           )
@@ -5967,6 +6068,7 @@ function DocumentPreparation() {
             "$DESIGNATION$",
             employee?.designation ? employee?.designation : ""
           )
+          .replaceAll("&nbsp;", `<span class="space-1"></span>`)
           .replaceAll(
             "$C:NAME$",
             employee?.companyname ? employee?.companyname : ""
@@ -6387,7 +6489,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+                 .space-1 {
+    display: inline-block;
+    width: 4px; /* Each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -6991,7 +7097,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -7568,7 +7678,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -8292,7 +8406,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -8857,7 +8975,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -9348,7 +9470,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -9894,7 +10020,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -10419,7 +10549,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -12436,7 +12570,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -13162,9 +13300,18 @@ function DocumentPreparation() {
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-        const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
         );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
+
+        console.log(backgroundimage, "13214");
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -13525,7 +13672,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -14059,7 +14210,11 @@ function DocumentPreparation() {
                 .ql-indent-4 { margin-left: 275px; }
                 .ql-indent-5 { margin-left: 325px; }
                 .ql-indent-6 { margin-left: 375px; }
-                .ql-indent-7 { margin-left: 425px; }
+                .ql-indent-7 { margin-left: 425px; }               
+.space-1 {
+    display: inline-block;
+    width: 4px; /* each &nbsp; ≈ 4px, adjust as needed */
+  }
                 .ql-indent-8 { margin-left: 475px; }
                /* Light badge look (like TEST 1 - top) */
 .__se__t-code {
@@ -16009,6 +16164,14 @@ function DocumentPreparation() {
                             : "Please Select Signature",
                           seal: "Please Select Seal",
                         });
+                        if (signatureValue) {
+                          fetchSignatureSealPlacement(
+                            signatureValue?.document,
+                            "Signature"
+                          );
+                          // setSignature(e?.document[0]?.preview);
+                          setSignatureContent(signatureValue);
+                        }
                       }}
                     />
                   </FormControl>

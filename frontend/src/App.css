@@ -5,122 +5,158 @@
 }
 
 .sun-editor-editable {
-  font-family: 'Montserrat', 'Mukta Malar', 'Noto Sans Tamil', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Times New Roman", Arial, Helvetica, sans-serif !important;
 }
+
+
+/* 🎯 Title Styles for SunEditor */
+/* .sun-editor-editable title {
+  font-size: 28px;
+}
+
+.sun-editor-editable h2 {
+  font-size: 22px;
+  font-weight: 100;
+  color: #2d3748;
+  margin-bottom: 6px;
+}
+
+.sun-editor-editable h3 {
+  font-size: 18px;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 4px;
+}
+
+.sun-editor-editable blockquote {
+  border-left: 4px solid #a0aec0;
+  padding-left: 10px;
+  color: #718096;
+  font-style: italic;
+} */
+
 /* Tamil font mappings */
 .sun-editor .se-toolbar select option[value="முக்த மலர்"],
 .sun-editor .se-wrapper [style*="font-family:முக்த மலர்"] {
-  font-family: 'Mukta Malar', sans-serif !important;
+  font-family: "Mukta Malar", sans-serif !important;
 }
 
 .sun-editor .se-toolbar select option[value="நோட்டோ சான்ஸ் தமிழ்"],
 .sun-editor .se-wrapper [style*="font-family:நோட்டோ சான்ஸ் தமிழ்"] {
-  font-family: 'Noto Sans Tamil', sans-serif !important;
+  font-family: "Noto Sans Tamil", sans-serif !important;
 }
 
 .sun-editor .se-toolbar select option[value="கட்டமரன்"],
 .sun-editor .se-wrapper [style*="font-family:கட்டமரன்"] {
-  font-family: 'Catamaran', sans-serif !important;
+  font-family: "Catamaran", sans-serif !important;
 }
 
 .sun-editor .se-toolbar select option[value="பாலூ தம்பி 2"],
 .sun-editor .se-wrapper [style*="font-family:பாலூ தம்பி 2"] {
-  font-family: 'Baloo Thambi 2', sans-serif !important;
+  font-family: "Baloo Thambi 2", sans-serif !important;
 }
-
 
 /* ------------------- MONTSERRAT ------------------- */
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../src/components/fonts/Montserrat-Regular.ttf') format('truetype');
+  font-family: "Montserrat";
+  src: url("../src/components/fonts/Montserrat-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../src/components/fonts/Montserrat-Bold.ttf') format('truetype');
+  font-family: "Montserrat";
+  src: url("../src/components/fonts/Montserrat-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../src/components/fonts/Montserrat-ExtraBold.ttf') format('truetype');
+  font-family: "Montserrat";
+  src: url("../src/components/fonts/Montserrat-ExtraBold.ttf")
+    format("truetype");
   font-weight: 800;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Montserrat';
-  src: url('../src/components/fonts/Montserrat-Italic.ttf') format('truetype');
+  font-family: "Montserrat";
+  src: url("../src/components/fonts/Montserrat-Italic.ttf") format("truetype");
   font-weight: 400;
   font-style: italic;
 }
 
 /* ------------------- MUKTA MALAR ------------------- */
 @font-face {
-  font-family: 'Mukta Malar';
-  src: url('../src/components/fonts/MuktaMalar-Regular.ttf') format('truetype');
+  font-family: "Mukta Malar";
+  src: url("../src/components/fonts/MuktaMalar-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Mukta Malar';
-  src: url('../src/components/fonts/MuktaMalar-Light.ttf') format('truetype');
+  font-family: "Mukta Malar";
+  src: url("../src/components/fonts/MuktaMalar-Light.ttf") format("truetype");
   font-weight: 300;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Mukta Malar';
-  src: url('../src/components/fonts/MuktaMalar-Bold.ttf') format('truetype');
+  font-family: "Mukta Malar";
+  src: url("../src/components/fonts/MuktaMalar-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Mukta Malar';
-  src: url('../src/components/fonts/MuktaMalar-ExtraBold.ttf') format('truetype');
+  font-family: "Mukta Malar";
+  src: url("../src/components/fonts/MuktaMalar-ExtraBold.ttf")
+    format("truetype");
   font-weight: 800;
   font-style: normal;
 }
 
 /* ------------------- NOTO SANS TAMIL ------------------- */
 @font-face {
-  font-family: 'Noto Sans Tamil';
-  src: url('../src/components/fonts/NotoSansTamil-Thin.ttf') format('truetype');
+  font-family: "Noto Sans Tamil";
+  src: url("../src/components/fonts/NotoSansTamil-Thin.ttf") format("truetype");
   font-weight: 200;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Noto Sans Tamil';
-  src: url('../src/components/fonts/NotoSansTamil-Regular.ttf') format('truetype');
+  font-family: "Noto Sans Tamil";
+  src: url("../src/components/fonts/NotoSansTamil-Regular.ttf")
+    format("truetype");
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Noto Sans Tamil';
-  src: url('../src/components/fonts/NotoSansTamil-Medium.ttf') format('truetype');
+  font-family: "Noto Sans Tamil";
+  src: url("../src/components/fonts/NotoSansTamil-Medium.ttf")
+    format("truetype");
   font-weight: 500;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Noto Sans Tamil';
-  src: url('../src/components/fonts/NotoSansTamil-Bold.ttf') format('truetype');
+  font-family: "Noto Sans Tamil";
+  src: url("../src/components/fonts/NotoSansTamil-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
 }
 @font-face {
-  font-family: 'Noto Sans Tamil';
-  src: url('../src/components/fonts/NotoSansTamil-Black.ttf') format('truetype');
+  font-family: "Noto Sans Tamil";
+  src: url("../src/components/fonts/NotoSansTamil-Black.ttf") format("truetype");
   font-weight: 900;
   font-style: normal;
 }
 
 /* ------------------- NEUROPOL X ------------------- */
 @font-face {
-  font-family: 'Neuropol X';
-  src: url('../src/components/fonts/Neuropol X Rg.otf') format('opentype');
+  font-family: "Neuropol X";
+  src: url("../src/components/fonts/Neuropol X Rg.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
 }
-
+@font-face {
+  font-family: "Helvetica";
+  src: url("../src/components/fonts/Helvetica.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
 
 @font-face {
   font-family: "JostMedium";

@@ -637,9 +637,16 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-        const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
-        );
+     const backGroundCondition = ans?.letterheadbodycontent?.find(
+                    (data) => data?.default === "default"
+                  );
+                  const backgroundimage = await convertFileUrlToBase64(
+                    `${BASE_URL}/templatecontrolpanel/${
+                      backGroundCondition
+                        ? backGroundCondition?.backgroundimage?.name
+                        : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+                    }`
+                  );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -2096,9 +2103,16 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-        const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
-        );
+  const backGroundCondition = ans?.letterheadbodycontent?.find(
+                 (data) => data?.default === "default"
+               );
+               const backgroundimage = await convertFileUrlToBase64(
+                 `${BASE_URL}/templatecontrolpanel/${
+                   backGroundCondition
+                     ? backGroundCondition?.backgroundimage?.name
+                     : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+                 }`
+               );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,

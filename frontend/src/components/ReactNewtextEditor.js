@@ -414,6 +414,7 @@ const ReactNewtextEditor = ({
     return parseFloat(px) * 0.264583;
   }
 
+  // console.log(agenda , "agenda")
   /* ---------------------------- EXPORT TO PDF ---------------------------- */
   const exportToPDF = (fileName = "document") => {
     const elementHTML = agenda;

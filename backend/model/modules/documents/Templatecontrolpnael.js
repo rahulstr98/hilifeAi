@@ -25,15 +25,18 @@ const templatecontrolpanelSchema = new Schema({
   letterheadcontentheader: [
     {
       headername: String,
+      default: String,
       headerimage: fileSchema,
     },
   ],
 
-  letterheadcontentfooter: [{ footername: String, footerimage: fileSchema }],
+  letterheadcontentfooter: [{ footername: String, default: String, footerimage: fileSchema }],
 
   qrInfo: [{ details: String }],
 
-  letterheadbodycontent: fileSchema,
+     letterheadbodycontent: [
+        { backgroundname: String, default: String, backgroundimage: fileSchema },
+      ],
 
   companyurl: String,
 
@@ -52,7 +55,7 @@ const templatecontrolpanelSchema = new Schema({
     },
   ],
 
-  documentcompany: fileSchema,
+  documentcompany: [{ default: String, file: fileSchema },],
 
   documentseal: [
     {
@@ -88,12 +91,14 @@ const templatecontrolpanelSchema = new Schema({
       bccemail: [String],
       qrInfo: [{ details: String }],
       letterheadcontentheader: [
-        { headername: String, headerimage: fileSchema },
+        { headername: String, default: String,headerimage: fileSchema },
       ],
       letterheadcontentfooter: [
-        { footername: String, footerimage: fileSchema },
+        { footername: String,default: String, footerimage: fileSchema },
       ],
-      letterheadbodycontent: fileSchema,
+      letterheadbodycontent: [
+        { backgroundname: String,default: String, backgroundimage: fileSchema },
+      ],
       companyurl: String,
       idcardfrontheader: fileSchema,
       idcardfrontfooter: fileSchema,
@@ -107,7 +112,7 @@ const templatecontrolpanelSchema = new Schema({
           toAddress: String,
         },
       ],
-      documentcompany: fileSchema,
+       documentcompany: [{ default: String, file: fileSchema },],
       documentseal: [
         {
           name: String,

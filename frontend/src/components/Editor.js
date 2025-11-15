@@ -23,6 +23,26 @@ const Editor = ({ name, onChange, ...props }) => {
     },
     katex: katex,
     lang: en,
+    pasteConvert: true,
+    pasteDialog: false,
+    pasteIgnoreImg: false,
+    pasteKeepImg: true,
+
+    pasteTagsWhitelist:
+      "span|font|b|i|u|strong|em|p|div|br|ul|ol|li|table|thead|tbody|tr|td",
+    pasteTagsBlacklist: "script|style",
+
+    // preserve styles from Word
+    attributesWhitelist: {
+      all: "style,class",
+    },
+
+    pasteStyles:
+      "font-family,font-size,font-weight,font-style,text-decoration,color,background-color",
+
+    addTagsWhitelist: "span|font",
+    fontSizeUnit: "pt",
+    fontSize: [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36],
     font: [
       "Montserrat",
       "முக்த மலர்",
@@ -40,7 +60,7 @@ const Editor = ({ name, onChange, ...props }) => {
       "Cambria",
       "Tahoma",
       "Trebuchet MS",
-      "Helvetica",
+    
       "Arial",
       "Calibri",
       "Comic Sans MS",
@@ -61,6 +81,7 @@ const Editor = ({ name, onChange, ...props }) => {
       "Mukta Malar",
       "கட்டமரன்",
       "பாலூ தம்பி 2",
+        "Helvetica",
     ],
 
     buttonList: [
@@ -106,15 +127,6 @@ const Editor = ({ name, onChange, ...props }) => {
       placeholder="Please type here..."
       name={name}
       lang="en"
-      setDefaultStyle="font-family: 'Helvetica Neue', Arial, sans-serif;"
-      onPaste={(event, cleanData, maxCharCount, core) => {
-        event.preventDefault(); // stop default paste
-        const text = (event.clipboardData || window.clipboardData).getData(
-          "text"
-        );
-        // paste only plain text — no styles
-        core.insertHTML(text.replace(/\n/g, "<br>"));
-      }}
       setOptions={options}
       // onImageUploadBefore={handleImageUploadBefore}
       onChange={onChange}

@@ -100,7 +100,10 @@ const keywordData = [
   { id: 64, keyword: "$USER_NOTICE_PERIOD_ENDDATE$", instruction: "It denotes endDate of user's notice period for Employee Document at Date of Joining." },
   { id: 65, keyword: "$USER_NOTICE_PERIOD_STATUS$", instruction: "It denotes status of user's notice period for Employee Document at Date of Joining." },
   { id: 66, keyword: "$M:TIME$", instruction: "It denotes Manual Time for Employee Document." },
-  { id: 67, keyword: "$EMPLOYEE_PHOTO$", instruction: "It denotes the selected user image for Employee Document." },
+  { id: 67, keyword: "$EMPLOYEE_PHOTO$", instruction: "It denotes the selected user image for Employee Document in the fixed Position." },
+  { id: 68, keyword: "$EMPLOYEE_PHOTO_RIGHT$", instruction: "It denotes the selected user image for Employee Document in the Right End." },
+  { id: 69, keyword: "$EMPLOYEE_PHOTO_LEFT$", instruction: "It denotes the selected user image for Employee Document in the LEft End." },
+  { id: 70, keyword: "$EMPLOYEE_PHOTO_CENTER$", instruction: "It denotes the selected user image for Employee Document in the Center." },
 ];
 
 

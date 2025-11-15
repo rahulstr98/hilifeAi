@@ -5,25 +5,151 @@ const PagePreview = ({ agenda, width, height, margins }) => {
   const [showPreview, setShowPreview] = useState(false);
   const tempDivRef = useRef(null);
 
-  const getMarginValues = (type) => {
-    switch (type) {
-      case "narrow":
-        return { top: 36, right: 36, bottom: 36, left: 36 };
-      case "wide":
-        return { top: 108, right: 108, bottom: 108, left: 108 };
-      default:
-        return { top: 72, right: 72, bottom: 72, left: 72 };
-    }
+  // 🧩 Define base margin presets (in px)
+  const marginValues = {
+    normal: [96, 96, 96, 96],
+    narrow: [48, 48, 48, 48],
+    moderate: [96, 72, 96, 72],
+    wide: [96, 192, 96, 192],
+    mirrored: [96, 120, 96, 96],
+    office2003: [96, 120, 96, 120],
   };
 
-  const resolvedMargins = getMarginValues(margins);
+  // 🧮 Helper: convert px → mm
+  const pxToMm = (px) => px * 0.264583;
+
+  // 🧮 Convert all sides to mm
+  const convertPxArrayToMm = (arr) => arr.map(pxToMm);
+
+  // 🎯 Replacement for getMarginValues
+  const getMarginValues = (selectedMargin, headImage, footImage) => {
+    const base = marginValues[selectedMargin] || marginValues["narrow"];
+    let [top, right, bottom, left] = base;
+
+    // ⬆️ Add extra space for top and both sides (in px)
+    const extraTop = 60; // increase top margin by +60px
+    const extraSides = 40; // increase left & right margins by +40px
+
+    top += extraTop;
+    right += extraSides;
+    left += extraSides;
+
+    // Optional reserved space for footer elements like page numbers
+    const footerReservedSpace = 60;
+
+    // Adjust for header/footer image presence
+    if (headImage) top += selectedMargin === "narrow" ? 80 : 35;
+    if (footImage) bottom += selectedMargin === "narrow" ? 80 : 35;
+
+    // Convert to mm for PDF accuracy
+    const [topMm, rightMm, bottomMm, leftMm] = convertPxArrayToMm([
+      top,
+      right,
+      bottom + footerReservedSpace,
+      left,
+    ]);
+
+    // Return as an object (same format as before)
+    return {
+      top: topMm + 80,
+      right: rightMm + 35,
+      bottom: bottomMm + 90,
+      left: leftMm + 35,
+    };
+  };
+
+  // 🧩 Usage
+  const resolvedMargins = getMarginValues(margins, true, true);
+
+  // ✅ Inject custom CSS styles when preview is shown
+  useEffect(() => {
+    if (!showPreview) return;
+
+    const styleElement = document.createElement("style");
+    styleElement.textContent = `
+      .ql-indent-1 { margin-left: 75px; }
+      .ql-indent-2 { margin-left: 150px; }
+      .ql-indent-3 { margin-left: 225px; }
+      .ql-indent-4 { margin-left: 275px; }
+      .ql-indent-5 { margin-left: 325px; }
+      .ql-indent-6 { margin-left: 375px; }
+      .ql-indent-7 { margin-left: 425px; }
+      .ql-indent-8 { margin-left: 475px; }
+
+      /* Light badge look (like TEST 1 - top) */
+      .__se__t-code {
+        display: inline-block;
+        background: #f3f3f3;
+        color: #222;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+      }
+
+      /* Shadowed text (like TEST 1 - bottom) */
+      .__se__t-shadow {
+        font-weight: 600;
+        color: #000;
+        text-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+      }
+
+      .ql-align-right { text-align: right; }
+      .ql-align-left { text-align: left; }
+      .ql-align-center { text-align: center; }
+      .ql-align-justify { text-align: justify; }
+
+      .page-break-label {
+        page-break-before: always;
+        break-before: page;
+        margin: 20px 0;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      td, th {
+        border: 1px solid #000;
+        padding: 6px;
+      }
+
+      ol {
+        padding-left: 20px;
+        list-style-type: decimal;
+      }
+
+      ul {
+        padding-left: 20px;
+        list-style-type: disc;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+    `;
+    document.head.appendChild(styleElement);
+
+    // 🧹 Cleanup on close
+    return () => {
+      if (styleElement.parentNode) {
+        styleElement.parentNode.removeChild(styleElement);
+      }
+    };
+  }, [showPreview]);
 
   useEffect(() => {
     if (!showPreview || !agenda) return;
 
-    const pageHeightLimit = height - resolvedMargins.top - resolvedMargins.bottom;
+    const pageHeightLimit =
+      height - resolvedMargins.top - resolvedMargins.bottom;
     const measureDiv = document.createElement("div");
-    measureDiv.style.width = `${width - resolvedMargins.left - resolvedMargins.right}px`;
+    measureDiv.style.width = `${
+      width - resolvedMargins.left - resolvedMargins.right
+    }px`;
     measureDiv.style.position = "absolute";
     measureDiv.style.visibility = "hidden";
     measureDiv.style.whiteSpace = "normal";
@@ -44,15 +170,16 @@ const PagePreview = ({ agenda, width, height, margins }) => {
       return measureDiv.scrollHeight;
     };
 
-    // Go through text progressively (paragraphs first, then split long ones)
     const allParagraphs = Array.from(wrapper.childNodes);
     for (let p of allParagraphs) {
       const pHTML = p.outerHTML || p.textContent || "";
 
       measureDiv.innerHTML = currentHTML + pHTML;
 
-      if (measureDiv.scrollHeight > pageHeightLimit && currentHTML.trim() !== "") {
-        // Check if it’s a long paragraph (overflowing itself)
+      if (
+        measureDiv.scrollHeight > pageHeightLimit &&
+        currentHTML.trim() !== ""
+      ) {
         if (p.textContent && p.textContent.length > 200) {
           const words = p.textContent.split(" ");
           let tempText = "";
@@ -62,7 +189,7 @@ const PagePreview = ({ agenda, width, height, margins }) => {
             if (measureDiv.scrollHeight > pageHeightLimit) {
               generatedPages.push(currentHTML + `<p>${tempText}</p>`);
               currentHTML = "";
-              tempText = w; // start new page with remaining words
+              tempText = w;
             } else {
               tempText = test;
             }
