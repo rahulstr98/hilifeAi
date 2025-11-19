@@ -462,12 +462,17 @@ function DocumentPreparation() {
         );
       }
     } else if (["Preview Manual", "Print Manual"]?.includes(pagePopeOpen)) {
+      const inside = documentPrepartion?.template?.match(/\((.*?)\)/)?.[1];
+      const [companyValue, branchValue] = inside.split("--");
+
+      console.log(companyValue); // "TTS"
+      console.log(branchValue); // "TTS-TRICHY"
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: documentPrepartion?.company,
-        branch: documentPrepartion?.branch,
+        company: companyValue,
+        branch: branchValue,
       });
       const ans = res?.data?.templatecontrolpanel
         ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
@@ -476,12 +481,21 @@ function DocumentPreparation() {
         : "";
       const templateHeaderFooter = documentPrepartion;
 
-      const headerOption = ans?.letterheadcontentheader?.find(
-        (data) => data?.headername === templateHeaderFooter?.header
-      );
-      const footerOption = ans?.letterheadcontentfooter?.find(
-        (data) => data?.footername === templateHeaderFooter?.footer
-      );
+      const headerOption = templateHeaderFooter?.header
+        ? ans?.letterheadcontentheader?.find(
+            (data) => data?.headername === templateHeaderFooter?.header
+          )
+        : ans?.letterheadcontentheader?.find(
+            (data) => data?.default === "default"
+          );
+      const footerOption = templateHeaderFooter?.footer
+        ? ans?.letterheadcontentfooter?.find(
+            (data) => data?.footername === templateHeaderFooter?.footer
+          )
+        : ans?.letterheadcontentfooter?.find(
+            (data) => data?.default === "default"
+          );
+
       const header = await convertFileUrlToBase64(
         `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
       );
@@ -499,7 +513,7 @@ function DocumentPreparation() {
             : ans?.letterheadbodycontent[0]?.backgroundimage?.name
         }`
       );
-      console.log(backgroundimage, "494");
+      // console.log(backgroundimage, "494");
       const headerFooterBase64 = {
         ...ans,
         headerimage: header,
@@ -1477,46 +1491,32 @@ function DocumentPreparation() {
       );
 
       if (selectedData.length > 0) {
-        const allHeadersSame = selectedData.every(
-          (item) => item.header === selectedData[0].header
+        const extractCompanyBranch = (template) => {
+          const inside = template?.match(/\((.*?)\)/)?.[1]; // TTS--TTS-TRICHY
+          if (!inside) return [null, null];
+          return inside.split("--"); // [company, branch]
+        };
+
+        const [firstCompany, firstBranch] = extractCompanyBranch(
+          selectedData[0].template
         );
-        const allFootersSame = selectedData.every(
-          (item) => item.footer === selectedData[0].footer
-        );
-        if (!allHeadersSame || !allFootersSame) {
-          setPopupContentMalert(
-            "Headers or footers differ between selected rows!"
-          );
+
+        const allSameCompanyBranch = selectedData.every((item) => {
+          const [comp, br] = extractCompanyBranch(item.template);
+          return comp === firstCompany && br === firstBranch;
+        });
+
+        if (!allSameCompanyBranch) {
+          setPopupContentMalert("Please Select Same Template Name rows!");
           setPopupSeverityMalert("warning");
           handleClickOpenPopupMalert();
           return; // Prevents further execution
         }
-      }
-      if (selectedData.length > 0) {
-        const isSameCompanyAndBranch = selectedData.every(
-          (data) =>
-            data.company === selectedData[0]?.company &&
-            data.branch === selectedData[0]?.branch
-        );
-
-        if (!isSameCompanyAndBranch) {
-          setPopupContentMalert(
-            "Please Choose Data with the Same Company and Branch!"
-          );
-          setPopupSeverityMalert("info");
-          handleClickOpenPopupMalert();
-          return; // Prevents further execution
-        }
-
         const headerFooter = {
           header: selectedData[0]?.header,
           footer: selectedData[0]?.footer,
         };
-        TemplateDropdownsValueManual(
-          selectedData[0].company,
-          selectedData[0].branch,
-          headerFooter
-        );
+        TemplateDropdownsValueManual(selectedData[0], headerFooter);
         setIsDeleteOpenBulkcheckbox(true);
       }
     }
@@ -1605,13 +1605,18 @@ function DocumentPreparation() {
 
   const TemplateDropdownsValue = async (e, control, templateCrea) => {
     setPageName(!pageName);
+    const inside = documentPrepartion?.template?.match(/\((.*?)\)/)?.[1];
+    const [companyValue, branchValue] = inside.split("--");
+
+    console.log(companyValue); // "TTS"
+    console.log(branchValue); // "TTS-TRICHY"
     try {
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: control?.company,
-        branch: control?.branch,
+        company: companyValue,
+        branch: branchValue,
       });
 
       setPageSizepdf(e?.pagesize);
@@ -1628,12 +1633,20 @@ function DocumentPreparation() {
 
         const templateHeaderFooter = templateCrea;
 
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
@@ -1650,7 +1663,7 @@ function DocumentPreparation() {
               : ans?.letterheadbodycontent[0]?.backgroundimage?.name
           }`
         );
-        console.log(backgroundimage, "1638");
+        // console.log(backgroundimage, "1638");
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -1689,19 +1702,20 @@ function DocumentPreparation() {
       );
     }
   };
-  const TemplateDropdownsValueManual = async (
-    company,
-    branch,
-    headerfooter
-  ) => {
+  const TemplateDropdownsValueManual = async (rowData, headerfooter) => {
     setPageName(!pageName);
+    const inside = rowData?.template?.match(/\((.*?)\)/)?.[1];
+    const [companyValue, branchValue] = inside.split("--");
+
+    console.log(companyValue); // "TTS"
+    console.log(branchValue); // "TTS-TRICHY"
     try {
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: company,
-        branch: branch,
+        company: companyValue,
+        branch: branchValue,
       });
       if (res?.data?.templatecontrolpanel) {
         const ans = res?.data?.templatecontrolpanel
@@ -1713,12 +1727,21 @@ function DocumentPreparation() {
         console.log(headerfooter, "headerfooter");
         const templateHeaderFooter = headerfooter;
 
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
+
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
@@ -1735,7 +1758,7 @@ function DocumentPreparation() {
               : ans?.letterheadbodycontent[0]?.backgroundimage?.name
           }`
         );
-        console.log(backgroundimage, "1715");
+        // console.log(backgroundimage, "1715");
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -1773,12 +1796,17 @@ function DocumentPreparation() {
     setPageName(!pageName);
     try {
       if (mode === "Manual") {
+        const inside = documentPrepartion?.template?.match(/\((.*?)\)/)?.[1];
+        const [companyValue, branchValue] = inside.split("--");
+
+        console.log(companyValue); // "TTS"
+        console.log(branchValue); // "TTS-TRICHY"
         let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-          company: company,
-          branch: branch,
+          company: companyValue,
+          branch: branchValue,
         });
 
         // setHeadValue(e?.headvalue);
@@ -1794,12 +1822,21 @@ function DocumentPreparation() {
 
         const templateHeaderFooter = templateCrea;
 
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
+
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
@@ -13269,12 +13306,17 @@ function DocumentPreparation() {
     const NewDatetime = await getCurrentServerTime();
 
     try {
+      const inside = e?.template?.match(/\((.*?)\)/)?.[1];
+      const [companyValue, branchValue] = inside.split("--");
+
+      console.log(companyValue); // "TTS"
+      console.log(branchValue); // "TTS-TRICHY"
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: e?.company,
-        branch: e?.branch,
+        company: companyValue,
+        branch: branchValue,
         template: e?.template?.split("--")[0],
         pagename: "Employee",
       });
@@ -13288,12 +13330,21 @@ function DocumentPreparation() {
 
         const templateHeaderFooter = res?.data?.headerfooter;
 
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
+
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
@@ -13311,7 +13362,7 @@ function DocumentPreparation() {
           }`
         );
 
-        console.log(backgroundimage, "13214");
+        // console.log(backgroundimage, "13214");
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -15111,6 +15162,7 @@ function DocumentPreparation() {
                         value: documentPrepartion.template,
                       }}
                       onChange={(e) => {
+                        console.log(e, "e");
                         setDocumentPrepartion({
                           ...documentPrepartion,
                           template: e.value,
@@ -15399,8 +15451,7 @@ function DocumentPreparation() {
                             footer: documentPrepartion?.footer,
                           };
                           TemplateDropdownsValueManual(
-                            documentPrepartion.company,
-                            e.value,
+                            documentPrepartion,
                             headerFooter
                           );
                         }

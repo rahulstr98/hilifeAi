@@ -466,7 +466,7 @@ function CandidateDocumentsApprovalPage({ id, user, handleStart }) {
                     setOpenGreetDialog(true)
                     getApprovalDocument(documentData?.data?.scandidateDocumentPreparation);
                 } else {
-                    // handleCloseValidation();
+                    handleCloseValidation();
                     setMobile("");
                     setDob("");
                     setErrorValidation("Please Enter Correct Details");
@@ -772,7 +772,7 @@ function CandidateDocumentsApprovalPage({ id, user, handleStart }) {
                                     }
                                 }).then(response => {
                                     handleStart();
-                                    console.log("PDF uploaded successfully:");
+                                    console.log("PDF uploaded successfully: 1");
                                 }).catch(error => {
                                     console.error("Error uploading PDF:", error);
                                 });
@@ -817,7 +817,7 @@ function CandidateDocumentsApprovalPage({ id, user, handleStart }) {
                                 }
                             }).then(response => {
                                 handleStart();
-                                console.log("PDF uploaded successfully:");
+                                console.log("PDF uploaded successfully:2");
                             }).catch(error => {
                                 console.error("Error uploading PDF:", error);
                             });

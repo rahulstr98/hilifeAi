@@ -1,5 +1,7 @@
 {
   "dependencies": {
-    "html-docx-js": "^0.3.1"
+    "html-docx-js": "^0.3.1",
+    "suneditor": "^2.47.2",
+    "suneditor-react": "^3.4.1"
   }
 }

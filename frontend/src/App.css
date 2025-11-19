@@ -4,56 +4,17 @@
   font-weight: 200 !important;
 }
 
-.sun-editor-editable {
-  font-family: "Times New Roman", Arial, Helvetica, sans-serif !important;
-}
-
-
-/* 🎯 Title Styles for SunEditor */
-/* .sun-editor-editable title {
-  font-size: 28px;
+/* SunEditor Default Heading Overrides */
+.sun-editor-editable h1 {
+  font-size: 16pt !important;
 }
 
 .sun-editor-editable h2 {
-  font-size: 22px;
-  font-weight: 100;
-  color: #2d3748;
-  margin-bottom: 6px;
+  font-size: 13pt !important;
 }
 
-.sun-editor-editable h3 {
-  font-size: 18px;
-  font-weight: 500;
-  color: #4a5568;
-  margin-bottom: 4px;
-}
-
-.sun-editor-editable blockquote {
-  border-left: 4px solid #a0aec0;
-  padding-left: 10px;
-  color: #718096;
-  font-style: italic;
-} */
-
-/* Tamil font mappings */
-.sun-editor .se-toolbar select option[value="முக்த மலர்"],
-.sun-editor .se-wrapper [style*="font-family:முக்த மலர்"] {
-  font-family: "Mukta Malar", sans-serif !important;
-}
-
-.sun-editor .se-toolbar select option[value="நோட்டோ சான்ஸ் தமிழ்"],
-.sun-editor .se-wrapper [style*="font-family:நோட்டோ சான்ஸ் தமிழ்"] {
-  font-family: "Noto Sans Tamil", sans-serif !important;
-}
-
-.sun-editor .se-toolbar select option[value="கட்டமரன்"],
-.sun-editor .se-wrapper [style*="font-family:கட்டமரன்"] {
-  font-family: "Catamaran", sans-serif !important;
-}
-
-.sun-editor .se-toolbar select option[value="பாலூ தம்பி 2"],
-.sun-editor .se-wrapper [style*="font-family:பாலூ தம்பி 2"] {
-  font-family: "Baloo Thambi 2", sans-serif !important;
+.sun-editor-editable p {
+  font-size: 12px !important;
 }
 
 /* ------------------- MONTSERRAT ------------------- */

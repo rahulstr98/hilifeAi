@@ -1480,13 +1480,18 @@ function DocumentsPrintedStatusList() {
     const NewDatetime = await getCurrentServerTime();
 
     console.log(pagename, "pagename");
+    const inside = e?.template?.match(/\((.*?)\)/)?.[1];
+    const [companyValue, branchValue] = inside.split("--");
+
+    console.log(companyValue); // "TTS"
+    console.log(branchValue); // "TTS-TRICHY"
     try {
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: e?.company,
-        branch: e?.branch,
+        company: companyValue,
+        branch: branchValue,
         template: e?.template?.split("--")[0],
         pagename: "Employee",
       });
@@ -1499,28 +1504,36 @@ function DocumentsPrintedStatusList() {
           : "";
         const templateHeaderFooter = res?.data?.headerfooter;
         console.log(templateHeaderFooter, "templateHeaderFooter");
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-     const backGroundCondition = ans?.letterheadbodycontent?.find(
-              (data) => data?.default === "default"
-            );
-            const backgroundimage = await convertFileUrlToBase64(
-              `${BASE_URL}/templatecontrolpanel/${
-                backGroundCondition
-                  ? backGroundCondition?.backgroundimage?.name
-                  : ans?.letterheadbodycontent[0]?.backgroundimage?.name
-              }`
-            );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -1650,7 +1663,6 @@ function DocumentsPrintedStatusList() {
     }
   };
 
-  
   // Print Documents
   const downloadPdfTesdtTable = async (e, pagename) => {
     const NewDatetime = await getCurrentServerTime();
@@ -1683,12 +1695,18 @@ function DocumentsPrintedStatusList() {
       );
       let qrCodeInfoDetails = [];
       if (response.data.sdocumentPreparation) {
+        const inside =
+          response.data.sdocumentPreparation?.template?.match(/\((.*?)\)/)?.[1];
+        const [companyValue, branchValue] = inside.split("--");
+
+        console.log(companyValue); // "TTS"
+        console.log(branchValue); // "TTS-TRICHY"
         let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-          company: response.data.sdocumentPreparation?.company,
-          branch: response.data.sdocumentPreparation?.branch,
+          company: companyValue,
+          branch: branchValue,
           template:
             response.data.sdocumentPreparation?.template?.split("--")[0],
           pagename: "Employee",
@@ -1703,28 +1721,36 @@ function DocumentsPrintedStatusList() {
 
           const templateHeaderFooter = res?.data?.headerfooter;
 
-          const headerOption = ans?.letterheadcontentheader?.find(
-            (data) => data?.headername === templateHeaderFooter?.header
-          );
-          const footerOption = ans?.letterheadcontentfooter?.find(
-            (data) => data?.footername === templateHeaderFooter?.footer
-          );
+          const headerOption = templateHeaderFooter?.header
+            ? ans?.letterheadcontentheader?.find(
+                (data) => data?.headername === templateHeaderFooter?.header
+              )
+            : ans?.letterheadcontentheader?.find(
+                (data) => data?.default === "default"
+              );
+          const footerOption = templateHeaderFooter?.footer
+            ? ans?.letterheadcontentfooter?.find(
+                (data) => data?.footername === templateHeaderFooter?.footer
+              )
+            : ans?.letterheadcontentfooter?.find(
+                (data) => data?.default === "default"
+              );
           const header = await convertFileUrlToBase64(
             `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
           );
           const footer = await convertFileUrlToBase64(
             `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
           );
-      const backGroundCondition = ans?.letterheadbodycontent?.find(
-               (data) => data?.default === "default"
-             );
-             const backgroundimage = await convertFileUrlToBase64(
-               `${BASE_URL}/templatecontrolpanel/${
-                 backGroundCondition
-                   ? backGroundCondition?.backgroundimage?.name
-                   : ans?.letterheadbodycontent[0]?.backgroundimage?.name
-               }`
-             );
+          const backGroundCondition = ans?.letterheadbodycontent?.find(
+            (data) => data?.default === "default"
+          );
+          const backgroundimage = await convertFileUrlToBase64(
+            `${BASE_URL}/templatecontrolpanel/${
+              backGroundCondition
+                ? backGroundCondition?.backgroundimage?.name
+                : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+            }`
+          );
           const headerFooterBase64 = {
             ...ans,
             headerimage: header,
@@ -1742,10 +1768,7 @@ function DocumentsPrintedStatusList() {
               `${index + 1}. ${data?.details
                 ?.replaceAll("$C:TIME$", formatTime(new Date(NewDatetime)))
                 .replaceAll("$C:DATE$", formatDate(date))
-                .replaceAll(
-                  "$MANUALDATE$",
-                  formatDate(e?.manualdate)
-                )
+                .replaceAll("$MANUALDATE$", formatDate(e?.manualdate))
                 .replaceAll("$M:TIME$", e?.manualtime)
                 .replaceAll("$DOJ$", e ? e?.employeedoj : "")}`
           );
@@ -2300,12 +2323,18 @@ function DocumentsPrintedStatusList() {
       );
       let qrCodeInfoDetails = [];
       if (response.data.sdocumentPreparation) {
+        const inside =
+          response.data.sdocumentPreparation?.template?.match(/\((.*?)\)/)?.[1];
+        const [companyValue, branchValue] = inside.split("--");
+
+        console.log(companyValue); // "TTS"
+        console.log(branchValue); // "TTS-TRICHY"
         let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-          company: response.data.sdocumentPreparation?.company,
-          branch: response.data.sdocumentPreparation?.branch,
+          company: companyValue,
+          branch: branchValue,
         });
         if (res?.data?.templatecontrolpanel) {
           const ans = res?.data?.templatecontrolpanel
@@ -2867,12 +2896,18 @@ function DocumentsPrintedStatusList() {
     );
     let qrCodeInfoDetails = [];
     if (response.data.sdocumentPreparation) {
+      const inside =
+        response.data.sdocumentPreparation?.template?.match(/\((.*?)\)/)?.[1];
+      const [companyValue, branchValue] = inside.split("--");
+
+      console.log(companyValue); // "TTS"
+      console.log(branchValue); // "TTS-TRICHY"
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: response.data.sdocumentPreparation?.company,
-        branch: response.data.sdocumentPreparation?.branch,
+        company: companyValue,
+        branch: branchValue,
       });
       if (res?.data?.templatecontrolpanel) {
         const ans = res?.data?.templatecontrolpanel

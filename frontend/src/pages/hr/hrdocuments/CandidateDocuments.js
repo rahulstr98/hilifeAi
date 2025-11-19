@@ -932,48 +932,33 @@ function CandidateDocuments() {
       const selectedData = rowDataTable?.filter((data) =>
         selectedRows?.includes(data?.id)
       );
-
       if (selectedData.length > 0) {
-        const allHeadersSame = selectedData.every(
-          (item) => item.header === selectedData[0].header
+        const extractCompanyBranch = (template) => {
+          const inside = template?.match(/\((.*?)\)/)?.[1]; // TTS--TTS-TRICHY
+          if (!inside) return [null, null];
+          return inside.split("--"); // [company, branch]
+        };
+
+        const [firstCompany, firstBranch] = extractCompanyBranch(
+          selectedData[0].template
         );
-        const allFootersSame = selectedData.every(
-          (item) => item.footer === selectedData[0].footer
-        );
-        if (!allHeadersSame || !allFootersSame) {
-          setPopupContentMalert(
-            "Headers or footers differ between selected rows!"
-          );
+
+        const allSameCompanyBranch = selectedData.every((item) => {
+          const [comp, br] = extractCompanyBranch(item.template);
+          return comp === firstCompany && br === firstBranch;
+        });
+
+        if (!allSameCompanyBranch) {
+          setPopupContentMalert("Please Select Same Template Name rows!");
           setPopupSeverityMalert("warning");
           handleClickOpenPopupMalert();
           return; // Prevents further execution
         }
-      }
-      if (selectedData.length > 0) {
-        const isSameCompanyAndBranch = selectedData.every(
-          (data) =>
-            data.company === selectedData[0]?.company &&
-            data.branch === selectedData[0]?.branch
-        );
-
-        if (!isSameCompanyAndBranch) {
-          setPopupContentMalert(
-            "Please Choose Data with the Same Company and Branch!"
-          );
-          setPopupSeverityMalert("info");
-          handleClickOpenPopupMalert();
-          return; // Prevents further execution
-        }
-
         const headerFooter = {
           header: selectedData[0]?.header,
           footer: selectedData[0]?.footer,
         };
-        TemplateDropdownsValueManual(
-          selectedData[0].company,
-          selectedData[0].branch,
-          headerFooter
-        );
+        TemplateDropdownsValueManual(selectedData[0], headerFooter);
         setIsDeleteOpenBulkcheckbox(true);
       }
     }
@@ -983,18 +968,22 @@ function CandidateDocuments() {
   };
 
   const TemplateDropdownsValueManual = async (
-    company,
-    branch,
+ rowData,
     headerfooter
   ) => {
     setPageName(!pageName);
     try {
+      const inside = rowData?.template?.match(/\((.*?)\)/)?.[1];
+      const [companyValue, branchValue] = inside.split("--");
+
+      console.log(companyValue); // "TTS"
+      console.log(branchValue); // "TTS-TRICHY"
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: company,
-        branch: branch,
+        company: companyValue,
+        branch: branchValue,
       });
       if (res?.data?.templatecontrolpanel) {
         const ans = res?.data?.templatecontrolpanel
@@ -1006,28 +995,37 @@ function CandidateDocuments() {
 
         const templateHeaderFooter = headerfooter;
 
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
+
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-   const backGroundCondition = ans?.letterheadbodycontent?.find(
-                  (data) => data?.default === "default"
-                );
-                const backgroundimage = await convertFileUrlToBase64(
-                  `${BASE_URL}/templatecontrolpanel/${
-                    backGroundCondition
-                      ? backGroundCondition?.backgroundimage?.name
-                      : ans?.letterheadbodycontent[0]?.backgroundimage?.name
-                  }`
-                );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -1298,15 +1296,20 @@ function CandidateDocuments() {
     fetchManualKeywords();
   }, []);
 
-  const TemplateDropdownsValue = async (comp, bran, e) => {
+  const TemplateDropdownsValue = async (e) => {
     setPageName(!pageName);
     try {
+      const inside = e?.value?.match(/\((.*?)\)/)?.[1];
+      const [companyValue, branchValue] = inside?.split("--");
+
+      console.log(companyValue); // "TTS"
+      console.log(branchValue); // "TTS-TRICHY"
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: comp,
-        branch: bran,
+        company: companyValue,
+        branch: branchValue,
       });
       setHeadValue(e?.headvalue);
       setPageSizepdf(e?.pagesize);
@@ -1319,12 +1322,21 @@ function CandidateDocuments() {
             ]
           : "";
 
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === e?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === e?.footer
-        );
+        const templateHeaderFooter = e;
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
 
         console.log(headerOption, footerOption, e, "footerOption");
         const header = await convertFileUrlToBase64(
@@ -1333,16 +1345,16 @@ function CandidateDocuments() {
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-  const backGroundCondition = ans?.letterheadbodycontent?.find(
-                 (data) => data?.default === "default"
-               );
-               const backgroundimage = await convertFileUrlToBase64(
-                 `${BASE_URL}/templatecontrolpanel/${
-                   backGroundCondition
-                     ? backGroundCondition?.backgroundimage?.name
-                     : ans?.letterheadbodycontent[0]?.backgroundimage?.name
-                 }`
-               );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -5309,12 +5321,17 @@ function CandidateDocuments() {
     setPageName(!pageName);
     const NewDatetime = await getCurrentServerTime();
     try {
+      const inside = e?.template?.match(/\((.*?)\)/)?.[1];
+      const [companyValue, branchValue] = inside.split("--");
+
+      console.log(companyValue); // "TTS"
+      console.log(branchValue); // "TTS-TRICHY"
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: e?.company,
-        branch: e?.branch,
+        company: companyValue,
+        branch: branchValue,
         template: e?.template?.split("--")[0],
         pagename: "Candidate",
       });
@@ -5327,29 +5344,37 @@ function CandidateDocuments() {
           : "";
 
         const templateHeaderFooter = res?.data?.headerfooter;
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
 
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-const backGroundCondition = ans?.letterheadbodycontent?.find(
-               (data) => data?.default === "default"
-             );
-             const backgroundimage = await convertFileUrlToBase64(
-               `${BASE_URL}/templatecontrolpanel/${
-                 backGroundCondition
-                   ? backGroundCondition?.backgroundimage?.name
-                   : ans?.letterheadbodycontent[0]?.backgroundimage?.name
-               }`
-             );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -5962,10 +5987,7 @@ const backGroundCondition = ans?.letterheadbodycontent?.find(
                         setSignature("");
                         setChecking("");
                         setTemplateCreationValue(e);
-                        TemplateDropdownsValue(
-                          documentPrepartion?.company,
-                          documentPrepartion?.branch,
-                          e
+                        TemplateDropdownsValue(e
                         );
                         setSignatureStatus("");
                         setSealStatus("");

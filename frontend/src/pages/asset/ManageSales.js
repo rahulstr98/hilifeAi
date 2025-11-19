@@ -391,22 +391,22 @@ function ManageSalesList() {
           : "";
         const templateHeaderFooter = res?.data?.headerfooter;
 
-        const headerOption = ans?.letterheadcontentheader[0];
-        const footerOption = ans?.letterheadcontentfooter[0];
+        const headerOption = ans?.letterheadcontentheader?.find(data => data?.default === "default");
+        const footerOption = ans?.letterheadcontentfooter?.find(data => data?.default === "default");
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-        const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
-        );
+        // const backgroundimage = await convertFileUrlToBase64(
+        //   `${BASE_URL}/templatecontrolpanel/${ans?.letterheadbodycontent?.name}`
+        // );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
           footerimage: footer,
-          backgroundimage: backgroundimage,
+          // backgroundimage: backgroundimage,
         };
         setPersonId(headerFooterBase64);
       }

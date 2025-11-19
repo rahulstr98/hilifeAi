@@ -23,24 +23,30 @@ const Editor = ({ name, onChange, ...props }) => {
     },
     katex: katex,
     lang: en,
-    pasteConvert: true,
-    pasteDialog: false,
-    pasteIgnoreImg: false,
-    pasteKeepImg: true,
+    // pasteTagsWhitelist: "p|br|div|span|strong|b|i|u|ul|ol|li|table|tr|td",
 
-    pasteTagsWhitelist:
-      "span|font|b|i|u|strong|em|p|div|br|ul|ol|li|table|thead|tbody|tr|td",
-    pasteTagsBlacklist: "script|style",
+    // pasteStyles:
+    //   "font-weight,font-style,text-decoration,color,background-color",
 
-    // preserve styles from Word
-    attributesWhitelist: {
-      all: "style,class",
+    // attributesWhitelist: {
+    //   all: "style,class",
+    // },
+    pasteHandler: (html) => {
+      // Remove Word junk
+      html = html.replace(/mso-[^:;"]+:[^;"]+;?/gi, "");
+      html = html.replace(/font-size:[^;"]+;?/gi, "");
+      html = html.replace(/font-family:[^;"]+;?/gi, "");
+
+      // Auto-wrap H1 → span(style="font-size:18pt")
+      html = html.replace(
+        /<h1>(.*?)<\/h1>/gi,
+        (match, content) =>
+          `<h1><span style="font-size: 18pt">${content.trim()}</span></h1>`
+      );
+
+      return html;
     },
 
-    pasteStyles:
-      "font-family,font-size,font-weight,font-style,text-decoration,color,background-color",
-
-    addTagsWhitelist: "span|font",
     fontSizeUnit: "pt",
     fontSize: [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36],
     font: [
@@ -60,7 +66,7 @@ const Editor = ({ name, onChange, ...props }) => {
       "Cambria",
       "Tahoma",
       "Trebuchet MS",
-    
+
       "Arial",
       "Calibri",
       "Comic Sans MS",
@@ -81,8 +87,10 @@ const Editor = ({ name, onChange, ...props }) => {
       "Mukta Malar",
       "கட்டமரன்",
       "பாலூ தம்பி 2",
-        "Helvetica",
+      "Helvetica",
     ],
+    // defaultStyle:
+    //   "font-family: 'Arial', 'Times New Roman', 'Montserrat', sans-serif; font-size: 14px;",
 
     buttonList: [
       [
@@ -120,6 +128,27 @@ const Editor = ({ name, onChange, ...props }) => {
     ],
   };
 
+  const getLineCountFromHtml = (html) => {
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
+
+    // Count paragraphs & divs = lines
+    let lines = temp.querySelectorAll("p, div").length;
+
+    // Count <br> tags = additional line breaks
+    lines += temp.querySelectorAll("br").length;
+
+    // If editor is empty, count as 0 or 1
+    return lines || 1;
+  };
+
+  const handleEditorChange = (content) => {
+    // HTML length
+    const lineCount = getLineCountFromHtml(content);
+    let clean = content;
+    if (onChange) onChange(clean);
+  };
+
   return (
     <SunEditor
       {...props}
@@ -129,7 +158,7 @@ const Editor = ({ name, onChange, ...props }) => {
       lang="en"
       setOptions={options}
       // onImageUploadBefore={handleImageUploadBefore}
-      onChange={onChange}
+      onChange={handleEditorChange}
     />
   );
 };

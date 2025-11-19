@@ -539,34 +539,24 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
         selectedRows?.includes(data?.id)
       );
       if (selectedData.length > 0) {
-        const allHeadersSame = selectedData.every(
-          (item) => item.header === selectedData[0].header
+        const extractCompanyBranch = (template) => {
+          const inside = template?.match(/\((.*?)\)/)?.[1]; // TTS--TTS-TRICHY
+          if (!inside) return [null, null];
+          return inside.split("--"); // [company, branch]
+        };
+
+        const [firstCompany, firstBranch] = extractCompanyBranch(
+          selectedData[0].template
         );
-        const allFootersSame = selectedData.every(
-          (item) => item.footer === selectedData[0].footer
-        );
-        if (!allHeadersSame || !allFootersSame) {
-          setPopupContentMalert(
-            "Headers or footers differ between selected rows!"
-          );
+
+        const allSameCompanyBranch = selectedData.every((item) => {
+          const [comp, br] = extractCompanyBranch(item.template);
+          return comp === firstCompany && br === firstBranch;
+        });
+
+        if (!allSameCompanyBranch) {
+          setPopupContentMalert("Please Select Same Template Name rows!");
           setPopupSeverityMalert("warning");
-          handleClickOpenPopupMalert();
-          return; // Prevents further execution
-        }
-      }
-
-      if (selectedData.length > 0) {
-        const isSameCompanyAndBranch = selectedData.every(
-          (data) =>
-            data.company === selectedData[0]?.company &&
-            data.branch === selectedData[0]?.branch
-        );
-
-        if (!isSameCompanyAndBranch) {
-          setPopupContentMalert(
-            "Please Choose Data with the Same Company and Branch!"
-          );
-          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Prevents further execution
         }
@@ -574,11 +564,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
           header: selectedData[0]?.header,
           footer: selectedData[0]?.footer,
         };
-        TemplateDropdownsValueManual(
-          selectedData[0].company,
-          selectedData[0].branch,
-          headerFooter
-        );
+        TemplateDropdownsValueManual(selectedData[0], headerFooter);
         setIsDeleteOpenBulkcheckbox(true);
       }
     }
@@ -601,19 +587,22 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
       return null;
     }
   }
-  const TemplateDropdownsValueManual = async (
-    company,
-    branch,
+  const TemplateDropdownsValueManual = async (rowData,
     headerfooter
   ) => {
     setPageName(!pageName);
     try {
+       const inside = rowData?.template?.match(/\((.*?)\)/)?.[1];
+      const [companyValue, branchValue] = inside.split("--");
+
+      console.log(companyValue); // "TTS"
+      console.log(branchValue); // "TTS-TRICHY"
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        company: company,
-        branch: branch,
+        company: companyValue,
+        branch: branchValue,
       });
       if (res?.data?.templatecontrolpanel) {
         const ans = res?.data?.templatecontrolpanel
@@ -625,12 +614,12 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
 
         const templateHeaderFooter = headerfooter;
 
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
+      const headerOption =  templateHeaderFooter?.header ? ans?.letterheadcontentheader?.find(
+        (data) => data?.headername === templateHeaderFooter?.header
+      ) : ans?.letterheadcontentheader?.find(data => data?.default === "default");
+      const footerOption =  templateHeaderFooter?.footer ? ans?.letterheadcontentfooter?.find(
+        (data) => data?.footername === templateHeaderFooter?.footer
+      ): ans?.letterheadcontentfooter?.find(data => data?.default === "default");
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
@@ -2070,6 +2059,11 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     console.log(e, "e");
     const NewDatetime = await getCurrentServerTime();
     try {
+       const inside = e?.template?.match(/\((.*?)\)/)?.[1];
+      const [companyValue, branchValue] = inside.split("--");
+
+      console.log(companyValue); // "TTS"
+      console.log(branchValue); // "TTS-TRICHY"
       let res = await axios.post(SERVICE.FILTERTEMPLATECONTROLPANEL, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
@@ -2091,12 +2085,12 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
 
         const templateHeaderFooter = res?.data?.headerfooter;
         console.log(templateHeaderFooter, "templateHeaderFooter");
-        const headerOption = ans?.letterheadcontentheader?.find(
-          (data) => data?.headername === templateHeaderFooter?.header
-        );
-        const footerOption = ans?.letterheadcontentfooter?.find(
-          (data) => data?.footername === templateHeaderFooter?.footer
-        );
+        const headerOption =  templateHeaderFooter?.header ? ans?.letterheadcontentheader?.find(
+        (data) => data?.headername === templateHeaderFooter?.header
+      ) : ans?.letterheadcontentheader?.find(data => data?.default === "default");
+      const footerOption =  templateHeaderFooter?.footer ? ans?.letterheadcontentfooter?.find(
+        (data) => data?.footername === templateHeaderFooter?.footer
+      ): ans?.letterheadcontentfooter?.find(data => data?.default === "default");
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );

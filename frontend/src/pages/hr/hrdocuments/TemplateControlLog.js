@@ -314,7 +314,10 @@ function TemplateControlLog() {
           (item) => item._id === logid
         );
       setPurposeEdit(lastupdatedata[0]);
-      console.log(lastupdatedata?.letterheadcontentheader , "lastupdatedata?.letterheadcontentheader")
+      // console.log(
+      //   lastupdatedata?.letterheadcontentheader,
+      //   "lastupdatedata?.letterheadcontentheader"
+      // );
       setHeaderTodoView(lastupdatedata[0]?.letterheadcontentheader);
       setFooterTodoView(lastupdatedata[0]?.letterheadcontentfooter);
       // setdocumentFilesDOcumentContentHeaderView(lastupdatedata[0]?.letterheadcontentheader)
@@ -1090,652 +1093,678 @@ function TemplateControlLog() {
                   View Template Control Panel
                 </Typography>
                 <br /> <br />
-          <Grid container spacing={2}>
-                       <Grid item md={6} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography>
-                             <b>Company</b>
-                           </Typography>
-                           <Typography>{purposeEdit.company}</Typography>
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={6} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography>
-                             <b>Branch</b>
-                           </Typography>
-                           <Typography>{purposeEdit.branch}</Typography>
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={6} sm={12} xs={12}>
-                         <Typography>
-                           <b>Document Letter Head Content Header</b>{" "}
-                         </Typography>
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {headerTodoView?.length > 0 &&
-                             headerTodoView?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={2} sm={6} xs={6}>
-                                     <Typography>{file.headername}</Typography>
-                                   </Grid>
-                                         <Grid item md={2} sm={6} xs={6}>
-                                     <Typography>
-                                       {file?.default}
-                                     </Typography>
-                                   </Grid>
-                                   <Grid item md={4} sm={6} xs={6}>
-                                     <Typography>
-                                       {file?.headerimage?.originalname}
-                                     </Typography>
-                                   </Grid>
-                             
-                                   <Grid></Grid>
-                                   <Grid item md={1} sm={6} xs={6}>
-                                     <VisibilityOutlinedIcon
-                                       style={{
-                                         fontsize: "large",
-                                         color: "#357AE8",
-                                         cursor: "pointer",
-                                       }}
-                                       onClick={() =>
-                                         renderFilePreviewDocumentContentHeader(
-                                           file?.headerimage
-                                         )
-                                       }
-                                     />
-                                   </Grid>
-                                 </Grid>
-                               </>
-                             ))}
-                         </Grid>
-                       </Grid>
-                       <Grid item md={6} sm={12} xs={12}>
-                         <Typography>
-                           <b>Document Letter Head Content Footer</b>{" "}
-                         </Typography>
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {footerTodoView?.length > 0 &&
-                             footerTodoView?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={2} sm={6} xs={6}>
-                                     <Typography>{file.footername}</Typography>
-                                   </Grid>
-                                         <Grid item md={2} sm={6} xs={6}>
-                                     <Typography>
-                                       {file?.default}
-                                     </Typography>
-                                   </Grid>
-                                   <Grid item md={6} sm={6} xs={6}>
-                                     <Typography>
-                                       {file?.footerimage?.originalname}
-                                     </Typography>
-                                   </Grid>
-                                   <Grid></Grid>
-                                   <Grid item md={1} sm={6} xs={6}>
-                                     <VisibilityOutlinedIcon
-                                       style={{
-                                         fontsize: "large",
-                                         color: "#357AE8",
-                                         cursor: "pointer",
-                                       }}
-                                       onClick={() =>
-                                         renderFilePreviewDocumentContentHeader(
-                                           file?.footerimage
-                                         )
-                                       }
-                                     />
-                                   </Grid>
-                                 </Grid>
-                               </>
-                             ))}
-                         </Grid>
-                       </Grid>
-                       <Grid item md={6} sm={12} xs={12}>
-                         <Typography>
-                           <b>Document Letter Head Body Content(Background)</b>{" "}
-                         </Typography>
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {documentFilesDocumentBodyContentView?.length &&
-                             documentFilesDocumentBodyContentView?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={2} sm={6} xs={6}>
-                                     <Typography>{file.backgroundname}</Typography>
-                                   </Grid>
-                                   <Grid item md={2} sm={6} xs={6}>
-                                     <Typography>
-                                       {file?.default}
-                                     </Typography>
-                                   </Grid>
-                                   <Grid item md={6} sm={6} xs={6}>
-                                     <Typography>
-                                       {file?.backgroundimage?.originalname}
-                                     </Typography>
-                                   </Grid>
-                                   <Grid></Grid>
-                                   <Grid item md={1} sm={6} xs={6}>
-                                     <VisibilityOutlinedIcon
-                                       style={{
-                                         fontsize: "large",
-                                         color: "#357AE8",
-                                         cursor: "pointer",
-                                       }}
-                                       onClick={() =>
-                                         renderFilePreviewDocumentContentHeader(
-                                           file?.backgroundimage
-                                         )
-                                       }
-                                     />
-                                   </Grid>
-                                 </Grid>
-                               </>
-                             ))}
-                         </Grid>
-                       </Grid>
-                       <Grid item md={6} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography>
-                             <b>Company URL</b>
-                           </Typography>
-                           <Typography>{purposeEdit.companyurl}</Typography>
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={6} sm={12} xs={12}>
-                         <Typography>
-                           <b>ID Card Front Header</b>{" "}
-                         </Typography>
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {
-                             documentFilesDocumentFrontHeaderView && (
-                               // documentFilesDocumentFrontHeaderView?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={8} sm={6} xs={6}>
-                                     <Typography>
-                                       {
-                                         documentFilesDocumentFrontHeaderView?.originalname
-                                       }
-                                     </Typography>
-                                   </Grid>
-                                   <Grid></Grid>
-                                   <Grid item md={1} sm={6} xs={6}>
-                                     <VisibilityOutlinedIcon
-                                       style={{
-                                         fontsize: "large",
-                                         color: "#357AE8",
-                                         cursor: "pointer",
-                                       }}
-                                       onClick={() =>
-                                         renderFilePreviewDocumentContentHeader(
-                                           documentFilesDocumentFrontHeaderView
-                                         )
-                                       }
-                                     />
-                                   </Grid>
-                                 </Grid>
-                               </>
-                             )
-                             // ))
-                           }
-                         </Grid>
-                       </Grid>
-                       <Grid item md={6} sm={12} xs={12}>
-                         <Typography>
-                           <b>ID Card Front Footer</b>
-                         </Typography>
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {
-                             documentFilesDocumentFrontFooterView && (
-                               // documentFilesDocumentFrontFooterView?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={8} sm={6} xs={6}>
-                                     <Typography>
-                                       {
-                                         documentFilesDocumentFrontFooterView?.originalname
-                                       }
-                                     </Typography>
-                                   </Grid>
-                                   <Grid></Grid>
-                                   <Grid item md={1} sm={6} xs={6}>
-                                     <VisibilityOutlinedIcon
-                                       style={{
-                                         fontsize: "large",
-                                         color: "#357AE8",
-                                         cursor: "pointer",
-                                       }}
-                                       onClick={() =>
-                                         renderFilePreviewDocumentContentHeader(
-                                           documentFilesDocumentFrontFooterView
-                                         )
-                                       }
-                                     />
-                                   </Grid>
-                                 </Grid>
-                               </>
-                             )
-                             // ))
-                           }
-                         </Grid>
-                       </Grid>
-                       <Grid item md={6} sm={12} xs={12}>
-                         <Typography>
-                           <b>ID Card Back Header</b>{" "}
-                         </Typography>
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {
-                             documentFilesDocumentBackHeaderView && (
-                               // documentFilesDocumentBackHeaderView?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={8} sm={6} xs={6}>
-                                     <Typography>
-                                       {
-                                         documentFilesDocumentBackHeaderView?.originalname
-                                       }
-                                     </Typography>
-                                   </Grid>
-                                   <Grid></Grid>
-                                   <Grid item md={1} sm={6} xs={6}>
-                                     <VisibilityOutlinedIcon
-                                       style={{
-                                         fontsize: "large",
-                                         color: "#357AE8",
-                                         cursor: "pointer",
-                                       }}
-                                       onClick={() =>
-                                         renderFilePreviewDocumentContentHeader(
-                                           documentFilesDocumentBackHeaderView
-                                         )
-                                       }
-                                     />
-                                   </Grid>
-                                 </Grid>
-                               </>
-                             )
-                             // ))
-                           }
-                         </Grid>
-                       </Grid>
-                       <Grid item md={6} sm={12} xs={12}>
-                         <Typography>
-                           <b>ID Card Back Footer </b>
-                         </Typography>
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {
-                             documentFilesDocumentBackFooterView && (
-                               // documentFilesDocumentBackFooterView?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={8} sm={6} xs={6}>
-                                     <Typography>
-                                       {
-                                         documentFilesDocumentBackFooterView?.originalname
-                                       }
-                                     </Typography>
-                                   </Grid>
-                                   <Grid></Grid>
-                                   <Grid item md={1} sm={6} xs={6}>
-                                     <VisibilityOutlinedIcon
-                                       style={{
-                                         fontsize: "large",
-                                         color: "#357AE8",
-                                         cursor: "pointer",
-                                       }}
-                                       onClick={() =>
-                                         renderFilePreviewDocumentContentHeader(
-                                           documentFilesDocumentBackFooterView
-                                         )
-                                       }
-                                     />
-                                   </Grid>
-                                 </Grid>
-                               </>
-                             )
-                             // ))
-                           }
-                         </Grid>
-                       </Grid>
-                       <Grid item md={6} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography>
-                             <b>Company Name</b>
-                           </Typography>
-                           <Typography>{purposeEdit.companyname}</Typography>
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={6} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography>
-                             <b>Address</b>
-                           </Typography>
-                           <Typography>{purposeEdit.address}</Typography>
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={6} sm={12} xs={12}>
-                         <Typography>
-                           <b>Logo</b> <b style={{ color: "red" }}>*</b>
-                         </Typography>
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {documentFilesView?.length > 0 &&
-                             documentFilesView?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={6} sm={6} xs={6}>
-                                     <Typography>{file?.file?.originalname}</Typography>
-                                   </Grid>
-                                   <Grid item md={2} sm={6} xs={6}>
-                                     <Typography>
-                                       {file?.default}
-                                     </Typography>
-                                   </Grid>
-                                   <Grid></Grid>
-                                   <Grid item md={1} sm={6} xs={6}>
-                                     <VisibilityOutlinedIcon
-                                       style={{
-                                         fontsize: "large",
-                                         color: "#357AE8",
-                                         cursor: "pointer",
-                                       }}
-                                       onClick={() =>
-                                         renderFilePreviewDocumentContentHeader(file?.file)
-                                       }
-                                     />
-                                   </Grid>
-                                 </Grid>
-                               </>
-                             ))}
-                         </Grid>
-                       </Grid>
-         
-                       <Grid item md={6} sm={12} xs={12}>
-                         {purposeEdit?.toCompany?.length > 0 && (
-                           <Grid container spacing={2}>
-                             <Grid item md={4} sm={6} xs={6}>
-                               <Typography>
-                                 <b>To Company</b>{" "}
-                               </Typography>
-                             </Grid>
-                             <Grid item md={4} sm={6} xs={6}>
-                               <Typography>
-                                 <b>To Address</b>{" "}
-                               </Typography>
-                             </Grid>
-                           </Grid>
-                         )}
-         
-                         <br></br>
-                         <Grid item md={12} xs={12} sm={12}>
-                           {purposeEdit?.toCompany?.length > 0 &&
-                             purposeEdit?.toCompany?.map((file, index) => (
-                               <>
-                                 <Grid container spacing={2}>
-                                   <Grid item md={4} sm={6} xs={6}>
-                                     <Typography>{file.toCompanyname}</Typography>
-                                   </Grid>
-                                   <Grid item md={4} sm={6} xs={6}>
-                                     <Typography>{file.toAddress}</Typography>
-                                   </Grid>
-                                   <Grid></Grid>
-                                 </Grid>
-                               </>
-                             ))}
-                         </Grid>
-                       </Grid>
-                       <Grid item md={12} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography variant="h6">Seal</Typography>
-                           <Grid item md={12} xs={12} sm={12}>
-                             {todoscheckSealView?.length > 0 &&
-                               todoscheckSealView.map((todo, index) => (
-                                 <div key={index}>
-                                   <Grid container spacing={1}>
-                                     <>
-                                       <Grid item md={3} xs={12} sm={12}>
-                                         <FormControl fullWidth size="small">
-                                           <Typography>
-                                             <b>Seal Type</b>
-                                           </Typography>
-                                           <OutlinedInput
-                                             id="component-outlined"
-                                             type="text"
-                                             placeholder="Please Enter Name"
-                                             value={todo.seal}
-                                             readOnly={true}
-                                           />
-                                         </FormControl>
-                                       </Grid>
-                                       <Grid item md={3} xs={12} sm={12}>
-                                         <FormControl fullWidth size="small">
-                                           <Typography>
-                                             <b>Name</b>
-                                           </Typography>
-                                           <OutlinedInput
-                                             id="component-outlined"
-                                             type="text"
-                                             placeholder="Please Enter Name"
-                                             value={todo.name}
-                                             readOnly={true}
-                                           />
-                                         </FormControl>
-                                       </Grid>
-                                     </>
-                                     <br />
-                                     <br />
-                                     <Grid item md={4} sm={6} xs={6}>
-                                       <Typography>
-                                         <b>Seal Logo</b>
-                                       </Typography>
-                                       <Box
-                                         sx={{ display: "flex", justifyContent: "left" }}
-                                       ></Box>
-                                       <Grid item md={12} xs={12} sm={12}>
-                                         {
-                                           todo.document && (
-                                             // todo.document.map((file, index) => (
-                                             <>
-                                               <Grid container spacing={2}>
-                                                 <Grid item md={8} sm={6} xs={6}>
-                                                   <Typography>
-                                                     {todo?.document?.originalname}
-                                                   </Typography>
-                                                 </Grid>
-                                                 <Grid></Grid>
-                                                 <Grid item md={1} sm={6} xs={6}>
-                                                   <VisibilityOutlinedIcon
-                                                     style={{
-                                                       fontsize: "large",
-                                                       color: "#357AE8",
-                                                       cursor: "pointer",
-                                                     }}
-                                                     onClick={() =>
-                                                       renderFilePreview(todo?.document)
-                                                     }
-                                                   />
-                                                 </Grid>
-                                               </Grid>
-                                             </>
-                                           )
-                                           // ))
-                                         }
-                                       </Grid>
-                                     </Grid>
-                                   </Grid>
-         
-                                   <br />
-                                 </div>
-                               ))}
-                           </Grid>
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={12} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography variant="h6">Signature</Typography>
-                           <Grid item md={12} xs={12} sm={12}>
-                             {documentFilesSignatureView?.length > 0 &&
-                               documentFilesSignatureView.map((todo, index) => (
-                                 <div key={index}>
-                                   <Grid container spacing={1}>
-                                     <>
-                                       <Grid item md={2.5} xs={12} sm={12}>
-                                         <FormControl fullWidth size="small">
-                                           <Typography>
-                                             <b>Unit</b>
-                                           </Typography>
-                                           <OutlinedInput
-                                             id="component-outlined"
-                                             type="text"
-                                             placeholder="Please Enter Name"
-                                             value={todo.unit}
-                                             readOnly={true}
-                                           />
-                                         </FormControl>
-                                       </Grid>
-                                       <Grid item md={2.5} xs={12} sm={12}>
-                                         <FormControl fullWidth size="small">
-                                           <Typography>
-                                             <b>Team</b>
-                                           </Typography>
-                                           <OutlinedInput
-                                             id="component-outlined"
-                                             type="text"
-                                             placeholder="Please Enter Name"
-                                             value={todo.team}
-                                             readOnly={true}
-                                           />
-                                         </FormControl>
-                                       </Grid>
-                                       <Grid item md={2.5} xs={12} sm={12}>
-                                         <FormControl fullWidth size="small">
-                                           <Typography>
-                                             <b>Employee</b>
-                                           </Typography>
-                                           <OutlinedInput
-                                             id="component-outlined"
-                                             type="text"
-                                             placeholder="Please Enter Name"
-                                             value={todo.employee}
-                                             readOnly={true}
-                                           />
-                                         </FormControl>
-                                       </Grid>
-                                       <Grid item md={2.5} xs={12} sm={12}>
-                                         <FormControl fullWidth size="small">
-                                           <Typography>
-                                             <b>Name</b>
-                                           </Typography>
-                                           <OutlinedInput
-                                             id="component-outlined"
-                                             type="text"
-                                             placeholder="Please Enter Name"
-                                             value={todo.signaturename}
-                                             readOnly={true}
-                                           />
-                                         </FormControl>
-                                       </Grid>
-                                     </>
-                                     <br />
-                                     <br />
-                                     <Grid item md={2} sm={6} xs={6}>
-                                       <Typography>
-                                         <b>Signature Logo</b>
-                                       </Typography>
-                                       <Box
-                                         sx={{ display: "flex", justifyContent: "left" }}
-                                       ></Box>
-                                       <Grid item md={12} xs={12} sm={12}>
-                                         {
-                                           todo?.document && (
-                                             // todo.document.map((file, index) => (
-                                             <>
-                                               <Grid container spacing={2}>
-                                                 <Grid item md={8} sm={6} xs={6}>
-                                                   <Typography>
-                                                     {todo?.document?.originalname}
-                                                   </Typography>
-                                                 </Grid>
-                                                 <Grid></Grid>
-                                                 <Grid item md={1} sm={6} xs={6}>
-                                                   <VisibilityOutlinedIcon
-                                                     style={{
-                                                       fontsize: "large",
-                                                       color: "#357AE8",
-                                                       cursor: "pointer",
-                                                     }}
-                                                     onClick={() =>
-                                                       renderFilePreview(todo?.document)
-                                                     }
-                                                   />
-                                                 </Grid>
-                                               </Grid>
-                                             </>
-                                           )
-                                           // ))
-                                         }
-                                       </Grid>
-                                     </Grid>
-                                   </Grid>
-                                   <br />
-                                 </div>
-                               ))}
-                           </Grid>
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={4} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography>
-                             <b>From Email</b>
-                           </Typography>
-                           <Typography>{purposeEdit.fromemail}</Typography>
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={4} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography>
-                             <b>CC Email</b>
-                           </Typography>
-                           {Array.isArray(purposeEdit.ccemail)
-                             ? purposeEdit.ccemail?.map((item) => (
-                                 <Typography>{item}</Typography>
-                               ))
-                             : ""}
-                         </FormControl>
-                       </Grid>
-                       <Grid item md={4} xs={12} sm={12}>
-                         <FormControl fullWidth size="small">
-                           <Typography>
-                             <b>BCC Email</b>
-                           </Typography>
-                           {Array.isArray(purposeEdit.bccemail)
-                             ? purposeEdit.bccemail?.map((item) => (
-                                 <Typography>{item}</Typography>
-                               ))
-                             : ""}
-                         </FormControl>
-                       </Grid>
-                     </Grid>
-            <br /> <br /> <br />
-            <Grid container spacing={2}>
-                       <Button
-                         sx={buttonStyles.btncancel}
-                         variant="contained"
-                         color="primary"
-                         onClick={handleCloseModView}
-                       >
-                         {" "}
-                         Back{" "}
-                       </Button>
-                     </Grid>
+                <Grid container spacing={2}>
+                  <Grid item md={6} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>Company</b>
+                      </Typography>
+                      <Typography>{purposeEdit.company}</Typography>
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>Branch</b>
+                      </Typography>
+                      <Typography>{purposeEdit.branch}</Typography>
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} sm={12} xs={12}>
+                    <Typography>
+                      <b>Document Letter Head Content Header</b>{" "}
+                    </Typography>
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {headerTodoView?.length > 0 &&
+                        headerTodoView?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file.headername}</Typography>
+                              </Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file?.default}</Typography>
+                              </Grid>
+                              <Grid item md={4} sm={6} xs={6}>
+                                <Typography>
+                                  {file?.headerimage?.originalname}
+                                </Typography>
+                              </Grid>
+
+                              <Grid></Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentHeader(
+                                      file?.headerimage
+                                    )
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </>
+                        ))}
+                    </Grid>
+                  </Grid>
+                  <Grid item md={6} sm={12} xs={12}>
+                    <Typography>
+                      <b>Document Letter Head Content Footer</b>{" "}
+                    </Typography>
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {footerTodoView?.length > 0 &&
+                        footerTodoView?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file.footername}</Typography>
+                              </Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file?.default}</Typography>
+                              </Grid>
+                              <Grid item md={6} sm={6} xs={6}>
+                                <Typography>
+                                  {file?.footerimage?.originalname}
+                                </Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentHeader(
+                                      file?.footerimage
+                                    )
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </>
+                        ))}
+                    </Grid>
+                  </Grid>
+                  <Grid item md={6} sm={12} xs={12}>
+                    <Typography>
+                      <b>Document Letter Head Body Content(Background)</b>{" "}
+                    </Typography>
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {documentFilesDocumentBodyContentView?.length &&
+                        documentFilesDocumentBodyContentView?.map(
+                          (file, index) => (
+                            <>
+                              <Grid container spacing={2}>
+                                <Grid item md={2} sm={6} xs={6}>
+                                  <Typography>{file.backgroundname}</Typography>
+                                </Grid>
+                                <Grid item md={2} sm={6} xs={6}>
+                                  <Typography>{file?.default}</Typography>
+                                </Grid>
+                                <Grid item md={6} sm={6} xs={6}>
+                                  <Typography>
+                                    {file?.backgroundimage?.originalname}
+                                  </Typography>
+                                </Grid>
+                                <Grid></Grid>
+                                <Grid item md={1} sm={6} xs={6}>
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentContentHeader(
+                                        file?.backgroundimage
+                                      )
+                                    }
+                                  />
+                                </Grid>
+                              </Grid>
+                            </>
+                          )
+                        )}
+                    </Grid>
+                  </Grid>
+                  <Grid item md={6} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>Company URL</b>
+                      </Typography>
+                      <Typography>{purposeEdit.companyurl}</Typography>
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} sm={12} xs={12}>
+                    <Typography>
+                      <b>ID Card Front Header</b>{" "}
+                    </Typography>
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {
+                        documentFilesDocumentFrontHeaderView && (
+                          // documentFilesDocumentFrontHeaderView?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={8} sm={6} xs={6}>
+                                <Typography>
+                                  {
+                                    documentFilesDocumentFrontHeaderView?.originalname
+                                  }
+                                </Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentHeader(
+                                      documentFilesDocumentFrontHeaderView
+                                    )
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </>
+                        )
+                        // ))
+                      }
+                    </Grid>
+                  </Grid>
+                  <Grid item md={6} sm={12} xs={12}>
+                    <Typography>
+                      <b>ID Card Front Footer</b>
+                    </Typography>
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {
+                        documentFilesDocumentFrontFooterView && (
+                          // documentFilesDocumentFrontFooterView?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={8} sm={6} xs={6}>
+                                <Typography>
+                                  {
+                                    documentFilesDocumentFrontFooterView?.originalname
+                                  }
+                                </Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentHeader(
+                                      documentFilesDocumentFrontFooterView
+                                    )
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </>
+                        )
+                        // ))
+                      }
+                    </Grid>
+                  </Grid>
+                  <Grid item md={6} sm={12} xs={12}>
+                    <Typography>
+                      <b>ID Card Back Header</b>{" "}
+                    </Typography>
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {
+                        documentFilesDocumentBackHeaderView && (
+                          // documentFilesDocumentBackHeaderView?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={8} sm={6} xs={6}>
+                                <Typography>
+                                  {
+                                    documentFilesDocumentBackHeaderView?.originalname
+                                  }
+                                </Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentHeader(
+                                      documentFilesDocumentBackHeaderView
+                                    )
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </>
+                        )
+                        // ))
+                      }
+                    </Grid>
+                  </Grid>
+                  <Grid item md={6} sm={12} xs={12}>
+                    <Typography>
+                      <b>ID Card Back Footer </b>
+                    </Typography>
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {
+                        documentFilesDocumentBackFooterView && (
+                          // documentFilesDocumentBackFooterView?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={8} sm={6} xs={6}>
+                                <Typography>
+                                  {
+                                    documentFilesDocumentBackFooterView?.originalname
+                                  }
+                                </Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentHeader(
+                                      documentFilesDocumentBackFooterView
+                                    )
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </>
+                        )
+                        // ))
+                      }
+                    </Grid>
+                  </Grid>
+                  <Grid item md={6} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>Company Name</b>
+                      </Typography>
+                      <Typography>{purposeEdit.companyname}</Typography>
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>Address</b>
+                      </Typography>
+                      <Typography>{purposeEdit.address}</Typography>
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} sm={12} xs={12}>
+                    <Typography>
+                      <b>Logo</b> <b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {documentFilesView?.length > 0 &&
+                        documentFilesView?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={6} sm={6} xs={6}>
+                                <Typography>
+                                  {file?.file?.originalname}
+                                </Typography>
+                              </Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file?.default}</Typography>
+                              </Grid>
+                              <Grid></Grid>
+                              <Grid item md={1} sm={6} xs={6}>
+                                <VisibilityOutlinedIcon
+                                  style={{
+                                    fontsize: "large",
+                                    color: "#357AE8",
+                                    cursor: "pointer",
+                                  }}
+                                  onClick={() =>
+                                    renderFilePreviewDocumentContentHeader(
+                                      file?.file
+                                    )
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                          </>
+                        ))}
+                    </Grid>
+                  </Grid>
+
+                  <Grid item md={6} sm={12} xs={12}>
+                    {purposeEdit?.toCompany?.length > 0 && (
+                      <Grid container spacing={2}>
+                        <Grid item md={4} sm={6} xs={6}>
+                          <Typography>
+                            <b>To Company</b>{" "}
+                          </Typography>
+                        </Grid>
+                        <Grid item md={4} sm={6} xs={6}>
+                          <Typography>
+                            <b>To Address</b>{" "}
+                          </Typography>
+                        </Grid>
+                      </Grid>
+                    )}
+
+                    <br></br>
+                    <Grid item md={12} xs={12} sm={12}>
+                      {purposeEdit?.toCompany?.length > 0 &&
+                        purposeEdit?.toCompany?.map((file, index) => (
+                          <>
+                            <Grid container spacing={2}>
+                              <Grid item md={4} sm={6} xs={6}>
+                                <Typography>{file.toCompanyname}</Typography>
+                              </Grid>
+                              <Grid item md={4} sm={6} xs={6}>
+                                <Typography>{file.toAddress}</Typography>
+                              </Grid>
+                              <Grid></Grid>
+                            </Grid>
+                          </>
+                        ))}
+                    </Grid>
+                  </Grid>
+                  <Grid item md={12} xs={12} sm={12}>
+                    <Typography>
+                      <b>QR Info</b>{" "}
+                    </Typography>
+                    {purposeEdit?.qrInfo?.length > 0 &&
+                      purposeEdit?.qrInfo?.map((file, index) => (
+                        <>
+                          <Grid container spacing={2}>
+                            <Grid item md={4} sm={6} xs={6}>
+                              <Typography>{`${index + 1}. ${
+                                file.details
+                              }`}</Typography>
+                            </Grid>
+                            <Grid></Grid>
+                          </Grid>
+                        </>
+                      ))}
+                  </Grid>
+                  <Grid item md={12} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography variant="h6">Seal</Typography>
+                      <Grid item md={12} xs={12} sm={12}>
+                        {todoscheckSealView?.length > 0 &&
+                          todoscheckSealView.map((todo, index) => (
+                            <div key={index}>
+                              <Grid container spacing={1}>
+                                <>
+                                  <Grid item md={3} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        <b>Seal Type</b>
+                                      </Typography>
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter Name"
+                                        value={todo.seal}
+                                        readOnly={true}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={3} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        <b>Name</b>
+                                      </Typography>
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter Name"
+                                        value={todo.name}
+                                        readOnly={true}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                </>
+                                <br />
+                                <br />
+                                <Grid item md={4} sm={6} xs={6}>
+                                  <Typography>
+                                    <b>Seal Logo</b>
+                                  </Typography>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "left",
+                                    }}
+                                  ></Box>
+                                  <Grid item md={12} xs={12} sm={12}>
+                                    {
+                                      todo.document && (
+                                        // todo.document.map((file, index) => (
+                                        <>
+                                          <Grid container spacing={2}>
+                                            <Grid item md={8} sm={6} xs={6}>
+                                              <Typography>
+                                                {todo?.document?.originalname}
+                                              </Typography>
+                                            </Grid>
+                                            <Grid></Grid>
+                                            <Grid item md={1} sm={6} xs={6}>
+                                              <VisibilityOutlinedIcon
+                                                style={{
+                                                  fontsize: "large",
+                                                  color: "#357AE8",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() =>
+                                                  renderFilePreview(
+                                                    todo?.document
+                                                  )
+                                                }
+                                              />
+                                            </Grid>
+                                          </Grid>
+                                        </>
+                                      )
+                                      // ))
+                                    }
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+
+                              <br />
+                            </div>
+                          ))}
+                      </Grid>
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={12} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography variant="h6">Signature</Typography>
+                      <Grid item md={12} xs={12} sm={12}>
+                        {documentFilesSignatureView?.length > 0 &&
+                          documentFilesSignatureView.map((todo, index) => (
+                            <div key={index}>
+                              <Grid container spacing={1}>
+                                <>
+                                  <Grid item md={2.5} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        <b>Unit</b>
+                                      </Typography>
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter Name"
+                                        value={todo.unit}
+                                        readOnly={true}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={2.5} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        <b>Team</b>
+                                      </Typography>
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter Name"
+                                        value={todo.team}
+                                        readOnly={true}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={2.5} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        <b>Employee</b>
+                                      </Typography>
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter Name"
+                                        value={todo.employee}
+                                        readOnly={true}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={2.5} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        <b>Name</b>
+                                      </Typography>
+                                      <OutlinedInput
+                                        id="component-outlined"
+                                        type="text"
+                                        placeholder="Please Enter Name"
+                                        value={todo.signaturename}
+                                        readOnly={true}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                </>
+                                <br />
+                                <br />
+                                <Grid item md={2} sm={6} xs={6}>
+                                  <Typography>
+                                    <b>Signature Logo</b>
+                                  </Typography>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "left",
+                                    }}
+                                  ></Box>
+                                  <Grid item md={12} xs={12} sm={12}>
+                                    {
+                                      todo?.document && (
+                                        // todo.document.map((file, index) => (
+                                        <>
+                                          <Grid container spacing={2}>
+                                            <Grid item md={8} sm={6} xs={6}>
+                                              <Typography>
+                                                {todo?.document?.originalname}
+                                              </Typography>
+                                            </Grid>
+                                            <Grid></Grid>
+                                            <Grid item md={1} sm={6} xs={6}>
+                                              <VisibilityOutlinedIcon
+                                                style={{
+                                                  fontsize: "large",
+                                                  color: "#357AE8",
+                                                  cursor: "pointer",
+                                                }}
+                                                onClick={() =>
+                                                  renderFilePreview(
+                                                    todo?.document
+                                                  )
+                                                }
+                                              />
+                                            </Grid>
+                                          </Grid>
+                                        </>
+                                      )
+                                      // ))
+                                    }
+                                  </Grid>
+                                </Grid>
+                              </Grid>
+                              <br />
+                            </div>
+                          ))}
+                      </Grid>
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>From Email</b>
+                      </Typography>
+                      <Typography>{purposeEdit.fromemail}</Typography>
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>CC Email</b>
+                      </Typography>
+                      {Array.isArray(purposeEdit.ccemail)
+                        ? purposeEdit.ccemail?.map((item) => (
+                            <Typography>{item}</Typography>
+                          ))
+                        : ""}
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        <b>BCC Email</b>
+                      </Typography>
+                      {Array.isArray(purposeEdit.bccemail)
+                        ? purposeEdit.bccemail?.map((item) => (
+                            <Typography>{item}</Typography>
+                          ))
+                        : ""}
+                    </FormControl>
+                  </Grid>
+                </Grid>
+                <br /> <br /> <br />
+                <Grid container spacing={2}>
+                  <Button
+                    sx={buttonStyles.btncancel}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleCloseModView}
+                  >
+                    {" "}
+                    Back{" "}
+                  </Button>
+                </Grid>
               </>
             </Box>
           </Box>

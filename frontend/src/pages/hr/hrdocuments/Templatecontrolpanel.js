@@ -276,12 +276,11 @@ function TempControlPanel() {
       } else if (page === "createtodo") {
         if (userESignature) {
           const fileType = getFileTypeFromBase64(userESignature); // returns "png", "jpeg", etc.
-          todoscheckSignature[index].document = [
+          todoscheckSignature[index].document = 
             {
               name: `${employeename}.${fileType}`,
               preview: userESignature,
-            },
-          ];
+            };
         }
       } else if (page === "edit") {
         if (userESignature) {
@@ -482,7 +481,7 @@ function TempControlPanel() {
   const [documentFilesView, setdocumentFilesVIew] = useState([]);
   const [documentFilesSeal, setdocumentFilesSeal] = useState("");
   const [documentFilesSignature, setdocumentFilesSignature] = useState("");
-  console.log(documentFiles, "documentFiles");
+  // console.log(documentFiles, "documentFiles");
   const [companyname, setCompanyname] = useState("");
   const [anchorElDoc, setAnchorElDoc] = useState(null);
   const [anchorElDoc2, setAnchorElDoc2] = useState(null);
@@ -1544,7 +1543,7 @@ function TempControlPanel() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
-    handleClickOpenInfoImage();
+      handleClickOpenInfoImage();
     }
   };
   // console.log(qrInfoTodos, 'qrInfoTodos');
@@ -1974,6 +1973,7 @@ function TempControlPanel() {
       setdocumentFilesDOcumentBackHeaderEdit(lastupdatedata?.idcardbackheader);
       setdocumentFilesDOcumentBackFooterEdit(lastupdatedata?.idcardbackfooter);
       setTodoscheckSealEdit(lastupdatedata?.documentseal);
+      // console.log(lastupdatedata?.documentsignature, "lastupdatedata?.documentsignature)")
       setTodoscheckSignatureEdit(lastupdatedata?.documentsignature);
       setEmailFormatEdit(lastupdatedata?.emailformat);
 
@@ -2059,6 +2059,7 @@ function TempControlPanel() {
   const handleEditTodocheck = (index) => {
     setSignTodo(true);
     setEditingIndexcheck(index);
+    // console.log(todoscheckSignatureEdit , 'todoscheckSignatureEdit20263')
     setUnitEditTodo(todoscheckSignatureEdit[index]?.unit);
     setTeamEditTodo(todoscheckSignatureEdit[index]?.team);
     setAllBranchEditTodo(todoscheckSignatureEdit[index]?.allBranch);
@@ -2098,7 +2099,7 @@ function TempControlPanel() {
       "edittodo",
       editingIndexcheck
     );
-
+// console.log(todoscheckSignatureEdit , "todoscheckSignatureEdit")
     if (!allBranchEditTodo && unitEditTodo === "Please Select Unit") {
       setPopupContentMalert("Please Select Unit");
       setPopupSeverityMalert("warning");
@@ -2135,17 +2136,22 @@ function TempControlPanel() {
       handleClickOpenPopupMalert();
     } else {
       const newTodoscheck = [...todoscheckSignatureEdit];
-      newTodoscheck[editingIndexcheck].unit = unitEditTodo;
-      newTodoscheck[editingIndexcheck].team = teamEditTodo;
-      newTodoscheck[editingIndexcheck].employee = employeeEditTodo;
-      newTodoscheck[editingIndexcheck].signaturename = signaturenameEditTodo;
-      newTodoscheck[editingIndexcheck].seal = forSealEditTodo;
-      newTodoscheck[editingIndexcheck].topcontent = topContentEditTodo;
-      newTodoscheck[editingIndexcheck].bottomcontent = bottomContentEditTodo;
-      newTodoscheck[editingIndexcheck].employee = employeeEditTodo;
-      newTodoscheck[editingIndexcheck].allBranch = allBranchEditTodo;
+
+      newTodoscheck[editingIndexcheck] = {
+        ...newTodoscheck[editingIndexcheck],
+        unit: unitEditTodo,
+        team: teamEditTodo,
+        employee: employeeEditTodo,
+        signaturename: signaturenameEditTodo,
+        seal: forSealEditTodo,
+        topcontent: topContentEditTodo,
+        bottomcontent: bottomContentEditTodo,
+        allBranch: allBranchEditTodo,
+        document:newTodoscheck[editingIndexcheck]?.document[0]
+      };
 
       setTodoscheckSignatureEdit(newTodoscheck);
+
       setUnitEditTodo("Please Select Unit");
       setTeamEditTodo("Please Select Team");
       setEmployeeEditTodo("Please Select Employee");
@@ -2509,7 +2515,7 @@ function TempControlPanel() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
-    handleClickOpenInfoImageEdit();
+      handleClickOpenInfoImageEdit();
     }
   };
 
@@ -3660,16 +3666,21 @@ function TempControlPanel() {
       handleClickOpenPopupMalert();
     } else {
       const newTodocheck = [...todoscheckSignature];
-      todoscheckSignature[indexSignatureCreate].unit = unitTodo;
-      todoscheckSignature[indexSignatureCreate].team = teamTodo;
-      todoscheckSignature[indexSignatureCreate].employee = employeeTodo;
-      todoscheckSignature[indexSignatureCreate].signaturename =
-        signaturenameTodo;
-      todoscheckSignature[indexSignatureCreate].seal = forSealTodo;
-      todoscheckSignature[indexSignatureCreate].topcontent = topContentTodo;
-      todoscheckSignature[indexSignatureCreate].bottomcontent =
-        bottomContentTodo;
-      todoscheckSignature[indexSignatureCreate].allBranch = allBranchTodo;
+
+      newTodocheck[indexSignatureCreate] = {
+        ...newTodocheck[indexSignatureCreate],
+        unit: unitTodo,
+        team: teamTodo,
+        employee: employeeTodo,
+        signaturename: signaturenameTodo,
+        seal: forSealTodo,
+        topcontent: topContentTodo,
+        bottomcontent: bottomContentTodo,
+        document: newTodocheck[indexSignatureCreate].document, // no change
+        allBranch: allBranchTodo,
+      };
+
+      // call function AFTER updating the array
       fetchEmployeeSignatureDefault(
         employeeTodo,
         "createtodo",
@@ -4065,10 +4076,10 @@ function TempControlPanel() {
     useState(false);
   const [editIndexBackgroundImageEdit, setEditIndexBackgroundImageEdit] =
     useState(null);
-  console.log(
-    documentFilesDocumentContentHeader,
-    "documentFilesDocumentContentHeader"
-  );
+  // console.log(
+  //   documentFilesDocumentContentHeader,
+  //   "documentFilesDocumentContentHeader"
+  // );
   // Header Todo Create Section
   const handleCreateTodoHeader = () => {
     if (!headerNameCreate.trim()) {
@@ -4635,7 +4646,11 @@ function TempControlPanel() {
             (data) => data?.default === "default"
           ) && DefaultBackgroundImageNameEdit === "default"
     ) {
-      console.log(isEditingBackgroundImageEdit ,editIndexBackgroundImageEdit, "isEditingBackgroundImageEdit")
+      // console.log(
+      //   isEditingBackgroundImageEdit,
+      //   editIndexBackgroundImageEdit,
+      //   "isEditingBackgroundImageEdit"
+      // );
       setPopupContentMalert("Can't set more than one default status");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -4885,7 +4900,7 @@ function TempControlPanel() {
             ? "none"
             : "default",
         },
-      ]);;
+      ]);
       handleClose8Edit();
       // };
     }
@@ -5616,7 +5631,11 @@ function TempControlPanel() {
                               <Typography>{file?.default}</Typography>
                             </Grid>
                             <Grid item md={6} sm={6} xs={6}>
-                              <Typography>{file?.headerimage?.originalname ? file?.headerimage?.originalname : file?.headerimage?.name }</Typography>
+                              <Typography>
+                                {file?.headerimage?.originalname
+                                  ? file?.headerimage?.originalname
+                                  : file?.headerimage?.name}
+                              </Typography>
                             </Grid>
                             <Grid></Grid>
                             <Grid item md={2} sm={6} xs={6}>
@@ -5936,7 +5955,11 @@ function TempControlPanel() {
                               <Typography>{file?.default}</Typography>
                             </Grid>
                             <Grid item md={6} sm={6} xs={6}>
-                                                            <Typography>{file?.footerimage?.originalname ? file?.footerimage?.originalname : file?.footerimage?.name }</Typography>
+                              <Typography>
+                                {file?.footerimage?.originalname
+                                  ? file?.footerimage?.originalname
+                                  : file?.footerimage?.name}
+                              </Typography>
 
                               {/* <Typography>{file?.footerimage?.name}</Typography> */}
                             </Grid>
@@ -6260,8 +6283,11 @@ function TempControlPanel() {
                             <Grid item md={6} sm={6} xs={6}>
                               <Typography>
                                 {file?.backgroundimage?.name}
-                                                                                            <Typography>{file?.backgroundimage?.originalname ? file?.backgroundimage?.originalname : file?.backgroundimage?.name }</Typography>
-
+                                <Typography>
+                                  {file?.backgroundimage?.originalname
+                                    ? file?.backgroundimage?.originalname
+                                    : file?.backgroundimage?.name}
+                                </Typography>
                               </Typography>
                             </Grid>
                             <Grid></Grid>
@@ -6770,7 +6796,9 @@ function TempControlPanel() {
                             <Grid container spacing={2}>
                               <Grid item md={8} sm={6} xs={6}>
                                 <Typography>
-                                  {documentFilesDocumentFrontFooter?.originalname ? documentFilesDocumentFrontFooter?.originalname : documentFilesDocumentFrontFooter?.name}
+                                  {documentFilesDocumentFrontFooter?.originalname
+                                    ? documentFilesDocumentFrontFooter?.originalname
+                                    : documentFilesDocumentFrontFooter?.name}
                                 </Typography>
                               </Grid>
                               <Grid></Grid>
@@ -9865,12 +9893,14 @@ function TempControlPanel() {
                               <Grid item md={2} sm={6} xs={6}>
                                 <Typography>{file?.headername}</Typography>
                               </Grid>
-                               <Grid item md={2} sm={6} xs={6}>
-                              <Typography>{file?.default}</Typography>
-                            </Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file?.default}</Typography>
+                              </Grid>
                               <Grid item md={6} sm={6} xs={6}>
                                 <Typography>
-                                  {file?.headerimage?.originalname ? file?.headerimage?.originalname  : file?.headerimage?.name }
+                                  {file?.headerimage?.originalname
+                                    ? file?.headerimage?.originalname
+                                    : file?.headerimage?.name}
                                 </Typography>
                               </Grid>
                               <Grid></Grid>
@@ -10196,11 +10226,13 @@ function TempControlPanel() {
                                 <Typography>{file?.footername}</Typography>
                               </Grid>
                               <Grid item md={2} sm={6} xs={6}>
-                              <Typography>{file?.default}</Typography>
-                            </Grid>
+                                <Typography>{file?.default}</Typography>
+                              </Grid>
                               <Grid item md={6} sm={6} xs={6}>
                                 <Typography>
-                                  {file?.footerimage?.originalname ? file?.footerimage?.originalname : file?.footerimage?.name}
+                                  {file?.footerimage?.originalname
+                                    ? file?.footerimage?.originalname
+                                    : file?.footerimage?.name}
                                 </Typography>
                               </Grid>
                               <Grid></Grid>
@@ -10455,9 +10487,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {
-                                      documentFilesDocumentBodyContentEdit.originalname ?  documentFilesDocumentBodyContentEdit.originalname :  documentFilesDocumentBodyContentEdit.name
-                                    }
+                                    {documentFilesDocumentBodyContentEdit.originalname
+                                      ? documentFilesDocumentBodyContentEdit.originalname
+                                      : documentFilesDocumentBodyContentEdit.name}
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -10525,12 +10557,14 @@ function TempControlPanel() {
                               <Grid item md={2} sm={6} xs={6}>
                                 <Typography>{file?.backgroundname}</Typography>
                               </Grid>
-                               <Grid item md={2} sm={6} xs={6}>
-                              <Typography>{file?.default}</Typography>
-                            </Grid>
+                              <Grid item md={2} sm={6} xs={6}>
+                                <Typography>{file?.default}</Typography>
+                              </Grid>
                               <Grid item md={6} sm={6} xs={6}>
                                 <Typography>
-                                  {file?.backgroundimage?.originalname ? file?.backgroundimage?.originalname :file?.backgroundimage?.name}
+                                  {file?.backgroundimage?.originalname
+                                    ? file?.backgroundimage?.originalname
+                                    : file?.backgroundimage?.name}
                                 </Typography>
                               </Grid>
                               <Grid></Grid>
@@ -10755,9 +10789,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {
-                                      documentFilesDocumentFrontHeaderEdit?.originalname ? documentFilesDocumentFrontHeaderEdit?.originalname : documentFilesDocumentFrontHeaderEdit?.name
-                                    }
+                                    {documentFilesDocumentFrontHeaderEdit?.originalname
+                                      ? documentFilesDocumentFrontHeaderEdit?.originalname
+                                      : documentFilesDocumentFrontHeaderEdit?.name}
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -10906,9 +10940,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {
-                                      documentFilesDocumentFrontFooterEdit?.originalname ? documentFilesDocumentFrontFooterEdit?.originalname : documentFilesDocumentFrontFooterEdit?.name
-                                    }
+                                    {documentFilesDocumentFrontFooterEdit?.originalname
+                                      ? documentFilesDocumentFrontFooterEdit?.originalname
+                                      : documentFilesDocumentFrontFooterEdit?.name}
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -11062,9 +11096,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {
-                                      documentFilesDocumentBackHeaderEdit?.originalname ?  documentFilesDocumentBackHeaderEdit?.originalname :  documentFilesDocumentBackHeaderEdit?.name
-                                    }
+                                    {documentFilesDocumentBackHeaderEdit?.originalname
+                                      ? documentFilesDocumentBackHeaderEdit?.originalname
+                                      : documentFilesDocumentBackHeaderEdit?.name}
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -11209,9 +11243,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {
-                                      documentFilesDocumentBackFooterEdit?.originalname ? documentFilesDocumentBackFooterEdit?.originalname : documentFilesDocumentBackFooterEdit?.name
-                                    }
+                                    {documentFilesDocumentBackFooterEdit?.originalname
+                                      ? documentFilesDocumentBackFooterEdit?.originalname
+                                      : documentFilesDocumentBackFooterEdit?.name}
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -11378,18 +11412,18 @@ function TempControlPanel() {
                                       filePath,
                                       resume?.name
                                     );
-                                setdocumentFilesEdit((prev) => [
-                                  ...prev,
-                                  {
-                                    name: resume?.name,
-                                    file: base64,
-                                    default: prev?.some(
-                                      (data) => data?.default === "default"
-                                    )
-                                      ? "none"
-                                      : "default",
-                                  },
-                                ]);
+                                  setdocumentFilesEdit((prev) => [
+                                    ...prev,
+                                    {
+                                      name: resume?.name,
+                                      file: base64,
+                                      default: prev?.some(
+                                        (data) => data?.default === "default"
+                                      )
+                                        ? "none"
+                                        : "default",
+                                    },
+                                  ]);
                                 }}
                               />
                             </FormControl>
@@ -11408,7 +11442,11 @@ function TempControlPanel() {
                             <>
                               <Grid container spacing={2}>
                                 <Grid item md={6} sm={6} xs={6}>
-                                   <Typography>{file?.file?.originalname ?  file?.file?.originalname : file?.file?.name}</Typography>
+                                  <Typography>
+                                    {file?.file?.originalname
+                                      ? file?.file?.originalname
+                                      : file?.file?.name}
+                                  </Typography>
                                 </Grid>
                                 <Grid item md={4} sm={6} xs={6}>
                                   {editingLogoIndexEdit === index ? (
@@ -12716,7 +12754,9 @@ function TempControlPanel() {
                               <Grid container spacing={2}>
                                 <Grid item md={8} sm={6} xs={6}>
                                   <Typography>
-                                    {documentFilesSignatureEdit?.originalname ? documentFilesSignatureEdit?.originalname : documentFilesSignatureEdit?.name}
+                                    {documentFilesSignatureEdit?.originalname
+                                      ? documentFilesSignatureEdit?.originalname
+                                      : documentFilesSignatureEdit?.name}
                                   </Typography>
                                 </Grid>
                                 <Grid></Grid>
@@ -13008,13 +13048,15 @@ function TempControlPanel() {
                                   </Typography>
                                   <Grid item md={12} xs={12} sm={12}>
                                     {
-                                      todo.document?.name && (
+                                      todo.document && (
                                         // todo.document.map((file, index) => (
                                         <>
                                           <Grid container spacing={2}>
                                             <Grid item md={10} sm={6} xs={6}>
                                               <Typography>
-                                                {todo.document?.originalname ? todo.document?.originalname : todo.document?.name}
+                                                {todo.document?.originalname
+                                                  ? todo.document?.originalname
+                                                  : todo.document?.name}
                                               </Typography>
                                             </Grid>
                                             <Grid></Grid>
@@ -13206,7 +13248,9 @@ function TempControlPanel() {
                                           <Grid container spacing={2}>
                                             <Grid item md={10} sm={6} xs={6}>
                                               <Typography>
-                                                {todo?.document?.originalname ? todo?.document?.originalname : todo?.document?.name}
+                                                {todo?.document?.originalname
+                                                  ? todo?.document?.originalname
+                                                  : todo?.document?.name}
                                               </Typography>
                                             </Grid>
                                             <Grid></Grid>
@@ -14124,17 +14168,15 @@ function TempControlPanel() {
                           <Grid item md={2} sm={6} xs={6}>
                             <Typography>{file.headername}</Typography>
                           </Grid>
-                                <Grid item md={2} sm={6} xs={6}>
-                            <Typography>
-                              {file?.default}
-                            </Typography>
+                          <Grid item md={2} sm={6} xs={6}>
+                            <Typography>{file?.default}</Typography>
                           </Grid>
                           <Grid item md={4} sm={6} xs={6}>
                             <Typography>
                               {file?.headerimage?.originalname}
                             </Typography>
                           </Grid>
-                    
+
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
                             <VisibilityOutlinedIcon
@@ -14168,10 +14210,8 @@ function TempControlPanel() {
                           <Grid item md={2} sm={6} xs={6}>
                             <Typography>{file.footername}</Typography>
                           </Grid>
-                                <Grid item md={2} sm={6} xs={6}>
-                            <Typography>
-                              {file?.default}
-                            </Typography>
+                          <Grid item md={2} sm={6} xs={6}>
+                            <Typography>{file?.default}</Typography>
                           </Grid>
                           <Grid item md={6} sm={6} xs={6}>
                             <Typography>
@@ -14212,9 +14252,7 @@ function TempControlPanel() {
                             <Typography>{file.backgroundname}</Typography>
                           </Grid>
                           <Grid item md={2} sm={6} xs={6}>
-                            <Typography>
-                              {file?.default}
-                            </Typography>
+                            <Typography>{file?.default}</Typography>
                           </Grid>
                           <Grid item md={6} sm={6} xs={6}>
                             <Typography>
@@ -14425,6 +14463,7 @@ function TempControlPanel() {
                   <Typography>{purposeEdit.address}</Typography>
                 </FormControl>
               </Grid>
+
               <Grid item md={6} sm={12} xs={12}>
                 <Typography>
                   <b>Logo</b> <b style={{ color: "red" }}>*</b>
@@ -14439,9 +14478,7 @@ function TempControlPanel() {
                             <Typography>{file?.file?.originalname}</Typography>
                           </Grid>
                           <Grid item md={2} sm={6} xs={6}>
-                            <Typography>
-                              {file?.default}
-                            </Typography>
+                            <Typography>{file?.default}</Typography>
                           </Grid>
                           <Grid></Grid>
                           <Grid item md={1} sm={6} xs={6}>
@@ -14495,6 +14532,25 @@ function TempControlPanel() {
                       </>
                     ))}
                 </Grid>
+              </Grid>
+
+              <Grid item md={12} xs={12} sm={12}>
+                <Typography>
+                  <b>QR Info</b>{" "}
+                </Typography>
+                {purposeEdit?.qrInfo?.length > 0 &&
+                  purposeEdit?.qrInfo?.map((file, index) => (
+                    <>
+                      <Grid container spacing={2}>
+                        <Grid item md={4} sm={6} xs={6}>
+                          <Typography>{`${index + 1}. ${
+                            file.details
+                          }`}</Typography>
+                        </Grid>
+                        <Grid></Grid>
+                      </Grid>
+                    </>
+                  ))}
               </Grid>
               <Grid item md={12} xs={12} sm={12}>
                 <FormControl fullWidth size="small">

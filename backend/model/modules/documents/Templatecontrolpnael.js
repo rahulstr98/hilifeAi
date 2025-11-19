@@ -30,13 +30,15 @@ const templatecontrolpanelSchema = new Schema({
     },
   ],
 
-  letterheadcontentfooter: [{ footername: String, default: String, footerimage: fileSchema }],
+  letterheadcontentfooter: [
+    { footername: String, default: String, footerimage: fileSchema },
+  ],
 
   qrInfo: [{ details: String }],
 
-     letterheadbodycontent: [
-        { backgroundname: String, default: String, backgroundimage: fileSchema },
-      ],
+  letterheadbodycontent: [
+    { backgroundname: String, default: String, backgroundimage: fileSchema },
+  ],
 
   companyurl: String,
 
@@ -55,7 +57,7 @@ const templatecontrolpanelSchema = new Schema({
     },
   ],
 
-  documentcompany: [{ default: String, file: fileSchema },],
+  documentcompany: [{ default: String, file: fileSchema }],
 
   documentseal: [
     {
@@ -91,13 +93,17 @@ const templatecontrolpanelSchema = new Schema({
       bccemail: [String],
       qrInfo: [{ details: String }],
       letterheadcontentheader: [
-        { headername: String, default: String,headerimage: fileSchema },
+        { headername: String, default: String, headerimage: fileSchema },
       ],
       letterheadcontentfooter: [
-        { footername: String,default: String, footerimage: fileSchema },
+        { footername: String, default: String, footerimage: fileSchema },
       ],
       letterheadbodycontent: [
-        { backgroundname: String,default: String, backgroundimage: fileSchema },
+        {
+          backgroundname: String,
+          default: String,
+          backgroundimage: fileSchema,
+        },
       ],
       companyurl: String,
       idcardfrontheader: fileSchema,
@@ -112,7 +118,7 @@ const templatecontrolpanelSchema = new Schema({
           toAddress: String,
         },
       ],
-       documentcompany: [{ default: String, file: fileSchema },],
+      documentcompany: [{ default: String, file: fileSchema }],
       documentseal: [
         {
           name: String,
@@ -135,11 +141,19 @@ const templatecontrolpanelSchema = new Schema({
       ],
       addedby: [{ name: String, date: String }],
       updatedby: [{ name: String, date: String }],
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
   ],
 
   addedby: [{ name: String, date: String }],
   updatedby: [{ name: String, date: String }],
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model(
