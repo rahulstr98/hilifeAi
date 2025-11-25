@@ -5539,5 +5539,7 @@ export const SERVICE = {
 
   DEPARTMENT_DESIGNATION_BASED_ON_DATE: `${BASE_URL}/api/departmentdesignationbasedondate`,
   HEADER_FOOTER_FROM_TEMPLATECONTROLPANEL: `${BASE_URL}/api/headerfooterfromtemplatecontrolpanel`,
+  HIGHER_DESIGNATION_COMPANYNAMES: `${BASE_URL}/api/higherdesignationusernames`,
+    GET_FILTERED_USERDOCUMENTUPLOADS: `${BASE_URL}/api/getfiltereduserdocumentuploads`,
 
 };

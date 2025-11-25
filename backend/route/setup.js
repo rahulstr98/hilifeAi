@@ -23,7 +23,7 @@ companyRoute.route("/checkcompanydomainuser").post(getAllCompanydomainUserCheck)
 
 // Hirerarchy
 // Hirerarchy
-const { getDesignationControl,getAllUserReportingToChange,getAllHierarchyActionEmployeesList,getAllHierarchyBasedEmployeeFind, getUserBasedHierarchyRestriction,getHierarchyGroupListInidividual, getLocationwiseFilter,getAllReportingToDesignationUserHierarchyRelation,getAllReportingToUserHierarchyRelation,getNotAssignHierarchyDataBackend,getAllNoticeHierarchyList,getAllHierarchyDesignationLogRelations,getAllHierarchyProcessTeamRelations, getAllHierarchyReportingTo, getAllHierarchyListSalary, getBranchWiseunit,getAllHierarchyTeamAndDesignation, getNotAssignHierarchyData, checkHierarchyAddNewEmp, hierarchyEditMatchcheck, getAllUserWiseFilteredit, checkHierarchyEditEmpDetails, checkHierarchyEditEmpDetailsDesignation, getUnitwiseTeam, getAllUserWiseFilter, getAllHirerarchi, addHirerarchi, getSingleHirerarchi, updateHirerarchi, deleteHirerarchi } = require("../controller/modules/setup/hierarchy");
+const { getDesignationControl,getAllUserReportingToChange,getAllHierarchyActionEmployeesList,getAllHigherDesignationUserNames,getAllHierarchyBasedEmployeeFind, getUserBasedHierarchyRestriction,getHierarchyGroupListInidividual, getLocationwiseFilter,getAllReportingToDesignationUserHierarchyRelation,getAllReportingToUserHierarchyRelation,getNotAssignHierarchyDataBackend,getAllNoticeHierarchyList,getAllHierarchyDesignationLogRelations,getAllHierarchyProcessTeamRelations, getAllHierarchyReportingTo, getAllHierarchyListSalary, getBranchWiseunit,getAllHierarchyTeamAndDesignation, getNotAssignHierarchyData, checkHierarchyAddNewEmp, hierarchyEditMatchcheck, getAllUserWiseFilteredit, checkHierarchyEditEmpDetails, checkHierarchyEditEmpDetailsDesignation, getUnitwiseTeam, getAllUserWiseFilter, getAllHirerarchi, addHirerarchi, getSingleHirerarchi, updateHirerarchi, deleteHirerarchi } = require("../controller/modules/setup/hierarchy");
 companyRoute.route("/locationwiseall").post(getLocationwiseFilter);
 companyRoute.route("/usersreportingtochange").post(getAllUserReportingToChange);
 companyRoute.route("/branchwiseunit").post(getBranchWiseunit);
@@ -52,6 +52,7 @@ companyRoute.route("/hirerarchigroupindividual").get(getHierarchyGroupListInidiv
 companyRoute.route("/hierarchybaseduserrestriction").post(getUserBasedHierarchyRestriction);
 companyRoute.route("/hierachyactionemployeedatas").post(getAllHierarchyActionEmployeesList);
 companyRoute.route("/hierarchybasedemployeefind").post(getAllHierarchyBasedEmployeeFind);
+companyRoute.route("/higherdesignationusernames").post(getAllHigherDesignationUserNames);
 
 const { getAllDocCategory, getSingleDocCategory, addDocCategory, getAllOverallBulDeleteCategory, updateDocCategory, getOverAllEditDocuments, deleteocumentCategory } = require("../controller/modules/documents/documentcategory");
 companyRoute.route("/documentcategories").get(getAllDocCategory);

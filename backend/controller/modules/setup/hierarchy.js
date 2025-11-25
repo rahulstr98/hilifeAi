@@ -1884,14 +1884,14 @@ exports.getAllHierarchyReportingTo = catchAsyncErrors(
     let result;
     try {
       const { company, branch, unit, team, department } = req.body;
-      console.log(company, branch, unit, team,department, "1882 Hiearachy");
+      console.log(company, branch, unit, team, department, "1882 Hiearachy");
       const resultHierarchy = await Hirerarchi.find({}).lean();
       const request = {
         company,
         branch,
         unit,
         team,
-        department
+        department,
       };
 
       const companyNamesResult = getAllSupervisors(resultHierarchy, request);
@@ -3062,6 +3062,57 @@ exports.getAllHierarchyBasedEmployeeFind = catchAsyncErrors(
 
       hierarchydata = groupedResult;
       // console.log(groupedSupervisors);
+    } catch (err) {
+      return next(new ErrorHandler("Records not found!", 404));
+    }
+
+    return res.status(200).json({
+      hierarchydata,
+    });
+  }
+);
+exports.getAllHigherDesignationUserNames = catchAsyncErrors(
+  async (req, res, next) => {
+    let hierarchydata;
+    const { replacename, designation } = req.body;
+    try {
+      const hierarchyData = await Hirerarchi.find(
+        { employeename: { $in: replacename } },
+        { supervisorchoose: 1 }
+      ).lean();
+
+      const firstLevel =
+        hierarchyData?.length > 0
+          ? hierarchyData?.flatMap((data) => data?.supervisorchoose)
+          : [];
+      const hierarchyDataSecond = await Hirerarchi.find(
+        { employeename: { $in: firstLevel } },
+        { supervisorchoose: 1 }
+      ).lean();
+      const SecondLevel =
+        hierarchyDataSecond?.length > 0
+          ? hierarchyDataSecond?.flatMap((data) => data?.supervisorchoose)
+          : [];
+
+      const finalDesig = [...firstLevel, ...SecondLevel];
+
+      const userDesignation = await User.find(
+        {
+          companyname: { $in: finalDesig },
+          designation: { $ne: designation },
+        },
+        { designation: 1 }
+      );
+
+      const designations = userDesignation?.map((data) => data?.designation);
+
+      const userNamesBasedDesignations = await User.find(
+        {
+          designation: { $in: designations },
+        },
+        { companyname: 1 , company :1 , branch :1  }
+      );
+      hierarchydata = userNamesBasedDesignations;
     } catch (err) {
       return next(new ErrorHandler("Records not found!", 404));
     }
