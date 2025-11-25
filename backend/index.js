@@ -505,9 +505,9 @@ const crypto = require('crypto');
 
 // setInterval(async () => {
 //   try {
-//     const logs = await fetchDeviceLogs();
-//     //const logsCommand = await sendCommandToDeviceAttendance({ cmd: "getnewlog", stn: true });
-// //  console.log(logs , "logs")
+//     //const logs = await fetchDeviceLogs();
+//     // const logsCommand = await sendCommandToDeviceAttendance({ cmd: "getnewlog", stn: true });
+// //  console.log(logsCommand , "logsCommand")
 //     let combinedResult = [];
 
 //     // // ✅ Handle logsCommand (new logs from device)
@@ -522,16 +522,16 @@ const crypto = require('crypto');
 //     //   combinedResult.push(...resultCommand);
 //     // }
 
-//     if (logs?.length > 0) {
-//       const result = logs.map(item => ({
-//         biometricUserIDC: item?.accNo,
-//         clockDateTimeD: formatToDDMMYYYYWithTime(item?.passTime),
-//         cloudIDC: item?.deviceKey,
-//         verifyC: item?.mode === 2 ? "Pass" : "",
-//         staffNameC: item?.username
-//       }));
-//       combinedResult.push(...result);
-//     }
+//     // if (logs?.length > 0) {
+//     //   const result = logs.map(item => ({
+//     //     biometricUserIDC: item?.accNo,
+//     //     clockDateTimeD: formatToDDMMYYYYWithTime(item?.passTime),
+//     //     cloudIDC: item?.deviceKey,
+//     //     verifyC: item?.mode === 2 ? "Pass" : "",
+//     //     staffNameC: item?.username
+//     //   }));
+//     //   combinedResult.push(...result);
+//     // }
 
 //     // console.log(combinedResult , "combinedResult")
 //     // // ✅ Deduplicate combined logs

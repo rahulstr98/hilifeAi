@@ -325,16 +325,17 @@ function DocumentPreparation() {
     const employeeModeOpt =
       e?.employeemode?.length > 0
         ? [
-            ...e?.employeemode?.map((data) => ({
-              label: data,
-              value: data,
-            })),
-            { label: "Manual", value: "Manual" },
-          ]
+          ...e?.employeemode?.map((data) => ({
+            label: data,
+            value: data,
+          })),
+          { label: "Manual", value: "Manual" },
+        ]
         : [{ label: "Manual", value: "Manual" }];
     setEmployeeModeOptions(employeeModeOpt);
   };
   const handleHeadChangeAdd = (options) => {
+    console.log(options, "options");
     let value = options.map((a) => {
       return a.value;
     });
@@ -389,15 +390,14 @@ function DocumentPreparation() {
     { value: "With Footer content", label: "With Footer content" },
   ];
   const [isOpenLetterHeadPopup, setIsLetterHeadPopup] = useState(false);
-  const [headerOptions, setHeaderOptions] = useState(
-    "Please Select Print Options"
-  );
+  const [headerOptions, setHeaderOptions] = useState("With Letter Head");
   const [pagePopeOpen, setPagePopUpOpen] = useState("");
   const [DataTableId, setDataTableId] = useState("");
   const [selectedHeadOpt, setSelectedHeadOpt] = useState([]);
   const [headvalue, setHeadValue] = useState([]);
   const [emailValuePage, setEmailValuePage] = useState({});
   const handleHeadChange = async (options) => {
+    console.log(options, "options");
     let value = options.map((a) => {
       return a.value;
     });
@@ -408,10 +408,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                  ...item,
-                  header: personId?.headerimage,
-                  //  footer: personId?.footerimage
-                }
+                ...item,
+                header: personId?.headerimage,
+                //  footer: personId?.footerimage
+              }
               : item
           )
         );
@@ -425,10 +425,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                  ...item,
-                  // header: personId?.headerimage,
-                  footer: personId?.footerimage,
-                }
+                ...item,
+                // header: personId?.headerimage,
+                footer: personId?.footerimage,
+              }
               : item
           )
         );
@@ -437,10 +437,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                  ...item,
-                  header: personId?.headerimage,
-                  footer: personId?.footerimage,
-                }
+                ...item,
+                header: personId?.headerimage,
+                footer: personId?.footerimage,
+              }
               : item
           )
         );
@@ -453,10 +453,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                  ...item,
-                  header: "",
-                  footer: "",
-                }
+                ...item,
+                header: "",
+                footer: "",
+              }
               : item
           )
         );
@@ -476,25 +476,25 @@ function DocumentPreparation() {
       });
       const ans = res?.data?.templatecontrolpanel
         ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
-            res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1
-          ]
+        res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length - 1
+        ]
         : "";
       const templateHeaderFooter = documentPrepartion;
 
       const headerOption = templateHeaderFooter?.header
         ? ans?.letterheadcontentheader?.find(
-            (data) => data?.headername === templateHeaderFooter?.header
-          )
+          (data) => data?.headername === templateHeaderFooter?.header
+        )
         : ans?.letterheadcontentheader?.find(
-            (data) => data?.default === "default"
-          );
+          (data) => data?.default === "default"
+        );
       const footerOption = templateHeaderFooter?.footer
         ? ans?.letterheadcontentfooter?.find(
-            (data) => data?.footername === templateHeaderFooter?.footer
-          )
+          (data) => data?.footername === templateHeaderFooter?.footer
+        )
         : ans?.letterheadcontentfooter?.find(
-            (data) => data?.default === "default"
-          );
+          (data) => data?.default === "default"
+        );
 
       const header = await convertFileUrlToBase64(
         `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
@@ -507,10 +507,9 @@ function DocumentPreparation() {
         (data) => data?.default === "default"
       );
       const backgroundimage = await convertFileUrlToBase64(
-        `${BASE_URL}/templatecontrolpanel/${
-          backGroundCondition
-            ? backGroundCondition?.backgroundimage?.name
-            : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+        `${BASE_URL}/templatecontrolpanel/${backGroundCondition
+          ? backGroundCondition?.backgroundimage?.name
+          : ans?.letterheadbodycontent[0]?.backgroundimage?.name
         }`
       );
       // console.log(backgroundimage, "494");
@@ -538,10 +537,10 @@ function DocumentPreparation() {
           prevArray.map((item, ind) =>
             ind === indexViewQuest - 1
               ? {
-                  ...item,
-                  header: "",
-                  footer: "",
-                }
+                ...item,
+                header: "",
+                footer: "",
+              }
               : item
           )
         );
@@ -559,12 +558,13 @@ function DocumentPreparation() {
   const handleClickOpenLetterHeader = (page) => {
     setPagePopUpOpen(page);
     setIsLetterHeadPopup(true);
+    handleHeadChange(WithHeaderOptions);
     handleCloseBulkModcheckbox();
   };
 
   const handleClickCloseLetterHead = () => {
     setIsLetterHeadPopup(false);
-    setHeaderOptions("Please Select Print Options");
+    setHeaderOptions("With Letter Head");
     setHeadValue([]);
     // setPagePopUpOpen("");
     // setHeader("");
@@ -709,9 +709,8 @@ function DocumentPreparation() {
     setSelectMonthName(event.label);
   };
 
-  let newvalReference = `DP000${
-    checkingArray?.length > 0 ? checkingArray?.length + 1 : 1
-  }`;
+  let newvalReference = `DP000${checkingArray?.length > 0 ? checkingArray?.length + 1 : 1
+    }`;
   const handleYearChangeAttendance = (selectedYear) => {
     setChecking("");
     setProductionDateStatus("");
@@ -1232,60 +1231,60 @@ function DocumentPreparation() {
   // AssignBranch For Users
   const accessbranch = isUserRoleAccess?.role?.includes("Manager")
     ? isAssignBranch?.map((data) => ({
+      branch: data.branch,
+      company: data.company,
+      unit: data.unit,
+    }))
+    : isAssignBranch
+      ?.filter((data) => {
+        let fetfinalurl = [];
+        if (
+          data?.modulenameurl?.length !== 0 &&
+          data?.submodulenameurl?.length !== 0 &&
+          data?.mainpagenameurl?.length !== 0 &&
+          data?.subpagenameurl?.length !== 0 &&
+          data?.subsubpagenameurl?.length !== 0 &&
+          data?.subsubpagenameurl?.includes(window.location.pathname)
+        ) {
+          fetfinalurl = data.subsubpagenameurl;
+        } else if (
+          data?.modulenameurl?.length !== 0 &&
+          data?.submodulenameurl?.length !== 0 &&
+          data?.mainpagenameurl?.length !== 0 &&
+          data?.subpagenameurl?.length !== 0 &&
+          data?.subsubpagenameurl?.includes(window.location.pathname)
+        ) {
+          fetfinalurl = data.subpagenameurl;
+        } else if (
+          data?.modulenameurl?.length !== 0 &&
+          data?.submodulenameurl?.length !== 0 &&
+          data?.mainpagenameurl?.length !== 0 &&
+          data?.subsubpagenameurl?.includes(window.location.pathname)
+        ) {
+          fetfinalurl = data.mainpagenameurl;
+        } else if (
+          data?.modulenameurl?.length !== 0 &&
+          data?.submodulenameurl?.length !== 0 &&
+          data?.subsubpagenameurl?.includes(window.location.pathname)
+        ) {
+          fetfinalurl = data.submodulenameurl;
+        } else if (data?.modulenameurl?.length !== 0) {
+          fetfinalurl = data.modulenameurl;
+        } else {
+          fetfinalurl = [];
+        }
+
+        const remove = [
+          window.location.pathname?.substring(1),
+          window.location.pathname,
+        ];
+        return fetfinalurl?.some((item) => remove?.includes(item));
+      })
+      ?.map((data) => ({
         branch: data.branch,
         company: data.company,
         unit: data.unit,
-      }))
-    : isAssignBranch
-        ?.filter((data) => {
-          let fetfinalurl = [];
-          if (
-            data?.modulenameurl?.length !== 0 &&
-            data?.submodulenameurl?.length !== 0 &&
-            data?.mainpagenameurl?.length !== 0 &&
-            data?.subpagenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.includes(window.location.pathname)
-          ) {
-            fetfinalurl = data.subsubpagenameurl;
-          } else if (
-            data?.modulenameurl?.length !== 0 &&
-            data?.submodulenameurl?.length !== 0 &&
-            data?.mainpagenameurl?.length !== 0 &&
-            data?.subpagenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.includes(window.location.pathname)
-          ) {
-            fetfinalurl = data.subpagenameurl;
-          } else if (
-            data?.modulenameurl?.length !== 0 &&
-            data?.submodulenameurl?.length !== 0 &&
-            data?.mainpagenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.includes(window.location.pathname)
-          ) {
-            fetfinalurl = data.mainpagenameurl;
-          } else if (
-            data?.modulenameurl?.length !== 0 &&
-            data?.submodulenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.includes(window.location.pathname)
-          ) {
-            fetfinalurl = data.submodulenameurl;
-          } else if (data?.modulenameurl?.length !== 0) {
-            fetfinalurl = data.modulenameurl;
-          } else {
-            fetfinalurl = [];
-          }
-
-          const remove = [
-            window.location.pathname?.substring(1),
-            window.location.pathname,
-          ];
-          return fetfinalurl?.some((item) => remove?.includes(item));
-        })
-        ?.map((data) => ({
-          branch: data.branch,
-          company: data.company,
-          unit: data.unit,
-        }));
+      }));
 
   let exportColumnNames = [
     "Date ",
@@ -1563,9 +1562,9 @@ function DocumentPreparation() {
     // console.log(branches, "branches")
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-          branch: data.branch,
-          company: data.company,
-        }))
+        branch: data.branch,
+        company: data.company,
+      }))
       : [];
     setPageName(!pageName);
     try {
@@ -1626,27 +1625,27 @@ function DocumentPreparation() {
 
         const ans = res?.data?.templatecontrolpanel
           ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
-              res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
-                1
-            ]
+          res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
+          1
+          ]
           : "";
 
         const templateHeaderFooter = templateCrea;
 
         const headerOption = templateHeaderFooter?.header
           ? ans?.letterheadcontentheader?.find(
-              (data) => data?.headername === templateHeaderFooter?.header
-            )
+            (data) => data?.headername === templateHeaderFooter?.header
+          )
           : ans?.letterheadcontentheader?.find(
-              (data) => data?.default === "default"
-            );
+            (data) => data?.default === "default"
+          );
         const footerOption = templateHeaderFooter?.footer
           ? ans?.letterheadcontentfooter?.find(
-              (data) => data?.footername === templateHeaderFooter?.footer
-            )
+            (data) => data?.footername === templateHeaderFooter?.footer
+          )
           : ans?.letterheadcontentfooter?.find(
-              (data) => data?.default === "default"
-            );
+            (data) => data?.default === "default"
+          );
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
@@ -1657,10 +1656,9 @@ function DocumentPreparation() {
           (data) => data?.default === "default"
         );
         const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${
-            backGroundCondition
-              ? backGroundCondition?.backgroundimage?.name
-              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          `${BASE_URL}/templatecontrolpanel/${backGroundCondition
+            ? backGroundCondition?.backgroundimage?.name
+            : ans?.letterheadbodycontent[0]?.backgroundimage?.name
           }`
         );
         // console.log(backgroundimage, "1638");
@@ -1720,27 +1718,27 @@ function DocumentPreparation() {
       if (res?.data?.templatecontrolpanel) {
         const ans = res?.data?.templatecontrolpanel
           ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
-              res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
-                1
-            ]
+          res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
+          1
+          ]
           : "";
         console.log(headerfooter, "headerfooter");
         const templateHeaderFooter = headerfooter;
 
         const headerOption = templateHeaderFooter?.header
           ? ans?.letterheadcontentheader?.find(
-              (data) => data?.headername === templateHeaderFooter?.header
-            )
+            (data) => data?.headername === templateHeaderFooter?.header
+          )
           : ans?.letterheadcontentheader?.find(
-              (data) => data?.default === "default"
-            );
+            (data) => data?.default === "default"
+          );
         const footerOption = templateHeaderFooter?.footer
           ? ans?.letterheadcontentfooter?.find(
-              (data) => data?.footername === templateHeaderFooter?.footer
-            )
+            (data) => data?.footername === templateHeaderFooter?.footer
+          )
           : ans?.letterheadcontentfooter?.find(
-              (data) => data?.default === "default"
-            );
+            (data) => data?.default === "default"
+          );
 
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
@@ -1752,10 +1750,9 @@ function DocumentPreparation() {
           (data) => data?.default === "default"
         );
         const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${
-            backGroundCondition
-              ? backGroundCondition?.backgroundimage?.name
-              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          `${BASE_URL}/templatecontrolpanel/${backGroundCondition
+            ? backGroundCondition?.backgroundimage?.name
+            : ans?.letterheadbodycontent[0]?.backgroundimage?.name
           }`
         );
         // console.log(backgroundimage, "1715");
@@ -1815,27 +1812,27 @@ function DocumentPreparation() {
 
         const ans = res?.data?.templatecontrolpanel
           ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
-              res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
-                1
-            ]
+          res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
+          1
+          ]
           : "";
 
         const templateHeaderFooter = templateCrea;
 
         const headerOption = templateHeaderFooter?.header
           ? ans?.letterheadcontentheader?.find(
-              (data) => data?.headername === templateHeaderFooter?.header
-            )
+            (data) => data?.headername === templateHeaderFooter?.header
+          )
           : ans?.letterheadcontentheader?.find(
-              (data) => data?.default === "default"
-            );
+            (data) => data?.default === "default"
+          );
         const footerOption = templateHeaderFooter?.footer
           ? ans?.letterheadcontentfooter?.find(
-              (data) => data?.footername === templateHeaderFooter?.footer
-            )
+            (data) => data?.footername === templateHeaderFooter?.footer
+          )
           : ans?.letterheadcontentfooter?.find(
-              (data) => data?.default === "default"
-            );
+            (data) => data?.default === "default"
+          );
 
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
@@ -1847,10 +1844,9 @@ function DocumentPreparation() {
           (data) => data?.default === "default"
         );
         const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${
-            backGroundCondition
-              ? backGroundCondition?.backgroundimage?.name
-              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          `${BASE_URL}/templatecontrolpanel/${backGroundCondition
+            ? backGroundCondition?.backgroundimage?.name
+            : ans?.letterheadbodycontent[0]?.backgroundimage?.name
           }`
         );
         const headerFooterBase64 = {
@@ -2124,9 +2120,9 @@ function DocumentPreparation() {
             const finalSelectedMonthNum =
               selectedModeType == "DOJ"
                 ? months.find(
-                    (d) =>
-                      d.value.toLowerCase() === findexp.monthname.toLowerCase()
-                  ).numval
+                  (d) =>
+                    d.value.toLowerCase() === findexp.monthname.toLowerCase()
+                ).numval
                 : Number(selectedMonthNum);
 
             // console.log(finalSelectedMonth, finalSelectedYear, finalSelectedMonthNum, "123");
@@ -2415,45 +2411,45 @@ function DocumentPreparation() {
               item.doj && modevalue && modevalue.expmode === "Manual"
                 ? modevalue.salarycode
                 : item.doj
-                ? getprocessCode +
+                  ? getprocessCode +
                   (differenceInMonthstar > 0
                     ? differenceInMonthstar <= 9
                       ? `0${differenceInMonthstar}`
                       : differenceInMonthstar
                     : "00")
-                : "";
+                  : "";
 
             let processcodeexpvaluesalary =
               item.doj && modevalue && modevalue.expmode === "Manual"
                 ? modevalue.salarycode
                 : item.doj
-                ? getprocessCode +
+                  ? getprocessCode +
                   (differenceInMonthsexp > 0
                     ? differenceInMonthsexp <= 9
                       ? `0${differenceInMonthsexp}`
                       : differenceInMonthsexp
                     : "00")
-                : "";
+                  : "";
 
             //findsalary from salaryslab
             let findSalDetails =
               modevalue && modevalue.expmode === "Manual"
                 ? {
-                    basic: modevalue.basic,
-                    hra: modevalue.hra,
-                    conveyance: modevalue.conveyance,
-                    gross: modevalue.gross,
-                    medicalallowance: modevalue.medicalallowance,
-                    productionallowance: modevalue.productionallowance,
-                    otherallowance: modevalue.otherallowance,
-                    productionallowancetwo: modevalue.productionallowancetwo,
-                  }
+                  basic: modevalue.basic,
+                  hra: modevalue.hra,
+                  conveyance: modevalue.conveyance,
+                  gross: modevalue.gross,
+                  medicalallowance: modevalue.medicalallowance,
+                  productionallowance: modevalue.productionallowance,
+                  otherallowance: modevalue.otherallowance,
+                  productionallowancetwo: modevalue.productionallowancetwo,
+                }
                 : salSlabs.find(
-                    (d) =>
-                      d.company === item.company &&
-                      d.branch === item.branch &&
-                      d.salarycode === processcodeexpvaluesalary
-                  );
+                  (d) =>
+                    d.company === item.company &&
+                    d.branch === item.branch &&
+                    d.salarycode === processcodeexpvaluesalary
+                );
 
             const isHadreasondate =
               item.reasondate != "" && item.reasondate != undefined;
@@ -2461,8 +2457,8 @@ function DocumentPreparation() {
             const enddateproduction = isHadreasondate
               ? item.reasondate
               : findexp
-              ? findexp.todate
-              : selectedMonEndDate;
+                ? findexp.todate
+                : selectedMonEndDate;
 
             function getTotalDaysInMonthByName(monthName, year) {
               const monthIndex =
@@ -2481,45 +2477,45 @@ function DocumentPreparation() {
               modevalue && modevalue.expmode === "Manual"
                 ? Number(modevalue.productionallowance)
                 : findSalDetails
-                ? Number(findSalDetails.productionallowance)
-                : 0;
+                  ? Number(findSalDetails.productionallowance)
+                  : 0;
             let oldprodAllowancetwoCalcVal =
               modevalue && modevalue.expmode === "Manual"
                 ? Number(modevalue.productionallowancetwo)
                 : findSalDetails
-                ? Number(findSalDetails.productionallowancetwo)
-                : 0;
+                  ? Number(findSalDetails.productionallowancetwo)
+                  : 0;
             // ACUTAL BASIC/HRA/CONVEYACE/MEDICAL/OTHER ALLOWANCE
             let oldactualBasicCalcVal =
               modevalue && modevalue.expmode === "Manual"
                 ? Number(modevalue.basic)
                 : findSalDetails
-                ? Number(findSalDetails.basic)
-                : 0;
+                  ? Number(findSalDetails.basic)
+                  : 0;
             let oldactualHraCalcVal =
               modevalue && modevalue.expmode === "Manual"
                 ? Number(modevalue.hra)
                 : findSalDetails
-                ? Number(findSalDetails.hra)
-                : 0;
+                  ? Number(findSalDetails.hra)
+                  : 0;
             let oldactualConveyanceCalcVal =
               modevalue && modevalue.expmode === "Manual"
                 ? Number(modevalue.conveyance)
                 : findSalDetails
-                ? Number(findSalDetails.conveyance)
-                : 0;
+                  ? Number(findSalDetails.conveyance)
+                  : 0;
             let oldactualMedicalAllowCalcVal =
               modevalue && modevalue.expmode === "Manual"
                 ? Number(modevalue.medicalallowance)
                 : findSalDetails
-                ? Number(findSalDetails.medicalallowance)
-                : 0;
+                  ? Number(findSalDetails.medicalallowance)
+                  : 0;
             let oldactualOtherCalVAL =
               modevalue && modevalue.expmode === "Manual"
                 ? Number(modevalue.otherallowance)
                 : findSalDetails
-                ? Number(findSalDetails.otherallowance)
-                : 0;
+                  ? Number(findSalDetails.otherallowance)
+                  : 0;
 
             return {
               // ...item,
@@ -2573,8 +2569,8 @@ function DocumentPreparation() {
                 item.doj && modevalue && modevalue.expmode === "Manual"
                   ? modevalue.salarycode
                   : item.doj
-                  ? getprocessCode
-                  : "",
+                    ? getprocessCode
+                    : "",
               salexp: item.doj
                 ? differenceInMonthsexp > 0
                   ? differenceInMonthsexp <= 9
@@ -2798,12 +2794,12 @@ function DocumentPreparation() {
         getWeekNumberInMonth(startMonthDate) === 1
           ? `${getWeekNumberInMonth(startMonthDate)}st Week`
           : getWeekNumberInMonth(startMonthDate) === 2
-          ? `${getWeekNumberInMonth(startMonthDate)}nd Week`
-          : getWeekNumberInMonth(startMonthDate) === 3
-          ? `${getWeekNumberInMonth(startMonthDate)}rd Week`
-          : getWeekNumberInMonth(startMonthDate) > 3
-          ? `${getWeekNumberInMonth(startMonthDate)}th Week`
-          : "";
+            ? `${getWeekNumberInMonth(startMonthDate)}nd Week`
+            : getWeekNumberInMonth(startMonthDate) === 3
+              ? `${getWeekNumberInMonth(startMonthDate)}rd Week`
+              : getWeekNumberInMonth(startMonthDate) > 3
+                ? `${getWeekNumberInMonth(startMonthDate)}th Week`
+                : "";
 
       daysArray.push({
         formattedDate,
@@ -2922,16 +2918,14 @@ function DocumentPreparation() {
 
         // Check if 'Late - ClockIn' count exceeds the specified limit
         if (updatedClockInStatus === "Late - ClockIn") {
-          updatedClockInStatus = `${
-            countByEmpcodeClockin[item.empcode]
-          }Late - ClockIn`;
+          updatedClockInStatus = `${countByEmpcodeClockin[item.empcode]
+            }Late - ClockIn`;
           countByEmpcodeClockin[item.empcode]++; // Increment count for current empcode
         }
         // Check if 'Early - ClockOut' count exceeds the specified limit
         if (updatedClockOutStatus === "Early - ClockOut") {
-          updatedClockOutStatus = `${
-            countByEmpcodeClockout[item.empcode]
-          }Early - ClockOut`;
+          updatedClockOutStatus = `${countByEmpcodeClockout[item.empcode]
+            }Early - ClockOut`;
           countByEmpcodeClockout[item.empcode]++; // Increment count for current empcode
         }
 
@@ -3491,16 +3485,14 @@ function DocumentPreparation() {
                 }
 
                 if (updatedClockInStatus === "Late - ClockIn") {
-                  updatedClockInStatus = `${
-                    countByEmpcodeClockin[item.empcode]
-                  }Late - ClockIn`;
+                  updatedClockInStatus = `${countByEmpcodeClockin[item.empcode]
+                    }Late - ClockIn`;
                   countByEmpcodeClockin[item.empcode]++;
                 }
 
                 if (updatedClockOutStatus === "Early - ClockOut") {
-                  updatedClockOutStatus = `${
-                    countByEmpcodeClockout[item.empcode]
-                  }Early - ClockOut`;
+                  updatedClockOutStatus = `${countByEmpcodeClockout[item.empcode]
+                    }Early - ClockOut`;
                   countByEmpcodeClockout[item.empcode]++;
                 }
 
@@ -4034,7 +4026,7 @@ function DocumentPreparation() {
             (data) =>
               Number(data.year) === Number(chooseyear) &&
               data.monthname ===
-                monthstring[Number(getMonthIndex(choosemonth) + 1) - 1]
+              monthstring[Number(getMonthIndex(choosemonth) + 1) - 1]
           );
 
           // console.log(fianlResult, 'fianlResult')
@@ -4374,19 +4366,19 @@ function DocumentPreparation() {
 
           finalresult[existingEntryIndex].lopcount = String(
             parseFloat(finalresult[existingEntryIndex].lopcount) +
-              parseFloat(item.lopcount)
+            parseFloat(item.lopcount)
           );
           finalresult[existingEntryIndex].paidpresentday = String(
             parseFloat(finalresult[existingEntryIndex].paidpresentday) +
-              parseFloat(item.paidpresentday)
+            parseFloat(item.paidpresentday)
           );
           finalresult[existingEntryIndex].totalshifthours = String(
             parseInt(finalresult[existingEntryIndex].totalshifthours) +
-              parseInt(item.totalshifthours)
+            parseInt(item.totalshifthours)
           );
           finalresult[existingEntryIndex].totalbreakhours = String(
             parseInt(finalresult[existingEntryIndex].totalbreakhours) +
-              parseInt(item.totalbreakhours)
+            parseInt(item.totalbreakhours)
           );
         } else {
           const newItem = {
@@ -4416,10 +4408,10 @@ function DocumentPreparation() {
             nostatus: 0,
             nostatuscount:
               item.clockinstatus !== "Not Allotted" &&
-              item.clockoutstatus !== "Not Allotted" &&
-              item.paidpresent === "No" &&
-              item.modetarget === "No" &&
-              item.lopcalculation === "No"
+                item.clockoutstatus !== "Not Allotted" &&
+                item.paidpresent === "No" &&
+                item.modetarget === "No" &&
+                item.lopcalculation === "No"
                 ? 1
                 : 0,
             doublelopcount: item.lopcalculation === "Yes - Double Day" ? 1 : 0,
@@ -4480,8 +4472,8 @@ function DocumentPreparation() {
             Number(item.paidpresentday) > Number(item.shift)
               ? Number(item.shift) - Number(item.lopcount)
               : Number(item.paidpresentday) -
-                Number(item.doublelopcount) +
-                Number(item.doublehalflopcount),
+              Number(item.doublelopcount) +
+              Number(item.doublehalflopcount),
           totalshifthours: Number(item.totalshifthours),
           workinghours: workingHours < 0 ? 0 : workingHours,
           missedhours: missedHours < 0 ? 0 : missedHours,
@@ -4971,10 +4963,10 @@ function DocumentPreparation() {
       setIssuingAutholrity(
         answer?.length > 0
           ? answer.map((Data) => ({
-              ...Data,
-              label: Data.companyname,
-              value: Data.companyname,
-            }))
+            ...Data,
+            label: Data.companyname,
+            value: Data.companyname,
+          }))
           : []
       );
     } catch (err) {
@@ -5007,10 +4999,10 @@ function DocumentPreparation() {
       setIssuingAutholrity(
         answer?.length > 0
           ? answer.map((Data) => ({
-              ...Data,
-              label: Data.companyname,
-              value: Data.companyname,
-            }))
+            ...Data,
+            label: Data.companyname,
+            value: Data.companyname,
+          }))
           : []
       );
     } catch (err) {
@@ -5179,8 +5171,8 @@ function DocumentPreparation() {
         e === "ALL"
           ? res_type.data.teamsdetails.filter((d) => d.branch === allBranch)
           : res_type.data.teamsdetails.filter(
-              (d) => d.unit === e && d.branch === allBranch
-            );
+            (d) => d.unit === e && d.branch === allBranch
+          );
 
       const teamall = [
         { label: "ALL", value: "ALL" },
@@ -5221,7 +5213,7 @@ function DocumentPreparation() {
         res_type.data.userteamgroup?.length > 0
           ? res_type.data.userteamgroup
           : [];
-      setEmployeenames(
+      setEmployeenames(mode ?
         usersEmployeemode?.map((data) => ({
           // ...data,
           label: data.companyname,
@@ -5232,7 +5224,7 @@ function DocumentPreparation() {
           username: data.username,
           team: data.team,
           department: data.department,
-        }))
+        })) : []
       );
     } catch (err) {
       console.log(err, "err");
@@ -5273,7 +5265,7 @@ function DocumentPreparation() {
           ? res_module?.data?.userteamgroup
           : [];
 
-      setEmployeenames(
+      setEmployeenames(employeeMode ?
         usersEmployeemode?.map((data) => ({
           // ...data,
           label: data.companyname,
@@ -5284,7 +5276,7 @@ function DocumentPreparation() {
           username: data.username,
           team: data.team,
           department: data.department,
-        }))
+        })) : []
       );
     } catch (err) {
       console.log(err, "err");
@@ -5384,7 +5376,7 @@ function DocumentPreparation() {
     try {
       const response = await QRCode.toDataURL(`${Allcodedata}`);
       setImageUrl(response);
-    } catch (error) {}
+    } catch (error) { }
   };
   const generateQrCodeEdit = async () => {
     setPageName(!pageName);
@@ -5445,9 +5437,9 @@ function DocumentPreparation() {
         res_queue?.data?.documentPreparation?.length > 0
           ? res_queue?.data?.documentPreparation[0]?.templateno
           : //  uniqueCode +
-            //   employeeControlPanel?.team?.slice(0, 3) +
-            //   "#" +
-            templateCreationValue?.tempcode + "_" + "0000";
+          //   employeeControlPanel?.team?.slice(0, 3) +
+          //   "#" +
+          templateCreationValue?.tempcode + "_" + "0000";
       let codenum = refNo.split("_");
       return codenum;
     } catch (err) {
@@ -5529,44 +5521,44 @@ function DocumentPreparation() {
       prefixString.length == 1
         ? `000${prefixString}`
         : prefixString.length == 2
-        ? `00${prefixString}`
-        : prefixString.length == 3
-        ? `0${prefixString}`
-        : prefixString.length == 4
-        ? `0${prefixString}`
-        : prefixString.length == 5
-        ? `0${prefixString}`
-        : prefixString.length == 6
-        ? `0${prefixString}`
-        : prefixString.length == 7
-        ? `0${prefixString}`
-        : prefixString.length == 8
-        ? `0${prefixString}`
-        : prefixString.length == 9
-        ? `0${prefixString}`
-        : prefixString.length == 10
-        ? `0${prefixString}`
-        : prefixString;
+          ? `00${prefixString}`
+          : prefixString.length == 3
+            ? `0${prefixString}`
+            : prefixString.length == 4
+              ? `0${prefixString}`
+              : prefixString.length == 5
+                ? `0${prefixString}`
+                : prefixString.length == 6
+                  ? `0${prefixString}`
+                  : prefixString.length == 7
+                    ? `0${prefixString}`
+                    : prefixString.length == 8
+                      ? `0${prefixString}`
+                      : prefixString.length == 9
+                        ? `0${prefixString}`
+                        : prefixString.length == 10
+                          ? `0${prefixString}`
+                          : prefixString;
 
     let newval = employeeControlPanel
       ? // uniqueCode +
-        //   employeeControlPanel?.team?.slice(0, 3) +
-        //   "#" +
-        templateCreationValue?.tempcode + "_" + postfixLength
+      //   employeeControlPanel?.team?.slice(0, 3) +
+      //   "#" +
+      templateCreationValue?.tempcode + "_" + postfixLength
       : // "Man" +
-        //   "#" +
-        (templateCreationValue?.tempcode === "" ||
+      //   "#" +
+      (templateCreationValue?.tempcode === "" ||
         templateCreationValue?.tempcode === undefined
-          ? ""
-          : templateCreationValue?.tempcode) +
-        "_" +
-        postfixLength;
+        ? ""
+        : templateCreationValue?.tempcode) +
+      "_" +
+      postfixLength;
     let newvalRefNo = `DP_${postfixLength}`;
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-          branch: data.branch,
-          company: data.company,
-        }))
+        branch: data.branch,
+        company: data.company,
+      }))
       : [];
     setPageName(!pageName);
     try {
@@ -5646,14 +5638,18 @@ function DocumentPreparation() {
           resultAttendance?.length > 0
             ? documentPrepartion.attendancesort === "Date"
               ? resultAttendance[0]?.monthdata?.find(
-                  (data) =>
-                    data?.finalDate === documentPrepartion.attendancedate
-                )?.daystatus
+                (data) =>
+                  data?.finalDate === documentPrepartion.attendancedate
+              )?.daystatus
               : resultAttendance[0].lopcount
             : "";
       }
       const companyTitleName =
         companynameSettings?.data?.overallsettings?.companyname;
+      const companyFullName =
+        companynameSettings?.data?.overallsettings?.companyfullname;
+      const companyShortName =
+        companynameSettings?.data?.overallsettings?.companyshortname;
       const branchAddress = isAssignBranch?.find(
         (data) => data?.branch === res_emp?.data?.usersstatus?.branch
       );
@@ -5754,12 +5750,12 @@ function DocumentPreparation() {
         documentPrepartion?.employeemode !== "Manual"
           ? documentPrepartion.productionsort === "Date"
             ? await fetchProductionDateStatus(
-                employeeControlPanel,
-                documentPrepartion?.productiondate
-              )
+              employeeControlPanel,
+              documentPrepartion?.productiondate
+            )
             : documentPrepartion.productionsort === "Month"
-            ? await fetchDepartmentMonthsets(documentPrepartion?.productionyear)
-            : []
+              ? await fetchDepartmentMonthsets(documentPrepartion?.productionyear)
+              : []
           : [];
       const salaryKeyValues = SalaryDetails?.length > 0 ? SalaryDetails[0] : "";
 
@@ -5831,32 +5827,33 @@ function DocumentPreparation() {
       await replaceKeywordsWithBase64();
 
       setLoadingGeneratingDatas(false);
-      let branchAddressTextHorizontal = `${
-        !branchAddress?.branchcity ? "" : branchAddress?.branchcity + ", "
-      }${!branchAddress?.branchstate ? "" : branchAddress?.branchstate + ", "}${
-        !branchAddress?.branchcountry ? "" : branchAddress?.branchcountry
-      }${
-        !branchAddress?.branchpincode ? "" : "- " + branchAddress?.branchpincode
-      }`;
-      let branchAddressTextVertical = `${
-        !branchAddress?.branchcity ? "" : branchAddress?.branchcity + ", "
-      }${
-        !branchAddress?.branchstate
+      let branchAddressTextHorizontal = `${!branchAddress?.branchcity ? "" : branchAddress?.branchcity + ", "
+        }${!branchAddress?.branchstate ? "" : branchAddress?.branchstate + ", "}${!branchAddress?.branchcountry ? "" : branchAddress?.branchcountry
+        }${!branchAddress?.branchpincode ? "" : "- " + branchAddress?.branchpincode
+        }`;
+      let branchAddressTextVertical = `${!branchAddress?.branchcity ? "" : branchAddress?.branchcity + ", "
+        }${!branchAddress?.branchstate
           ? ""
           : `</br>${branchAddress?.branchstate}  , `
-      }${
-        !branchAddress?.branchcountry
+        }${!branchAddress?.branchcountry
           ? ""
           : `</br>${branchAddress?.branchcountry}`
-      }${
-        !branchAddress?.branchpincode ? "" : "- " + branchAddress?.branchpincode
-      }`;
+        }${!branchAddress?.branchpincode ? "" : "- " + branchAddress?.branchpincode
+        }`;
       if (employeeMode === "Manual") {
         let findMethod = texted
           .replaceAll("$UNIID$", newval ? newval : "")
           .replaceAll(
             "$COMPANYTITLE$",
             companyTitleName ? companyTitleName : ""
+          )
+          .replaceAll(
+            "$COMPANYFULLNAME$",
+            companyFullName ? companyFullName : ""
+          )
+          .replaceAll(
+            "$COMPANYSHORTNAME$",
+            companyShortName ? companyShortName : ""
           )
           .replaceAll(
             "$H.BRANCHADDRESS$",
@@ -5873,25 +5870,21 @@ function DocumentPreparation() {
 
         setChecking(findMethod);
       } else {
-        let caddress = `${!employee?.cdoorno ? "" : employee?.cdoorno + ", "}${
-          !employee?.cstreet ? "" : employee?.cstreet + ", "
-        }${!employee?.carea ? "" : employee?.carea + ", "}
-    <br>${!employee?.clandmark ? "" : employee?.clandmark + ", "}${
-          !employee?.ctaluk ? "" : employee?.ctaluk + ", "
-        }${!employee?.cpost ? "" : employee?.cpost + ", "}
-    <br>${!employee?.ccity ? "" : employee?.ccity + ", "}${
-          !employee?.cstate ? "" : employee?.cstate + ", "
-        }${!employee?.ccountry ? "" : employee?.ccountry + ", "}${
-          !employee?.cpincode ? "" : "- " + employee?.cpincode
-        }`;
+        let caddress = `${!employee?.cdoorno ? "" : employee?.cdoorno + ", "}${!employee?.cstreet ? "" : employee?.cstreet + ", "
+          }${!employee?.carea ? "" : employee?.carea + ", "}
+    <br>${!employee?.clandmark ? "" : employee?.clandmark + ", "}${!employee?.ctaluk ? "" : employee?.ctaluk + ", "
+          }${!employee?.cpost ? "" : employee?.cpost + ", "}
+    <br>${!employee?.ccity ? "" : employee?.ccity + ", "}${!employee?.cstate ? "" : employee?.cstate + ", "
+          }${!employee?.ccountry ? "" : employee?.ccountry + ", "}${!employee?.cpincode ? "" : "- " + employee?.cpincode
+          }`;
 
         let GenderHeShe =
           employee?.gender !== "" || employee?.gender !== undefined
             ? employee?.gender === "Male"
               ? "He"
               : employee?.gender === "Female"
-              ? "She"
-              : "He/She"
+                ? "She"
+                : "He/She"
             : "He/She";
 
         let GenderHeShesmall =
@@ -5899,8 +5892,8 @@ function DocumentPreparation() {
             ? employee?.gender === "Male"
               ? "he"
               : employee?.gender === "Female"
-              ? "she"
-              : "he/she"
+                ? "she"
+                : "he/she"
             : "he/she";
 
         let GenderHimHer =
@@ -5908,19 +5901,16 @@ function DocumentPreparation() {
             ? employee?.gender === "Male"
               ? "him"
               : employee?.gender === "Female"
-              ? "her"
-              : "him/her"
+                ? "her"
+                : "him/her"
             : "him/her";
 
-        let paddress = `${!employee?.pdoorno ? "" : employee?.pdoorno + ", "}${
-          !employee?.pstreet ? "" : employee?.pstreet + ", "
-        }${!employee?.parea ? "" : employee?.parea + ", "}
-    <br>${!employee?.plandmark ? "" : employee?.plandmark + ", "}${
-          !employee?.ptaluk ? "" : employee?.ptaluk + ", "
-        }${!employee?.ppost ? "" : employee?.ppost + ", "}
-    <br>${!employee?.pcity ? "" : employee?.pcity + ", "}${
-          !employee?.pstate ? "" : employee?.pstate + ", "
-        }${!employee?.pcountry ? "" : employee?.pcountry + ", "}
+        let paddress = `${!employee?.pdoorno ? "" : employee?.pdoorno + ", "}${!employee?.pstreet ? "" : employee?.pstreet + ", "
+          }${!employee?.parea ? "" : employee?.parea + ", "}
+    <br>${!employee?.plandmark ? "" : employee?.plandmark + ", "}${!employee?.ptaluk ? "" : employee?.ptaluk + ", "
+          }${!employee?.ppost ? "" : employee?.ppost + ", "}
+    <br>${!employee?.pcity ? "" : employee?.pcity + ", "}${!employee?.pstate ? "" : employee?.pstate + ", "
+          }${!employee?.pcountry ? "" : employee?.pcountry + ", "}
     ${!employee?.ppincode ? "" : "- " + employee?.ppincode}`;
 
         let findMethod = texted
@@ -6078,6 +6068,14 @@ function DocumentPreparation() {
             companyTitleName ? companyTitleName : ""
           )
           .replaceAll(
+            "$COMPANYFULLNAME$",
+            companyFullName ? companyFullName : ""
+          )
+          .replaceAll(
+            "$COMPANYSHORTNAME$",
+            companyShortName ? companyShortName : ""
+          )
+          .replaceAll(
             "$H.BRANCHADDRESS$",
             branchAddressTextHorizontal ? branchAddressTextHorizontal : ""
           )
@@ -6203,16 +6201,14 @@ function DocumentPreparation() {
             "$FSIGNATURE$",
             signatureContent?.seal === "For Seal"
               ? `<span style="display: inline-block; vertical-align: top;">
-          <span style="color:#53177e; font-weight: bold;">${
-            signatureContent?.topcontent
-          }</span><br/>
-          ${
-            signature
-              ? `<span style="position: relative; display: inline-block;">
+          <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent
+              }</span><br/>
+          ${signature
+                ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
-              : ""
-          }
+                : ""
+              }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
           </span>
@@ -6403,14 +6399,12 @@ function DocumentPreparation() {
             setButtonLoading(false);
             setLoadingPrintData(false);
             setHeaderOptionsButton(false);
-            setPopupContentMalert(`This Template has  page mode of ${
-              templateCreationValue?.pagemode
-            } but provided is
-            ${
-              templateCreationValue?.pagemode === "Single Page"
+            setPopupContentMalert(`This Template has  page mode of ${templateCreationValue?.pagemode
+              } but provided is
+            ${templateCreationValue?.pagemode === "Single Page"
                 ? "more than expected"
                 : "not sufficient"
-            }  to print documents`);
+              }  to print documents`);
             setPopupSeverityMalert("info");
             handleClickOpenPopupMalert();
           } else {
@@ -6475,14 +6469,12 @@ function DocumentPreparation() {
           ) {
             setButtonLoading(false);
             setLoadingPrintManualData(false);
-            setPopupContentMalert(`This Template has  page mode of ${
-              templateCreationValue?.pagemode
-            } but provided is
-            ${
-              templateCreationValue?.pagemode === "Single Page"
+            setPopupContentMalert(`This Template has  page mode of ${templateCreationValue?.pagemode
+              } but provided is
+            ${templateCreationValue?.pagemode === "Single Page"
                 ? "more than expected"
                 : "not sufficient"
-            }  to print documents`);
+              }  to print documents`);
             setPopupSeverityMalert("info");
             handleClickOpenPopupMalert();
           } else {
@@ -6874,12 +6866,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -6919,12 +6911,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -7097,16 +7089,14 @@ function DocumentPreparation() {
           "$FSIGNATURE$",
           signatureContent?.seal === "For Seal"
             ? `<span style="display: inline-block; vertical-align: top;">
-          <span style="color:#53177e; font-weight: bold;">${
-            signatureContent?.topcontent
-          }</span><br/>
-          ${
-            signature
+          <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent
+            }</span><br/>
+          ${signature
               ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
               : ""
-          }
+            }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
           </span>
@@ -7388,14 +7378,17 @@ function DocumentPreparation() {
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(
-                  documentPrepartion.signature,
-                  "PNG",
-                  leftX,
-                  yPos,
-                  sigWidth,
-                  sigHeight
-                );
+                  {
+                  (documentPrepartion?.signature !== "Please Select Signature" && !documentPrepartion?.signature) &&
+                    doc.addImage(
+                      documentPrepartion.signature,
+                      "PNG",
+                      leftX,
+                      yPos,
+                      sigWidth,
+                      sigHeight
+                    );
+                }
 
                 if (
                   documentPrepartion?.signaturetype === "For Seal" &&
@@ -7415,7 +7408,7 @@ function DocumentPreparation() {
 
               // --- Center: Seal (align with same yPos) ---
               const centerX = pageWidth / 2 - sealWidth / 2;
-              if (documentPrepartion?.seal) {
+               if (documentPrepartion?.seal && documentPrepartion?.seal !== "Please Select Seal") {
                 doc.addImage(
                   documentPrepartion.seal,
                   "PNG",
@@ -7472,12 +7465,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -7511,12 +7504,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -8084,12 +8077,12 @@ function DocumentPreparation() {
                       qrCodeInfoDetails?.length > 0
                         ? qrCodeInfoDetails
                         : [
-                            "1. Scan to verify the authenticity of this document.",
-                            `2. This document was generated on ${moment(
-                              new Date(serverTime)
-                            ).format("DD-MM-YYYY hh:mm a")}`,
-                            `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
-                          ];
+                          "1. Scan to verify the authenticity of this document.",
+                          `2. This document was generated on ${moment(
+                            new Date(serverTime)
+                          ).format("DD-MM-YYYY hh:mm a")}`,
+                          `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
+                        ];
 
                     // starting position
                     const statementX = qrCodeX + qrCodeWidth + 10;
@@ -8126,12 +8119,12 @@ function DocumentPreparation() {
                       qrCodeInfoDetails?.length > 0
                         ? qrCodeInfoDetails
                         : [
-                            "1. Scan to verify the authenticity of this document.",
-                            `2. This document was generated on ${moment(
-                              new Date(serverTime)
-                            ).format("DD-MM-YYYY hh:mm a")}`,
-                            `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
-                          ];
+                          "1. Scan to verify the authenticity of this document.",
+                          `2. This document was generated on ${moment(
+                            new Date(serverTime)
+                          ).format("DD-MM-YYYY hh:mm a")}`,
+                          `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
+                        ];
 
                     // starting position
                     const statementX = qrCodeX + qrCodeWidth + 10;
@@ -8413,16 +8406,14 @@ function DocumentPreparation() {
                 "$FSIGNATURE$",
                 signatureContent?.seal === "For Seal"
                   ? `<span style="display: inline-block; vertical-align: top;">
-          <span style="color:#53177e; font-weight: bold;">${
-            signatureContent?.topcontent
-          }</span><br/>
-          ${
-            signature
-              ? `<span style="position: relative; display: inline-block;">
+          <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent
+                  }</span><br/>
+          ${signature
+                    ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
-              : ""
-          }
+                    : ""
+                  }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
           </span>
@@ -8696,7 +8687,7 @@ function DocumentPreparation() {
                         );
                         doc.setTextColor(0, 0, 0);
                       }
-
+{ (documentPrepartion?.signature !== "Please Select Signature" && !documentPrepartion?.signature) &&
                       doc.addImage(
                         documentPrepartion.signature,
                         "PNG",
@@ -8705,7 +8696,7 @@ function DocumentPreparation() {
                         sigWidth,
                         sigHeight
                       );
-
+}
                       if (
                         documentPrepartion?.signaturetype === "For Seal" &&
                         documentPrepartion?.bottomcontent
@@ -8724,7 +8715,7 @@ function DocumentPreparation() {
 
                     // --- Center: Seal (align with same yPos) ---
                     const centerX = pageWidth / 2 - sealWidth / 2;
-                    if (documentPrepartion?.seal) {
+                    if (documentPrepartion?.seal && documentPrepartion?.seal !== "Please Select Seal") {
                       doc.addImage(
                         documentPrepartion.seal,
                         "PNG",
@@ -8799,12 +8790,12 @@ function DocumentPreparation() {
                       qrCodeInfoDetails?.length > 0
                         ? qrCodeInfoDetails
                         : [
-                            "1. Scan to verify the authenticity of this document.",
-                            `2. This document was generated on ${moment(
-                              new Date(serverTime)
-                            ).format("DD-MM-YYYY hh:mm a")}`,
-                            `3. For questions, contact us at ${fromEmail}.`,
-                          ];
+                          "1. Scan to verify the authenticity of this document.",
+                          `2. This document was generated on ${moment(
+                            new Date(serverTime)
+                          ).format("DD-MM-YYYY hh:mm a")}`,
+                          `3. For questions, contact us at ${fromEmail}.`,
+                        ];
 
                     // starting position
                     const statementX = qrCodeX + qrCodeWidth + 10;
@@ -8841,12 +8832,12 @@ function DocumentPreparation() {
                       qrCodeInfoDetails?.length > 0
                         ? qrCodeInfoDetails
                         : [
-                            "1. Scan to verify the authenticity of this document.",
-                            `2. This document was generated on ${moment(
-                              new Date(serverTime)
-                            ).format("DD-MM-YYYY hh:mm a")}`,
-                            `3. For questions, contact us at ${fromEmail}.`,
-                          ];
+                          "1. Scan to verify the authenticity of this document.",
+                          `2. This document was generated on ${moment(
+                            new Date(serverTime)
+                          ).format("DD-MM-YYYY hh:mm a")}`,
+                          `3. For questions, contact us at ${fromEmail}.`,
+                        ];
 
                     // starting position
                     const statementX = qrCodeX + qrCodeWidth + 10;
@@ -8974,15 +8965,13 @@ function DocumentPreparation() {
         "$FSIGNATURE$",
         signatureContent?.seal === "For Seal"
           ? `<span style="display: inline-block; vertical-align: top;">
-          <span style="color:#53177e; font-weight: bold;">${
-            signatureContent?.topcontent
+          <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent
           }</span><br/>
-          ${
-            signature
-              ? `<span style="position: relative; display: inline-block;">
+          ${signature
+            ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
-              : ""
+            : ""
           }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
@@ -9251,14 +9240,17 @@ function DocumentPreparation() {
                 doc.setTextColor(0, 0, 0);
               }
 
-              doc.addImage(
-                documentPrepartion.signature,
-                "PNG",
-                leftX,
-                yPos,
-                sigWidth,
-                sigHeight
-              );
+               {
+                  (documentPrepartion?.signature !== "Please Select Signature" && !documentPrepartion?.signature) &&
+                    doc.addImage(
+                      documentPrepartion.signature,
+                      "PNG",
+                      leftX,
+                      yPos,
+                      sigWidth,
+                      sigHeight
+                    );
+                }
 
               if (
                 documentPrepartion?.signaturetype === "For Seal" &&
@@ -9278,7 +9270,7 @@ function DocumentPreparation() {
 
             // --- Center: Seal (align with same yPos) ---
             const centerX = pageWidth / 2 - sealWidth / 2;
-            if (documentPrepartion?.seal) {
+            if (documentPrepartion?.seal && documentPrepartion?.seal !== "Please Select Seal") {
               doc.addImage(
                 documentPrepartion.seal,
                 "PNG",
@@ -9349,12 +9341,12 @@ function DocumentPreparation() {
               qrCodeInfoDetails?.length > 0
                 ? qrCodeInfoDetails
                 : [
-                    "1. Scan to verify the authenticity of this document.",
-                    `2. This document was generated on ${moment(
-                      new Date(serverTime)
-                    ).format("DD-MM-YYYY hh:mm a")}`,
-                    `3. For questions, contact us at ${fromEmail}.`,
-                  ];
+                  "1. Scan to verify the authenticity of this document.",
+                  `2. This document was generated on ${moment(
+                    new Date(serverTime)
+                  ).format("DD-MM-YYYY hh:mm a")}`,
+                  `3. For questions, contact us at ${fromEmail}.`,
+                ];
 
             // starting position
             const statementX = qrCodeX + qrCodeWidth + 10;
@@ -9388,12 +9380,12 @@ function DocumentPreparation() {
               qrCodeInfoDetails?.length > 0
                 ? qrCodeInfoDetails
                 : [
-                    "1. Scan to verify the authenticity of this document.",
-                    `2. This document was generated on ${moment(
-                      new Date(serverTime)
-                    ).format("DD-MM-YYYY hh:mm a")}`,
-                    `3. For questions, contact us at ${fromEmail}.`,
-                  ];
+                  "1. Scan to verify the authenticity of this document.",
+                  `2. This document was generated on ${moment(
+                    new Date(serverTime)
+                  ).format("DD-MM-YYYY hh:mm a")}`,
+                  `3. For questions, contact us at ${fromEmail}.`,
+                ];
 
             // starting position
             const statementX = qrCodeX + qrCodeWidth + 10;
@@ -9850,12 +9842,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -9892,12 +9884,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${checkingArray[index]?.frommailemail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -10020,16 +10012,14 @@ function DocumentPreparation() {
           "$FSIGNATURE$",
           signatureContent?.seal === "For Seal"
             ? `<span style="display: inline-block; vertical-align: top;">
-          <span style="color:#53177e; font-weight: bold;">${
-            signatureContent?.topcontent
-          }</span><br/>
-          ${
-            signature
+          <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent
+            }</span><br/>
+          ${signature
               ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
               : ""
-          }
+            }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
           </span>
@@ -10294,15 +10284,19 @@ function DocumentPreparation() {
                   );
                   doc.setTextColor(0, 0, 0);
                 }
+                console.log(documentPrepartion?.signature, "documentPrepartion?.signature")
 
-                doc.addImage(
-                  documentPrepartion.signature,
-                  "PNG",
-                  leftX,
-                  yPos,
-                  sigWidth,
-                  sigHeight
-                );
+                {
+                  (documentPrepartion?.signature !== "Please Select Signature" && !documentPrepartion?.signature) &&
+                    doc.addImage(
+                      documentPrepartion.signature,
+                      "PNG",
+                      leftX,
+                      yPos,
+                      sigWidth,
+                      sigHeight
+                    );
+                }
 
                 if (
                   documentPrepartion?.signaturetype === "For Seal" &&
@@ -10322,7 +10316,7 @@ function DocumentPreparation() {
 
               // --- Center: Seal (align with same yPos) ---
               const centerX = pageWidth / 2 - sealWidth / 2;
-              if (documentPrepartion?.seal) {
+              if (documentPrepartion?.seal && documentPrepartion?.seal !== "Please Select Seal") {
                 doc.addImage(
                   documentPrepartion.seal,
                   "PNG",
@@ -10394,12 +10388,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -10433,12 +10427,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -10815,7 +10809,7 @@ function DocumentPreparation() {
                   if (response?.data?.sdocumentPreparation?.signature) {
                     if (
                       response?.data?.sdocumentPreparation?.signaturetype ===
-                        "For Seal" &&
+                      "For Seal" &&
                       response?.data?.sdocumentPreparation?.topcontent
                     ) {
                       doc.setFontSize(8);
@@ -10840,7 +10834,7 @@ function DocumentPreparation() {
 
                     if (
                       response?.data?.sdocumentPreparation?.signaturetype ===
-                        "For Seal" &&
+                      "For Seal" &&
                       response?.data?.sdocumentPreparation?.bottomcontent
                     ) {
                       doc.setFontSize(8);
@@ -10905,7 +10899,7 @@ function DocumentPreparation() {
                 });
               } else if (
                 response?.data?.sdocumentPreparation?.pagenumberneed ===
-                  "End Page" &&
+                "End Page" &&
                 i === totalPages
               ) {
                 const textY = footerY - 3;
@@ -10938,12 +10932,12 @@ function DocumentPreparation() {
                     qrCodeInfoDetails?.length > 0
                       ? qrCodeInfoDetails
                       : [
-                          "1. Scan to verify the authenticity of this document.",
-                          `2. This document was generated on ${moment(
-                            new Date(serverTime)
-                          ).format("DD-MM-YYYY hh:mm a")}`,
-                          `3. For questions, contact us at ${fromEmail}.`,
-                        ];
+                        "1. Scan to verify the authenticity of this document.",
+                        `2. This document was generated on ${moment(
+                          new Date(serverTime)
+                        ).format("DD-MM-YYYY hh:mm a")}`,
+                        `3. For questions, contact us at ${fromEmail}.`,
+                      ];
 
                   // starting position
                   const statementX = qrCodeX + qrCodeWidth + 10;
@@ -10961,7 +10955,7 @@ function DocumentPreparation() {
               if (
                 response?.data?.sdocumentPreparation?.qrCodeNeed &&
                 response?.data?.sdocumentPreparation?.qrcodevalue ===
-                  "All Pages"
+                "All Pages"
               ) {
                 if (i === totalPages) {
                   // Add QR code in the left corner
@@ -10982,12 +10976,12 @@ function DocumentPreparation() {
                     qrCodeInfoDetails?.length > 0
                       ? qrCodeInfoDetails
                       : [
-                          "1. Scan to verify the authenticity of this document.",
-                          `2. This document was generated on ${moment(
-                            new Date(serverTime)
-                          ).format("DD-MM-YYYY hh:mm a")}`,
-                          `3. For questions, contact us at ${fromEmail}.`,
-                        ];
+                        "1. Scan to verify the authenticity of this document.",
+                        `2. This document was generated on ${moment(
+                          new Date(serverTime)
+                        ).format("DD-MM-YYYY hh:mm a")}`,
+                        `3. For questions, contact us at ${fromEmail}.`,
+                      ];
 
                   // starting position
                   const statementX = qrCodeX + qrCodeWidth + 10;
@@ -11282,38 +11276,38 @@ function DocumentPreparation() {
       prefixString.length == 1
         ? `000${prefixString}`
         : prefixString.length == 2
-        ? `00${prefixString}`
-        : prefixString.length == 3
-        ? `0${prefixString}`
-        : prefixString.length == 4
-        ? `0${prefixString}`
-        : prefixString.length == 5
-        ? `0${prefixString}`
-        : prefixString.length == 6
-        ? `0${prefixString}`
-        : prefixString.length == 7
-        ? `0${prefixString}`
-        : prefixString.length == 8
-        ? `0${prefixString}`
-        : prefixString.length == 9
-        ? `0${prefixString}`
-        : prefixString.length == 10
-        ? `0${prefixString}`
-        : prefixString;
+          ? `00${prefixString}`
+          : prefixString.length == 3
+            ? `0${prefixString}`
+            : prefixString.length == 4
+              ? `0${prefixString}`
+              : prefixString.length == 5
+                ? `0${prefixString}`
+                : prefixString.length == 6
+                  ? `0${prefixString}`
+                  : prefixString.length == 7
+                    ? `0${prefixString}`
+                    : prefixString.length == 8
+                      ? `0${prefixString}`
+                      : prefixString.length == 9
+                        ? `0${prefixString}`
+                        : prefixString.length == 10
+                          ? `0${prefixString}`
+                          : prefixString;
 
     let newval = employeeControlPanel
       ? // uniqueCode +
-        //   employeeControlPanel?.team?.slice(0, 3) +
-        //   "#" +
-        templateCreationValue?.tempcode + "_" + postfixLength
+      //   employeeControlPanel?.team?.slice(0, 3) +
+      //   "#" +
+      templateCreationValue?.tempcode + "_" + postfixLength
       : // "Man" +
-        //   "#" +
-        (templateCreationValue?.tempcode === "" ||
+      //   "#" +
+      (templateCreationValue?.tempcode === "" ||
         templateCreationValue?.tempcode === undefined
-          ? ""
-          : templateCreationValue?.tempcode) +
-        "_" +
-        postfixLength;
+        ? ""
+        : templateCreationValue?.tempcode) +
+      "_" +
+      postfixLength;
 
     let newvalRefNo = `DP_${postfixLength}`;
 
@@ -11337,15 +11331,13 @@ function DocumentPreparation() {
         "$FSIGNATURE$",
         signatureContent?.seal === "For Seal"
           ? `<span style="display: inline-block; vertical-align: top;">
-          <span style="color:#53177e; font-weight: bold;">${
-            signatureContent?.topcontent
+          <span style="color:#53177e; font-weight: bold;">${signatureContent?.topcontent
           }</span><br/>
-          ${
-            signature
-              ? `<span style="position: relative; display: inline-block;">
+          ${signature
+            ? `<span style="position: relative; display: inline-block;">
                    <img src="${signature}" alt="Signature" style="position: absolute; z-index: -1; width: 200px; height: 30px;" />
                  </span><br/>`
-              : ""
+            : ""
           }
           <span style="color:#53177e; font-weight: bold; display: inline-block; margin-top: 25px;">
             ${signatureContent?.bottomcontent}
@@ -11485,13 +11477,13 @@ function DocumentPreparation() {
     const isNameMatch = templateCreationArrayCreate?.some(
       (item) =>
         item.template?.toLowerCase() ===
-          documentPrepartion.template?.toLowerCase() &&
+        documentPrepartion.template?.toLowerCase() &&
         item.person === documentPrepartion.person
     );
     const isNameMatchInside = checkingArray?.some(
       (item) =>
         item.template?.toLowerCase() ===
-          documentPrepartion.template?.toLowerCase() &&
+        documentPrepartion.template?.toLowerCase() &&
         item.empname === documentPrepartion.person
     );
 
@@ -11715,7 +11707,7 @@ function DocumentPreparation() {
     const isNameMatch = templateCreationArray?.some(
       (item) =>
         item.template?.toLowerCase() ===
-          documentPrepartion.template?.toLowerCase() &&
+        documentPrepartion.template?.toLowerCase() &&
         item.person === documentPrepartion.person
     );
     if (selectedBranch?.length === 0) {
@@ -11874,12 +11866,10 @@ function DocumentPreparation() {
 
       if (!allFalse && templateCreationValue?.pagemode === "Single Page") {
         setPopupContentMalert(
-          `This Template has a page mode of ${
-            templateCreationValue?.pagemode
-          }, but the provided documents are ${
-            templateCreationValue?.pagemode === "Single Page"
-              ? "more than expected"
-              : "not sufficient"
+          `This Template has a page mode of ${templateCreationValue?.pagemode
+          }, but the provided documents are ${templateCreationValue?.pagemode === "Single Page"
+            ? "more than expected"
+            : "not sufficient"
           } to print documents.`
         );
         setPopupSeverityMalert("info");
@@ -11935,7 +11925,7 @@ function DocumentPreparation() {
     const isNameMatch = templateCreationArray?.some(
       (item) =>
         item.template?.toLowerCase() ===
-          documentPrepartion.template?.toLowerCase() &&
+        documentPrepartion.template?.toLowerCase() &&
         item.person === documentPrepartion.person
     );
     if (selectedBranch?.length === 0) {
@@ -12054,13 +12044,11 @@ function DocumentPreparation() {
             templateCreationValue?.pagemode === "Single Page"
           ) {
             setButtonLoading(false);
-            setPopupContentMalert(`This Template has  page mode of ${
-              templateCreationValue?.pagemode
-            } but provided is
-              ${
-                templateCreationValue?.pagemode === "Single Page"
-                  ? "more than expected"
-                  : "not sufficient"
+            setPopupContentMalert(`This Template has  page mode of ${templateCreationValue?.pagemode
+              } but provided is
+              ${templateCreationValue?.pagemode === "Single Page"
+                ? "more than expected"
+                : "not sufficient"
               }  to print documents`);
             setPopupSeverityMalert("info");
             handleClickOpenPopupMalert();
@@ -12290,10 +12278,10 @@ function DocumentPreparation() {
   const fetchBrandMaster = async () => {
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-          branch: data.branch,
-          company: data.company,
-          unit: data.unit,
-        }))
+        branch: data.branch,
+        company: data.company,
+        unit: data.unit,
+      }))
       : [];
 
     setPageName(!pageName);
@@ -12314,29 +12302,29 @@ function DocumentPreparation() {
       const answer =
         res_freq?.data?.documentPreparation?.length > 0
           ? res_freq?.data?.documentPreparation
-              ?.filter((data) => data?.printingstatus === "Not-Printed")
-              ?.map((item, index) => ({
-                ...item,
-                // ...item,
-                serialNumber: index + 1,
-                id: item?._id,
-                approval:
-                  item?.approval === "sentforapproval"
-                    ? "Sent to Approval"
-                    : item?.approval === "approved"
+            ?.filter((data) => data?.printingstatus === "Not-Printed")
+            ?.map((item, index) => ({
+              ...item,
+              // ...item,
+              serialNumber: index + 1,
+              id: item?._id,
+              approval:
+                item?.approval === "sentforapproval"
+                  ? "Sent to Approval"
+                  : item?.approval === "approved"
                     ? "Approved"
                     : "Not yet sent",
-                department:
-                  item?.department === "Please Select Department"
-                    ? ""
-                    : item?.department,
-                date: moment(item.date).format("DD-MM-YYYY"),
-                daystatus: item.attendanceautostatus
-                  ? item.attendanceautostatus
-                  : item.weekoffpresentstatus
+              department:
+                item?.department === "Please Select Department"
+                  ? ""
+                  : item?.department,
+              date: moment(item.date).format("DD-MM-YYYY"),
+              daystatus: item.attendanceautostatus
+                ? item.attendanceautostatus
+                : item.weekoffpresentstatus
                   ? "WEEKOFF PRESENT"
                   : getattendancestatus(item),
-              }))
+            }))
           : [];
       setTemplateCreationArrayCreate(answer);
       setTemplateCreationArray(res_freq?.data?.overalldocuments);
@@ -12356,10 +12344,10 @@ function DocumentPreparation() {
   const fetchBrandMasterOverall = async () => {
     const accessbranchs = accessbranch
       ? accessbranch.map((data) => ({
-          branch: data.branch,
-          company: data.company,
-          unit: data.unit,
-        }))
+        branch: data.branch,
+        company: data.company,
+        unit: data.unit,
+      }))
       : [];
 
     setPageName(!pageName);
@@ -12379,29 +12367,29 @@ function DocumentPreparation() {
       const answer =
         res_freq?.data?.overalldocuments?.length > 0
           ? res_freq?.data?.overalldocuments
-              ?.filter((data) => data?.printingstatus === "Not-Printed")
-              ?.map((item, index) => ({
-                ...item,
-                // ...item,
-                serialNumber: index + 1,
-                id: item?._id,
-                approval:
-                  item?.approval === "sentforapproval"
-                    ? "Sent to Approval"
-                    : item?.approval === "approved"
+            ?.filter((data) => data?.printingstatus === "Not-Printed")
+            ?.map((item, index) => ({
+              ...item,
+              // ...item,
+              serialNumber: index + 1,
+              id: item?._id,
+              approval:
+                item?.approval === "sentforapproval"
+                  ? "Sent to Approval"
+                  : item?.approval === "approved"
                     ? "Approved"
                     : "Not yet sent",
-                department:
-                  item?.department === "Please Select Department"
-                    ? ""
-                    : item?.department,
-                date: moment(item.date).format("DD-MM-YYYY"),
-                daystatus: item.attendanceautostatus
-                  ? item.attendanceautostatus
-                  : item.weekoffpresentstatus
+              department:
+                item?.department === "Please Select Department"
+                  ? ""
+                  : item?.department,
+              date: moment(item.date).format("DD-MM-YYYY"),
+              daystatus: item.attendanceautostatus
+                ? item.attendanceautostatus
+                : item.weekoffpresentstatus
                   ? "WEEKOFF PRESENT"
                   : getattendancestatus(item),
-              }))
+            }))
           : [];
       setTemplateCreationArray(answer);
       setChanged("ChangedStatus");
@@ -12502,12 +12490,12 @@ function DocumentPreparation() {
             $inc: { printedcount: 1 },
             updatedby: update
               ? [
-                  ...update,
-                  {
-                    name: isUserRoleAccess.companyname,
-                    date: new Date(serverTime),
-                  },
-                ]
+                ...update,
+                {
+                  name: isUserRoleAccess.companyname,
+                  date: new Date(serverTime),
+                },
+              ]
               : [],
           }
         );
@@ -12820,7 +12808,7 @@ function DocumentPreparation() {
               if (response?.data?.sdocumentPreparation?.signature) {
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
-                    "For Seal" &&
+                  "For Seal" &&
                   response?.data?.sdocumentPreparation?.topcontent
                 ) {
                   doc.setFontSize(8);
@@ -12845,7 +12833,7 @@ function DocumentPreparation() {
 
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
-                    "For Seal" &&
+                  "For Seal" &&
                   response?.data?.sdocumentPreparation?.bottomcontent
                 ) {
                   doc.setFontSize(8);
@@ -12910,7 +12898,7 @@ function DocumentPreparation() {
             });
           } else if (
             response?.data?.sdocumentPreparation?.pagenumberneed ===
-              "End Page" &&
+            "End Page" &&
             i === totalPages
           ) {
             const textY = footerY - 3;
@@ -12943,12 +12931,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -12986,12 +12974,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -13323,27 +13311,27 @@ function DocumentPreparation() {
       if (res?.data?.templatecontrolpanel) {
         const ans = res?.data?.templatecontrolpanel
           ? res?.data?.templatecontrolpanel?.templatecontrolpanellog[
-              res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
-                1
-            ]
+          res?.data?.templatecontrolpanel?.templatecontrolpanellog?.length -
+          1
+          ]
           : "";
 
         const templateHeaderFooter = res?.data?.headerfooter;
 
         const headerOption = templateHeaderFooter?.header
           ? ans?.letterheadcontentheader?.find(
-              (data) => data?.headername === templateHeaderFooter?.header
-            )
+            (data) => data?.headername === templateHeaderFooter?.header
+          )
           : ans?.letterheadcontentheader?.find(
-              (data) => data?.default === "default"
-            );
+            (data) => data?.default === "default"
+          );
         const footerOption = templateHeaderFooter?.footer
           ? ans?.letterheadcontentfooter?.find(
-              (data) => data?.footername === templateHeaderFooter?.footer
-            )
+            (data) => data?.footername === templateHeaderFooter?.footer
+          )
           : ans?.letterheadcontentfooter?.find(
-              (data) => data?.default === "default"
-            );
+            (data) => data?.default === "default"
+          );
 
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
@@ -13355,10 +13343,9 @@ function DocumentPreparation() {
           (data) => data?.default === "default"
         );
         const backgroundimage = await convertFileUrlToBase64(
-          `${BASE_URL}/templatecontrolpanel/${
-            backGroundCondition
-              ? backGroundCondition?.backgroundimage?.name
-              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          `${BASE_URL}/templatecontrolpanel/${backGroundCondition
+            ? backGroundCondition?.backgroundimage?.name
+            : ans?.letterheadbodycontent[0]?.backgroundimage?.name
           }`
         );
 
@@ -13589,24 +13576,24 @@ function DocumentPreparation() {
           {isUserRoleCompare?.includes(
             "menuemployeedocumentpreparationmail"
           ) && (
-            <Button
-              variant="contained"
-              sx={{
-                backgroundColor:
-                  params?.data?.mail === "Send" ? "#4CAF50" : "#F44336", // Green for "Send", Red otherwise
-                color: "white",
-                "&:hover": {
+              <Button
+                variant="contained"
+                sx={{
                   backgroundColor:
-                    params?.data?.mail === "Send" ? "#45A049" : "#D32F2F",
-                },
-              }}
-              onClick={() => {
-                extractEmailFormat(params.data.person, params.data.id);
-              }}
-            >
-              {params?.data?.mail}
-            </Button>
-          )}
+                    params?.data?.mail === "Send" ? "#4CAF50" : "#F44336", // Green for "Send", Red otherwise
+                  color: "white",
+                  "&:hover": {
+                    backgroundColor:
+                      params?.data?.mail === "Send" ? "#45A049" : "#D32F2F",
+                  },
+                }}
+                onClick={() => {
+                  extractEmailFormat(params.data.person, params.data.id);
+                }}
+              >
+                {params?.data?.mail}
+              </Button>
+            )}
         </Grid>
       ),
     },
@@ -13930,7 +13917,7 @@ function DocumentPreparation() {
               if (response?.data?.sdocumentPreparation?.signature) {
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
-                    "For Seal" &&
+                  "For Seal" &&
                   response?.data?.sdocumentPreparation?.topcontent
                 ) {
                   doc.setFontSize(8);
@@ -13955,7 +13942,7 @@ function DocumentPreparation() {
 
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
-                    "For Seal" &&
+                  "For Seal" &&
                   response?.data?.sdocumentPreparation?.bottomcontent
                 ) {
                   doc.setFontSize(8);
@@ -14020,7 +14007,7 @@ function DocumentPreparation() {
             });
           } else if (
             response?.data?.sdocumentPreparation?.pagenumberneed ===
-              "End Page" &&
+            "End Page" &&
             i === totalPages
           ) {
             const textY = footerY - 3;
@@ -14052,12 +14039,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -14095,12 +14082,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -14468,7 +14455,7 @@ function DocumentPreparation() {
               if (response?.data?.sdocumentPreparation?.signature) {
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
-                    "For Seal" &&
+                  "For Seal" &&
                   response?.data?.sdocumentPreparation?.topcontent
                 ) {
                   doc.setFontSize(8);
@@ -14493,7 +14480,7 @@ function DocumentPreparation() {
 
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
-                    "For Seal" &&
+                  "For Seal" &&
                   response?.data?.sdocumentPreparation?.bottomcontent
                 ) {
                   doc.setFontSize(8);
@@ -14558,7 +14545,7 @@ function DocumentPreparation() {
             });
           } else if (
             response?.data?.sdocumentPreparation?.pagenumberneed ===
-              "End Page" &&
+            "End Page" &&
             i === totalPages
           ) {
             const textY = footerY - 3;
@@ -14590,12 +14577,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -14633,12 +14620,12 @@ function DocumentPreparation() {
                 qrCodeInfoDetails?.length > 0
                   ? qrCodeInfoDetails
                   : [
-                      "1. Scan to verify the authenticity of this document.",
-                      `2. This document was generated on ${moment(
-                        new Date(serverTime)
-                      ).format("DD-MM-YYYY hh:mm a")}`,
-                      `3. For questions, contact us at ${fromEmail}.`,
-                    ];
+                    "1. Scan to verify the authenticity of this document.",
+                    `2. This document was generated on ${moment(
+                      new Date(serverTime)
+                    ).format("DD-MM-YYYY hh:mm a")}`,
+                    `3. For questions, contact us at ${fromEmail}.`,
+                  ];
 
               // starting position
               const statementX = qrCodeX + qrCodeWidth + 10;
@@ -15641,7 +15628,7 @@ function DocumentPreparation() {
                               sx={{ fontSize: "1.1rem" }}
                             >
                               {documentPrepartion.person !==
-                              "Please Select Person"
+                                "Please Select Person"
                                 ? 1
                                 : 0}
                             </Typography>
@@ -16170,10 +16157,10 @@ function DocumentPreparation() {
                         allSupervisor
                           ? issuingauthority
                           : issuingauthority?.filter((name) =>
-                              DocumentNeed
-                                ? !selectedEmployeeValues?.includes(name?.value)
-                                : name?.value !== documentPrepartion?.person
-                            )
+                            DocumentNeed
+                              ? !selectedEmployeeValues?.includes(name?.value)
+                              : name?.value !== documentPrepartion?.person
+                          )
                       }
                       value={{
                         label: documentPrepartion.issuingauthority,
@@ -16201,10 +16188,10 @@ function DocumentPreparation() {
                             (data) =>
                               (DocumentNeed
                                 ? !selectedEmployeeValues?.includes(
-                                    data?.employee
-                                  )
+                                  data?.employee
+                                )
                                 : documentPrepartion?.person !==
-                                  data?.employee) && e.value === data?.employee
+                                data?.employee) && e.value === data?.employee
                           );
                         setDocumentPrepartion({
                           ...documentPrepartion,
@@ -16241,12 +16228,12 @@ function DocumentPreparation() {
                               (data) =>
                                 (DocumentNeed
                                   ? !selectedEmployeeValues?.includes(
-                                      data?.employee
-                                    )
+                                    data?.employee
+                                  )
                                   : documentPrepartion?.person !==
-                                    data?.employee) &&
+                                  data?.employee) &&
                                 documentPrepartion?.issuingauthority ===
-                                  data?.employee
+                                data?.employee
                             )
                             ?.map((data) => ({
                               ...data,
@@ -16361,92 +16348,92 @@ function DocumentPreparation() {
                   documentPrepartion?.branch !== "Please Select Branch") ||
                   (documentPrepartion?.employeemode !== "Manual" &&
                     selectedEmployee?.length > 0)) && (
-                  <>
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>Document Need</Typography>
-                        <Selects
-                          maxMenuHeight={300}
-                          options={[
-                            {
-                              label: "Print Document",
-                              value: "Print Document",
-                            },
-                            {
-                              label: "Employee Approval",
-                              value: "Employee Approval",
-                            },
-                          ]}
-                          value={{
-                            label: documentPrepartion.documentneed,
-                            value: documentPrepartion.documentneed,
-                          }}
-                          onChange={(e) => {
-                            setDocumentPrepartion({
-                              ...documentPrepartion,
-                              documentneed: e.value,
-                            });
-                          }}
-                        />
-                      </FormControl>
-                    </Grid>
+                    <>
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Document Need</Typography>
+                          <Selects
+                            maxMenuHeight={300}
+                            options={[
+                              {
+                                label: "Print Document",
+                                value: "Print Document",
+                              },
+                              {
+                                label: "Employee Approval",
+                                value: "Employee Approval",
+                              },
+                            ]}
+                            value={{
+                              label: documentPrepartion.documentneed,
+                              value: documentPrepartion.documentneed,
+                            }}
+                            onChange={(e) => {
+                              setDocumentPrepartion({
+                                ...documentPrepartion,
+                                documentneed: e.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
 
-                    {documentPrepartion?.documentneed ===
-                      "Employee Approval" && (
-                      <>
-                        <Grid item md={4} xs={12} sm={12}>
-                          <FormControl fullWidth size="small">
-                            <Typography>
-                              Print Option<b style={{ color: "red" }}>*</b>
-                            </Typography>
-                            <Selects
-                              maxMenuHeight={300}
-                              options={HeaderDropDowns}
-                              value={{
-                                label: documentPrepartion.printoptions,
-                                value: documentPrepartion.printoptions,
-                              }}
-                              onChange={(e) => {
-                                setDocumentPrepartion({
-                                  ...documentPrepartion,
-                                  printoptions: e.value,
-                                });
-                              }}
-                            />
-                          </FormControl>
-                        </Grid>
-                        {documentPrepartion.printoptions ===
-                          "With Letter Head" && (
-                          <Grid
-                            item
-                            md={
-                              documentPrepartion.printoptions ===
-                              "With Letter Head"
-                                ? 4
-                                : 3
-                            }
-                            xs={12}
-                            sm={12}
-                          >
-                            <FormControl fullWidth size="small">
-                              <Typography>
-                                With Letter Head{" "}
-                                <b style={{ color: "red" }}>*</b>
-                              </Typography>
-                              <MultiSelect
-                                maxMenuHeight={300}
-                                options={WithHeaderOptions}
-                                value={selectedHeadOptAdd}
-                                onChange={handleHeadChangeAdd}
-                                valueRenderer={customValueRenderHeadFromAdd}
-                              />
-                            </FormControl>
-                          </Grid>
+                      {documentPrepartion?.documentneed ===
+                        "Employee Approval" && (
+                          <>
+                            <Grid item md={4} xs={12} sm={12}>
+                              <FormControl fullWidth size="small">
+                                <Typography>
+                                  Print Option<b style={{ color: "red" }}>*</b>
+                                </Typography>
+                                <Selects
+                                  maxMenuHeight={300}
+                                  options={HeaderDropDowns}
+                                  value={{
+                                    label: documentPrepartion.printoptions,
+                                    value: documentPrepartion.printoptions,
+                                  }}
+                                  onChange={(e) => {
+                                    setDocumentPrepartion({
+                                      ...documentPrepartion,
+                                      printoptions: e.value,
+                                    });
+                                  }}
+                                />
+                              </FormControl>
+                            </Grid>
+                            {documentPrepartion.printoptions ===
+                              "With Letter Head" && (
+                                <Grid
+                                  item
+                                  md={
+                                    documentPrepartion.printoptions ===
+                                      "With Letter Head"
+                                      ? 4
+                                      : 3
+                                  }
+                                  xs={12}
+                                  sm={12}
+                                >
+                                  <FormControl fullWidth size="small">
+                                    <Typography>
+                                      With Letter Head{" "}
+                                      <b style={{ color: "red" }}>*</b>
+                                    </Typography>
+                                    <MultiSelect
+                                      maxMenuHeight={300}
+                                      options={WithHeaderOptions}
+                                      value={selectedHeadOptAdd}
+                                      onChange={handleHeadChangeAdd}
+                                      valueRenderer={customValueRenderHeadFromAdd}
+                                    />
+                                  </FormControl>
+                                </Grid>
+                              )}
+                          </>
                         )}
-                      </>
-                    )}
-                  </>
-                )}
+                    </>
+                  )}
 
                 <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
@@ -16605,7 +16592,7 @@ function DocumentPreparation() {
                                         }}
                                       >
                                         {indexViewQuest > 1 &&
-                                        indexViewQuest <=
+                                          indexViewQuest <=
                                           checkingArray?.length ? (
                                           <Button
                                             variant="contained"
@@ -16615,7 +16602,7 @@ function DocumentPreparation() {
                                           </Button>
                                         ) : null}
                                         {indexViewQuest <
-                                        checkingArray?.length ? (
+                                          checkingArray?.length ? (
                                           <Button
                                             variant="contained"
                                             onClick={handleNextPage}
@@ -16693,11 +16680,11 @@ function DocumentPreparation() {
                         sx={userStyle.buttonadd}
                         onClick={() => {
                           documentPrepartion?.documentneed ===
-                          "Employee Approval"
+                            "Employee Approval"
                             ? handlePreviewDocumentManual()
                             : handleClickOpenLetterHeader("Preview Manual");
                         }}
-                        // onClick={handlePreviewDocumentManual}
+                      // onClick={handlePreviewDocumentManual}
                       >
                         Preview
                       </LoadingButton>
@@ -16715,11 +16702,11 @@ function DocumentPreparation() {
                         sx={userStyle.buttonadd}
                         onClick={() =>
                           documentPrepartion?.documentneed ===
-                          "Employee Approval"
+                            "Employee Approval"
                             ? handlePrintDocumentManual()
                             : handleClickOpenLetterHeader("Print Manual")
                         }
-                        // onClick={handlePrintDocumentManual}
+                      // onClick={handlePrintDocumentManual}
                       >
                         Print
                       </LoadingButton>
@@ -16762,11 +16749,11 @@ function DocumentPreparation() {
                         sx={userStyle.buttonadd}
                         onClick={() =>
                           documentPrepartion?.documentneed ===
-                          "Employee Approval"
+                            "Employee Approval"
                             ? handlePreviewDocument(indexViewQuest - 1)
                             : handleClickOpenLetterHeader("Preview")
                         }
-                        // onClick={() => handlePreviewDocument(indexViewQuest - 1)}
+                      // onClick={() => handlePreviewDocument(indexViewQuest - 1)}
                       >
                         Preview
                       </LoadingButton>
@@ -16784,11 +16771,11 @@ function DocumentPreparation() {
                         sx={userStyle.buttonadd}
                         onClick={() =>
                           documentPrepartion?.documentneed ===
-                          "Employee Approval"
+                            "Employee Approval"
                             ? handlePrintDocument(indexViewQuest - 1)
                             : handleClickOpenLetterHeader("Print")
                         }
-                        // onClick={() => handlePrintDocument(indexViewQuest - 1)}
+                      // onClick={() => handlePrintDocument(indexViewQuest - 1)}
                       >
                         Print
                       </LoadingButton>
@@ -16874,78 +16861,78 @@ function DocumentPreparation() {
                   {isUserRoleCompare?.includes(
                     "excelemployeedocumentpreparation"
                   ) && (
-                    <>
-                      <Button
-                        onClick={(e) => {
-                          setIsFilterOpen(true);
-                          setFormat("xl");
-                          fetchBrandMasterOverall();
-                        }}
-                        sx={userStyle.buttongrp}
-                      >
-                        <FaFileExcel />
-                        &ensp;Export to Excel&ensp;
-                      </Button>
-                    </>
-                  )}
+                      <>
+                        <Button
+                          onClick={(e) => {
+                            setIsFilterOpen(true);
+                            setFormat("xl");
+                            fetchBrandMasterOverall();
+                          }}
+                          sx={userStyle.buttongrp}
+                        >
+                          <FaFileExcel />
+                          &ensp;Export to Excel&ensp;
+                        </Button>
+                      </>
+                    )}
                   {isUserRoleCompare?.includes(
                     "csvemployeedocumentpreparation"
                   ) && (
-                    <>
-                      <Button
-                        onClick={(e) => {
-                          setIsFilterOpen(true);
-                          setFormat("csv");
-                          fetchBrandMasterOverall();
-                        }}
-                        sx={userStyle.buttongrp}
-                      >
-                        <FaFileCsv />
-                        &ensp;Export to CSV&ensp;
-                      </Button>
-                    </>
-                  )}
+                      <>
+                        <Button
+                          onClick={(e) => {
+                            setIsFilterOpen(true);
+                            setFormat("csv");
+                            fetchBrandMasterOverall();
+                          }}
+                          sx={userStyle.buttongrp}
+                        >
+                          <FaFileCsv />
+                          &ensp;Export to CSV&ensp;
+                        </Button>
+                      </>
+                    )}
                   {isUserRoleCompare?.includes(
                     "printemployeedocumentpreparation"
                   ) && (
-                    <>
-                      <Button sx={userStyle.buttongrp} onClick={handleprint}>
-                        &ensp;
-                        <FaPrint />
-                        &ensp;Print&ensp;
-                      </Button>
-                    </>
-                  )}
+                      <>
+                        <Button sx={userStyle.buttongrp} onClick={handleprint}>
+                          &ensp;
+                          <FaPrint />
+                          &ensp;Print&ensp;
+                        </Button>
+                      </>
+                    )}
                   {isUserRoleCompare?.includes(
                     "pdfemployeedocumentpreparation"
                   ) && (
-                    <>
-                      <Button
-                        sx={userStyle.buttongrp}
-                        onClick={() => {
-                          setIsPdfFilterOpen(true);
-                          fetchBrandMasterOverall();
-                        }}
-                      >
-                        <FaFilePdf />
-                        &ensp;Export to PDF&ensp;
-                      </Button>
-                    </>
-                  )}
+                      <>
+                        <Button
+                          sx={userStyle.buttongrp}
+                          onClick={() => {
+                            setIsPdfFilterOpen(true);
+                            fetchBrandMasterOverall();
+                          }}
+                        >
+                          <FaFilePdf />
+                          &ensp;Export to PDF&ensp;
+                        </Button>
+                      </>
+                    )}
 
                   {isUserRoleCompare?.includes(
                     "imageemployeedocumentpreparation"
                   ) && (
-                    <Button
-                      sx={userStyle.buttongrp}
-                      onClick={handleCaptureImage}
-                    >
-                      {" "}
-                      <ImageIcon
-                        sx={{ fontSize: "15px" }}
-                      /> &ensp;Image&ensp;{" "}
-                    </Button>
-                  )}
+                      <Button
+                        sx={userStyle.buttongrp}
+                        onClick={handleCaptureImage}
+                      >
+                        {" "}
+                        <ImageIcon
+                          sx={{ fontSize: "15px" }}
+                        /> &ensp;Image&ensp;{" "}
+                      </Button>
+                    )}
                 </Box>
               </Grid>
               <Grid item md={2} xs={12} sm={12}>
@@ -17223,14 +17210,12 @@ function DocumentPreparation() {
         >
           <DialogContent sx={{ textAlign: "center", alignItems: "center" }}>
             <Typography variant="h6">
-              {`This Template has  page mode of ${
-                templateCreationValue?.pagemode
-              } but provided is
-            ${
-              templateCreationValue?.pagemode === "Single Page"
-                ? "more than expected"
-                : "not sufficient"
-            }  to print documents`}
+              {`This Template has  page mode of ${templateCreationValue?.pagemode
+                } but provided is
+            ${templateCreationValue?.pagemode === "Single Page"
+                  ? "more than expected"
+                  : "not sufficient"
+                }  to print documents`}
             </Typography>
           </DialogContent>
           <DialogActions>
@@ -17336,7 +17321,7 @@ function DocumentPreparation() {
               autoFocus
               variant="contained"
               color="primary"
-              // onClick={(e) => downloadPdfTesdt(e)}
+            // onClick={(e) => downloadPdfTesdt(e)}
             >
               {" "}
               Download
@@ -17412,7 +17397,7 @@ function DocumentPreparation() {
                 ""
               )}
               {documentPreparationEdit.department ===
-              "Please Select Department" ? (
+                "Please Select Department" ? (
                 <>
                   {" "}
                   <Grid item md={4} xs={12} sm={12}>
@@ -17461,7 +17446,7 @@ function DocumentPreparation() {
                 </Grid>
               )}
               {documentPreparationEdit.issuingauthority ===
-              "Please Select Issuing Authority" ? (
+                "Please Select Issuing Authority" ? (
                 ""
               ) : (
                 <Grid item md={4} xs={12} sm={12}>
@@ -17751,10 +17736,10 @@ function DocumentPreparation() {
                           prevArray.map((item, ind) =>
                             ind === indexViewQuest - 1
                               ? {
-                                  ...item,
-                                  header: "",
-                                  footer: "",
-                                }
+                                ...item,
+                                header: "",
+                                footer: "",
+                              }
                               : item
                           )
                         );

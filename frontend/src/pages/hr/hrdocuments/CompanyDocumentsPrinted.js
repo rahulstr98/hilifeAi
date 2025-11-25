@@ -198,7 +198,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     "Printed Count",
     "Issued Person Details",
     "Issuing Authority",
-        "Header",
+    "Header",
     "Footer",
   ];
   let exportRowValues = [
@@ -213,7 +213,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     "printedcount",
     "issuedpersondetails",
     "issuingauthority",
-        "header",
+    "header",
     "footer",
   ];
 
@@ -433,7 +433,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     issuedpersondetails: true,
     issuingauthority: true,
     actions: true,
-        header: true,
+    header: true,
     footer: true,
   };
   const [columnVisibility, setColumnVisibility] = useState(
@@ -587,12 +587,10 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
       return null;
     }
   }
-  const TemplateDropdownsValueManual = async (rowData,
-    headerfooter
-  ) => {
+  const TemplateDropdownsValueManual = async (rowData, headerfooter) => {
     setPageName(!pageName);
     try {
-       const inside = rowData?.template?.match(/\((.*?)\)/)?.[1];
+      const inside = rowData?.template?.match(/\((.*?)\)/)?.[1];
       const [companyValue, branchValue] = inside.split("--");
 
       console.log(companyValue); // "TTS"
@@ -614,28 +612,36 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
 
         const templateHeaderFooter = headerfooter;
 
-      const headerOption =  templateHeaderFooter?.header ? ans?.letterheadcontentheader?.find(
-        (data) => data?.headername === templateHeaderFooter?.header
-      ) : ans?.letterheadcontentheader?.find(data => data?.default === "default");
-      const footerOption =  templateHeaderFooter?.footer ? ans?.letterheadcontentfooter?.find(
-        (data) => data?.footername === templateHeaderFooter?.footer
-      ): ans?.letterheadcontentfooter?.find(data => data?.default === "default");
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-     const backGroundCondition = ans?.letterheadbodycontent?.find(
-                    (data) => data?.default === "default"
-                  );
-                  const backgroundimage = await convertFileUrlToBase64(
-                    `${BASE_URL}/templatecontrolpanel/${
-                      backGroundCondition
-                        ? backGroundCondition?.backgroundimage?.name
-                        : ans?.letterheadbodycontent[0]?.backgroundimage?.name
-                    }`
-                  );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
@@ -750,7 +756,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
 
           // Add custom styles to the PDF content
           const styleElement = document.createElement("style");
-    styleElement.textContent = `
+          styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -1075,7 +1081,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
       pdfElement.innerHTML = response.data.sdocumentPreparation.document;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-    styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -1374,7 +1380,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
       pdfElement.innerHTML = response.data.sdocumentPreparation.document;
       // Add custom styles to the PDF content
       const styleElement = document.createElement("style");
-    styleElement.textContent = `
+      styleElement.textContent = `
                 .ql-indent-1 { margin-left: 75px; }
                 .ql-indent-2 { margin-left: 150px; }
                 .ql-indent-3 { margin-left: 225px; }
@@ -2003,15 +2009,14 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     { value: "With Footer content", label: "With Footer content" },
   ];
   const [isOpenLetterHeadPopup, setIsLetterHeadPopup] = useState(false);
-  const [headerOptions, setHeaderOptions] = useState(
-    "Please Select Print Options"
-  );
+  const [headerOptions, setHeaderOptions] = useState("With Letter Head");
   const [pagePopeOpen, setPagePopUpOpen] = useState("");
   const [DataTableId, setDataTableId] = useState("");
   const [selectedHeadOpt, setSelectedHeadOpt] = useState([]);
   const [headvalue, setHeadValue] = useState([]);
   const [emailValuePage, setEmailValuePage] = useState({});
-  const handleHeadChange = (options) => {
+  const handleHeadChange = (options, personId) => {
+    console.log(personId, "personId");
     let value = options.map((a) => {
       return a.value;
     });
@@ -2040,15 +2045,16 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
       : "Please Select Letter Head";
   };
 
-  const handleClickOpenLetterHeader = (page) => {
+  const handleClickOpenLetterHeader = (page, personId) => {
     setPagePopUpOpen(page);
     setIsLetterHeadPopup(true);
     handleCloseBulkModcheckbox();
+    handleHeadChange(WithHeaderOptions, personId);
   };
 
   const handleClickCloseLetterHead = () => {
     setIsLetterHeadPopup(false);
-    setHeaderOptions("Please Select Print Options");
+    setHeaderOptions("With Letter Head");
     setHeadValue([]);
     setPagePopUpOpen("");
     setSelectedHeadOpt([]);
@@ -2059,7 +2065,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
     console.log(e, "e");
     const NewDatetime = await getCurrentServerTime();
     try {
-       const inside = e?.template?.match(/\((.*?)\)/)?.[1];
+      const inside = e?.template?.match(/\((.*?)\)/)?.[1];
       const [companyValue, branchValue] = inside.split("--");
 
       console.log(companyValue); // "TTS"
@@ -2085,34 +2091,43 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
 
         const templateHeaderFooter = res?.data?.headerfooter;
         console.log(templateHeaderFooter, "templateHeaderFooter");
-        const headerOption =  templateHeaderFooter?.header ? ans?.letterheadcontentheader?.find(
-        (data) => data?.headername === templateHeaderFooter?.header
-      ) : ans?.letterheadcontentheader?.find(data => data?.default === "default");
-      const footerOption =  templateHeaderFooter?.footer ? ans?.letterheadcontentfooter?.find(
-        (data) => data?.footername === templateHeaderFooter?.footer
-      ): ans?.letterheadcontentfooter?.find(data => data?.default === "default");
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
         const header = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
         );
         const footer = await convertFileUrlToBase64(
           `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
         );
-  const backGroundCondition = ans?.letterheadbodycontent?.find(
-                 (data) => data?.default === "default"
-               );
-               const backgroundimage = await convertFileUrlToBase64(
-                 `${BASE_URL}/templatecontrolpanel/${
-                   backGroundCondition
-                     ? backGroundCondition?.backgroundimage?.name
-                     : ans?.letterheadbodycontent[0]?.backgroundimage?.name
-                 }`
-               );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
         const headerFooterBase64 = {
           ...ans,
           headerimage: header,
           footerimage: footer,
           backgroundimage: backgroundimage,
         };
+        console.log(headerFooterBase64, "headerFooterBase64");
         setPersonId(headerFooterBase64);
         const qrInfoDetails =
           headerFooterBase64?.qrInfo?.length > 0
@@ -2130,7 +2145,9 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
                 .replaceAll("$DOJ$", "")}`
           )
         );
-        handleClickOpenLetterHeader(pagename);
+        queueMicrotask(() => {
+          handleClickOpenLetterHeader(pagename, headerFooterBase64);
+        });
         setDataTableId(e?.id);
       }
     } catch (err) {
@@ -2295,7 +2312,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
       hide: !columnVisibility.issuingauthority,
       headerClassName: "bold-header",
     },
-        {
+    {
       field: "header",
       headerName: "Header",
       flex: 0,
@@ -2989,7 +3006,7 @@ function CompanyDocumentPreparationPrinted({ data, setData }) {
               loading={bulkPrintStatus}
               autoFocus
               variant="contained"
-              onClick={(e) => handleClickOpenLetterHeader("Bulk Print")}
+              onClick={(e) => handleClickOpenLetterHeader("Bulk Print", personId)}
             >
               {" "}
               OK{" "}

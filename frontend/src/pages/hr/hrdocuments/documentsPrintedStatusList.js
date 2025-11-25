@@ -1388,7 +1388,7 @@ function DocumentsPrintedStatusList() {
   const [PageMailOpen, setPageMailOpen] = useState(false);
   const [PageUpdateOpen, setPageUpdateOpen] = useState(false);
   const [headerOptions, setHeaderOptions] = useState(
-    "Please Select Print Options"
+    "With Letter Head"
   );
   const [pagePopeOpen, setPagePopUpOpen] = useState("");
   const [DataTableId, setDataTableId] = useState("");
@@ -1399,7 +1399,7 @@ function DocumentsPrintedStatusList() {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
   };
-  const handleHeadChange = (options) => {
+  const handleHeadChange = (options, personId) => {
     let value = options.map((a) => {
       return a.value;
     });
@@ -1428,14 +1428,15 @@ function DocumentsPrintedStatusList() {
       ? valueCate.map(({ label }) => label).join(", ")
       : "Please Select Letter Head";
   };
-  const handleClickOpenLetterHeader = (page) => {
+  const handleClickOpenLetterHeader = (page , personId) => {
     setPagePopUpOpen(page);
     setIsLetterHeadPopup(true);
+    handleHeadChange(WithHeaderOptions , personId);
   };
 
   const handleClickCloseLetterHead = () => {
     setIsLetterHeadPopup(false);
-    setHeaderOptions("Please Select Print Options");
+    setHeaderOptions("With Letter Head");
     setHeadValue([]);
     setPagePopUpOpen("");
     setHeader("");
@@ -1542,7 +1543,7 @@ function DocumentsPrintedStatusList() {
         };
 
         setPersonId(headerFooterBase64);
-        handleClickOpenLetterHeader(pagename);
+        handleClickOpenLetterHeader(pagename , headerFooterBase64);
         setDataTableId(e);
       }
     } catch (err) {
@@ -1608,7 +1609,7 @@ function DocumentsPrintedStatusList() {
       handleClickOpenMailOpen();
       // await fetchEmailForUser(id, convert, fromemail, ccemail, bccemail, email, pagename)
     } else {
-      handleClickOpenLetterHeader("Email");
+      handleClickOpenLetterHeader("Email" ,personId);
       setEmailValuePage({
         id,
         convert,
@@ -2018,14 +2019,16 @@ function DocumentsPrintedStatusList() {
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(
+              { 
+                (response?.data?.sdocumentPreparation?.signature !== "Please Select Signature" && !response?.data?.sdocumentPreparation?.signature) &&
+                 doc.addImage(
                   response?.data?.sdocumentPreparation.signature,
                   "PNG",
                   leftX,
                   yPos,
                   sigWidth,
                   sigHeight
-                );
+                );}
 
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
@@ -2046,7 +2049,7 @@ function DocumentsPrintedStatusList() {
 
               // --- Center: Seal (align with same yPos) ---
               const centerX = pageWidth / 2 - sealWidth / 2;
-              if (response?.data?.sdocumentPreparation?.seal) {
+              if (response?.data?.sdocumentPreparation?.seal && response?.data?.sdocumentPreparation?.seal !== "Please Select Seal") {
                 doc.addImage(
                   response?.data?.sdocumentPreparation.seal,
                   "PNG",
@@ -2598,14 +2601,16 @@ function DocumentsPrintedStatusList() {
                   doc.setTextColor(0, 0, 0);
                 }
 
-                doc.addImage(
+              { 
+                (response?.data?.sdocumentPreparation?.signature !== "Please Select Signature" && !response?.data?.sdocumentPreparation?.signature) &&
+                 doc.addImage(
                   response?.data?.sdocumentPreparation.signature,
                   "PNG",
                   leftX,
                   yPos,
                   sigWidth,
                   sigHeight
-                );
+                );}
 
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
@@ -2626,7 +2631,8 @@ function DocumentsPrintedStatusList() {
 
               // --- Center: Seal (align with same yPos) ---
               const centerX = pageWidth / 2 - sealWidth / 2;
-              if (response?.data?.sdocumentPreparation?.seal) {
+                          if (response?.data?.sdocumentPreparation?.seal && response?.data?.sdocumentPreparation?.seal !== "Please Select Seal") {
+
                 doc.addImage(
                   response?.data?.sdocumentPreparation.seal,
                   "PNG",
@@ -3210,14 +3216,16 @@ function DocumentsPrintedStatusList() {
                 doc.setTextColor(0, 0, 0);
               }
 
-              doc.addImage(
-                response?.data?.sdocumentPreparation.signature,
-                "PNG",
-                leftX,
-                yPos,
-                sigWidth,
-                sigHeight
-              );
+              { 
+                (response?.data?.sdocumentPreparation?.signature !== "Please Select Signature" && !response?.data?.sdocumentPreparation?.signature) &&
+                 doc.addImage(
+                  response?.data?.sdocumentPreparation.signature,
+                  "PNG",
+                  leftX,
+                  yPos,
+                  sigWidth,
+                  sigHeight
+                );}
 
               if (
                 response?.data?.sdocumentPreparation?.signaturetype ===
@@ -3238,7 +3246,8 @@ function DocumentsPrintedStatusList() {
 
             // --- Center: Seal (align with same yPos) ---
             const centerX = pageWidth / 2 - sealWidth / 2;
-            if (response?.data?.sdocumentPreparation?.seal) {
+                          if (response?.data?.sdocumentPreparation?.seal && response?.data?.sdocumentPreparation?.seal !== "Please Select Seal") {
+
               doc.addImage(
                 response?.data?.sdocumentPreparation.seal,
                 "PNG",

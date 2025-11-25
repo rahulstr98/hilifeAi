@@ -104,6 +104,8 @@ const keywordData = [
   { id: 68, keyword: "$EMPLOYEE_PHOTO_RIGHT$", instruction: "It denotes the selected user image for Employee Document in the Right End." },
   { id: 69, keyword: "$EMPLOYEE_PHOTO_LEFT$", instruction: "It denotes the selected user image for Employee Document in the LEft End." },
   { id: 70, keyword: "$EMPLOYEE_PHOTO_CENTER$", instruction: "It denotes the selected user image for Employee Document in the Center." },
+  { id: 71, keyword: "$COMPANYFULLNAME$", instruction: "It denotes the Company full Name in Employee Document." },
+  { id: 72, keyword: "$COMPANYSHORTNAME$", instruction: "It denotes the Company short Name in Employee Document." },
 ];
 
 

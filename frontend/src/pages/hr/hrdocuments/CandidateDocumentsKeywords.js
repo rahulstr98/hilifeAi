@@ -65,6 +65,8 @@ function CandidateDocumentsKeywords() {
     { id: 30, keyword: "$V.BRANCHADDRESS$", instruction: "It denotes the Branch's Address that aligned vertical." },
     { id: 31, keyword: "$H.BRANCHADDRESS$", instruction: "It denotes the Branch's Address that aligned horizontal." },
     { id: 32, keyword: "$PAGE_BREAK$", instruction: "It makes content to the next page for Candidate Document." },
+          { id: 33, keyword: "$COMPANYFULLNAME$", instruction: "It denotes the Company full Name in Candidate Document." },
+  { id: 34, keyword: "$COMPANYSHORTNAME$", instruction: "It denotes the Company short Name in Candidate Document." },
   ];
 
 

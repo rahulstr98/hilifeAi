@@ -227,10 +227,10 @@ function CompanyDocuments() {
   ];
   const [isOpenLetterHeadPopup, setIsLetterHeadPopup] = useState(false);
   const [headerOptions, setHeaderOptions] = useState(
-    "Please Select Print Options"
+    "With Letter Head"
   );
   const [pagePopeOpen, setPagePopUpOpen] = useState("");
-  const handleHeadChange = (options) => {
+  const handleHeadChange = (options , personId) => {
     console.log(personId, "personId");
     let value = options.map((a) => {
       return a.value;
@@ -278,15 +278,16 @@ function CompanyDocuments() {
       : "Please Select Letter Head";
   };
 
-  const handleClickOpenLetterHeader = (page) => {
+  const handleClickOpenLetterHeader = (page , personId) => {
     setPagePopUpOpen(page);
     setIsLetterHeadPopup(true);
     handleCloseBulkModcheckbox();
+    handleHeadChange(WithHeaderOptions , personId);
   };
 
   const handleClickCloseLetterHead = () => {
     setIsLetterHeadPopup(false);
-    setHeaderOptions("Please Select Print Options");
+    setHeaderOptions("With Letter Head");
     setHeadValue([]);
     setPagePopUpOpen("");
     setSelectedHeadOpt([]);
@@ -1414,6 +1415,10 @@ function CompanyDocuments() {
         : "";
       const companyTitleName =
         companynameSettings?.data?.overallsettings?.companyname;
+              const companyFullName =
+        companynameSettings?.data?.overallsettings?.companyfullname;
+      const companyShortName =
+        companynameSettings?.data?.overallsettings?.companyshortname;
       let convert = format?.pageformat;
       const tempElement = document?.createElement("div");
       tempElement.innerHTML = convert;
@@ -1502,6 +1507,14 @@ function CompanyDocuments() {
           toCompanyAddress ? documentPrepartion?.branch : ""
         )
         .replaceAll("$COMPANYTITLE$", companyTitleName ? companyTitleName : "")
+         .replaceAll(
+            "$COMPANYFULLNAME$",
+            companyFullName ? companyFullName : ""
+          )
+          .replaceAll(
+            "$COMPANYSHORTNAME$",
+            companyShortName ? companyShortName : ""
+          )
         .replaceAll(
           "$H.BRANCHADDRESS$",
           branchAddressTextHorizontal ? branchAddressTextHorizontal : ""
@@ -4830,7 +4843,7 @@ function CompanyDocuments() {
         };
 
         setPersonId(headerFooterBase64);
-        handleClickOpenLetterHeader(pagename);
+        handleClickOpenLetterHeader(pagename  , headerFooterBase64);
         setDataTableId(e?.id);
         const qrInfoDetails =
           headerFooterBase64?.qrInfo?.length > 0
@@ -5608,7 +5621,7 @@ function CompanyDocuments() {
                       color="primary"
                       sx={userStyle.buttonadd}
                       // onClick={handlePreviewDocumentManual}
-                      onClick={() => handleClickOpenLetterHeader("Preview")}
+                      onClick={() => handleClickOpenLetterHeader("Preview" , personId)}
                     >
                       Preview
                     </LoadingButton>
@@ -5626,7 +5639,7 @@ function CompanyDocuments() {
                       sx={userStyle.buttonadd}
                       // onClick={getDownloadFile}
                       // onClick={handlePrintDocumentManual}
-                      onClick={() => handleClickOpenLetterHeader("Print")}
+                      onClick={() => handleClickOpenLetterHeader("Print", personId)}
                     >
                       Print
                     </LoadingButton>
@@ -6225,7 +6238,7 @@ function CompanyDocuments() {
               loading={bulkPrintStatus}
               autoFocus
               variant="contained"
-              onClick={(e) => handleClickOpenLetterHeader("Bulk Print")}
+              onClick={(e) => handleClickOpenLetterHeader("Bulk Print" ,personId)}
             >
               {" "}
               OK{" "}

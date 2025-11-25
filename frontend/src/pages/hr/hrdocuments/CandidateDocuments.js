@@ -503,7 +503,7 @@ function CandidateDocuments() {
   ];
   const [isOpenLetterHeadPopup, setIsLetterHeadPopup] = useState(false);
   const [headerOptions, setHeaderOptions] = useState(
-    "Please Select Print Options"
+    "With Letter Head"
   );
   const [headvalueAdd, setHeadValueAdd] = useState([]);
   const [DataTableId, setDataTableId] = useState("");
@@ -683,15 +683,16 @@ function CandidateDocuments() {
       );
     }
   };
-  const handleClickOpenLetterHeader = (page) => {
+  const handleClickOpenLetterHeader = (page , personId) => {
     setPagePopUpOpen(page);
     setIsLetterHeadPopup(true);
     handleCloseBulkModcheckbox();
+    handleHeadChange(WithHeaderOptions, personId);
   };
 
   const handleClickCloseLetterHead = () => {
     setIsLetterHeadPopup(false);
-    setHeaderOptions("Please Select Print Options");
+    setHeaderOptions("With Letter Head");
     setHeadValue([]);
     setPagePopUpOpen("");
     // setHeader("");
@@ -967,10 +968,7 @@ function CandidateDocuments() {
     // }
   };
 
-  const TemplateDropdownsValueManual = async (
- rowData,
-    headerfooter
-  ) => {
+  const TemplateDropdownsValueManual = async (rowData, headerfooter) => {
     setPageName(!pageName);
     try {
       const inside = rowData?.template?.match(/\((.*?)\)/)?.[1];
@@ -1519,8 +1517,48 @@ function CandidateDocuments() {
     let fromemail = tempcontpanel?.data?.result[0]?.fromemail;
     let ccemail = tempcontpanel?.data?.result[0]?.ccemail;
     let bccemail = tempcontpanel?.data?.result[0]?.bccemail;
-    setPersonId(tempcontpanel?.data?.result[0]);
-    handleClickOpenLetterHeader("Email");
+
+let ans = tempcontpanel?.data?.result[0];
+     const templateHeaderFooter = userdetails;
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
+
+        const header = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
+        );
+        const footer = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
+        );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
+        const headerFooterBase64 = {
+          ...ans,
+          headerimage: header,
+          footerimage: footer,
+          backgroundimage: backgroundimage,
+        };
+    setPersonId(headerFooterBase64);
+    handleClickOpenLetterHeader("Email" , headerFooterBase64);
     setEmailValuePage({ id, convert, fromemail, ccemail, bccemail });
     // await fetchEmailForUser(id, convert, fromemail, ccemail, bccemail)
   };
@@ -4237,6 +4275,11 @@ function CandidateDocuments() {
       //   setEmailUser(employee?.email)
       const companyTitleName =
         companynameSettings?.data?.overallsettings?.companyname;
+      const companyFullName =
+        companynameSettings?.data?.overallsettings?.companyfullname;
+      const companyShortName =
+        companynameSettings?.data?.overallsettings?.companyshortname;
+
       const branchAddress = isAssignBranch?.find(
         (data) => data?.branch === person?.branch
       );
@@ -4372,6 +4415,11 @@ function CandidateDocuments() {
         )
         .replaceAll("$C:ADDRESS$", caddress)
         .replaceAll("$COMPANYTITLE$", companyTitleName ? companyTitleName : "")
+        .replaceAll("$COMPANYFULLNAME$", companyFullName ? companyFullName : "")
+        .replaceAll(
+          "$COMPANYSHORTNAME$",
+          companyShortName ? companyShortName : ""
+        )
         .replaceAll(
           "$H.BRANCHADDRESS$",
           branchAddressTextHorizontal ? branchAddressTextHorizontal : ""
@@ -5383,7 +5431,7 @@ function CandidateDocuments() {
         };
 
         setPersonId(headerFooterBase64);
-        handleClickOpenLetterHeader(pagename);
+        handleClickOpenLetterHeader(pagename , headerFooterBase64);
         setDataTableId(e?.id);
         const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : [];
         setQrCodeInfoDetails(
@@ -5987,8 +6035,7 @@ function CandidateDocuments() {
                         setSignature("");
                         setChecking("");
                         setTemplateCreationValue(e);
-                        TemplateDropdownsValue(e
-                        );
+                        TemplateDropdownsValue(e);
                         setSignatureStatus("");
                         setSealStatus("");
                         setCheckingArray([]);
@@ -6417,7 +6464,7 @@ function CandidateDocuments() {
                         documentPrepartion?.documentneed ===
                         "Candidate Approval"
                           ? handlePreviewDocument(indexViewQuest - 1)
-                          : handleClickOpenLetterHeader("Preview")
+                          : handleClickOpenLetterHeader("Preview" , personId)
                       }
                     >
                       Preview
@@ -6439,7 +6486,7 @@ function CandidateDocuments() {
                         documentPrepartion?.documentneed ===
                         "Candidate Approval"
                           ? handlePrintDocument(indexViewQuest - 1)
-                          : handleClickOpenLetterHeader("Print")
+                          : handleClickOpenLetterHeader("Print", personId)
                       }
                     >
                       Print
@@ -6901,7 +6948,7 @@ function CandidateDocuments() {
               loading={bulkPrintStatus}
               autoFocus
               variant="contained"
-              onClick={(e) => handleClickOpenLetterHeader("Bulk Print")}
+              onClick={(e) => handleClickOpenLetterHeader("Bulk Print", personId)}
             >
               {" "}
               OK{" "}

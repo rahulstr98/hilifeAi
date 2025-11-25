@@ -115,6 +115,21 @@ function TempControlPanel() {
     fetchTime();
   }, []);
 
+  const base64ToFile = (base64String, filename) => {
+    const arr = base64String.split(',');
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : '';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, { type: mime });
+  };
+
   const {
     isUserRoleCompare,
     isUserRoleAccess,
@@ -276,32 +291,31 @@ function TempControlPanel() {
       } else if (page === "createtodo") {
         if (userESignature) {
           const fileType = getFileTypeFromBase64(userESignature); // returns "png", "jpeg", etc.
-          todoscheckSignature[index].document = 
-            {
-              name: `${employeename}.${fileType}`,
-              preview: userESignature,
-            };
+          todoscheckSignature[index].document = {
+            name: `${employeename}.${fileType}`,
+            file: base64ToFile(userESignature, `${employeename}.${fileType}`),
+          };
         }
       } else if (page === "edit") {
         if (userESignature) {
-          setdocumentFilesSignatureEdit([
-            {
-              name: `${employeename}.${getFileTypeFromBase64(userESignature)}`,
-              preview: userESignature,
-            },
-          ]);
+          setdocumentFilesSignatureEdit({
+            name: `${employeename}.${getFileTypeFromBase64(userESignature)}`,
+            file: base64ToFile(
+              userESignature,
+              `${employeename}.${getFileTypeFromBase64(userESignature)}`
+            ),
+          });
         } else {
-          setdocumentFilesSignatureEdit([]);
+          setdocumentFilesSignatureEdit({});
         }
       } else if (page === "edittodo") {
+        console.log(userESignature, "userESignature");
         if (userESignature) {
           const fileType = getFileTypeFromBase64(userESignature); // returns "png", "jpeg", etc.
-          todoscheckSignatureEdit[index].document = [
-            {
-              name: `${employeename}.${fileType}`,
-              preview: userESignature,
-            },
-          ];
+          todoscheckSignatureEdit[index].document = {
+            name: `${employeename}.${fileType}`,
+            file: base64ToFile(userESignature, `${employeename}.${fileType}`),
+          };
         }
       }
     } catch (err) {
@@ -2081,7 +2095,7 @@ function TempControlPanel() {
     setEmployeeEditTodo(todoscheckSignatureEdit[index]?.employee);
   };
 
-  const handleUpdateTodocheck = () => {
+  const handleUpdateTodocheck = async () => {
     const isSignatDup = todoscheckSignatureEdit
       ?.filter((data, index) => index !== editingIndexcheck)
       .some(
@@ -2094,12 +2108,12 @@ function TempControlPanel() {
           item.signaturename?.toLowerCase() ==
             signaturenameEditTodo?.toLowerCase()
       );
-    fetchEmployeeSignatureDefault(
+    await fetchEmployeeSignatureDefault(
       employeeEditTodo,
       "edittodo",
       editingIndexcheck
     );
-// console.log(todoscheckSignatureEdit , "todoscheckSignatureEdit")
+    // console.log(todoscheckSignatureEdit , "todoscheckSignatureEdit")
     if (!allBranchEditTodo && unitEditTodo === "Please Select Unit") {
       setPopupContentMalert("Please Select Unit");
       setPopupSeverityMalert("warning");
@@ -2147,8 +2161,13 @@ function TempControlPanel() {
         topcontent: topContentEditTodo,
         bottomcontent: bottomContentEditTodo,
         allBranch: allBranchEditTodo,
-        document:newTodoscheck[editingIndexcheck]?.document[0]
+        document: todoscheckSignatureEdit[editingIndexcheck]?.document,
       };
+      console.log(
+        todoscheckSignatureEdit,
+        newTodoscheck,
+        todoscheckSignatureEdit[editingIndexcheck]?.document
+      );
 
       setTodoscheckSignatureEdit(newTodoscheck);
 
@@ -5194,6 +5213,7 @@ function TempControlPanel() {
   };
 
   const renderFilePreview = async (file) => {
+    console.log(file, "file");
     if (!file) return;
     if (file?.file) {
       const url = URL.createObjectURL(file?.file);
@@ -5688,6 +5708,18 @@ function TempControlPanel() {
                                     alignItems: "center",
                                   }}
                                 >
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentContentHeader(
+                                        file?.headerimage
+                                      )
+                                    }
+                                  />
                                   {/* ✏️ Edit Button */}
                                   <Button
                                     sx={{
@@ -6014,6 +6046,18 @@ function TempControlPanel() {
                                     alignItems: "center",
                                   }}
                                 >
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentContentHeader(
+                                        file?.footerimage
+                                      )
+                                    }
+                                  />
                                   {/* ✏️ Edit Button */}
                                   <Button
                                     sx={{
@@ -6343,6 +6387,18 @@ function TempControlPanel() {
                                     alignItems: "center",
                                   }}
                                 >
+                                  <VisibilityOutlinedIcon
+                                    style={{
+                                      fontsize: "large",
+                                      color: "#357AE8",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      renderFilePreviewDocumentContentHeader(
+                                        file?.backgroundimage
+                                      )
+                                    }
+                                  />
                                   {/* ✏️ Edit Button */}
                                   <Button
                                     sx={{
@@ -9955,6 +10011,18 @@ function TempControlPanel() {
                                       alignItems: "center",
                                     }}
                                   >
+                                    <VisibilityOutlinedIcon
+                                      style={{
+                                        fontsize: "large",
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                        renderFilePreviewDocumentContentHeader(
+                                          file?.headerimage
+                                        )
+                                      }
+                                    />
                                     {/* ✏️ Edit Button */}
                                     <Button
                                       sx={{
@@ -9997,7 +10065,7 @@ function TempControlPanel() {
                     <Grid item md={4} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Edit
+                          <b>Footer Name</b>
                           <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <OutlinedInput
@@ -10287,6 +10355,18 @@ function TempControlPanel() {
                                       alignItems: "center",
                                     }}
                                   >
+                                    <VisibilityOutlinedIcon
+                                      style={{
+                                        fontsize: "large",
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                        renderFilePreviewDocumentContentHeader(
+                                          file?.footerimage
+                                        )
+                                      }
+                                    />
                                     {/* ✏️ Edit Button */}
                                     <Button
                                       sx={{
@@ -10621,6 +10701,18 @@ function TempControlPanel() {
                                       alignItems: "center",
                                     }}
                                   >
+                                    <VisibilityOutlinedIcon
+                                      style={{
+                                        fontsize: "large",
+                                        color: "#357AE8",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                        renderFilePreviewDocumentContentHeader(
+                                          file?.backgroundimage
+                                        )
+                                      }
+                                    />
                                     {/* ✏️ Edit Button */}
                                     <Button
                                       sx={{

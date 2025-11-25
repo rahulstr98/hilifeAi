@@ -307,7 +307,7 @@ const ReactNewtextEditor = ({
   const [dragOver, setDragOver] = useState(false);
   const [imageItem, setImageItem] = useState(null);
   const fileInputRef = useRef(null);
-  console.log(agenda, "agenda");
+  // console.log(agenda, "agenda");
   const [editorFocused, setEditorFocused] = useState(false);
   const jsPDFPageDimensions = {
     A2: [420, 594],

@@ -160,6 +160,7 @@ function Noticeperiodactionemployeelist() {
   const [clientId, setClientId] = useState([]);
   const [employeesList, setEmployeesList] = useState([]);
   const [replaceName, setReplaceName] = useState('Please Choose Replace name');
+  const [sameDesignation, setSameDesignation] = useState(false);
 
   const { isUserRoleAccess, isUserRoleCompare, alldesignation, allUsersData, pageName, setPageName, allTeam, buttonStyles, isAssignBranch } = useContext(UserRoleAccessContext);
 
@@ -1643,7 +1644,8 @@ function Noticeperiodactionemployeelist() {
           setPopupContentMalert('Please Select Date');
           setPopupSeverityMalert('info');
           handleClickOpenPopupMalert();
-        } else if (hierarchyConditions?.hierarchySupempSame?.length > 0) {
+        }
+        else if (hierarchyConditions?.hierarchySupempSame?.length > 0) {
           setLoading(false);
           setPopupContentMalert(`The EmployeeName in the hierarchy data is the same as the ReplaceName.`);
           setPopupSeverityMalert('info');
@@ -1663,7 +1665,8 @@ function Noticeperiodactionemployeelist() {
           setPopupContentMalert(`The supervisor name can't be replaced, as it already matches the data in the hierarchy.`);
           setPopupSeverityMalert('info');
           handleClickOpenPopupMalert();
-        } else if (!reason?.date) {
+        }
+         else if (!reason?.date) {
           setLoading(false);
           setPopupContentMalert('Please Select Date!');
           setPopupSeverityMalert('info');
@@ -2082,11 +2085,12 @@ function Noticeperiodactionemployeelist() {
       setReason({ date: '', reasonname: '' });
       setLastworkday({});
       handleCloseviewReleave();
-      await hierarchyCheckDelete(empaddform.companyname, statusemployee);
+      // await hierarchyCheckDelete(empaddform.companyname, statusemployee);
+      await handleCheckInHierarchy(replaceName , empaddform.companyname, statusemployee)
       await handleActionSubmit();
       setIsCheckedListOverall(false);
       setLoading(false);
-      setReplaceName('Please Choose Replace Name');
+      
       await fetchHandler();
       setValueCompanyCatNew([]);
       setSelectedOptionsCompanyNew([]);
@@ -2103,6 +2107,7 @@ function Noticeperiodactionemployeelist() {
         unit: '',
         team: '',
       }));
+      setReplaceName('Please Choose Replace Name');
     } catch (err) {
       console.log(err);
       setLoading(false);
@@ -2240,279 +2245,279 @@ function Noticeperiodactionemployeelist() {
             Authorization: `Bearer ${auth.APIToken}`,
           },
         }),
-        axios.post(SERVICE.MODULEMYCHECKLIST, {
-          headers: {
-            Authorization: `Bearer ${auth.APIToken}`,
-          },
-          commonid: details?.id,
-          module: 'Human Resources',
-          submodule: 'HR',
-          mainpage: ['Employee'],
-          subpage: 'Employee Action Details',
-          subsubpage: 'Action Employee List',
-        }),
-        axios.post(SERVICE.CHECKUSERPRESENTINLDAP, {
-          username: details?.username,
-        }),
+        // axios.post(SERVICE.MODULEMYCHECKLIST, {
+        //   headers: {
+        //     Authorization: `Bearer ${auth.APIToken}`,
+        //   },
+        //   commonid: details?.id,
+        //   module: 'Human Resources',
+        //   submodule: 'HR',
+        //   mainpage: ['Employee'],
+        //   subpage: 'Employee Action Details',
+        //   subsubpage: 'Action Employee List',
+        // }),
+        // axios.post(SERVICE.CHECKUSERPRESENTINLDAP, {
+        //   username: details?.username,
+        // }),
       ]);
-      setUserPresentInLDAP(resNew?.data?.status);
-      setDatasAvailedDB(res1?.data?.mychecklist);
+      // setUserPresentInLDAP(resNew?.data?.status);
+      // setDatasAvailedDB(res1?.data?.mychecklist);
       await checkVpnUserDetails(res?.data?.suser?.companyname);
       await checkUserBiometricAvailability(res?.data?.suser);
       await fetchProfileImage(details?.id);
-      let searchItem = res1?.data?.mychecklist.find((item) => item.commonid == details?.id && item.module == 'Human Resources' && item.submodule == 'HR' && item.mainpage == 'Employee' && item.subpage == 'Employee Action Details' && item.subsubpage == 'Action Employee List');
+      // let searchItem = res1?.data?.mychecklist.find((item) => item.commonid == details?.id && item.module == 'Human Resources' && item.submodule == 'HR' && item.mainpage == 'Employee' && item.subpage == 'Employee Action Details' && item.subsubpage == 'Action Employee List');
 
-      if (searchItem) {
-        setDeleteBtnDisable(false);
-        setAssignDetails(searchItem);
+      // if (searchItem) {
+      //   setDeleteBtnDisable(false);
+      //   setAssignDetails(searchItem);
 
-        setPostID(searchItem?.commonid);
-        let datasNew = searchItem.groups.map((item) => {
-          switch (item.details) {
-            case 'LEGALNAME':
-              return {
-                ...item,
-                data: details.companyname,
-              };
-              break;
-            case 'USERNAME':
-              return {
-                ...item,
-                data: details.username,
-              };
-              break;
-            case 'PASSWORD':
-              return {
-                ...item,
-                data: details.originalpassword,
-              };
-              break;
-            case 'DATE OF BIRTH':
-              return {
-                ...item,
-                data: details.dob,
-              };
-              break;
-            case 'EMAIL':
-              return {
-                ...item,
-                data: details.email,
-              };
-              break;
-            case 'PHONE NUMBER':
-              return {
-                ...item,
-                data: details.contactpersonal,
-              };
-              break;
-            case 'FIRST NAME':
-              return {
-                ...item,
-                data: details.firstname,
-              };
-              break;
-            case 'LAST NAME':
-              return {
-                ...item,
-                data: details.lastname,
-              };
-              break;
-            case 'AADHAAR NUMBER':
-              return {
-                ...item,
-                data: details.aadhar,
-              };
-              break;
-            case 'PAN NUMBER':
-              return {
-                ...item,
-                data: details.panno,
-              };
-              break;
-            case 'CURRENT ADDRESS':
-              return {
-                ...item,
-                data: details.currentaddress,
-              };
-              break;
-            default:
-              return {
-                ...item,
-              };
-          }
-        });
-        setGroupDetails(
-          datasNew?.map((data) => ({
-            ...data,
-            lastcheck: false,
-          }))
-        );
+      //   setPostID(searchItem?.commonid);
+      //   let datasNew = searchItem.groups.map((item) => {
+      //     switch (item.details) {
+      //       case 'LEGALNAME':
+      //         return {
+      //           ...item,
+      //           data: details.companyname,
+      //         };
+      //         break;
+      //       case 'USERNAME':
+      //         return {
+      //           ...item,
+      //           data: details.username,
+      //         };
+      //         break;
+      //       case 'PASSWORD':
+      //         return {
+      //           ...item,
+      //           data: details.originalpassword,
+      //         };
+      //         break;
+      //       case 'DATE OF BIRTH':
+      //         return {
+      //           ...item,
+      //           data: details.dob,
+      //         };
+      //         break;
+      //       case 'EMAIL':
+      //         return {
+      //           ...item,
+      //           data: details.email,
+      //         };
+      //         break;
+      //       case 'PHONE NUMBER':
+      //         return {
+      //           ...item,
+      //           data: details.contactpersonal,
+      //         };
+      //         break;
+      //       case 'FIRST NAME':
+      //         return {
+      //           ...item,
+      //           data: details.firstname,
+      //         };
+      //         break;
+      //       case 'LAST NAME':
+      //         return {
+      //           ...item,
+      //           data: details.lastname,
+      //         };
+      //         break;
+      //       case 'AADHAAR NUMBER':
+      //         return {
+      //           ...item,
+      //           data: details.aadhar,
+      //         };
+      //         break;
+      //       case 'PAN NUMBER':
+      //         return {
+      //           ...item,
+      //           data: details.panno,
+      //         };
+      //         break;
+      //       case 'CURRENT ADDRESS':
+      //         return {
+      //           ...item,
+      //           data: details.currentaddress,
+      //         };
+      //         break;
+      //       default:
+      //         return {
+      //           ...item,
+      //         };
+      //     }
+      //   });
+      //   setGroupDetails(
+      //     datasNew?.map((data) => ({
+      //       ...data,
+      //       lastcheck: false,
+      //     }))
+      //   );
 
-        setIsCheckedList(searchItem?.groups?.map((data) => data.lastcheck));
+      //   setIsCheckedList(searchItem?.groups?.map((data) => data.lastcheck));
 
-        let forFillDetails = datasNew?.map((data) => {
-          if (data.checklist === 'Date Multi Random Time') {
-            if (data?.data && data?.data !== '') {
-              const [date, time] = data?.data?.split(' ');
-              return { date, time };
-            }
-          } else {
-            return { date: '0', time: '0' };
-          }
-        });
+      //   let forFillDetails = datasNew?.map((data) => {
+      //     if (data.checklist === 'Date Multi Random Time') {
+      //       if (data?.data && data?.data !== '') {
+      //         const [date, time] = data?.data?.split(' ');
+      //         return { date, time };
+      //       }
+      //     } else {
+      //       return { date: '0', time: '0' };
+      //     }
+      //   });
 
-        let forDateSpan = datasNew?.map((data) => {
-          if (data.checklist === 'Date Multi Span') {
-            if (data?.data && data?.data !== '') {
-              const [fromdate, todate] = data?.data?.split(' ');
-              return { fromdate, todate };
-            }
-          } else {
-            return { fromdate: '0', todate: '0' };
-          }
-        });
+      //   let forDateSpan = datasNew?.map((data) => {
+      //     if (data.checklist === 'Date Multi Span') {
+      //       if (data?.data && data?.data !== '') {
+      //         const [fromdate, todate] = data?.data?.split(' ');
+      //         return { fromdate, todate };
+      //       }
+      //     } else {
+      //       return { fromdate: '0', todate: '0' };
+      //     }
+      //   });
 
-        let forDateTime = datasNew?.map((data) => {
-          if (data.checklist === 'DateTime') {
-            if (data?.data && data?.data !== '') {
-              const [date, time] = data?.data?.split(' ');
-              return { date, time };
-            }
-          } else {
-            return { date: '0', time: '0' };
-          }
-        });
+      //   let forDateTime = datasNew?.map((data) => {
+      //     if (data.checklist === 'DateTime') {
+      //       if (data?.data && data?.data !== '') {
+      //         const [date, time] = data?.data?.split(' ');
+      //         return { date, time };
+      //       }
+      //     } else {
+      //       return { date: '0', time: '0' };
+      //     }
+      //   });
 
-        let forDateMultiSpanTime = datasNew?.map((data) => {
-          if (data.checklist === 'Date Multi Span Time') {
-            if (data?.data && data?.data !== '') {
-              const [from, to] = data?.data?.split('/');
-              const [fromdate, fromtime] = from?.split(' ');
-              const [todate, totime] = to?.split(' ');
-              return { fromdate, fromtime, todate, totime };
-            }
-          } else {
-            return { fromdate: '0', fromtime: '0', todate: '0', totime: '0' };
-          }
-        });
+      //   let forDateMultiSpanTime = datasNew?.map((data) => {
+      //     if (data.checklist === 'Date Multi Span Time') {
+      //       if (data?.data && data?.data !== '') {
+      //         const [from, to] = data?.data?.split('/');
+      //         const [fromdate, fromtime] = from?.split(' ');
+      //         const [todate, totime] = to?.split(' ');
+      //         return { fromdate, fromtime, todate, totime };
+      //       }
+      //     } else {
+      //       return { fromdate: '0', fromtime: '0', todate: '0', totime: '0' };
+      //     }
+      //   });
 
-        setDateValueMultiFrom(forDateSpan.map((item) => item?.fromdate));
-        setDateValueMultiTo(forDateSpan.map((item) => item?.todate));
+      //   setDateValueMultiFrom(forDateSpan.map((item) => item?.fromdate));
+      //   setDateValueMultiTo(forDateSpan.map((item) => item?.todate));
 
-        setDateValueRandom(forFillDetails.map((item) => item?.date));
-        setTimeValueRandom(forFillDetails.map((item) => item?.time));
+      //   setDateValueRandom(forFillDetails.map((item) => item?.date));
+      //   setTimeValueRandom(forFillDetails.map((item) => item?.time));
 
-        setDateValue(forDateTime.map((item) => item?.date));
-        setTimeValue(forDateTime.map((item) => item?.time));
+      //   setDateValue(forDateTime.map((item) => item?.date));
+      //   setTimeValue(forDateTime.map((item) => item?.time));
 
-        setFirstDateValue(forDateMultiSpanTime.map((item) => item?.fromdate));
-        setFirstTimeValue(forDateMultiSpanTime.map((item) => item?.fromtime));
-        setSecondDateValue(forDateMultiSpanTime.map((item) => item?.todate));
-        setSecondTimeValue(forDateMultiSpanTime.map((item) => item?.totime));
-      } else {
-        setDeleteBtnDisable(true);
-        setAssignDetails(details);
-        setPostID(details?.id);
-        let datasNew = details?.groups?.map((item) => {
-          switch (item.details) {
-            case 'LEGALNAME':
-              return {
-                ...item,
-                data: details.companyname,
-              };
-              break;
-            case 'USERNAME':
-              return {
-                ...item,
-                data: details.username,
-              };
-              break;
-            case 'PASSWORD':
-              return {
-                ...item,
-                data: details.originalpassword,
-              };
-              break;
-            case 'DATE OF BIRTH':
-              return {
-                ...item,
-                data: details.dob,
-              };
-              break;
-            case 'EMAIL':
-              return {
-                ...item,
-                data: details.email,
-              };
-              break;
-            case 'PHONE NUMBER':
-              return {
-                ...item,
-                data: details.contactpersonal,
-              };
-              break;
-            case 'FIRST NAME':
-              return {
-                ...item,
-                data: details.firstname,
-              };
-              break;
-            case 'LAST NAME':
-              return {
-                ...item,
-                data: details.lastname,
-              };
-              break;
-            case 'AADHAAR NUMBER':
-              return {
-                ...item,
-                data: details.aadhar,
-              };
-              break;
-            case 'PAN NUMBER':
-              return {
-                ...item,
-                data: details.panno,
-              };
-              break;
-            case 'CURRENT ADDRESS':
-              return {
-                ...item,
-                data: details.currentaddress,
-              };
-              break;
-            default:
-              return {
-                ...item,
-              };
-          }
-        });
+      //   setFirstDateValue(forDateMultiSpanTime.map((item) => item?.fromdate));
+      //   setFirstTimeValue(forDateMultiSpanTime.map((item) => item?.fromtime));
+      //   setSecondDateValue(forDateMultiSpanTime.map((item) => item?.todate));
+      //   setSecondTimeValue(forDateMultiSpanTime.map((item) => item?.totime));
+      // } else {
+      //   setDeleteBtnDisable(true);
+      //   setAssignDetails(details);
+      //   setPostID(details?.id);
+      //   let datasNew = details?.groups?.map((item) => {
+      //     switch (item.details) {
+      //       case 'LEGALNAME':
+      //         return {
+      //           ...item,
+      //           data: details.companyname,
+      //         };
+      //         break;
+      //       case 'USERNAME':
+      //         return {
+      //           ...item,
+      //           data: details.username,
+      //         };
+      //         break;
+      //       case 'PASSWORD':
+      //         return {
+      //           ...item,
+      //           data: details.originalpassword,
+      //         };
+      //         break;
+      //       case 'DATE OF BIRTH':
+      //         return {
+      //           ...item,
+      //           data: details.dob,
+      //         };
+      //         break;
+      //       case 'EMAIL':
+      //         return {
+      //           ...item,
+      //           data: details.email,
+      //         };
+      //         break;
+      //       case 'PHONE NUMBER':
+      //         return {
+      //           ...item,
+      //           data: details.contactpersonal,
+      //         };
+      //         break;
+      //       case 'FIRST NAME':
+      //         return {
+      //           ...item,
+      //           data: details.firstname,
+      //         };
+      //         break;
+      //       case 'LAST NAME':
+      //         return {
+      //           ...item,
+      //           data: details.lastname,
+      //         };
+      //         break;
+      //       case 'AADHAAR NUMBER':
+      //         return {
+      //           ...item,
+      //           data: details.aadhar,
+      //         };
+      //         break;
+      //       case 'PAN NUMBER':
+      //         return {
+      //           ...item,
+      //           data: details.panno,
+      //         };
+      //         break;
+      //       case 'CURRENT ADDRESS':
+      //         return {
+      //           ...item,
+      //           data: details.currentaddress,
+      //         };
+      //         break;
+      //       default:
+      //         return {
+      //           ...item,
+      //         };
+      //     }
+      //   });
 
-        setGroupDetails(
-          datasNew?.map((data) => ({
-            ...data,
-            lastcheck: false,
-          }))
-        );
+      //   setGroupDetails(
+      //     datasNew?.map((data) => ({
+      //       ...data,
+      //       lastcheck: false,
+      //     }))
+      //   );
 
-        setIsCheckedList(new Array(datasNew?.length).fill(false));
+      //   setIsCheckedList(new Array(datasNew?.length).fill(false));
 
-        setDateValueRandom(new Array(details?.groups?.length).fill(0));
-        setTimeValueRandom(new Array(details?.groups?.length).fill(0));
+      //   setDateValueRandom(new Array(details?.groups?.length).fill(0));
+      //   setTimeValueRandom(new Array(details?.groups?.length).fill(0));
 
-        setDateValueMultiFrom(new Array(details?.groups?.length).fill(0));
-        setDateValueMultiTo(new Array(details?.groups?.length).fill(0));
+      //   setDateValueMultiFrom(new Array(details?.groups?.length).fill(0));
+      //   setDateValueMultiTo(new Array(details?.groups?.length).fill(0));
 
-        setDateValue(new Array(details?.groups?.length).fill(0));
-        setTimeValue(new Array(details?.groups?.length).fill(0));
+      //   setDateValue(new Array(details?.groups?.length).fill(0));
+      //   setTimeValue(new Array(details?.groups?.length).fill(0));
 
-        setFirstDateValue(new Array(details?.groups?.length).fill(0));
-        setFirstTimeValue(new Array(details?.groups?.length).fill(0));
-        setSecondDateValue(new Array(details?.groups?.length).fill(0));
-        setSecondTimeValue(new Array(details?.groups?.length).fill(0));
+      //   setFirstDateValue(new Array(details?.groups?.length).fill(0));
+      //   setFirstTimeValue(new Array(details?.groups?.length).fill(0));
+      //   setSecondDateValue(new Array(details?.groups?.length).fill(0));
+      //   setSecondTimeValue(new Array(details?.groups?.length).fill(0));
 
-        setDisableInput(new Array(details?.groups?.length).fill(true));
-      }
+      //   setDisableInput(new Array(details?.groups?.length).fill(true));
+      // }
 
       let designationGrpName = alldesignation?.find((data) => res?.data?.suser?.designation === data?.name)?.group;
       setisDgroup(designationGrpName);
@@ -2675,99 +2680,99 @@ function Noticeperiodactionemployeelist() {
   };
 
   //while clicking save it happens
-  const hierarchyCheckDelete = async (e, status) => {
-    setPageName(!pageName);
-    try {
-      if (status !== 'Hold') {
-        //Updating The SuperVisor based onn the supervisor array length
-        let DeleteSuperVisor =
-          hierarchyDeleteData.length > 0 &&
-          hierarchyDeleteData.map((data, i) => {
-            const checkSame = data.employeename.includes(replaceName);
-            const checkSamesup = data.supervisorchoose.includes(replaceName);
+  // const hierarchyCheckDelete = async (e, status) => {
+  //   setPageName(!pageName);
+  //   try {
+  //     if (status !== 'Hold') {
+  //       //Updating The SuperVisor based onn the supervisor array length
+  //       let DeleteSuperVisor =
+  //         hierarchyDeleteData.length > 0 &&
+  //         hierarchyDeleteData.map((data, i) => {
+  //           const checkSame = data.employeename.includes(replaceName);
+  //           const checkSamesup = data.supervisorchoose.includes(replaceName);
 
-            //if the supervisor array contains more than one element without the orginal releiveing name
-            if (data.supervisorchoose.length > 1 && !checkSame && !checkSamesup) {
-              const superVisor = data.supervisorchoose;
-              const supervisorCheck = superVisor.filter((item) => item !== e);
+  //           //if the supervisor array contains more than one element without the orginal releiveing name
+  //           if (data.supervisorchoose.length > 1 && !checkSame && !checkSamesup) {
+  //             const superVisor = data.supervisorchoose;
+  //             const supervisorCheck = superVisor.filter((item) => item !== e);
 
-              const ans = [...supervisorCheck, replaceName];
-              const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
-                supervisorchoose: ans,
-              });
-            } else if (data.supervisorchoose.length > 1 && checkSame && !checkSamesup) {
-              const superVisor = data.supervisorchoose;
-              const supervisorCheck = superVisor.filter((item) => item !== e);
+  //             const ans = [...supervisorCheck, replaceName];
+  //             const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
+  //               supervisorchoose: ans,
+  //             });
+  //           } else if (data.supervisorchoose.length > 1 && checkSame && !checkSamesup) {
+  //             const superVisor = data.supervisorchoose;
+  //             const supervisorCheck = superVisor.filter((item) => item !== e);
 
-              const ans = [...supervisorCheck];
-              const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
-                supervisorchoose: ans,
-              });
-            } else if (data.supervisorchoose.length > 1 && !checkSame && checkSamesup) {
-              const superVisor = data.supervisorchoose;
-              const supervisorCheck = superVisor.filter((item) => item !== e);
+  //             const ans = [...supervisorCheck];
+  //             const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
+  //               supervisorchoose: ans,
+  //             });
+  //           } else if (data.supervisorchoose.length > 1 && !checkSame && checkSamesup) {
+  //             const superVisor = data.supervisorchoose;
+  //             const supervisorCheck = superVisor.filter((item) => item !== e);
 
-              const ans = [...supervisorCheck];
-              const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
-                supervisorchoose: ans,
-              });
-            } else if (data.supervisorchoose.length > 1 && checkSame && checkSamesup) {
-              const superVisor = data.supervisorchoose;
-              const supervisorCheck = superVisor.filter((item) => item !== e);
+  //             const ans = [...supervisorCheck];
+  //             const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
+  //               supervisorchoose: ans,
+  //             });
+  //           } else if (data.supervisorchoose.length > 1 && checkSame && checkSamesup) {
+  //             const superVisor = data.supervisorchoose;
+  //             const supervisorCheck = superVisor.filter((item) => item !== e);
 
-              const ans = [...supervisorCheck];
-              const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
-                supervisorchoose: ans,
-              });
-            }
-            //if the supervisor array contains only the orginal releiveing name
-            else if (!checkSame && data.supervisorchoose.length == 1) {
-              const superVisor = data.supervisorchoose;
-              const supervisorCheck = superVisor.filter((item) => item !== e);
-              const ans = [...supervisorCheck];
-              const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
-                supervisorchoose: replaceName,
-              });
-            } else if (checkSame && data.supervisorchoose.length == 1) {
-              let res = axios.delete(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
-                headers: {
-                  Authorization: `Bearer ${auth.APIToken}`,
-                },
-              });
-            }
-          });
+  //             const ans = [...supervisorCheck];
+  //             const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
+  //               supervisorchoose: ans,
+  //             });
+  //           }
+  //           //if the supervisor array contains only the orginal releiveing name
+  //           else if (!checkSame && data.supervisorchoose.length == 1) {
+  //             const superVisor = data.supervisorchoose;
+  //             const supervisorCheck = superVisor.filter((item) => item !== e);
+  //             const ans = [...supervisorCheck];
+  //             const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
+  //               supervisorchoose: replaceName,
+  //             });
+  //           } else if (checkSame && data.supervisorchoose.length == 1) {
+  //             let res = axios.delete(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
+  //               headers: {
+  //                 Authorization: `Bearer ${auth.APIToken}`,
+  //               },
+  //             });
+  //           }
+  //         });
 
-        //Updating The EmployeeName based onn the Employeename array length
-        let DeleteemployeeName =
-          hierarchyDeleteEmployee.length > 0 &&
-          hierarchyDeleteEmployee.map((data) => {
-            //if the employeename array contains more than one element without the orginal releiveing name
-            if (data.employeename.length > 1) {
-              const superVisor = data.employeename;
-              const supervisorCheck = superVisor.filter((item) => item !== e);
-              const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
-                employeename: supervisorCheck,
-              });
-            } else {
-              let res = axios.delete(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
-                headers: {
-                  Authorization: `Bearer ${auth.APIToken}`,
-                },
-              });
-            }
-          });
-        const userUpdateReportingTo = await axios.post(`${SERVICE.USER_REPORTINGTO_CHANGE}`, {
-          headers: {
-            Authorization: `Bearer ${auth.APIToken}`,
-          },
-          replacename: replaceName,
-          oldname: empaddform.companyname,
-        });
-      }
-    } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
-    }
-  };
+  //       //Updating The EmployeeName based onn the Employeename array length
+  //       let DeleteemployeeName =
+  //         hierarchyDeleteEmployee.length > 0 &&
+  //         hierarchyDeleteEmployee.map((data) => {
+  //           //if the employeename array contains more than one element without the orginal releiveing name
+  //           if (data.employeename.length > 1) {
+  //             const superVisor = data.employeename;
+  //             const supervisorCheck = superVisor.filter((item) => item !== e);
+  //             const response = axios.put(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
+  //               employeename: supervisorCheck,
+  //             });
+  //           } else {
+  //             let res = axios.delete(`${SERVICE.HIRERARCHI_SINGLE}/${data._id}`, {
+  //               headers: {
+  //                 Authorization: `Bearer ${auth.APIToken}`,
+  //               },
+  //             });
+  //           }
+  //         });
+  //       const userUpdateReportingTo = await axios.post(`${SERVICE.USER_REPORTINGTO_CHANGE}`, {
+  //         headers: {
+  //           Authorization: `Bearer ${auth.APIToken}`,
+  //         },
+  //         replacename: replaceName,
+  //         oldname: empaddform.companyname,
+  //       });
+  //     }
+  //   } catch (err) {
+  //     handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+  //   }
+  // };
 
   // info model
   const [openInfo, setOpeninfo] = useState(false);
@@ -2804,18 +2809,20 @@ function Noticeperiodactionemployeelist() {
     }
   };
 
-  const handleCheckInHierarchy = async (e) => {
+  const handleCheckInHierarchy = async (replaceName , oldname , status) => {
     setPageName(!pageName);
     try {
+      if(status !== "Hold"){
       let res = await axios.post(`${SERVICE.HIRERARCHI_ACTION_EMPLOYEELIST}`, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        user: e,
-        oldname: empaddform.companyname,
+        user: replaceName,
+        oldname: oldname,
       });
-      setHierarchyConditions(res?.data);
-      console.log(res?.data, 'res_action');
+      }
+
+      // console.log(res?.data, 'res_action');
     } catch (err) {
       setIsBoarding(true);
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -4278,6 +4285,29 @@ function Noticeperiodactionemployeelist() {
 
               {hierarchyDeleteData.length > 0 ? (
                 <>
+                                <Grid item md={2} xs={12} sm={12}>
+                                  <FormControl fullWidth size="small">
+                                    <FormControlLabel
+                                      control={
+                                        <Checkbox
+                                          sx={{
+                                            "& .MuiSvgIcon-root": {
+                                              fontSize: 40,
+                                              marginTop: 1,
+                                            },
+                                          }}
+                                          checked={sameDesignation}
+                                          onChange={() => {
+                                            setSameDesignation((val) => !val);
+                                          }}
+                                          color="primary"
+                                        />
+                                      }
+                                      // sx={{marginTop: 1}}
+                                      label="Same Designation"
+                                    />
+                                  </FormControl>
+                                </Grid>
                   <Grid item md={6} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography sx={userStyle.SubHeaderText}>
@@ -4290,7 +4320,7 @@ function Noticeperiodactionemployeelist() {
                         value={{ label: replaceName, value: replaceName }}
                         onChange={(e) => {
                           setReplaceName(e.value);
-                          handleCheckInHierarchy(e);
+                          // handleCheckInHierarchy(e);
                         }}
                       />
                     </FormControl>

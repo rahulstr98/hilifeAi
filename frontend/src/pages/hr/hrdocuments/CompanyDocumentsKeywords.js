@@ -137,6 +137,8 @@ function CompanyDocumentsKeywords() {
       keyword: "$PAGE_BREAK$",
       instruction: "It makes content to the next page for Company Document.",
     },
+      { id: 18, keyword: "$COMPANYFULLNAME$", instruction: "It denotes the Company full Name in Company Document." },
+  { id: 19, keyword: "$COMPANYSHORTNAME$", instruction: "It denotes the Company short Name in Company Document." },
   ];
 
   const [items, setItems] = useState(keywordData);

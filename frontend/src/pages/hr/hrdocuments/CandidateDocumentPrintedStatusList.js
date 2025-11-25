@@ -953,7 +953,7 @@ function CandidateDocumentsPrintedStatusList() {
   const [PageMailOpen, setPageMailOpen] = useState(false);
   const [PageUpdateOpen, setPageUpdateOpen] = useState(false);
   const [headerOptions, setHeaderOptions] = useState(
-    "Please Select Print Options"
+    "With Letter Head"
   );
   const [pagePopeOpen, setPagePopUpOpen] = useState("");
   const [DataTableId, setDataTableId] = useState("");
@@ -964,7 +964,7 @@ function CandidateDocumentsPrintedStatusList() {
     const doc = new DOMParser().parseFromString(html, "text/html");
     return doc.body.textContent || "";
   };
-  const handleHeadChange = (options) => {
+  const handleHeadChange = (options, personId) => {
     let value = options.map((a) => {
       return a.value;
     });
@@ -993,14 +993,15 @@ function CandidateDocumentsPrintedStatusList() {
       ? valueCate.map(({ label }) => label).join(", ")
       : "Please Select Letter Head";
   };
-  const handleClickOpenLetterHeader = (page) => {
+  const handleClickOpenLetterHeader = (page , personId) => {
     setPagePopUpOpen(page);
     setIsLetterHeadPopup(true);
+    handleHeadChange(WithHeaderOptions, personId);
   };
 
   const handleClickCloseLetterHead = () => {
     setIsLetterHeadPopup(false);
-    setHeaderOptions("Please Select Print Options");
+    setHeaderOptions("With Letter Head");
     setHeadValue([]);
     setPagePopUpOpen("");
     setHeader("");
@@ -1105,7 +1106,7 @@ function CandidateDocumentsPrintedStatusList() {
         };
 
         setPersonId(headerFooterBase64);
-        handleClickOpenLetterHeader(pagename);
+        handleClickOpenLetterHeader(pagename , headerFooterBase64);
         setDataTableId(e?.id);
         const qrInfoDetails = ans?.qrInfo?.length > 0 ? ans?.qrInfo : [];
         setQrCodeInfoDetails(
@@ -1158,8 +1159,46 @@ function CandidateDocumentsPrintedStatusList() {
     let fromemail = tempcontpanel?.data?.result[0]?.fromemail;
     let ccemail = tempcontpanel?.data?.result[0]?.ccemail;
     let bccemail = tempcontpanel?.data?.result[0]?.bccemail;
+let ans = tempcontpanel?.data?.result[0];
+     const templateHeaderFooter = userdetails;
+        const headerOption = templateHeaderFooter?.header
+          ? ans?.letterheadcontentheader?.find(
+              (data) => data?.headername === templateHeaderFooter?.header
+            )
+          : ans?.letterheadcontentheader?.find(
+              (data) => data?.default === "default"
+            );
+        const footerOption = templateHeaderFooter?.footer
+          ? ans?.letterheadcontentfooter?.find(
+              (data) => data?.footername === templateHeaderFooter?.footer
+            )
+          : ans?.letterheadcontentfooter?.find(
+              (data) => data?.default === "default"
+            );
 
-    setPersonId(tempcontpanel?.data?.result[0]);
+        const header = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${headerOption?.headerimage?.name}`
+        );
+        const footer = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${footerOption?.footerimage?.name}`
+        );
+        const backGroundCondition = ans?.letterheadbodycontent?.find(
+          (data) => data?.default === "default"
+        );
+        const backgroundimage = await convertFileUrlToBase64(
+          `${BASE_URL}/templatecontrolpanel/${
+            backGroundCondition
+              ? backGroundCondition?.backgroundimage?.name
+              : ans?.letterheadbodycontent[0]?.backgroundimage?.name
+          }`
+        );
+        const headerFooterBase64 = {
+          ...ans,
+          headerimage: header,
+          footerimage: footer,
+          backgroundimage: backgroundimage,
+        };
+    setPersonId(headerFooterBase64);
     if (pagename === "Candidate") {
       setEmailValuePage({
         id,
@@ -1173,7 +1212,7 @@ function CandidateDocumentsPrintedStatusList() {
       handleClickOpenMailOpen();
       // await fetchEmailForUser(id, convert, fromemail, ccemail, bccemail, email, pagename)
     } else {
-      handleClickOpenLetterHeader("Email");
+      handleClickOpenLetterHeader("Email", headerFooterBase64);
       setEmailValuePage({
         id,
         convert,
