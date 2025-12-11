@@ -100,6 +100,7 @@ function calculateLuminance(hex) {
 }
 
 function Visitorsregister() {
+  
   const [overallSettings, setOverAllsettingsCount] = useState({});
   const [newimageNew, setNewimageNew] = useState([]);
   const [colorDrag, setColorDrag] = useState([]);
@@ -1584,11 +1585,18 @@ function Visitorsregister() {
       let addVendorDetails = await axios.post(SERVICE.CREATE_VISITORS, formData, {});
       const filesImages = allUploadedFiles.concat(refImage, refImageDrag, capturedImages);
       const visitorInfoDetails = await BiometricVisitorAddition({
-        company: String(company),
-        branch: String(branch),
+        company: [String(company)],
+        branch: [String(branch)],
+        unit :[],
+        floor :[],
+        area :[],
+        visitorid:newval,
         name: String(vendor.firstname + '' + vendor.lastname),
         photo: filesImages[0]?.base64,
         date: Boolean(vendor.isinterviewnow) ? formattedToday : vendor.interviewpreferedate ? vendor.interviewpreferedate : formattedToday,
+        intime: String(currtime),
+        visitoremail: String(vendor.email),
+        visitorcontactnumber: String(vendor.mobile),
       });
       const resdata = (await fetchLastindexVendor()) || 'VISIT#0001';
 
@@ -1771,41 +1779,41 @@ function Visitorsregister() {
     setStep(step - 1);
   };
 
-  {
-    cateCode &&
-      cateCode.map(() => {
-        let strings = 'VISIT#';
-        let refNo = cateCode[cateCode.length - 1]?.visitorid;
-        let digits = (cateCode.length + 1).toString();
-        const stringLength = refNo.length;
-        let lastChar = refNo.charAt(stringLength - 1);
-        let getlastBeforeChar = refNo.charAt(stringLength - 2);
-        let getlastThreeChar = refNo.charAt(stringLength - 3);
-        let getlastFourChar = refNo.charAt(stringLength - 4);
-        let lastBeforeChar = refNo.slice(-2);
-        let lastThreeChar = refNo.slice(-3);
-        let lastDigit = refNo.slice(-4);
+  // {
+  //   cateCode &&
+  //     cateCode.map(() => {
+  //       let strings = 'VISIT#';
+  //       let refNo = cateCode[cateCode.length - 1]?.visitorid;
+  //       let digits = (cateCode.length + 1).toString();
+  //       const stringLength = refNo.length;
+  //       let lastChar = refNo.charAt(stringLength - 1);
+  //       let getlastBeforeChar = refNo.charAt(stringLength - 2);
+  //       let getlastThreeChar = refNo.charAt(stringLength - 3);
+  //       let getlastFourChar = refNo.charAt(stringLength - 4);
+  //       let lastBeforeChar = refNo.slice(-2);
+  //       let lastThreeChar = refNo.slice(-3);
+  //       let lastDigit = refNo.slice(-4);
 
-        let refNOINC = parseInt(lastChar) + 1;
-        let refLstTwo = parseInt(lastBeforeChar) + 1;
-        let refLstThree = parseInt(lastThreeChar) + 1;
-        let refLstDigit = parseInt(lastDigit) + 1;
+  //       let refNOINC = parseInt(lastChar) + 1;
+  //       let refLstTwo = parseInt(lastBeforeChar) + 1;
+  //       let refLstThree = parseInt(lastThreeChar) + 1;
+  //       let refLstDigit = parseInt(lastDigit) + 1;
 
-        if (digits.length < 4 && Number(getlastFourChar) == 0 && Number(getlastBeforeChar) == 0 && Number(getlastThreeChar) == 0) {
-          refNOINC = '000' + refNOINC;
-          newval = strings + refNOINC;
-        } else if (digits.length < 4 && Number(getlastFourChar) == 0 && Number(getlastBeforeChar) == 0 && Number(getlastThreeChar) > 0) {
-          refNOINC = '00' + refLstTwo;
-          newval = strings + refNOINC;
-        } else if (digits.length < 4 && Number(getlastThreeChar) > 0 && Number(getlastThreeChar) < 9 && Number(getlastFourChar) == 0) {
-          refNOINC = '0' + refLstThree;
-          newval = strings + refNOINC;
-        } else if (getlastFourChar != 0) {
-          refNOINC = refLstDigit;
-          newval = strings + refNOINC;
-        }
-      });
-  }
+  //       if (digits.length < 4 && Number(getlastFourChar) == 0 && Number(getlastBeforeChar) == 0 && Number(getlastThreeChar) == 0) {
+  //         refNOINC = '000' + refNOINC;
+  //         newval = strings + refNOINC;
+  //       } else if (digits.length < 4 && Number(getlastFourChar) == 0 && Number(getlastBeforeChar) == 0 && Number(getlastThreeChar) > 0) {
+  //         refNOINC = '00' + refLstTwo;
+  //         newval = strings + refNOINC;
+  //       } else if (digits.length < 4 && Number(getlastThreeChar) > 0 && Number(getlastThreeChar) < 9 && Number(getlastFourChar) == 0) {
+  //         refNOINC = '0' + refLstThree;
+  //         newval = strings + refNOINC;
+  //       } else if (getlastFourChar != 0) {
+  //         refNOINC = refLstDigit;
+  //         newval = strings + refNOINC;
+  //       }
+  //     });
+  // }
 
   // Image Upload
   useEffect(() => {

@@ -162,6 +162,7 @@ const {
     getOverallBulkBiometricDevicesDelete,
     getSingleBulkBiometricDevicesDelete,
     getDuplicateBiometricDeviceGrouping,
+    getcompanyBranchbasedBiometricDevices,
     biometricdevicelastindex,
     getAllBiometricAttendanceDevices,
     // getDeviceNewLogs,
@@ -178,6 +179,7 @@ hrfacilityRoute.route("/biometricserialnumberassets").post(getBiometricSerialNum
 hrfacilityRoute.route("/overallbullbiometricdevicedelete").post(getOverallBulkBiometricDevicesDelete);
 hrfacilityRoute.route("/singlebiodevicemanagementdelete").post(getSingleBulkBiometricDevicesDelete);
 hrfacilityRoute.route("/getduplicatebiometricdevicegrouping").post(getDuplicateBiometricDeviceGrouping);
+hrfacilityRoute.route("/getcompanybranchbasedbiodevicees").post(getcompanyBranchbasedBiometricDevices);
 // hrfacilityRoute.route("/getdevicenewlogs").post(getDeviceNewLogs);
 hrfacilityRoute.route("/biometricassignedipasset").post(getBiometricAssignedIpAsset);
 hrfacilityRoute
@@ -205,9 +207,12 @@ const {
     getFilteredUserdocumentuploadsForLeave,
     getUserUploadDocumentsForRemote,
     getFilteredUserdocumentuploadsForPermission,
+    getFilteredUserdocumentuploadsLoginStatus,
 } = require('../controller/modules/userdocumentupload.js');
 hrfacilityRoute.route('/userdocumentuploads').get(getAllUserdocumentupload);
+
 hrfacilityRoute.route('/getfiltereduserdocumentuploads').post(getFilteredUserdocumentuploads);
+hrfacilityRoute.route('/getfiltereduserdocumentuploadsloginstatus').post(getFilteredUserdocumentuploadsLoginStatus);
 hrfacilityRoute.route('/useruploaddocumentforremote').post(getUserUploadDocumentsForRemote);
 hrfacilityRoute.route('/userdocumentupload/new').post(addUserdocumentupload);
 hrfacilityRoute.route('/userdocumentupload/:id').get(getSingleUserdocumentupload).put(updateUserdocumentupload).delete(deleteUserdocumentupload);

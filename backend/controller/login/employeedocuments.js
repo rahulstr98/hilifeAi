@@ -1,42 +1,54 @@
-const EmployeeDocuments = require('../../model/login/employeedocuments');
-const ErrorHandler = require('../../utils/errorhandler');
-const catchAsyncErrors = require('../../middleware/catchAsyncError');
-const fs = require('fs');
-const path = require('path');
+const EmployeeDocuments = require("../../model/login/employeedocuments");
+const ErrorHandler = require("../../utils/errorhandler");
+const catchAsyncErrors = require("../../middleware/catchAsyncError");
+const fs = require("fs");
+const path = require("path");
 
 // get All EmployeeDocuments => /api/employeedocuments
 exports.getAllEmployeeDocuments = catchAsyncErrors(async (req, res, next) => {
-    let alldocuments;
+  let alldocuments;
 
-    try {
-        alldocuments = await EmployeeDocuments.find()
-    } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
-    }
+  try {
+    alldocuments = await EmployeeDocuments.find();
+  } catch (err) {
+    return next(new ErrorHandler("Records not found!", 404));
+  }
 
-    if (!alldocuments) {
-        return next(new ErrorHandler('EmployeeDocuments not found', 400));
-    }
+  if (!alldocuments) {
+    return next(new ErrorHandler("EmployeeDocuments not found", 400));
+  }
 
-    return res.status(200).json({ alldocuments });
-})
+  return res.status(200).json({ alldocuments });
+});
 
 // get All EmployeeDocuments => /api/employeedocuments
-exports.getAllPreEmployeeDocuments = catchAsyncErrors(async (req, res, next) => {
+exports.getAllPreEmployeeDocuments = catchAsyncErrors(
+  async (req, res, next) => {
     let alldocuments;
 
     try {
-        alldocuments = await EmployeeDocuments.find({}, { companyname: 1, empcode: 1, commonid: 1, profileimage: 1, type: 1, _id: 1 })
+      alldocuments = await EmployeeDocuments.find(
+        {},
+        {
+          companyname: 1,
+          empcode: 1,
+          commonid: 1,
+          profileimage: 1,
+          type: 1,
+          _id: 1,
+        }
+      );
     } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
+      return next(new ErrorHandler("Records not found!", 404));
     }
 
     if (!alldocuments) {
-        return next(new ErrorHandler('EmployeeDocuments not found', 400));
+      return next(new ErrorHandler("EmployeeDocuments not found", 400));
     }
 
     return res.status(200).json({ alldocuments });
-})
+  }
+);
 
 // / register employeeDocument => api/employeedocuments/new
 // exports.addEmployeeDocuments = catchAsyncErrors( async (req, res, next) =>{
@@ -46,251 +58,330 @@ exports.getAllPreEmployeeDocuments = catchAsyncErrors(async (req, res, next) => 
 //     });
 // })
 
-
 exports.addEmployeeDocuments = catchAsyncErrors(async (req, res, next) => {
-    console.log(JSON.parse(req?.body.addedby), "req?.body")
-    try {
-        const {
-            empcode,
-            commonid,
-            companyname,
-            type,
-            addedby,
-            name,
-            data,
-            remark,
-            profileimage // received as plain string from body
-        } = req.body;
+  console.log(JSON.parse(req?.body.addedby), "req?.body");
+  try {
+    const {
+      empcode,
+      commonid,
+      companyname,
+      type,
+      addedby,
+      name,
+      data,
+      remark,
+      profileimage, // received as plain string from body
+    } = req.body;
 
-        const query = {};
+    const query = {};
 
-        if (empcode) query.empcode = empcode;
-        if (commonid) query.commonid = commonid;
-        if (companyname) query.companyname = companyname;
-        if (type) query.type = type;
-        if (profileimage) query.profileimage = profileimage;
+    if (empcode) query.empcode = empcode;
+    if (commonid) query.commonid = commonid;
+    if (companyname) query.companyname = companyname;
+    if (type) query.type = type;
+    if (profileimage) query.profileimage = profileimage;
 
-        const filesMeta = (req.files || []).map((file, index) => ({
-            path: file.path,
-            originalname: file.originalname,
-            filename: file.filename,
-            name: Array.isArray(name) ? name[index] : name,
-            //   data: Array.isArray(data) ? data[index] : data,
-            remark: Array.isArray(remark) ? remark[index] : remark
-        }));
+    const filesMeta = (req.files || []).map((file, index) => ({
+      path: file.path,
+      originalname: file.originalname,
+      filename: file.filename,
+      name: Array.isArray(name) ? name[index] : name,
+      //   data: Array.isArray(data) ? data[index] : data,
+      remark: Array.isArray(remark) ? remark[index] : remark,
+    }));
 
-        const employeeDocument = await EmployeeDocuments.create({
-            ...query, // already string
-            addedby: JSON.parse(addedby),
-            files: filesMeta,
-        });
+    const employeeDocument = await EmployeeDocuments.create({
+      ...query, // already string
+      addedby: JSON.parse(addedby),
+      files: filesMeta,
+    });
 
-        return res.status(200).json({
-            message: 'Successfully added!',
-            employeedocument: employeeDocument
-        });
-    } catch (err) {
-        console.log(err, 'err')
-        return res.status(500).json({ message: 'Upload failed', error: err.message });
-    }
+    return res.status(200).json({
+      message: "Successfully added!",
+      employeedocument: employeeDocument,
+    });
+  } catch (err) {
+    console.log(err, "err");
+    return res
+      .status(500)
+      .json({ message: "Upload failed", error: err.message });
+  }
 });
-
 
 // get Single employeeDocument => /api/employeedocument/:id
 exports.getSingleEmployeeDocument = catchAsyncErrors(async (req, res, next) => {
+  const semployeedocument = await EmployeeDocuments.findById(req.params.id);
 
-    const semployeedocument = await EmployeeDocuments.findById(req.params.id);
+  if (!semployeedocument) {
+    return next(new ErrorHandler("EmployeeDocuments not found", 404));
+  }
 
-
-    if (!semployeedocument) {
-        return next(new ErrorHandler('EmployeeDocuments not found', 404));
-    }
-
-    return res.status(200).json({
-        success: true,
-        semployeedocument
-    })
-})
-
+  return res.status(200).json({
+    success: true,
+    semployeedocument,
+  });
+});
 
 // get Single employeeDocument => /api/employeedocumentcommonid/:id
-exports.getSingleEmployeeDocumentByCommonid = catchAsyncErrors(async (req, res, next) => {
+exports.getSingleEmployeeDocumentByCommonid = catchAsyncErrors(
+  async (req, res, next) => {
     const { commonid } = req.body;
-    const semployeedocument = await EmployeeDocuments.findOne({ commonid }, { profileimage: 1 });
+    const semployeedocument = await EmployeeDocuments.findOne(
+      { commonid },
+      { profileimage: 1 }
+    );
 
     if (!semployeedocument) {
-        return res.status(200).json({});
+      return res.status(200).json({});
     }
 
     return res.status(200).json({
-        success: true,
-        semployeedocument
-    })
-})
+      success: true,
+      semployeedocument,
+    });
+  }
+);
 
 // get Single employeeDocument => /api/employeedocumentcommonidwithall
-exports.getSingleEmployeeDocumentByCommonidWithAll = catchAsyncErrors(async (req, res, next) => {
+exports.getSingleEmployeeDocumentByCommonidWithAll = catchAsyncErrors(
+  async (req, res, next) => {
     const { commonid } = req.body;
     const semployeedocument = await EmployeeDocuments.findOne({ commonid });
 
     if (!semployeedocument) {
-        return next(new ErrorHandler('EmployeeDocuments not found', 404));
+      return next(new ErrorHandler("EmployeeDocuments not found", 404));
     }
 
     return res.status(200).json({
-        success: true,
-        semployeedocument
-    })
-})
+      success: true,
+      semployeedocument,
+    });
+  }
+);
 
 // update employeedocumentswithoutmulter by id => /api/employeedocument/:id
-exports.updateEmployeeDocumentWithoutMulter = catchAsyncErrors(async (req, res, next) => {
-
+exports.updateEmployeeDocumentWithoutMulter = catchAsyncErrors(
+  async (req, res, next) => {
     const id = req.params.id;
 
-    const updateemployeedocument = await EmployeeDocuments.findByIdAndUpdate(id, req.body);
+    const updateemployeedocument = await EmployeeDocuments.findByIdAndUpdate(
+      id,
+      req.body
+    );
 
     if (!updateemployeedocument) {
-        return next(new ErrorHandler('EmployeeDocuments not found', 404));
+      return next(new ErrorHandler("EmployeeDocuments not found", 404));
     }
 
-    return res.status(200).json({ message: 'Updated successfully!' })
-})
+    return res.status(200).json({ message: "Updated successfully!" });
+  }
+);
 
-
-const uploadDir = path.join(__dirname, '../../EmployeeUserDocuments');
+const uploadDir = path.join(__dirname, "../../EmployeeUserDocuments");
 exports.updateEmployeeDocument = catchAsyncErrors(async (req, res, next) => {
-    const id = req.params.id;
+  const id = req.params.id;
 
-    try {
-        const {
-            empcode,
-            commonid,
-            companyname,
-            type,
-            addedby,
-            name,
-            remark,
-            oldFiles,
-            updatedby,
-            deleteFileNames,
-            profileimage // String (optional)
-        } = req.body;
+  try {
+    const {
+      empcode,
+      commonid,
+      companyname,
+      type,
+      addedby,
+      name,
+      remark,
+      oldFiles,
+      updatedby,
+      deleteFileNames,
+      profileimage, // String (optional)
+    } = req.body;
 
-
-        const query = {};
-        if (empcode) query.empcode = empcode;
-        if (commonid) query.commonid = commonid;
-        if (companyname) query.companyname = companyname;
-        if (type) query.type = type;
-        if (profileimage) query.profileimage = profileimage;
-        // console.log(req?.body?.oldFiles, "req?.body")
-        const parsedUpdatedBy = typeof updatedby === 'string' ? JSON.parse(updatedby) : updatedby;
-        const parsedOldFiles = typeof oldFiles === 'string' ? JSON.parse(oldFiles) : oldFiles;
-        const parseddeleteFileNames = typeof deleteFileNames === 'string' ? JSON.parse(deleteFileNames) : deleteFileNames;
-        if (Array.isArray(parseddeleteFileNames) && parseddeleteFileNames.length > 0) {
-            parseddeleteFileNames.forEach(file => {
-                if (file?.filename) {
-                    const filePath = path.join(uploadDir, file.filename);
-                    console.log(filePath, "filePath")
-                    if (fs.existsSync(filePath)) {
-                        console.log(filePath, "filePath 1")
-                        fs.unlinkSync(filePath);
-                    }
-                }
-            });
+    const query = {};
+    if (empcode) query.empcode = empcode;
+    if (commonid) query.commonid = commonid;
+    if (companyname) query.companyname = companyname;
+    if (type) query.type = type;
+    if (profileimage) query.profileimage = profileimage;
+    // console.log(req?.body?.oldFiles, "req?.body")
+    const parsedUpdatedBy =
+      typeof updatedby === "string" ? JSON.parse(updatedby) : updatedby;
+    const parsedOldFiles =
+      typeof oldFiles === "string" ? JSON.parse(oldFiles) : oldFiles;
+    const parseddeleteFileNames =
+      typeof deleteFileNames === "string"
+        ? JSON.parse(deleteFileNames)
+        : deleteFileNames;
+    if (
+      Array.isArray(parseddeleteFileNames) &&
+      parseddeleteFileNames.length > 0
+    ) {
+      parseddeleteFileNames.forEach((file) => {
+        if (file?.filename) {
+          const filePath = path.join(uploadDir, file.filename);
+          console.log(filePath, "filePath");
+          if (fs.existsSync(filePath)) {
+            console.log(filePath, "filePath 1");
+            fs.unlinkSync(filePath);
+          }
         }
-
-        const filesMeta = (req.files || []).map((file, index) => ({
-            path: file.path,
-            originalname: file.originalname,
-            filename: file.filename,
-            name: Array.isArray(name) ? name[index] : name,
-            remark: Array.isArray(remark) ? remark[index] : remark
-        }));
-
-        const updateData = {
-            ...query,
-            updatedby: parsedUpdatedBy,
-            files: [...parsedOldFiles, ...filesMeta]
-        };
-
-        const updatedDocument = await EmployeeDocuments.findByIdAndUpdate(id, updateData, {
-            new: true
-        });
-
-        if (!updatedDocument) {
-            return next(new ErrorHandler('EmployeeDocuments not found', 404));
-        }
-
-        return res.status(200).json({
-            message: 'Updated successfully!',
-            employeedocument: updatedDocument
-        });
-
-    } catch (err) {
-        console.error('Update failed:', err);
-        return res.status(500).json({ message: 'Update failed', error: err.message });
+      });
     }
-});
 
+    const filesMeta = (req.files || []).map((file, index) => ({
+      path: file.path,
+      originalname: file.originalname,
+      filename: file.filename,
+      name: Array.isArray(name) ? name[index] : name,
+      remark: Array.isArray(remark) ? remark[index] : remark,
+    }));
+
+    const updateData = {
+      ...query,
+      updatedby: parsedUpdatedBy,
+      files: [...parsedOldFiles, ...filesMeta],
+    };
+
+    const updatedDocument = await EmployeeDocuments.findByIdAndUpdate(
+      id,
+      updateData,
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedDocument) {
+      return next(new ErrorHandler("EmployeeDocuments not found", 404));
+    }
+
+    return res.status(200).json({
+      message: "Updated successfully!",
+      employeedocument: updatedDocument,
+    });
+  } catch (err) {
+    console.error("Update failed:", err);
+    return res
+      .status(500)
+      .json({ message: "Update failed", error: err.message });
+  }
+});
 
 // delete EmployeeDocument by id => /api/employeedocument/:id
 exports.deleteEmployeeDocument = catchAsyncErrors(async (req, res, next) => {
-    const id = req.params.id;
+  const id = req.params.id;
 
-    const dempdoc = await EmployeeDocuments.findByIdAndRemove(id);
+  const dempdoc = await EmployeeDocuments.findByIdAndRemove(id);
 
-    if (!dempdoc) {
-        return next(new ErrorHandler('EmployeeDocuments not found', 404));
-    }
+  if (!dempdoc) {
+    return next(new ErrorHandler("EmployeeDocuments not found", 404));
+  }
 
-    res.status(200).json({ message: 'Deleted successfully' })
-})
+  res.status(200).json({ message: "Deleted successfully" });
+});
 
 exports.getAllEmployeeProfile = catchAsyncErrors(async (req, res, next) => {
-    let alldocuments;
+  let alldocuments;
 
-    try {
-        alldocuments = await EmployeeDocuments.find({}, { profileimage: 1, commonid: 1 }).lean()
-    } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
-    }
+  try {
+    alldocuments = await EmployeeDocuments.find(
+      {},
+      { profileimage: 1, commonid: 1 }
+    ).lean();
+  } catch (err) {
+    return next(new ErrorHandler("Records not found!", 404));
+  }
 
-    if (!alldocuments) {
-        return next(new ErrorHandler('EmployeeDocuments not found', 400));
-    }
+  if (!alldocuments) {
+    return next(new ErrorHandler("EmployeeDocuments not found", 400));
+  }
 
-    return res.status(200).json({ alldocuments });
-})
+  return res.status(200).json({ alldocuments });
+});
 
 // get Single employeeDocument => /api/employeedocumentcommonidwithallnew
-exports.getSingleEmployeeDocumentByCommonidWithAllnew = catchAsyncErrors(async (req, res, next) => {
+exports.getSingleEmployeeDocumentByCommonidWithAllnew = catchAsyncErrors(
+  async (req, res, next) => {
     const { commonid } = req.body;
-    const semployeedocument = await EmployeeDocuments.findOne({ commonid }, { profileimage: 1, files: 1 });
+    const semployeedocument = await EmployeeDocuments.findOne(
+      { commonid },
+      { profileimage: 1, files: 1 }
+    );
     if (!semployeedocument) {
-        return res.status(200).json({});
+      return res.status(200).json({});
     }
 
     return res.status(200).json({
-        success: true,
-        semployeedocument
-    })
-})
+      success: true,
+      semployeedocument,
+    });
+  }
+);
 
-//employee documents 
-exports.getAllEmployeeDocumentsforidcard = catchAsyncErrors(async (req, res, next) => {
+//employee documents
+exports.getAllEmployeeDocumentsforidcard = catchAsyncErrors(
+  async (req, res, next) => {
     let alldocuments;
 
     try {
-        alldocuments = await EmployeeDocuments.find({}, { commonid: 1, profileimage: 1, _id: 1 })
+      alldocuments = await EmployeeDocuments.find(
+        {},
+        { commonid: 1, profileimage: 1, _id: 1 }
+      );
     } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
+      return next(new ErrorHandler("Records not found!", 404));
     }
 
     if (!alldocuments) {
-        return next(new ErrorHandler('EmployeeDocuments not found', 400));
+      return next(new ErrorHandler("EmployeeDocuments not found", 400));
     }
 
     return res.status(200).json({ alldocuments });
-})
+  }
+);
+
+exports.getUserDocumentLoginStatusUpdateFile = catchAsyncErrors(
+  async (req, res, next) => {
+    try {
+      const { userid } = req.body;
+console.log(req.body ,req.files, "req?.body")
+      // Multer files come from req.files
+      const fileArray = Array.isArray(req.files)
+  ? req.files
+  : req.files?.files;
+      if (!fileArray || fileArray.length === 0) {
+        return next(new ErrorHandler("No files uploaded!", 400));
+      }
+
+      // Convert multer files to your DB structure
+      const updateFiles = fileArray?.map((file) => ({
+        category: "Login Status",
+        subcategory: "Reset Letter",
+        remark: "Reset Letter",
+        candidatefilename:"Reset Letter",
+        status:"Uploaded",
+        orginpath: "User Documents Upload",
+
+        filename: file.filename,   // saved filename from multer
+        name: file.originalname,     // original file name
+        path: file.path,             // file upload path
+        mimetype: file.mimetype,
+        size: file.size,
+      }));
+
+      console.log(updateFiles , "updateFiles")
+    //   Update DB
+      await EmployeeDocuments.updateOne(
+        { commonid: userid },
+        { $push: { files: { $each: updateFiles } } }
+      );
+
+      return res.status(200).json({
+        success: true,
+        files: updateFiles,
+      });
+    } 
+    catch (err) {
+    console.log(err , "err")
+      return next(new ErrorHandler("Records not found!", 404));
+    }
+  }
+);

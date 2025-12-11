@@ -2,24 +2,23 @@ const VisitorDetailsLog = require('../../../model/modules/interactors/visitordet
 const ErrorHandler = require('../../../utils/errorhandler');
 // const Task = require('../../../model/modules/project/task');
 const catchAsyncErrors = require('../../../middleware/catchAsyncError');
-const Visitors = require("../../../model/modules/interactors/visitor");
+const Visitors = require('../../../model/modules/interactors/visitor');
 
 //get All VisitorDetailsLog =>/api/VisitorDetailsLog
 exports.getAllVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
   let visitordetailslog;
   try {
-    visitordetailslog = await VisitorDetailsLog.find()
+    visitordetailslog = await VisitorDetailsLog.find();
   } catch (err) {
-    return next(new ErrorHandler("Records not found!", 404));
+    return next(new ErrorHandler('Records not found!', 404));
   }
   if (!visitordetailslog) {
     return next(new ErrorHandler('VisitorDetailsLog not found!', 404));
   }
   return res.status(200).json({
-    visitordetailslog
+    visitordetailslog,
   });
-})
-
+});
 
 //create new VisitorDetailsLog => /api/VisitorDetailsLog/new
 exports.addVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
@@ -29,14 +28,14 @@ exports.addVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
   // }
   let avisitordetailslog = await VisitorDetailsLog.create(req.body);
   return res.status(200).json({
-    message: 'Successfully added!'
+    message: 'Successfully added!',
   });
-})
+});
 
 exports.getSingleVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
-  const visitorcommonid = req.params.id.replace(/#/g, "-"); // Extract visitorid from URL parameter
+  const visitorcommonid = req.params.id.replace(/-/g, '#'); // Extract visitorid from URL parameter
 
-  console.log(visitorcommonid, "visitorcommonid")
+  console.log(visitorcommonid, 'visitorcommonid');
   // Find the document where visitorid matches the given id
   const svisitordetailslog = await VisitorDetailsLog.find({ visitorcommonid });
 
@@ -49,7 +48,6 @@ exports.getSingleVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => 
   });
 });
 
-
 exports.updateVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id; // The ID to compare with visitorid
   const updateData = req.body; // The data to update
@@ -57,8 +55,8 @@ exports.updateVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
   // Find the document where visitorid matches the provided id and update it
   const uvisitordetailslog = await VisitorDetailsLog.findOneAndUpdate(
     { visitorid: id }, // Filter condition
-    updateData,        // Data to update
-    { new: true }      // Return the updated document
+    updateData, // Data to update
+    { new: true } // Return the updated document
   );
 
   if (!uvisitordetailslog) {
@@ -67,7 +65,6 @@ exports.updateVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
 
   return res.status(200).json({ message: 'Updated successfully', data: uvisitordetailslog });
 });
-
 
 //delete VisitorDetailsLog by id => /api/VisitorDetailsLog/:id
 exports.deleteVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
@@ -78,31 +75,31 @@ exports.deleteVisitorDetailsLog = catchAsyncErrors(async (req, res, next) => {
   }
 
   return res.status(200).json({ message: 'Deleted successfully' });
-})
+});
 
 //get All getAllVisitorDetailsLogGrouping =>/api/getAllVisitorDetailsLogGrouping
 exports.getAllVisitorDetailsLogGrouping = catchAsyncErrors(async (req, res, next) => {
+  console.log('work');
   try {
     const visitordetailslog = await VisitorDetailsLog.aggregate([
       {
         $group: {
-          _id: "$visitorcommonid", // Group by the visitorid field
-          logs: { $push: "$$ROOT" }, // Collect the original records for each visitorid
-          lastLog: { $last: "$$ROOT" }
-        }
+          _id: '$visitorcommonid', // Group by the visitorid field
+          logs: { $push: '$$ROOT' }, // Collect the original records for each visitorid
+          lastLog: { $last: '$$ROOT' },
+        },
       },
       {
-        $sort: { "_id": 1 } // Sort by visitorid to maintain a consistent order
+        $sort: { _id: 1 }, // Sort by visitorid to maintain a consistent order
       },
       {
         $project: {
           _id: 1, // Include only the logs field
-          currectvisitoremail: "$lastLog.visitoremail", // Include the visitoremail from the last log
-          currectvisitorcontactnumber: "$lastLog.visitorcontactnumber", // Include the visitorcontactnumber from the last log
-          currectvisitorname: "$lastLog.visitorname", // Include the visitorname from the last log
-        }
+          currectvisitoremail: '$lastLog.visitoremail', // Include the visitoremail from the last log
+          currectvisitorcontactnumber: '$lastLog.visitorcontactnumber', // Include the visitorcontactnumber from the last log
+          currectvisitorname: '$lastLog.visitorname', // Include the visitorname from the last log
+        },
       },
-
     ]);
 
     if (!visitordetailslog || visitordetailslog.length === 0) {
@@ -110,10 +107,11 @@ exports.getAllVisitorDetailsLogGrouping = catchAsyncErrors(async (req, res, next
     }
 
     return res.status(200).json({
-      visitordetailslog
+      visitordetailslog,
     });
   } catch (err) {
-    return next(new ErrorHandler("Records not found!", 404));
+    console.log(err);
+    return next(new ErrorHandler('Records not found!', 404));
   }
 });
 
@@ -125,22 +123,21 @@ exports.getSingleVisitorDetailsLogGrouping = catchAsyncErrors(async (req, res, n
     const visitordetailslog = await VisitorDetailsLog.aggregate([
       {
         $match: {
-          visitorid: visitorid // Match only the records with the specified visitorid
-        }
+          visitorid: visitorid, // Match only the records with the specified visitorid
+        },
       },
       {
         $group: {
-          _id: "$visitorid", // Group by the visitorid field
-          logs: { $push: "$$ROOT" }, // Collect the original records for each visitorid
-        }
+          _id: '$visitorid', // Group by the visitorid field
+          logs: { $push: '$$ROOT' }, // Collect the original records for each visitorid
+        },
       },
       {
         $project: {
           _id: 0, // Exclude the _id field
           logs: 1, // Include only the logs field
-        }
+        },
       },
-
     ]);
 
     if (!visitordetailslog || visitordetailslog.length === 0) {
@@ -148,22 +145,21 @@ exports.getSingleVisitorDetailsLogGrouping = catchAsyncErrors(async (req, res, n
     }
 
     return res.status(200).json({
-      visitordetailslog
+      visitordetailslog,
     });
   } catch (err) {
-    return next(new ErrorHandler("Records not found!", 404));
+    return next(new ErrorHandler('Records not found!', 404));
   }
 });
 
 //getAlloverallfiltervisitors
 exports.getAlloverallfiltervisitors = catchAsyncErrors(async (req, res, next) => {
   try {
-
     const visitorNamesArray = await Visitors.aggregate([
       {
         $group: {
           _id: null, // Group all documents into a single group
-          visitorNames: { $addToSet: "$visitorname" }, // Collect unique visitor names into an array
+          visitorNames: { $addToSet: '$visitorname' }, // Collect unique visitor names into an array
         },
       },
       {
@@ -176,34 +172,26 @@ exports.getAlloverallfiltervisitors = catchAsyncErrors(async (req, res, next) =>
 
     const visitordetailslog = visitorNamesArray[0]?.visitorNames || [];
 
-    console.log(visitordetailslog, "visitordetailslog")
+    console.log(visitordetailslog, 'visitordetailslog');
 
     if (!visitordetailslog || visitordetailslog.length === 0) {
       return next(new ErrorHandler('VisitorDetailsLog not found!', 404));
     }
 
     return res.status(200).json({
-      visitordetailslog
+      visitordetailslog,
     });
   } catch (err) {
-    return next(new ErrorHandler("Records not found!", 404));
+    return next(new ErrorHandler('Records not found!', 404));
   }
 });
 
 exports.getAlloverallfiltervisitorsname = async (req, res) => {
   try {
     let totalProjects, totalProjectsAllData, result;
-    const {
-      page,
-      pageSize,
-      assignbranch,
-      visitorname,
-      searchQuery,
-      allFilters,
-      logicOperator,
-    } = req.body;
+    const { page, pageSize, assignbranch, visitorname, searchQuery, allFilters, logicOperator } = req.body;
 
-    console.log(searchQuery, "searchQuery");
+    console.log(searchQuery, 'searchQuery');
 
     // Return an empty response if assignbranch is not provided or empty
     if (!Array.isArray(assignbranch) || assignbranch.length === 0) {
@@ -227,46 +215,30 @@ exports.getAlloverallfiltervisitorsname = async (req, res) => {
     const conditions = [];
     if (allFilters && allFilters.length > 0) {
       allFilters.forEach((filter) => {
-        if (
-          filter.column &&
-          filter.condition &&
-          (filter.value || ["Blank", "Not Blank"].includes(filter.condition))
-        ) {
-          conditions.push(
-            createFilterCondition(filter.column, filter.condition, filter.value)
-          );
+        if (filter.column && filter.condition && (filter.value || ['Blank', 'Not Blank'].includes(filter.condition))) {
+          conditions.push(createFilterCondition(filter.column, filter.condition, filter.value));
         }
       });
     }
 
     // Add search query filter
     if (searchQuery && searchQuery !== undefined) {
-      const searchTermsArray = searchQuery.split(" ");
-      const regexTerms = searchTermsArray.map((term) => new RegExp(term, "i"));
+      const searchTermsArray = searchQuery.split(' ');
+      const regexTerms = searchTermsArray.map((term) => new RegExp(term, 'i'));
 
       const orConditions = regexTerms.map((regex) => ({
-        $or: [
-          { company: regex },
-          { branch: regex },
-          { unit: regex },
-          { date: regex },
-          { visitorid: regex },
-          { visitorname: regex },
-        ],
+        $or: [{ company: regex }, { branch: regex }, { unit: regex }, { date: regex }, { visitorid: regex }, { visitorname: regex }],
       }));
       query = {
-        $and: [
-          query,
-          ...orConditions,
-        ],
+        $and: [query, ...orConditions],
       };
     }
 
     // Apply logicOperator to combine conditions
     if (conditions.length > 0) {
-      if (logicOperator === "AND") {
+      if (logicOperator === 'AND') {
         query.$and = conditions;
-      } else if (logicOperator === "OR") {
+      } else if (logicOperator === 'OR') {
         query.$or = conditions;
       }
     }
@@ -280,10 +252,7 @@ exports.getAlloverallfiltervisitorsname = async (req, res) => {
 
     // Combine all filters into $and
     const combinedFilter = {
-      $and: [
-        query,
-        { $or: branchFilters },
-      ],
+      $and: [query, { $or: branchFilters }],
     };
 
     // Use aggregation to fetch the most recent document for each visitorname
@@ -292,15 +261,14 @@ exports.getAlloverallfiltervisitorsname = async (req, res) => {
       { $sort: { createdAt: -1 } }, // Sort by `createdAt` in descending order
       {
         $group: {
-          _id: { visitorname: "$visitorname", visitorcommonid: "$visitorcommonid" }, // Group by both `visitorname` and `visitorcommonid`
-          mostRecentDocument: { $first: "$$ROOT" }, // Select the most recent document
+          _id: { visitorname: '$visitorname', visitorcommonid: '$visitorcommonid' }, // Group by both `visitorname` and `visitorcommonid`
+          mostRecentDocument: { $first: '$$ROOT' }, // Select the most recent document
         },
       },
       {
-        $replaceRoot: { newRoot: "$mostRecentDocument" }, // Replace root with the most recent document
+        $replaceRoot: { newRoot: '$mostRecentDocument' }, // Replace root with the most recent document
       },
     ];
-
 
     totalProjectsAllData = await Visitors.aggregate(aggregationPipeline);
 
@@ -308,10 +276,7 @@ exports.getAlloverallfiltervisitorsname = async (req, res) => {
     totalProjects = totalProjectsAllData.length;
 
     // Apply pagination
-    result = totalProjectsAllData.slice(
-      (page - 1) * pageSize,
-      (page - 1) * pageSize + parseInt(pageSize)
-    );
+    result = totalProjectsAllData.slice((page - 1) * pageSize, (page - 1) * pageSize + parseInt(pageSize));
 
     // Return the response
     return res.status(200).json({
@@ -323,28 +288,17 @@ exports.getAlloverallfiltervisitorsname = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
-
 
 //getAlloverallfiltervisitorsnameLog
 exports.getAlloverallfiltervisitorsnameLog = async (req, res) => {
   try {
     let totalProjects, totalProjectsAllData, result;
-    const {
-      page,
-      pageSize,
-      assignbranch,
-      visitorname,
-      searchQuery,
-      allFilters,
-      logicOperator,
-      visitorcommonid
-    } = req.body;
+    const { page, pageSize, assignbranch, visitorname, searchQuery, allFilters, logicOperator, visitorcommonid } = req.body;
 
-
-    console.log(req.body, "visitorcommonid")
+    console.log(req.body, 'visitorcommonid');
 
     // Return an empty response if assignbranch is not provided or empty
     if (!Array.isArray(assignbranch) || assignbranch.length === 0) {
@@ -359,17 +313,15 @@ exports.getAlloverallfiltervisitorsnameLog = async (req, res) => {
 
     let query = {};
 
-
     // if (Array.isArray(visitorname) && visitorname.length > 0) {
     //   query.visitorname = { $in: visitorname };
     // }
-
 
     // Advanced search filter
     const conditions = [];
     if (allFilters && allFilters.length > 0) {
       allFilters.forEach((filter) => {
-        if (filter.column && filter.condition && (filter.value || ["Blank", "Not Blank"].includes(filter.condition))) {
+        if (filter.column && filter.condition && (filter.value || ['Blank', 'Not Blank'].includes(filter.condition))) {
           conditions.push(createFilterCondition(filter.column, filter.condition, filter.value));
         }
       });
@@ -377,18 +329,11 @@ exports.getAlloverallfiltervisitorsnameLog = async (req, res) => {
 
     // Add search query filter
     if (searchQuery && searchQuery !== undefined) {
-      const searchTermsArray = searchQuery.split(" ");
-      const regexTerms = searchTermsArray.map((term) => new RegExp(term, "i"));
+      const searchTermsArray = searchQuery.split(' ');
+      const regexTerms = searchTermsArray.map((term) => new RegExp(term, 'i'));
 
       const orConditions = regexTerms.map((regex) => ({
-        $or: [
-          { company: regex },
-          { branch: regex },
-          { unit: regex },
-          { date: regex },
-          { visitorid: regex },
-          { visitorname: regex },
-        ],
+        $or: [{ company: regex }, { branch: regex }, { unit: regex }, { date: regex }, { visitorid: regex }, { visitorname: regex }],
       }));
       query = {
         $and: [
@@ -407,9 +352,9 @@ exports.getAlloverallfiltervisitorsnameLog = async (req, res) => {
 
     // Apply logicOperator to combine conditions
     if (conditions.length > 0) {
-      if (logicOperator === "AND") {
+      if (logicOperator === 'AND') {
         query.$and = conditions;
-      } else if (logicOperator === "OR") {
+      } else if (logicOperator === 'OR') {
         query.$or = conditions;
       }
     }
@@ -447,28 +392,56 @@ exports.getAlloverallfiltervisitorsnameLog = async (req, res) => {
       totalPages: Math.ceil(totalProjects / pageSize),
     });
   } catch (err) {
-    console.log(err)
-    return res.status(500).json({ error: "Internal server error" });
+    console.log(err);
+    return res.status(500).json({ error: 'Internal server error' });
   }
 };
 
+exports.getSingleVisitorDetailsLogforProfile = catchAsyncErrors(async (req, res, next) => {
+  const id = req.params.id;
+
+  let svisitordetailslog = await VisitorDetailsLog.findById(id);
+
+  if (!svisitordetailslog) {
+    return next(new ErrorHandler('Data not found!', 404));
+  }
+  return res.status(200).json({
+    svisitordetailslog,
+  });
+});
+
+exports.getSingleVisitorDetailsLogWithoutfiles = catchAsyncErrors(async (req, res, next) => {
+  const visitorcommonid = req.params.id.replace(/-/g, '#');
+
+  // Exclude files field directly in the query
+  const svisitordetailslog = await VisitorDetailsLog.find({ visitorcommonid }).select('-files'); // The minus sign excludes the field
+
+  if (!svisitordetailslog || svisitordetailslog.length === 0) {
+    return next(new ErrorHandler('VisitorDetailsLog not found', 404));
+  }
+
+  return res.status(200).json({
+    svisitordetailslog,
+  });
+});
+
 function createFilterCondition(column, condition, value) {
   switch (condition) {
-    case "Contains":
+    case 'Contains':
       return { [column]: new RegExp(value, 'i') };
-    case "Does Not Contain":
+    case 'Does Not Contain':
       return { [column]: { $not: new RegExp(value, 'i') } };
-    case "Equals":
+    case 'Equals':
       return { [column]: value };
-    case "Does Not Equal":
+    case 'Does Not Equal':
       return { [column]: { $ne: value } };
-    case "Begins With":
+    case 'Begins With':
       return { [column]: new RegExp(`^${value}`, 'i') };
-    case "Ends With":
+    case 'Ends With':
       return { [column]: new RegExp(`${value}$`, 'i') };
-    case "Blank":
+    case 'Blank':
       return { [column]: { $exists: false } };
-    case "Not Blank":
+    case 'Not Blank':
       return { [column]: { $exists: true } };
     default:
       return {};
@@ -478,14 +451,16 @@ function createFilterCondition(column, condition, value) {
 exports.getSingleVisitorDetailsLogForView = catchAsyncErrors(async (req, res, next) => {
   const visitorcommonid = req.params.id; // Extract visitorcommonid from URL parameter
 
-  console.log(visitorcommonid)
+  console.log(visitorcommonid);
   // Find the most recently created document where visitorcommonid matches
   const svisitordetailslog = await VisitorDetailsLog.find({ visitorcommonid })
     .sort({ createdAt: -1 }) // Sort by createdAt in descending order
     .limit(1); // Get the most recent document
 
   if (!svisitordetailslog || svisitordetailslog.length === 0) {
-    return next(new ErrorHandler('VisitorDetailsLog not found', 404));
+    return res.status(200).json({
+      svisitordetailslog: [], // Return the first document in the array
+    });
   }
 
   return res.status(200).json({
@@ -493,5 +468,52 @@ exports.getSingleVisitorDetailsLogForView = catchAsyncErrors(async (req, res, ne
   });
 });
 
+exports.getAllVisitorDetailsLogForProfile = catchAsyncErrors(async (req, res, next) => {
+  const visitorcommonid = decodeURIComponent(req.params.id);
+  // Find the most recently created document where visitorcommonid matches
+  const svisitordetailslog = await VisitorDetailsLog.find({ visitorcommonid });
 
+  if (!svisitordetailslog || svisitordetailslog.length === 0) {
+    return res.status(200).json({
+      svisitordetailslog: [], // Return the first document in the array
+    });
+  }
 
+  return res.status(200).json({
+    svisitordetailslog: svisitordetailslog, // Return the first document in the array
+  });
+});
+
+exports.getvisitorNames = catchAsyncErrors(async (req, res, next) => {
+  const result = await Visitors.aggregate([
+    {
+      $match: {
+        visitorname: { $exists: true, $ne: null },
+      },
+    },
+    {
+      $project: {
+        trimmedName: { $trim: { input: '$visitorname' } },
+      },
+    },
+    {
+      $group: {
+        _id: { $toLower: '$trimmedName' }, // case-insensitive deduplication
+        original: { $first: '$trimmedName' }, // keep the first original casing
+      },
+    },
+    {
+      $replaceRoot: { newRoot: { visitorname: '$original' } },
+    },
+    {
+      $sort: { visitorname: 1 }, // optional, alphabetically sort if needed
+    },
+  ]);
+
+  const uniqueVisitorNames = result.map((item) => item.visitorname);
+
+  res.status(200).json({
+    success: true,
+    visitorNames: uniqueVisitorNames,
+  });
+});

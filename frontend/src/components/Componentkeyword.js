@@ -539,10 +539,10 @@ export const address_type = [
   { label: 'Hostel', value: 'Hostel' },
 ];
 export const personal_prefix = [
-  { label: 'C/O - Care Of', value: 'C/O - Care Of' },
-  { label: 'S/O - Son Of', value: 'S/O - Son Of' },
-  { label: 'D/O - Daughter Of', value: 'D/O - Daughter Of' },
-  { label: 'W/O - Wife Of', value: 'W/O - Wife Of' },
+  { label: 'C/O - Care Of', value: 'C/O - Care Of', key: ['Male', 'Female', 'Others', 'Other'] },
+  { label: 'S/O - Son Of', value: 'S/O - Son Of', key: ['Male', 'Others', 'Other'] },
+  { label: 'D/O - Daughter Of', value: 'D/O - Daughter Of', key: ['Female', 'Others', 'Other'] },
+  { label: 'W/O - Wife Of', value: 'W/O - Wife Of', key: ['Female', 'Others', 'Other'] },
 ];
 export const landmark_and_positional_prefix = [
   { label: 'Near', value: 'Near' },
@@ -692,3 +692,22 @@ export const hoursTimeOpt = [
   { label: '11', value: '11' },
   { label: '12', value: '12' },
 ];
+
+export const handleRestrictedWords = (value, setValue, keyName, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert) => {
+  // Check if the value contains any restricted word (case-insensitive)
+  const foundWord = landmark_and_positional_prefix?.map((data) => data?.value).find((word) => value.toLowerCase().includes(word.toLowerCase()));
+
+  if (foundWord) {
+    // alert(`"${foundWord}" is not allowed in ${keyName}. It has been removed.`);
+    setPopupContentMalert(`"${foundWord}" is not allowed in ${keyName}. It has been removed.`);
+    setPopupSeverityMalert('info');
+    handleClickOpenPopupMalert();
+    // Remove the restricted word and clean up extra spaces
+    const cleanedValue = value.replace(new RegExp(foundWord, 'ig'), '').replace(/\s+/g, ' ').trim();
+
+    setValue(cleanedValue);
+    return cleanedValue;
+  }
+
+  return value;
+};

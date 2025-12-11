@@ -5,6 +5,7 @@ import moment from 'moment-timezone';
 import { SERVICE } from '../../services/Baseservice';
 import { AuthContext } from '../../context/Appcontext';
 const UserDocumentUploadView = ({ queryParams, openPopup, setUploadedFiles, date = [] }) => {
+  console.log(queryParams , "queryParams")
   const [fetchedOnce, setFetchedOnce] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [dataArrayMultiple, setDataArrayMultiple] = useState([]);
@@ -24,7 +25,7 @@ const UserDocumentUploadView = ({ queryParams, openPopup, setUploadedFiles, date
   };
   useEffect(() => {
     const fetchData = async () => {
-      if (!openPopup || fetchedOnce) return; // ✅ prevent re-run
+      // if (!openPopup || fetchedOnce) return; // ✅ prevent re-run
       setLoading(true);
       try {
         let response = await axios.post(

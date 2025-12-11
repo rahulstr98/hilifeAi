@@ -28,6 +28,14 @@ const employeeDocumentsSchema = new Schema({
     },
     files: [
         {
+            category: {
+                type: String,
+                required: false,
+            },
+            subcategory: {
+                type: String,
+                required: false,
+            },
             data: {
                 type: String,
                 required: false,

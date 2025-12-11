@@ -5041,6 +5041,10 @@ export const SERVICE = {
   VISITORDETAILS_LOG_SINGLE: `${BASE_URL}/api/visitordetailslog`,
   VISITORDETAILS_LOG_GROUPING: `${BASE_URL}/api/allvisitodetailsloggrouping`,
   VISITORDETAILS_LOG_SINGLE_GROUPING: `${BASE_URL}/api/visitordetailslogsingleidgrouping`,
+
+    VISITORDETAILS_LOG_SINGLE_PROFILE: `${BASE_URL}/api/visitordetailslogforprofile`,
+  VISITORDETAILS_LOG_SINGLE_FOR_VIEW: `${BASE_URL}/api/getoverallfiltervisitorsforview`,
+
   GETSINGLESHIFTGROUPWORKINGHOURS: `${BASE_URL}/api/shiftgroupingsworkinghours`,
   NONPRODUCTIONFILTERLIST: `${BASE_URL}/api/nonproductionfilterlist`,
   CREATE_OPERATINGSYSTEM: `${BASE_URL}/api/operatingsystem/new`,
@@ -5506,7 +5510,6 @@ export const SERVICE = {
   SINGLE_BIOMETRIC_PAIRED_DEVICE_GROUPING: `${BASE_URL}/api/biometricpaireddevicegrouping`,
   ALL_BIOMETRIC_PAIRED_DEVICE_GROUPING: `${BASE_URL}/api/biometricpaireddevicegroupings`,
   ALL_BIOMETRICDEVICES_PAIRED_DEVICES_AND_UNPAIRED: `${BASE_URL}/api/biometricpaireddevicesandunpaired`,
-  ALL_BIOMETRICDEVICES_PAIRED_DEVICES_AND_UNPAIRED_USER: `${BASE_URL}/api/biometricpaireddevicesandunpaireduser`,
 
   SALARYSLAB_LIMITED: `${BASE_URL}/api/salaryslablimited`,
   USER_PAYRUNDATA_LIMITED_FINAL_SALARY_GENERATION_REVIEW: `${BASE_URL}/api/userspayrundatalimitedfinalsalarygenerationreview`,
@@ -5541,5 +5544,57 @@ export const SERVICE = {
   HEADER_FOOTER_FROM_TEMPLATECONTROLPANEL: `${BASE_URL}/api/headerfooterfromtemplatecontrolpanel`,
   HIGHER_DESIGNATION_COMPANYNAMES: `${BASE_URL}/api/higherdesignationusernames`,
     GET_FILTERED_USERDOCUMENTUPLOADS: `${BASE_URL}/api/getfiltereduserdocumentuploads`,
+    GET_FILTERED_USERDOCUMENTUPLOADS_LOGINSTATUS: `${BASE_URL}/api/getfiltereduserdocumentuploadsloginstatus`,
+    USER_DOCUMENT_LOGIN_UPDATE: `${BASE_URL}/api/userdocumentloginupdate`,
+  BRANCH_TEMPLATEVVISITORINFORMATION: `${BASE_URL}/api/branchtemplatecontrolpanel`,
+
+
+// visitor information master
+  ALL_VISITORINFORMATIONS: `${BASE_URL}/api/allvisitorinformations`,
+  CHECKEXISTING_VISITORINFORMATION: `${BASE_URL}/api/checkexistingvisitorinformation`,
+  ALL_VISITORINFORMATIONS_REGISTER: `${BASE_URL}/api/allvisitorinformationsregister`,
+  LASTINDEX_VISITORINFORMATIONS: `${BASE_URL}/api/lastindexvisitorinformations`,
+  SKIPPED_VISITORINFORMATIONS: `${BASE_URL}/api/skippedvisitorinformations`,
+  BRANCHSKIPPEDVISITORINFORMATION: `${BASE_URL}/api/branchskippedvisitorinformations`,
+  SKIPPED_VISITORINFORMATIONS_BRANCHFORWARDED: `${BASE_URL}/api/skippedvisitorinformationsbranchforwarded`,
+  VISTORINFORMATION_BRANCHFORWARDLIST: `${BASE_URL}/api/visitorinformationbranchforwardlists`,
+  SKIPPED_VISITORINFORMATIONS_EXPORTS: `${BASE_URL}/api/skippedvisitorinformationsexports`,
+  SKIPPED_VISITORINFORMATIONS_EXPORTS_ALL: `${BASE_URL}/api/skippedallvisitorinformationsall`,
+  ADDVISITORIN_VISITORINFORMATIONS: `${BASE_URL}/api/addvisitorinformationin`,
+  ALL_VISITORINFORMATIONS_FILTEREDID: `${BASE_URL}/api/visitorinformationsfilteredid`,
+  ALL_VISITORINFORMATIONS_CHECKOUT: `${BASE_URL}/api/allvisitorinformationscheckout`,
+  SINGLE_VISITORINFORMATIONS_UPDATEID: `${BASE_URL}/api/visitorinformationsupdateid`,
+  SKIPPEDALL_VISITORINFORMATIONS: `${BASE_URL}/api/skippedallvisitorinformations`,
+  SKIPPEDALL_VISITORINFORMATIONS_DETAILSLOG: `${BASE_URL}/api/skippedallvisitorinformationsdetailslog`,
+  SKIPPEDALL_VISITORINFORMATIONS_DETAILSLOG_EXPORTS: `${BASE_URL}/api/skippedallvisitorinformationsdetailslogexports`,
+  VISITORINFORMATIONS_STATUSUPDATE: `${BASE_URL}/api/updateinteractoraddresumevisitorinformation`,
+  CREATE_VISITORINFORMATIONS: `${BASE_URL}/api/visitorinformations/new`,
+  DUPLICATECANDIDATEFACEDETECTVISITORINFORMATION: `${BASE_URL}/api/duplicatecandidatefacecheckvisitorinformation`,
+  DUPLICATECANDIDATEFACEDETECTVISITORINFORMATION_FORINTERVIEW: `${BASE_URL}/api/duplicatecandidatefacecheckvisitorinformationforinterview`,
+  ALL_VISITORINFORMATIONSFORCANDIDATE: `${BASE_URL}/api/allvisitorinformationsforcandidate`,
+  VISITORINFORMATIONS_UPDATE: `${BASE_URL}/api/visitorinformationstatusupdate`,
+  SINGLE_VISITORINFORMATIONS: `${BASE_URL}/api/visitorinformations`,
+  VEIW_VISITORINFORMATION_FILES: `${BASE_URL}/api/visitorinformationfiles`,
+  VISITOR_INFORMATIONMASTERS: `${BASE_URL}/api/visitorinformationmasters`,
+  SKIPPED_VISITORINFORMATIONS_APPROVALS: `${BASE_URL}/api/skippedvisitorinformationapprovals`,
+
+  VISITORINFORMATIONDETAILS_SINGLE_PROFILE: `${BASE_URL}/api/visitorinformationdetailsforprofile`,
+
+
+
+
+
+
+
+
+      GET_LOGOOVERALL_SETTINGS: `${BASE_URL}/api/getlogooverallsettings`,
+      GET_COMPANY_BRANCH_BIOMETRIC_DEVICES: `${BASE_URL}/api/getcompanybranchbasedbiodevicees`,
+      GET_FILTERED_BIO_DEVICES_VISITORS: `${BASE_URL}/api/getfilteredbiometricvisitordetails`,
+      ENABLE_VISITORS_DETAILS_BY_ID: `${BASE_URL}/api/enablevisitorsdetailsbyid`,
+      BIOMETRIC_VISITOR_DELETION_DETAILS: `${BASE_URL}/api/biometricvisitordeletiondetails`,
+        ALL_BIOMETRICDEVICES_PAIRED_DEVICES_AND_UNPAIRED_USER: `${BASE_URL}/api/biometricpaireddevicesandunpaireduser`,
+        BIOMETRIC_VISITORS_ATTENDANCE_REPORT_CHECK: `${BASE_URL}/api/biometricvisitorsattendancereportcheck`,
+        ALL_BIOMETRICDEVICE_OFFLINE_HISTORY: `${BASE_URL}/api/biometricdevicesofflinehistory`,
+
 
 };

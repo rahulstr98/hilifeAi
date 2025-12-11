@@ -1,5 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
 import ImageIcon from '@mui/icons-material/Image';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Stack } from "@mui/material";
 import {
   Backdrop,
   Box,
@@ -395,7 +397,41 @@ const EmployeeLoginUnmatchedData = () => {
   // Excel
   const fileName = 'EmployeeLoginUnmatchedData';
   let excelno = 1;
+  const [isCompanyDocOpen, setIsCompanyDocOpen] = useState(false);
+  const [selectedCompanyName, setSelectedCompanyName] = useState("");
+  const [selectedDocument, setSelectedDocument] = useState([]);
+const handleViewDocument = async (doc) => {
+  try {
+    let fileObj = doc;
 
+    // If doc is array (sometimes happens), take first element
+    if (Array.isArray(doc)) {
+      fileObj = doc[0];
+    }
+
+    if (!(fileObj instanceof File)) {
+      console.error("Not a File object:", fileObj);
+      return;
+    }
+
+    const url = URL.createObjectURL(fileObj);
+    window.open(url, "_blank");
+
+    // Cleanup
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch (err) {
+    console.error("Error opening document:", err);
+  }
+};
+    const handleShowCompanyDoc = (company, doc) => {
+    setSelectedCompanyName(company);
+    // setSelectedDocument(doc);
+    setIsCompanyDocOpen(true);
+  };
+
+  const handleCloseCompanyDoc = () => {
+    setIsCompanyDocOpen(false);
+  };
   const getCode = async (e, name) => {
     setPageName(!pageName);
     try {
@@ -404,19 +440,79 @@ const EmployeeLoginUnmatchedData = () => {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      setIdLoginStatus(res.data?.suser);
+      let response = await axios.post(
+        SERVICE.GET_FILTERED_USERDOCUMENTUPLOADS_LOGINSTATUS,
+        {
+          modulename: "Human Resources" || "",
+          submodulename: "HR" || "",
+          mainpagename: "Employee" || "",
+          subpagename: "Employee Status Details" || "",
+          subsubpagename: "Employee Login Status" || "",
+          employeename: res.data?.suser?.companyname|| "",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
+
       if (res.data?.suser?.loginUserStatus?.length > 0) {
-        const ans = res.data?.suser?.loginUserStatus?.filter((data) => data._id !== name?.addressid);
+        const ans = res.data?.suser?.loginUserStatus?.filter(
+          (data) => data._id !== name?.addressid
+        );
         setLoginStatusUpdate(ans);
-        handleClickOpendel();
+        if (response?.data?.success) {
+          console.log(response?.data, "response");
+          const filesbill = await getMultipleFilesAsObjects(
+            response?.data?.userdocumentuploads?.files,
+            "userdocuments",
+            response?.data?.userdocumentuploads?.uniqueId
+          );
+          setSelectedDocument(filesbill);
+          // handleFetchBill(filesbill, "Reset Letter", response?.data?.userdocumentuploads?.uniqueId);
+
+          setIdLoginStatus(res.data?.suser);
+          handleShowCompanyDoc(res.data?.suser?.companyname, []);
+        } else {
+          handleClickOpendel();
+        }
       } else {
-        console.log('No Reset');
+        handleShowCompanyDoc(res.data?.suser?.companyname, []);
+        console.log("No Reset");
       }
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
+    const getMultipleFilesAsObjects = async (filenames, type, uniqueId) => {
+      const files = [];
+      for (const name of filenames) {
+        const res = await axios.post(
+          SERVICE.USERDOCUMENTS_EDIT_FETCH,
+          { filename: `${uniqueId}$${type}$${name}` },
+          {
+            headers: {
+              Authorization: `Bearer ${auth.APIToken}`,
+            },
+            responseType: "blob",
+          }
+        );
+  
+        const blob = res.data;
+        const file = new File([blob], name, { type: blob.type });
+        files.push(file);
+      }
+      console.log(files, "files");
+  
+      return files;
+    };
   // Alert delete popup
   let branchid = idLoginStatus?._id;
   const delBranch = async () => {
@@ -428,6 +524,24 @@ const EmployeeLoginUnmatchedData = () => {
         },
         loginUserStatus: loginStatusUpdate,
       });
+      const formData = new FormData();
+      
+      formData.append("userid", branchid);
+      
+      selectedDocument.forEach((file) => {
+        formData.append("files", file);   // must match multer field name
+      });
+      
+      let response = await axios.post(
+        SERVICE.USER_DOCUMENT_LOGIN_UPDATE,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
       handleCloseDel();
       await fetchBranch();
       setPage(1);
@@ -674,9 +788,9 @@ const EmployeeLoginUnmatchedData = () => {
           label: getData?.label,
         };
       });
-      console.log(allWorkStationOpt, 'allWorkStationOpt');
-      console.log(foundDataNew, 'foundDataNew');
-      console.log(secondaryWorkstation, 'secondaryWorkstation');
+      // console.log(allWorkStationOpt, 'allWorkStationOpt');
+      // console.log(foundDataNew, 'foundDataNew');
+      // console.log(secondaryWorkstation, 'secondaryWorkstation');
       setSelectedOptionsWorkStation(foundDataNew);
       setValueWorkStation(res?.data?.suser?.workstation);
       setAssignPopup(true);
@@ -710,7 +824,7 @@ const EmployeeLoginUnmatchedData = () => {
       }
 
       let check = duplicateItem?.filter((item) => item !== null)?.length;
-      console.log(duplicateItem, 'duplicateItem');
+      // console.log(duplicateItem, 'duplicateItem');
 
       if (workstationTodoList?.length === 0 || duplicateItem?.length === 0) {
         setPopupContentMalert('Please Select Work Station');
@@ -921,7 +1035,7 @@ const EmployeeLoginUnmatchedData = () => {
     };
   });
 
-  console.log(rowDataTable, 'rowDataTable');
+  // console.log(rowDataTable, 'rowDataTable');
 
   const rowsWithCheckboxes = rowDataTable.map((row) => ({
     ...row,
@@ -1296,7 +1410,97 @@ const EmployeeLoginUnmatchedData = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Box>
+        <Dialog
+          open={isCompanyDocOpen}
+          onClose={handleCloseCompanyDoc}
+          aria-labelledby="dialog-title"
+          aria-describedby="dialog-description"
+          maxWidth="md"
+          sx={{ marginTop: "80px" }}
+        >
+          <DialogContent>
+            <Typography variant="h6" sx={{ mb: 2 }}>
+              Employee Details
+            </Typography>
 
+            <Grid container spacing={2}>
+              {/* Company Name */}
+              <Grid item xs={12}>
+                <Typography variant="body1">
+                  <b>Employee Name:</b> {selectedCompanyName || "-"}
+                </Typography>
+              </Grid>
+
+              {/* Document */}
+              <Grid item xs={12}>
+                <Typography variant="body1">
+                  <b>Document:</b>
+                </Typography>
+                {selectedDocument && selectedDocument.length > 0 ? (
+                  <Stack spacing={1} sx={{ mt: 1 }}>
+                    {selectedDocument.map((doc, index) => (
+                      <Stack
+                        key={index}
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        sx={{
+                          background: "#f5f5f5",
+                          padding: "6px 10px",
+                          borderRadius: "6px",
+                        }}
+                      >
+                        <Typography>{doc.name || "-"}</Typography>
+
+                        <IconButton onClick={() => handleViewDocument(doc)}>
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Stack>
+                    ))}
+                  </Stack>
+                ) : (
+                  <Typography>-</Typography>
+                )}
+              </Grid>
+            </Grid>
+          </DialogContent>
+
+          <DialogActions>
+            {isLoading ? (
+              <Backdrop
+                sx={{
+                  color: "blue",
+                  zIndex: (theme) => theme.zIndex.drawer + 2,
+                }}
+                open={isLoading}
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  sx={buttonStyles.buttonsubmit}
+                  onClick={() => {
+                    handleCloseCompanyDoc();
+                    handleClickOpendel();
+                  }}
+                >
+                  OK
+                </Button>
+
+                <Button
+                  sx={buttonStyles.btncancel}
+                  onClick={handleCloseCompanyDoc}
+                >
+                  Cancel
+                </Button>
+              </>
+            )}
+          </DialogActions>
+        </Dialog>
+      </Box>
       <Dialog open={assignPopup} onClose={() => handleCloseAssign()} maxWidth="md" fullWidth>
         <DialogTitle>
           <PersonIcon sx={{ color: 'blue', mr: 1 }} />
@@ -1402,7 +1606,7 @@ const EmployeeLoginUnmatchedData = () => {
 
                     const Floor = hyphenCount === 1 ? Bracketsbranch.split('-')[1].trim() : hyphenCount === 2 ? Bracketsbranch.split('-').pop() : Bracketsbranch.split('-').slice(-2).join('-').replace(')', '');
 
-                    console.log(workStationSystemName, 'workStationSystemName');
+                    // console.log(workStationSystemName, 'workStationSystemName');
 
                     // const shortname = workStationSystemName
                     //   ?.filter((item) => item?.branch === Branch && (Floor === '' || Floor === item?.floor) && item?.cabinname === selectedCabinName)

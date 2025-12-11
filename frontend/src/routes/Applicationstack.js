@@ -307,6 +307,17 @@ const Noticeperiodliststatus = React.lazy(() => import("../pages/hr/noticeperiod
 const Noticeperiodstatuslist = React.lazy(() => import("../pages/hr/noticeperiod/Noticeperiodapprovelist"));
 const Deactivateemployeeslist = React.lazy(() => import("../pages/hr/exit details/Deactivateemployeeslist"));
 const FollowUpVisitor = React.lazy(() => import("../pages/interactors/visitors/Followupvisitor"));
+const VisitorInformationMasterCreate = React.lazy(() => import('../pages/interactors/visitors/Visitorinformationmastercreate.js'));
+const VisitorInformationMasterList = React.lazy(() => import('../pages/interactors/visitors/Visitorinformationmasterlist.js'));
+const VisitorInformationMasterEdit = React.lazy(() => import('../pages/interactors/visitors/Visitorinformationmasteredit.js'));
+const VisitorInformationMasterView = React.lazy(() => import('../pages/interactors/visitors/Visitorinformationmasterview.js'));
+const VisitorInformationApprovalList = React.lazy(() => import('../pages/interactors/visitors/Visitorinformationapprovallist.js'));
+const VisitorInformationApprovalCreate = React.lazy(() => import('../pages/interactors/visitors/Visitorinformationapprovalcreate.js'));
+const VisitorInformationApprovalView = React.lazy(() => import('../pages/interactors/visitors/Visitorinformationapprovalview.js'));
+
+
+
+
 const Resumemanagement = React.lazy(() => import("../pages/hr/recruitment/resume/resumemanagement"));
 const ResumeEdit = React.lazy(() => import("../pages/hr/recruitment/resume/edit"));
 const ResumeView = React.lazy(() => import("../pages/hr/recruitment/resume/view"));
@@ -822,6 +833,8 @@ const BiometricUserImportFromDevice = React.lazy(() => import("../pages/hr/emplo
 const BiometricUnregisteredUsers = React.lazy(() => import("../pages/hr/employees/updatepages/BiometricUnregisteredUsers.js"));
 const BiometricUsersGrouping = React.lazy(() => import("../pages/hr/employees/updatepages/BiometricUsersGrouping.js"));
 const BiometricPairedDevicesGrouping = React.lazy(() => import("../pages/hr/employees/updatepages/BiometricPairedDevicesGrouping.js"));
+const VisitorBiometricApproval = React.lazy(() => import("../pages/hr/employees/updatepages/VisitorBiometricApproval.js"));
+const BiometricVisitorsAttendanceReport = React.lazy(() => import("../pages/hr/employees/updatepages/BiometricVisitorsAttendanceReport.js"));
 const BiometricUsersAttendanceReport = React.lazy(() => import("../pages/hr/employees/updatepages/BiometricAttendanceReport.js"));
 const BiometricTeamAttendanceReport = React.lazy(() => import("../pages/hr/employees/updatepages/BiometricTeamAttendanceReport.js"));
 const BiometricUnmatchedUserAttendanceReport = React.lazy(() => import("../pages/hr/employees/updatepages/BiometricUnmatchedUserAttendanceReport.js"));
@@ -893,6 +906,7 @@ const Biometricbrandmodel = React.lazy(() => import('../pages/biometric/Biometri
 
 
 const BiometricstatusList = React.lazy(() => import("../pages/biometric/BiometricStatusList"));
+const BiometricDeviceOfflineHistory = React.lazy(() => import("../pages/biometric/BiometricDeviceOfflineHistory"));
 const ApprovalDocumentsForUser = React.lazy(() => import("../pages/hr/hrdocuments/ApprovalDocumentsForUser"));
 const CandidateDocumentsApproval = React.lazy(() => import("../pages/hr/hrdocuments/CandidateDocumentsApproval.js"));
 const CandidateDocumentsPrintedStatusList = React.lazy(() => import("../pages/hr/hrdocuments/CandidateDocumentPrintedStatusList.js"));
@@ -1694,6 +1708,14 @@ const App = () => {
             <Route path="interactor/master/visitorsdatefilter" element={<VisitorDateFilter />} />
             <Route path="interactor/master/visitorsfollowupfilter" element={<VisitorFollowupFilter />} />
             <Route path="interactor/master/followupvisitor/:id/:form" element={<FollowUpVisitor />} />
+                        <Route path="interactor/master/visitorinformationmastercreate" element={<VisitorInformationMasterCreate />} />
+            <Route path="interactor/master/visitorinformationmasterlist" element={<VisitorInformationMasterList />} />
+            <Route path="interactor/master/visitorinformationmasteredit/:id/:form" element={<VisitorInformationMasterEdit />} />
+            <Route path="interactor/master/visitorinformationmasterview/:id" element={<VisitorInformationMasterView />} />
+            <Route path="interactor/master/visitorinformationapprovallist" element={<VisitorInformationApprovalList />} />
+            <Route path="interactor/master/visitorinformationapprovalcreate/:id" element={<VisitorInformationApprovalCreate />} />
+            <Route path="interactor/master/visitorinformationapprovalview/:id" element={<VisitorInformationApprovalView />} />
+
             <Route path="clientsupport/manageticketgrouping" element={<ManageTicketGrouping />} />
             <Route path="clientsupport/manageclientdetails" element={<ManageClientDetails />} />
             <Route path="clientsupport/clientsupportlist" element={<ClientSupportList />} />
@@ -1810,6 +1832,8 @@ const App = () => {
             <Route path="/biometricunregisteredusers" element={<BiometricUnregisteredUsers />} />
             <Route path="/biometricusersgrouping" element={<BiometricUsersGrouping />} />
             <Route path="/biometricpaireddevicesgrouping" element={<BiometricPairedDevicesGrouping />} />
+            <Route path="/visitorbiometricapproval" element={<VisitorBiometricApproval />} />
+            <Route path="/biometricvisitorsattendancereport" element={<BiometricVisitorsAttendanceReport />} />
             <Route path="/biometricusersattendancereport" element={<BiometricUsersAttendanceReport />} />
             <Route path="/biometricteamattendancereport" element={<BiometricTeamAttendanceReport />} />
             <Route path="/biometricunmatchedusersattendancereport" element={<BiometricUnmatchedUserAttendanceReport />} />
@@ -1880,6 +1904,7 @@ const App = () => {
             <Route path="/biometric/brandmodel" element={<Biometricbrandmodel />} />
 
 
+            <Route path="/biometricdeviceofflinehistory" element={<BiometricDeviceOfflineHistory />} />
             <Route path="/biometricstatuslist" element={<BiometricstatusList />} />
             <Route path="hrdocuments/approvaluserdocuments" element={<ApprovalDocumentsForUser />} />
             <Route path="hrdocuments/approvalcandidatedocuments" element={<CandidateDocumentsApproval />} />

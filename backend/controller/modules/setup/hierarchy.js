@@ -1849,6 +1849,8 @@ exports.getAllNoticeHierarchyList = catchAsyncErrors(async (req, res, next) => {
 function getAllSupervisors(hierarchy, criteria) {
   const { company, branch, unit, team, department } = criteria;
 
+  console.log(criteria , "criteria")
+
   // Step 1 → Filter with All logic + department support
   let matches = hierarchy.filter(
     (item) =>
@@ -1884,7 +1886,7 @@ exports.getAllHierarchyReportingTo = catchAsyncErrors(
     let result;
     try {
       const { company, branch, unit, team, department } = req.body;
-      console.log(company, branch, unit, team, department, "1882 Hiearachy");
+      // console.log(company, branch, unit, team, department, "1882 Hiearachy");
       const resultHierarchy = await Hirerarchi.find({}).lean();
       const request = {
         company,
@@ -1926,10 +1928,10 @@ exports.getAllHierarchyReportingTo = catchAsyncErrors(
       // Final MongoDB call
       resultUsers = await User.find(query, { companyname: 1 });
 
-      console.log(
-        resultUsers?.map((data) => data?.companyname),
-        "companyNamesResult"
-      );
+      // console.log(
+      //   resultUsers?.map((data) => data?.companyname),
+      //   "companyNamesResult"
+      // );
       result = [
         {
           result: {
@@ -1950,6 +1952,10 @@ exports.getAllHierarchyReportingTo = catchAsyncErrors(
     });
   }
 );
+
+
+
+
 // Newly Added Hierarchy User Based Restriction
 
 exports.getAllUserReportingToChange = catchAsyncErrors(
@@ -3098,6 +3104,21 @@ exports.getAllHigherDesignationUserNames = catchAsyncErrors(
 
       const userDesignation = await User.find(
         {
+          enquirystatus: {
+            $nin: ["Enquiry Purpose"],
+          },
+          resonablestatus: {
+            $nin: [
+              "Not Joined",
+              "Postponed",
+              "Rejected",
+              "Closed",
+              "Releave Employee",
+              "Absconded",
+              "Hold",
+              "Terminate",
+            ],
+          },
           companyname: { $in: finalDesig },
           designation: { $ne: designation },
         },
@@ -3108,9 +3129,24 @@ exports.getAllHigherDesignationUserNames = catchAsyncErrors(
 
       const userNamesBasedDesignations = await User.find(
         {
+          enquirystatus: {
+            $nin: ["Enquiry Purpose"],
+          },
+          resonablestatus: {
+            $nin: [
+              "Not Joined",
+              "Postponed",
+              "Rejected",
+              "Closed",
+              "Releave Employee",
+              "Absconded",
+              "Hold",
+              "Terminate",
+            ],
+          },
           designation: { $in: designations },
         },
-        { companyname: 1 , company :1 , branch :1  }
+        { companyname: 1, company: 1, branch: 1 }
       );
       hierarchydata = userNamesBasedDesignations;
     } catch (err) {

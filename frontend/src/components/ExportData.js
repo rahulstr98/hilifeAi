@@ -284,8 +284,8 @@ function ExportData({
           <TableHead>
             <TableRow>
               <TableCell>S No</TableCell>
-              {exportColumnNames?.map((item) => {
-                return <TableCell>{item}</TableCell>;
+              {exportColumnNames?.map((item , index) => {
+                return <TableCell key={index}>{item}</TableCell>;
               })}
             </TableRow>
           </TableHead>
@@ -296,8 +296,8 @@ function ExportData({
                   <TableCell component="th" scope="row">
                     {index + 1}
                   </TableCell>
-                  {exportRowValues?.map((item) => {
-                    return <TableCell>{row[item]}</TableCell>;
+                  {exportRowValues?.map((item , index) => {
+                    return <TableCell key={index}>{row[item]}</TableCell>;
                   })}
                 </TableRow>
               ))}

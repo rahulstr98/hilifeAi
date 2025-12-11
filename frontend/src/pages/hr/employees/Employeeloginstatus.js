@@ -50,9 +50,9 @@ import { colourStyles, userStyle } from "../../../pageStyle";
 import { SERVICE } from "../../../services/Baseservice";
 import EmployeeActionLoginStatus from "./EmployeeActionLoginStatus";
 import EmployeeLoginUnmatchedData from "./EmployeeLoginUnmatchedData";
-import UserDocumentUploadView from '../UserDocumentUploadView.js';
 import domtoimage from "dom-to-image";
-
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import { Stack } from "@mui/material";
 import AlertDialog from "../../../components/Alert";
 import { DeleteConfirmation } from "../../../components/DeleteConfirmation.js";
 import ExportData from "../../../components/ExportData";
@@ -131,17 +131,44 @@ const EmployeeLoginStatus = () => {
 
   const [isCompanyDocOpen, setIsCompanyDocOpen] = useState(false);
   const [selectedCompanyName, setSelectedCompanyName] = useState("");
-  const [selectedDocument, setSelectedDocument] = useState("");
+  const [selectedDocument, setSelectedDocument] = useState([]);
+const handleViewDocument = async (doc) => {
+  try {
+    let fileObj = doc;
+
+    // If doc is array (sometimes happens), take first element
+    if (Array.isArray(doc)) {
+      fileObj = doc[0];
+    }
+
+    if (!(fileObj instanceof File)) {
+      console.error("Not a File object:", fileObj);
+      return;
+    }
+
+    const url = URL.createObjectURL(fileObj);
+    window.open(url, "_blank");
+
+    // Cleanup
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+  } catch (err) {
+    console.error("Error opening document:", err);
+  }
+};
+
+
+
+
   const handleShowCompanyDoc = (company, doc) => {
     setSelectedCompanyName(company);
-    setSelectedDocument(doc);
+    // setSelectedDocument(doc);
     setIsCompanyDocOpen(true);
   };
 
   const handleCloseCompanyDoc = () => {
     setIsCompanyDocOpen(false);
   };
-
+  console.log(selectedDocument, "selectedDocument");
   let exportColumnNames = [
     "Employee Code",
     "Company Name",
@@ -1336,7 +1363,7 @@ const EmployeeLoginStatus = () => {
         return transformedArray;
       };
 
-      console.log(res_branch?.data?.users, "res_branch?.data?.users");
+      // console.log(res_branch?.data?.users, "res_branch?.data?.users");
 
       const transformedData = transformData(res_branch?.data?.users);
 
@@ -1401,10 +1428,10 @@ const EmployeeLoginStatus = () => {
           serialNumber: index + 1,
         }));
       setFilterLoader(false);
-      console.log(res_branch?.data?.users, "checked");
+      // console.log(res_branch?.data?.users, "checked");
       setLoginStatus(filteredItems);
       // setLoginStatus(itemsWithSerialNumber);
-      console.log(itemsWithSerialNumber, "itemsWithSerialNumber");
+      // console.log(itemsWithSerialNumber, "itemsWithSerialNumber");
       // setLoginStatusOverall(itemsWithSerialNumber);
       setLoginStatusOverall(filteredItems);
       // setIsBranch(false);
@@ -1434,31 +1461,43 @@ const EmployeeLoginStatus = () => {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-              let response = await axios.post(
-                SERVICE.GET_FILTERED_USERDOCUMENTUPLOADS,
-                {
-                  modulename: "Human Resources" || '',
-                  submodulename: "HR" || '',
-                  mainpagename: "Employee" || '',
-                  subpagename: "Employee details" || '',
-                  subsubpagename: "Remote Employee List" || '',
-                  employeename: "RAMA.SHREENIVASAN" || '',
-                  selectedDate: "" || [],
-                },
-                {
-                  headers: {
-                    Authorization: `Bearer ${auth.APIToken}`,
-                  },
-                }
-              );
-      setIdLoginStatus(res.data?.suser);
+      let response = await axios.post(
+        SERVICE.GET_FILTERED_USERDOCUMENTUPLOADS_LOGINSTATUS,
+        {
+          modulename: "Human Resources" || "",
+          submodulename: "HR" || "",
+          mainpagename: "Employee" || "",
+          subpagename: "Employee Status Details" || "",
+          subsubpagename: "Employee Login Status" || "",
+          employeename: res.data?.suser?.companyname|| "",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
+
       if (res.data?.suser?.loginUserStatus?.length > 0) {
         const ans = res.data?.suser?.loginUserStatus?.filter(
           (data) => data._id !== name?.addressid
         );
         setLoginStatusUpdate(ans);
-        // handleClickOpendel();
-        handleShowCompanyDoc(res.data?.suser?.companyname, []);
+        if (response?.data?.success) {
+          console.log(response?.data, "response");
+          const filesbill = await getMultipleFilesAsObjects(
+            response?.data?.userdocumentuploads?.files,
+            "userdocuments",
+            response?.data?.userdocumentuploads?.uniqueId
+          );
+          setSelectedDocument(filesbill);
+          // handleFetchBill(filesbill, "Reset Letter", response?.data?.userdocumentuploads?.uniqueId);
+
+          setIdLoginStatus(res.data?.suser);
+          handleShowCompanyDoc(res.data?.suser?.companyname, []);
+        } else {
+          handleClickOpendel();
+        }
       } else {
         handleShowCompanyDoc(res.data?.suser?.companyname, []);
         console.log("No Reset");
@@ -1473,6 +1512,64 @@ const EmployeeLoginStatus = () => {
     }
   };
 
+  const getMultipleFilesAsObjects = async (filenames, type, uniqueId) => {
+    const files = [];
+    for (const name of filenames) {
+      const res = await axios.post(
+        SERVICE.USERDOCUMENTS_EDIT_FETCH,
+        { filename: `${uniqueId}$${type}$${name}` },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          responseType: "blob",
+        }
+      );
+
+      const blob = res.data;
+      const file = new File([blob], name, { type: blob.type });
+      files.push(file);
+    }
+    console.log(files, "files");
+
+    return files;
+  };
+
+
+
+
+  const handleFetchBill = (data, remarks, uniqueId) => {
+    const files = Array.from(data); // Ensure it's an array
+
+    const fileReaders = [];
+    const newSelectedFiles = [];
+
+    // imageFiles.forEach((file) => {
+    files.forEach((file) => {
+      const reader = new FileReader();
+
+      const readerPromise = new Promise((resolve) => {
+        reader.onload = () => {
+          const fileData = {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            preview: reader.result,
+            uniqueId: uniqueId,
+          };
+          newSelectedFiles.push(fileData);
+          resolve(file);
+        };
+      });
+
+      reader.readAsDataURL(file);
+      fileReaders.push(readerPromise);
+    });
+
+    Promise.all(fileReaders).then((originalFiles) => {
+      // setSelectedDocument(newSelectedFiles);
+    });
+  };
   // Alert delete popup
   let branchid = idLoginStatus?._id;
   const delBranch = async () => {
@@ -1484,8 +1581,26 @@ const EmployeeLoginStatus = () => {
         },
         loginUserStatus: loginStatusUpdate,
       });
+  const formData = new FormData();
+
+formData.append("userid", branchid);
+
+selectedDocument.forEach((file) => {
+  formData.append("files", file);   // must match multer field name
+});
+
+let response = await axios.post(
+  SERVICE.USER_DOCUMENT_LOGIN_UPDATE,
+  formData,
+  {
+    headers: {
+      Authorization: `Bearer ${auth.APIToken}`,
+      "Content-Type": "multipart/form-data",
+    },
+  }
+);
       handleCloseDel();
-      // await fetchLoginStatus();
+      await fetchLoginStatus();
       setPage(1);
       setSelectedRows([]);
       setPage(1);
@@ -2035,7 +2150,7 @@ const EmployeeLoginStatus = () => {
       const data = allPastename.filter(
         (d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, ".").trim())
       );
-      console.log(data, allPastename, valueEmployeeCat, "data");
+      // console.log(data, allPastename, valueEmployeeCat, "data");
 
       setMismatchusers([...new Set(data)]);
       handleClickOpenview();
@@ -2913,34 +3028,47 @@ const EmployeeLoginStatus = () => {
         >
           <DialogContent>
             <Typography variant="h6" sx={{ mb: 2 }}>
-              Company Details
+              Employee Details
             </Typography>
 
             <Grid container spacing={2}>
               {/* Company Name */}
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  <b>Company Name:</b> {selectedCompanyName || "-"}
+                  <b>Employee Name:</b> {selectedCompanyName || "-"}
                 </Typography>
               </Grid>
 
               {/* Document */}
               <Grid item xs={12}>
                 <Typography variant="body1">
-                  <b>Document:</b> {selectedDocument || "-"}
+                  <b>Document:</b>
                 </Typography>
-                {/* <UserDocumentUploadView
-                  queryParams={{
-                    modulename: "Human Resources",
-                    submodulename: "HR",
-                    mainpagename: "Employee",
-                    subpagename: "Employee Details",
-                    subsubpagename: "Remote Employee List",
-                    employeename: "RAMA.SHREENIVASAN",
-                  }}
-                  // openPopup={isEditOpenCheckList}
-                  // setUploadedFiles={setEmployeeDocumentFiles}
-                /> */}
+                {selectedDocument && selectedDocument.length > 0 ? (
+                  <Stack spacing={1} sx={{ mt: 1 }}>
+                    {selectedDocument.map((doc, index) => (
+                      <Stack
+                        key={index}
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        sx={{
+                          background: "#f5f5f5",
+                          padding: "6px 10px",
+                          borderRadius: "6px",
+                        }}
+                      >
+                        <Typography>{doc.name || "-"}</Typography>
+
+                        <IconButton onClick={() => handleViewDocument(doc)}>
+                          <VisibilityIcon />
+                        </IconButton>
+                      </Stack>
+                    ))}
+                  </Stack>
+                ) : (
+                  <Typography>-</Typography>
+                )}
               </Grid>
             </Grid>
           </DialogContent>
@@ -2963,6 +3091,7 @@ const EmployeeLoginStatus = () => {
                   sx={buttonStyles.buttonsubmit}
                   onClick={() => {
                     handleCloseCompanyDoc();
+                    handleClickOpendel();
                   }}
                 >
                   OK

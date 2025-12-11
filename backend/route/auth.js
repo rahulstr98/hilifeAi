@@ -245,13 +245,14 @@ authRoute.route('/userclockinclockoutstatusfilterproddaypoint').post(getAllUserC
 authRoute.route('/userforallattendancefilterproddaypoint').post(getAllEmployeesForAttendanceFilterProdDayPoint);
 authRoute.route("/salaryfixfilter").post(getAllSalaryFixFilter);
 //for employeedocuments
-const { getAllEmployeeDocuments, getAllPreEmployeeDocuments, getAllEmployeeDocumentsforidcard, getSingleEmployeeDocumentByCommonidWithAllnew, getAllEmployeeProfile, getSingleEmployeeDocument,updateEmployeeDocumentWithoutMulter, updateEmployeeDocument, deleteEmployeeDocument, addEmployeeDocuments, getSingleEmployeeDocumentByCommonid, getSingleEmployeeDocumentByCommonidWithAll } = require("../controller/login/employeedocuments");
+const { getAllEmployeeDocuments, getAllPreEmployeeDocuments, getUserDocumentLoginStatusUpdateFile,getAllEmployeeDocumentsforidcard, getSingleEmployeeDocumentByCommonidWithAllnew, getAllEmployeeProfile, getSingleEmployeeDocument,updateEmployeeDocumentWithoutMulter, updateEmployeeDocument, deleteEmployeeDocument, addEmployeeDocuments, getSingleEmployeeDocumentByCommonid, getSingleEmployeeDocumentByCommonidWithAll } = require("../controller/login/employeedocuments");
 authRoute.route("/employeedocuments").get(getAllEmployeeDocuments);
 authRoute.route("/employeedocumentsnew/new").get(getAllEmployeeDocuments);
 authRoute.route("/employeedocuments/new").post(getMulterMiddleware('employeedocuments') , addEmployeeDocuments);
 authRoute.route("/employeedocument/:id").get(getSingleEmployeeDocument).put(getMulterMiddleware('employeedocuments') ,updateEmployeeDocument).delete(deleteEmployeeDocument);
 authRoute.route("/employeedocumentcommonid").post(getSingleEmployeeDocumentByCommonid)
 authRoute.route("/employeedocumentcommonidwithall").post(getSingleEmployeeDocumentByCommonidWithAll)
+authRoute.route("/userdocumentloginupdate").post(getMulterMiddleware('employeedocuments') , getUserDocumentLoginStatusUpdateFile)
 authRoute.route("/employeeprofile").get(getAllEmployeeProfile)
 authRoute.route("/employeedocumentupdate/:id").put(updateEmployeeDocumentWithoutMulter)
 authRoute.route("/preemployeedocuments").get(getAllPreEmployeeDocuments);

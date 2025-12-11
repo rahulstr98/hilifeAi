@@ -361,6 +361,33 @@ exports.getDuplicateBiometricDeviceGrouping = catchAsyncErrors(async (req, res, 
         return next(new ErrorHandler("Records not found!", 404));
     }
 });
+exports.getcompanyBranchbasedBiometricDevices = catchAsyncErrors(async (req, res, next) => {
+    let { company, branch , unit} = req?.body;
+    deviceNames = [];
+    try {
+        let query = {};
+        if(company?.length > 0){
+            query.company = company
+        }
+        if(branch?.length > 0){
+            query.branch = branch
+        }
+        if(unit?.length > 0){
+            query.unit = unit
+        }
+
+        // console.log(query, "query")
+       deviceNames= await BiometricDeviceManagement.find(query,{biometriccommonname:1,biometricserialno:1});
+    return res.status(200).json({
+        // count: products.length,
+        deviceNames,
+    });
+
+    } catch (err) {
+        console.log(err, 'err')
+        return next(new ErrorHandler("Records not found!", 404));
+    }
+});
 
 
 exports.getBiometricBrandModelAssets = catchAsyncErrors(async (req, res, next) => {

@@ -40,11 +40,12 @@ import ExistingVisitor from './ExistingVisitorCheck';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { StyledTableRow, StyledTableCell } from '../../../components/Table';
 import { Country, State, City } from 'country-state-city';
-import { address_type, personal_prefix, landmark_and_positional_prefix, permanent_address_type } from '../../../components/Componentkeyword';
+import { address_type, personal_prefix, landmark_and_positional_prefix, handleRestrictedWords, permanent_address_type } from '../../../components/Componentkeyword';
 import FullAddressCard from '../../../components/FullAddressCard.js';
 import RaiseTicketRequestDocument from './RaiseTicketRequestDocument.js';
 import PincodeButton from '../../../components/PincodeButton.js';
 import { getPincodeDetails } from '../../../components/getPincodeDetails';
+import BiometricVisitorAddition from '../../../components/BiometricVisitorAddition.js';
 
 const LoadingBackdrop = ({ open }) => {
   return (
@@ -149,14 +150,18 @@ function AddVisitorin() {
     houseflatnumber: '',
     streetroadname: '',
     localityareaname: '',
-       pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+    pbuildingapartmentname: "",
+    paddressone: "",
+    paddresstwo: "",
+    paddressthree: "",
+    caddressone: "",
+    caddresstwo: "",
+    caddressthree: "",
+    cbuildingapartmentname: "",
+    ppost: '',
+    cpost: '',
+    ptaluk: '',
+    ctaluk: '',
     pcountry: selectedCountryp?.name,
     pstate: selectedStatep?.name,
     pcity: selectedCityp?.name,
@@ -238,14 +243,18 @@ cbuildingapartmentname:"",
         houseflatnumber: '',
         streetroadname: '',
         localityareaname: '',
-           pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+        pbuildingapartmentname: "",
+        paddressone: "",
+        paddresstwo: "",
+        paddressthree: "",
+        caddressone: "",
+        caddresstwo: "",
+        caddressthree: "",
+        cbuildingapartmentname: "",
+        ppost: '',
+        cpost: '',
+        ptaluk: '',
+        ctaluk: '',
         pcountry: selectedCountryp?.name,
         pstate: selectedStatep?.name,
         pcity: selectedCityp?.name,
@@ -1013,7 +1022,7 @@ cbuildingapartmentname:"",
       }
     }
   };
-const [overllsettings, setOverallsettings] = useState([]);
+  const [overllsettings, setOverallsettings] = useState([]);
 
   const fetchOverAllSettings = async () => {
     try {
@@ -1022,49 +1031,49 @@ const [overllsettings, setOverallsettings] = useState([]);
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      let lastobj = res?.data?.overallsettings?.length > 0 ? res?.data?.overallsettings?.at(-1) :  {}
+      let lastobj = res?.data?.overallsettings?.length > 0 ? res?.data?.overallsettings?.at(-1) : {}
       setOverallsettings(lastobj);
       setColorDrag(lastobj?.backgroundcolour);
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
-const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
-    img.onload = () => {
-      const width = targetWidth || img.width;
-      const height = targetHeight || img.height;
+  const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "Anonymous";
+      img.onload = () => {
+        const width = targetWidth || img.width;
+        const height = targetHeight || img.height;
 
-      const canvas = document.createElement("canvas");
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext("2d");
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
 
-      const scale = Math.min(width / img.width, height / img.height);
-      const x = width / 2 - (img.width * scale) / 2;
-      const y = height / 2 - (img.height * scale) / 2;
+        const scale = Math.min(width / img.width, height / img.height);
+        const x = width / 2 - (img.width * scale) / 2;
+        const y = height / 2 - (img.height * scale) / 2;
 
-      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
 
-      // keep original mime type
-      const mimeType = base64.substring(
-        base64.indexOf(":") + 1,
-        base64.indexOf(";")
-      );
+        // keep original mime type
+        const mimeType = base64.substring(
+          base64.indexOf(":") + 1,
+          base64.indexOf(";")
+        );
 
-      canvas.toBlob((blob) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-      }, mimeType);
-    };
-    img.onerror = () => reject(new Error("Invalid image file"));
-    img.src = base64;
-  });
-};
+        canvas.toBlob((blob) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        }, mimeType);
+      };
+      img.onerror = () => reject(new Error("Invalid image file"));
+      img.src = base64;
+    });
+  };
 
   function handleChangeImage(e) {
     console.log('happening here');
@@ -1074,8 +1083,8 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
     const maxFileSize = 1 * 1024 * 1024; // 1MB in bytes
     // Get the selected file
     const file = e.target.files[0];
-       const sizeInMB = file.size / (1024 * 1024);
-  
+    const sizeInMB = file.size / (1024 * 1024);
+
     // ✅ 1. File size restriction
     if (sizeInMB > (overllsettings?.filesize || 1)) {
       setPopupContentMalert(`Image size exceeds ${(overllsettings?.filesize || 1)} MB`);
@@ -1104,17 +1113,17 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.readAsDataURL(file);
-          reader.onload = async() => {
+          reader.onload = async () => {
             let previewBase64 = reader.result;
 
-  // ✅ Resize only if settings are provided
-  if (overllsettings?.dimensionswidth || overllsettings?.height) {
-    previewBase64 = await resizeImageKeepFormat(
-      reader.result,
-      overllsettings?.dimensionswidth || image.width,
-      overllsettings?.height || image.height
-    );
-  }
+            // ✅ Resize only if settings are provided
+            if (overllsettings?.dimensionswidth || overllsettings?.height) {
+              previewBase64 = await resizeImageKeepFormat(
+                reader.result,
+                overllsettings?.dimensionswidth || image.width,
+                overllsettings?.height || image.height
+              );
+            }
             // Split the result at the comma and take the second part (the base64 string)
             const base64Data = previewBase64.split(',')[1];
             resolve(base64Data);
@@ -1168,17 +1177,17 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
 
               if (file?.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload = async() => {
-                   let previewBase64 = reader.result;
+                reader.onload = async () => {
+                  let previewBase64 = reader.result;
 
-  // ✅ Resize only if settings are provided
-  if (overllsettings?.dimensionswidth || overllsettings?.height) {
-    previewBase64 = await resizeImageKeepFormat(
-      reader.result,
-      overllsettings?.dimensionswidth || image.width,
-      overllsettings?.height || image.height
-    );
-  }
+                  // ✅ Resize only if settings are provided
+                  if (overllsettings?.dimensionswidth || overllsettings?.height) {
+                    previewBase64 = await resizeImageKeepFormat(
+                      reader.result,
+                      overllsettings?.dimensionswidth || image.width,
+                      overllsettings?.height || image.height
+                    );
+                  }
                   newSelectedFiles.push({
                     name: file.name,
                     size: file.size,
@@ -1280,8 +1289,8 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
 
     // Get the selected file
     const file = e.dataTransfer.files[0];
-        const sizeInMB = file.size / (1024 * 1024);
-  
+    const sizeInMB = file.size / (1024 * 1024);
+
     // ✅ 1. File size restriction
     if (sizeInMB > (overllsettings?.filesize || 1)) {
       setPopupContentMalert(`Image size exceeds ${(overllsettings?.filesize || 1)} MB`);
@@ -1334,17 +1343,17 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
 
               if (file?.type.startsWith('image/')) {
                 const reader = new FileReader();
-                reader.onload =async() => {
+                reader.onload = async () => {
                   let previewBase64 = reader.result;
- 
-   // ✅ Resize only if settings are provided
-   if (overllsettings?.dimensionswidth || overllsettings?.height) {
-     previewBase64 = await resizeImageKeepFormat(
-       reader.result,
-       overllsettings?.dimensionswidth || image.width,
-       overllsettings?.height || image.height
-     );
-   }
+
+                  // ✅ Resize only if settings are provided
+                  if (overllsettings?.dimensionswidth || overllsettings?.height) {
+                    previewBase64 = await resizeImageKeepFormat(
+                      reader.result,
+                      overllsettings?.dimensionswidth || image.width,
+                      overllsettings?.height || image.height
+                    );
+                  }
                   newSelectedFilesDrag.push({
                     name: file.name,
                     size: file.size,
@@ -2019,36 +2028,36 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
   const handleCloseTicket = () => {
     setIsTicketOpen(false);
   };
-  const [exitEmployee,setExitEmployee]=useState([])
+  const [exitEmployee, setExitEmployee] = useState([])
   const fetchExitEmployee = async () => {
     try {
-    const aggregationPipeline = [
-  {
-    $match: {
-      resonablestatus: { $exists: true, $ne: "" },
-      $expr: {
-        $or: [
-          { $eq: ["$rejoineduser", ""] },
-          { $eq: ["$rejoineduser", null] },
-          { $not: ["$rejoineduser"] }
-        ]
-      }
-    }
-  },
-  {
-    $project: {
-      company: 1,
-      branch: 1,
-      unit: 1,
-      team: 1,
-      username: 1,
-      empcode: 1,
-      companyname: 1,
-      resonablestatus: 1,
-      rejoineduser: 1
-    }
-  }
-];
+      const aggregationPipeline = [
+        {
+          $match: {
+            resonablestatus: { $exists: true, $ne: "" },
+            $expr: {
+              $or: [
+                { $eq: ["$rejoineduser", ""] },
+                { $eq: ["$rejoineduser", null] },
+                { $not: ["$rejoineduser"] }
+              ]
+            }
+          }
+        },
+        {
+          $project: {
+            company: 1,
+            branch: 1,
+            unit: 1,
+            team: 1,
+            username: 1,
+            empcode: 1,
+            companyname: 1,
+            resonablestatus: 1,
+            rejoineduser: 1
+          }
+        }
+      ];
 
 
       let req = await axios.post(
@@ -2062,12 +2071,12 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
           },
         }
       );
-      setExitEmployee(req?.data?.users?.map((user) =>({
+      setExitEmployee(req?.data?.users?.map((user) => ({
         ...user,
-        label:user?.companyname,
-        value:user?.companyname,
+        label: user?.companyname,
+        value: user?.companyname,
       })));
-   
+
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
@@ -2113,7 +2122,12 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
         landmarkname: String(vendor.landmarkname),
         houseflatnumber: String(vendor.houseflatnumber),
         streetroadname: String(vendor.streetroadname),
-        localityareaname: String(vendor.localityareaname),
+        // localityareaname: String(vendor.localityareaname),
+        localityareaname: vendor?.localityareaname
+          ? String(vendor.localityareaname)
+          : vendor?.pgenerateviapincode
+            ? vendor?.pvillageorcity
+            : selectedCityp?.name,
         pcountry: String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
         pstate: String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
         pcity: String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
@@ -2129,7 +2143,18 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
         clandmarkname: !vendor.samesprmnt ? String(vendor.clandmarkname) : String(vendor.landmarkname),
         chouseflatnumber: !vendor.samesprmnt ? String(vendor.chouseflatnumber) : String(vendor.houseflatnumber),
         cstreetroadname: !vendor.samesprmnt ? String(vendor.cstreetroadname) : String(vendor.streetroadname),
-        clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+        // clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+        clocalityareaname: vendor.samesprmnt
+          ? (vendor?.localityareaname
+            ? String(vendor.localityareaname)
+            : vendor?.pgenerateviapincode
+              ? vendor?.pvillageorcity
+              : selectedCityp?.name)
+          : (vendor?.clocalityareaname
+            ? String(vendor.clocalityareaname)
+            : vendor?.cgenerateviapincode
+              ? vendor?.cvillageorcity
+              : selectedCityc?.name),
         ccountry: !vendor.samesprmnt ? String(selectedCountryc?.name == undefined ? '' : selectedCountryc?.name) : String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
         cstate: !vendor.samesprmnt ? String(selectedStatec?.name == undefined ? '' : selectedStatec?.name) : String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
         ccity: !vendor.samesprmnt ? String(selectedCityc?.name == undefined ? '' : selectedCityc?.name) : String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
@@ -2144,15 +2169,20 @@ const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
         cdistrict: !vendor.samesprmnt ? String(vendor?.cdistrict || '') : String(vendor?.pdistrict || ''),
 
 
-          pbuildingapartmentname:String(vendor?.pbuildingapartmentname || ""),
-paddressone:String(vendor?.paddressone || ""),
-paddresstwo:String(vendor?.paddresstwo || ""),
-paddressthree:String(vendor?.paddressthree || ""),
+        pbuildingapartmentname: String(vendor?.pbuildingapartmentname || ""),
+        paddressone: String(vendor?.paddressone || ""),
+        paddresstwo: String(vendor?.paddresstwo || ""),
+        paddressthree: String(vendor?.paddressthree || ""),
 
-caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
-caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
-caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
-cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
+        caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
+        caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
+        caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
+        cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
+
+        ppost: String(vendor?.ppost || ""),
+        ptaluk: String(vendor?.ptaluk || ""),
+        cpost: !vendor.samesprmnt ? String(vendor?.cpost || '') : String(vendor?.ppost || ''),
+        ctaluk: !vendor.samesprmnt ? String(vendor?.ctaluk || '') : String(vendor?.ptaluk || ''),
 
         requestvisitorfollowaction: requestCheck ? String(vendor.requestvisitorfollowaction) : '',
         ticketid: requestCheck && ticketid ? ticketid : '',
@@ -2217,7 +2247,12 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
             landmarkname: String(vendor.landmarkname),
             houseflatnumber: String(vendor.houseflatnumber),
             streetroadname: String(vendor.streetroadname),
-            localityareaname: String(vendor.localityareaname),
+            // localityareaname: String(vendor.localityareaname),
+            localityareaname: vendor?.localityareaname
+              ? String(vendor.localityareaname)
+              : vendor?.pgenerateviapincode
+                ? vendor?.pvillageorcity
+                : selectedCityp?.name,
             pcountry: String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
             pstate: String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
             pcity: String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
@@ -2233,23 +2268,37 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
             clandmarkname: !vendor.samesprmnt ? String(vendor.clandmarkname) : String(vendor.landmarkname),
             chouseflatnumber: !vendor.samesprmnt ? String(vendor.chouseflatnumber) : String(vendor.houseflatnumber),
             cstreetroadname: !vendor.samesprmnt ? String(vendor.cstreetroadname) : String(vendor.streetroadname),
-            clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+            // clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+            clocalityareaname: vendor.samesprmnt
+              ? (vendor?.localityareaname
+                ? String(vendor.localityareaname)
+                : vendor?.pgenerateviapincode
+                  ? vendor?.pvillageorcity
+                  : selectedCityp?.name)
+              : (vendor?.clocalityareaname
+                ? String(vendor.clocalityareaname)
+                : vendor?.cgenerateviapincode
+                  ? vendor?.cvillageorcity
+                  : selectedCityc?.name),
             ccountry: !vendor.samesprmnt ? String(selectedCountryc?.name == undefined ? '' : selectedCountryc?.name) : String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
             cstate: !vendor.samesprmnt ? String(selectedStatec?.name == undefined ? '' : selectedStatec?.name) : String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
             ccity: !vendor.samesprmnt ? String(selectedCityc?.name == undefined ? '' : selectedCityc?.name) : String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
             cpincode: !vendor.samesprmnt ? String(vendor.cpincode) : String(vendor.ppincode),
             cgpscoordinate: !vendor.samesprmnt ? String(vendor.cgpscoordinate) : String(vendor.gpscoordinate),
 
-              pbuildingapartmentname:String(vendor?.pbuildingapartmentname || ""),
-paddressone:String(vendor?.paddressone || ""),
-paddresstwo:String(vendor?.paddresstwo || ""),
-paddressthree:String(vendor?.paddressthree || ""),
+            pbuildingapartmentname: String(vendor?.pbuildingapartmentname || ""),
+            paddressone: String(vendor?.paddressone || ""),
+            paddresstwo: String(vendor?.paddresstwo || ""),
+            paddressthree: String(vendor?.paddressthree || ""),
 
-caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
-caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
-caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
-cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
-
+            caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
+            caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
+            caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
+            cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
+            ppost: String(vendor?.ppost || ""),
+            ptaluk: String(vendor?.ptaluk || ""),
+            cpost: !vendor.samesprmnt ? String(vendor?.cpost || '') : String(vendor?.ppost || ''),
+            ctaluk: !vendor.samesprmnt ? String(vendor?.ctaluk || '') : String(vendor?.ptaluk || ''),
             visitortype: String(vendor.visitortype),
             visitormode: String(vendor.visitormode),
             source: String(vendor?.source || ''),
@@ -2302,6 +2351,22 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
+
+      const filesImages = allUploadedFiles.concat(refImage, refImageDrag, capturedImages);
+            const visitorInfoDetails = await BiometricVisitorAddition({
+              company:vendor.meetingdetails === true ? [...valueCompanyLocationCat] : [String(vendor?.company)],
+              branch:vendor.meetingdetails === true ? [...valueBranchLocationCat]:  [String(vendor?.branch)],
+               unit:vendor.meetingdetails === true ? [...valueUnitLocationCat] : [String(vendor.unit)],
+               floor:vendor.meetingdetails === true ? [...valueFloorLocationCat] : [],
+               area :vendor.meetingdetails === true ? vendor.meetinglocationarea : [],
+               visitorid: String(resdata),
+              name: String(vendor.visitorname),
+              photo: filesImages[0]?.base64,
+              date: String(vendor.date),
+              intime: String(vendor.intime),
+              visitoremail: String(vendor.email),
+              visitorcontactnumber: String(vendor.mobile),
+            });
       if (requestCheck && ticketid) {
         let res = await axios.put(`${SERVICE.RAISETICKET_SINGLE}/${ticketid}`, {
           headers: {
@@ -2310,6 +2375,8 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
           visitorid: addVendorDetails?.data?.newVisitor?._id,
           visitordocumentstatus: 'Ticket Raised',
         });
+
+
       }
 
       let addVisitorProfileDetail = await axios.post(SERVICE.VISITORDETAILS_LOG_CREATE, {
@@ -2377,14 +2444,18 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
           houseflatnumber: '',
           streetroadname: '',
           localityareaname: '',
-             pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+          pbuildingapartmentname: "",
+          paddressone: "",
+          paddresstwo: "",
+          paddressthree: "",
+          caddressone: "",
+          caddresstwo: "",
+          caddressthree: "",
+          cbuildingapartmentname: "",
+          ppost: '',
+          cpost: '',
+          ptaluk: '',
+          ctaluk: '',
           pcountry: selectedCountryp?.name,
           pstate: selectedStatep?.name,
           pcity: selectedCityp?.name,
@@ -2736,14 +2807,18 @@ cbuildingapartmentname:"",
       houseflatnumber: '',
       streetroadname: '',
       localityareaname: '',
-      pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+      pbuildingapartmentname: "",
+      paddressone: "",
+      paddresstwo: "",
+      paddressthree: "",
+      caddressone: "",
+      caddresstwo: "",
+      caddressthree: "",
+      cbuildingapartmentname: "",
+      ppost: '',
+      cpost: '',
+      ptaluk: '',
+      ctaluk: '',
       pcountry: country?.name,
       pstate: state?.name,
       pcity: city?.name,
@@ -3366,7 +3441,7 @@ cbuildingapartmentname:"",
       date: moment(serverTime).format('YYYY-MM-DD'),
       prefix: e?.prefix || 'Mr',
       visitorname: e?.visitorname || e?.fullname || e?.companyname,
-      exemployeeid:e?.exemployeeid || "",
+      exemployeeid: e?.exemployeeid || "",
       intime: getCurrentTime24Hour(serverTime),
       visitorpurpose: e?.visitorpurpose || 'Please Select Visitor Purpose',
       visitorcontactnumber: e?.visitorcontactnumber || e?.mobile,
@@ -3406,15 +3481,18 @@ cbuildingapartmentname:"",
       gpscoordinate: e?.gpscoordinate || '',
       samesprmnt: e?.samesprmnt || false,
 
-               pbuildingapartmentname: e?.pbuildingapartmentname || "",
-paddressone: e?.paddressone || "",
-paddresstwo: e?.paddresstwo || "",
-paddressthree: e?.paddressthree || "",
-caddressone: e?.caddressone || "",
-caddresstwo: e?.caddresstwo || "",
-caddressthree: e?.caddressthree || "",
-cbuildingapartmentname: e?.cbuildingapartmentname || "",
-
+      pbuildingapartmentname: e?.pbuildingapartmentname || "",
+      paddressone: e?.paddressone || "",
+      paddresstwo: e?.paddresstwo || "",
+      paddressthree: e?.paddressthree || "",
+      caddressone: e?.caddressone || "",
+      caddresstwo: e?.caddresstwo || "",
+      caddressthree: e?.caddressthree || "",
+      cbuildingapartmentname: e?.cbuildingapartmentname || "",
+      ppost: String(e?.ppost || ""),
+      ptaluk: String(e?.ptaluk || ""),
+      cpost: String(e?.cpost || ""),
+      ctaluk: String(e?.ctaluk || ""),
       caddesstype: e?.caddesstype || 'Home',
       cpersonalprefix: e?.cpersonalprefix || '',
       creferencename: e?.creferencename || '',
@@ -4256,7 +4334,7 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                     />
                   </FormControl>
                 </Grid>
-                 <Grid item md={3} xs={12} sm={12}>
+                <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
                       Visitor Purpose <b style={{ color: 'red' }}>*</b>
@@ -4355,35 +4433,35 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                     </Typography>
                     {visitorsTypeOption?.filter((item) => item?.interactorstype === vendor.visitortype && item?.interactorspurpose?.includes(vendor.visitorpurpose))[0]?.requestdocument ?
                       <>
-  <Selects
-                      maxMenuHeight={300}
-                      options={exitEmployee?.filter(data=>data?.company === vendor.company && data?.branch === vendor.branch && data?.unit === vendor.unit)}
-                      placeholder="Please Select Document Type"
-                      value={{
-                        label: vendor.visitorname === "" ? "Please Select Visitor Name" : vendor?.visitorname,
-                        value: vendor.visitorname === "" ? "Please Select Visitor Name" : vendor?.visitorname,
-                      }}
-                      isDisabled={isExistVisitor}
-                      onChange={(e) => {
-                        setVendor({
-                          ...vendor,
-                          visitorname: e.value,
-                          exemployeeid: e._id,
-                        });
-                      }}
-                    />
+                        <Selects
+                          maxMenuHeight={300}
+                          options={exitEmployee?.filter(data => data?.company === vendor.company && data?.branch === vendor.branch && data?.unit === vendor.unit)}
+                          placeholder="Please Select Document Type"
+                          value={{
+                            label: vendor.visitorname === "" ? "Please Select Visitor Name" : vendor?.visitorname,
+                            value: vendor.visitorname === "" ? "Please Select Visitor Name" : vendor?.visitorname,
+                          }}
+                          isDisabled={isExistVisitor}
+                          onChange={(e) => {
+                            setVendor({
+                              ...vendor,
+                              visitorname: e.value,
+                              exemployeeid: e._id,
+                            });
+                          }}
+                        />
                       </>
-                    :
-                    <OutlinedInput
-                      id="component-outlined"
-                      type="text"
-                      disabled={isExistVisitor}
-                      value={vendor.visitorname}
-                      placeholder="Please Enter Visitor Name"
-                      onChange={(e) => {
-                        setVendor({ ...vendor, visitorname: e.target.value ,exemployeeid:""});
-                      }}
-                    />}
+                      :
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        disabled={isExistVisitor}
+                        value={vendor.visitorname}
+                        placeholder="Please Enter Visitor Name"
+                        onChange={(e) => {
+                          setVendor({ ...vendor, visitorname: e.target.value, exemployeeid: "" });
+                        }}
+                      />}
                   </FormControl>
                 </Grid>
                 <Grid item md={3} xs={12} sm={12}>
@@ -4402,7 +4480,7 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                     />
                   </FormControl>
                 </Grid>
-               
+
                 <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
@@ -5188,9 +5266,43 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                             </FormControl>
                           </Grid>
                         )}
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Post</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Post"
+                              value={vendor?.ppost}
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  ppost: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Taluk</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Taluk"
+                              value={vendor?.ptaluk}
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  ptaluk: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
                         <Grid item md={3} xs={12} sm={12}>
                           <FormControl fullWidth size="small">
-                            <Typography>GPS Coordinate</Typography>
+                            <Typography>GPS Coordination</Typography>
                             <OutlinedInput
                               id="component-outlined"
                               type="text"
@@ -5238,6 +5350,15 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                                   landmarkname: e.target.value,
                                 });
                               }}
+                              onBlur={(e) => {
+                                handleRestrictedWords(
+                                  e.target.value,
+                                  (cleanedValue) =>
+                                    setVendor({ ...vendor, landmarkname: cleanedValue }),
+                                  "Landmark",
+                                  setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert
+                                );
+                              }}
                             />
                           </FormControl>
                         </Grid>
@@ -5253,6 +5374,24 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                                 setVendor({
                                   ...vendor,
                                   houseflatnumber: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+
+                        <Grid item md={3} xs={12} sm={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Building/Apartment Name</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              value={vendor.pbuildingapartmentname}
+                              placeholder="Please Enter Building/Apartment Name"
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  pbuildingapartmentname: e.target.value,
                                 });
                               }}
                             />
@@ -5275,6 +5414,59 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                             />
                           </FormControl>
                         </Grid>
+
+
+                        <Grid item md={3} xs={12} sm={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 1</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              value={vendor.paddressone}
+                              placeholder="Please Enter Address 1"
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  paddressone: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} xs={12} sm={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 2</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              value={vendor.paddresstwo}
+                              placeholder="Please Enter Address 2"
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  paddresstwo: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} xs={12} sm={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 3</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              value={vendor.paddressthree}
+                              placeholder="Please Enter Address 3"
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  paddressthree: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
                         <Grid item md={3} xs={12} sm={12}>
                           <FormControl fullWidth size="small">
                             <Typography>Locality/Area Name</Typography>
@@ -5292,75 +5484,6 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                             />
                           </FormControl>
                         </Grid>
-
-                             <Grid item md={3} xs={12} sm={12}>
-                                              <FormControl fullWidth size="small">
-                                                <Typography>Building/Apartment Name</Typography>
-                                                <OutlinedInput
-                                                  id="component-outlined"
-                                                  type="text"
-                                                  value={vendor.pbuildingapartmentname}
-                                                  placeholder="Please Enter Building/Apartment Name"
-                                                  onChange={(e) => {
-                                                    setVendor({
-                                                      ...vendor,
-                                                      pbuildingapartmentname: e.target.value,
-                                                    });
-                                                  }}
-                                                />
-                                              </FormControl>
-                                            </Grid>
-                                            <Grid item md={3} xs={12} sm={12}>
-                                              <FormControl fullWidth size="small">
-                                                <Typography>Address 1</Typography>
-                                                <OutlinedInput
-                                                  id="component-outlined"
-                                                  type="text"
-                                                  value={vendor.paddressone}
-                                                  placeholder="Please Enter Address 1"
-                                                  onChange={(e) => {
-                                                    setVendor({
-                                                      ...vendor,
-                                                      paddressone: e.target.value,
-                                                    });
-                                                  }}
-                                                />
-                                              </FormControl>
-                                            </Grid>
-                                            <Grid item md={3} xs={12} sm={12}>
-                                              <FormControl fullWidth size="small">
-                                                <Typography>Address 2</Typography>
-                                                <OutlinedInput
-                                                  id="component-outlined"
-                                                  type="text"
-                                                  value={vendor.paddresstwo}
-                                                  placeholder="Please Enter Address 2"
-                                                  onChange={(e) => {
-                                                    setVendor({
-                                                      ...vendor,
-                                                      paddresstwo: e.target.value,
-                                                    });
-                                                  }}
-                                                />
-                                              </FormControl>
-                                            </Grid>
-                                            <Grid item md={3} xs={12} sm={12}>
-                                              <FormControl fullWidth size="small">
-                                                <Typography>Address 3</Typography>
-                                                <OutlinedInput
-                                                  id="component-outlined"
-                                                  type="text"
-                                                  value={vendor.paddressthree}
-                                                  placeholder="Please Enter Address 3"
-                                                  onChange={(e) => {
-                                                    setVendor({
-                                                      ...vendor,
-                                                      paddressthree: e.target.value,
-                                                    });
-                                                  }}
-                                                />
-                                              </FormControl>
-                                            </Grid>
                       </Grid>
                       <Grid item md={12} sm={12} xs={12}>
                         <FullAddressCard
@@ -5381,10 +5504,12 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                             ppincode: vendor?.ppincode,
                             pgpscoordination: vendor?.gpscoordinate,
 
-                            pbuildingapartmentname:vendor?.pbuildingapartmentname || "",
-paddressone:vendor?.paddressone || "",
-paddresstwo:vendor?.paddresstwo || "",
-paddressthree:vendor?.paddressthree || "",
+                            pbuildingapartmentname: vendor?.pbuildingapartmentname || "",
+                            paddressone: vendor?.paddressone || "",
+                            paddresstwo: vendor?.paddresstwo || "",
+                            paddressthree: vendor?.paddressthree || "",
+                            ppost: vendor?.ppost || "",
+                            ptaluk: vendor?.ptaluk || "",
                           }}
                         />
                       </Grid>
@@ -5667,7 +5792,40 @@ paddressthree:vendor?.paddressthree || "",
                               </FormControl>
                             </Grid>
                           )}
-
+                          <Grid item md={3} sm={12} xs={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Post</Typography>
+                              <OutlinedInput
+                                id="component-outlined"
+                                type="text"
+                                placeholder="Post"
+                                value={vendor?.cpost}
+                                onChange={(e) => {
+                                  setVendor({
+                                    ...vendor,
+                                    cpost: e.target.value,
+                                  });
+                                }}
+                              />
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={3} sm={12} xs={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Taluk</Typography>
+                              <OutlinedInput
+                                id="component-outlined"
+                                type="text"
+                                placeholder="Taluk"
+                                value={vendor?.ctaluk}
+                                onChange={(e) => {
+                                  setVendor({
+                                    ...vendor,
+                                    ctaluk: e.target.value,
+                                  });
+                                }}
+                              />
+                            </FormControl>
+                          </Grid>
                           <Grid item md={3} sm={12} xs={12}>
                             <FormControl fullWidth size="small">
                               <Typography>GPS Coordination</Typography>
@@ -5715,6 +5873,15 @@ paddressthree:vendor?.paddressthree || "",
                                     clandmarkname: e.target.value,
                                   });
                                 }}
+                                onBlur={(e) => {
+                                  handleRestrictedWords(
+                                    e.target.value,
+                                    (cleanedValue) =>
+                                      setVendor({ ...vendor, clandmarkname: cleanedValue }),
+                                    "Landmark",
+                                    setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert
+                                  );
+                                }}
                               />
                             </FormControl>
                           </Grid>
@@ -5730,6 +5897,23 @@ paddressthree:vendor?.paddressthree || "",
                                   setVendor({
                                     ...vendor,
                                     chouseflatnumber: e.target.value,
+                                  });
+                                }}
+                              />
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={3} xs={12} sm={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Building/Apartment Name</Typography>
+                              <OutlinedInput
+                                id="component-outlined"
+                                type="text"
+                                value={vendor.cbuildingapartmentname}
+                                placeholder="Please Enter Building/Apartment Name"
+                                onChange={(e) => {
+                                  setVendor({
+                                    ...vendor,
+                                    cbuildingapartmentname: e.target.value,
                                   });
                                 }}
                               />
@@ -5752,6 +5936,61 @@ paddressthree:vendor?.paddressthree || "",
                               />
                             </FormControl>
                           </Grid>
+
+
+
+
+                          <Grid item md={3} xs={12} sm={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Address 1</Typography>
+                              <OutlinedInput
+                                id="component-outlined"
+                                type="text"
+                                value={vendor.caddressone}
+                                placeholder="Please Enter Address 1"
+                                onChange={(e) => {
+                                  setVendor({
+                                    ...vendor,
+                                    caddressone: e.target.value,
+                                  });
+                                }}
+                              />
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={3} xs={12} sm={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Address 2</Typography>
+                              <OutlinedInput
+                                id="component-outlined"
+                                type="text"
+                                value={vendor.caddresstwo}
+                                placeholder="Please Enter Address 2"
+                                onChange={(e) => {
+                                  setVendor({
+                                    ...vendor,
+                                    caddresstwo: e.target.value,
+                                  });
+                                }}
+                              />
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={3} xs={12} sm={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Address 3</Typography>
+                              <OutlinedInput
+                                id="component-outlined"
+                                type="text"
+                                value={vendor.caddressthree}
+                                placeholder="Please Enter Address 3"
+                                onChange={(e) => {
+                                  setVendor({
+                                    ...vendor,
+                                    caddressthree: e.target.value,
+                                  });
+                                }}
+                              />
+                            </FormControl>
+                          </Grid>
                           <Grid item md={3} sm={12} xs={12}>
                             <FormControl fullWidth size="small">
                               <Typography>Locality/Area Name</Typography>
@@ -5766,75 +6005,6 @@ paddressthree:vendor?.paddressthree || "",
                               />
                             </FormControl>
                           </Grid>
-
-                            <Grid item md={3} xs={12} sm={12}>
-                                                <FormControl fullWidth size="small">
-                                                  <Typography>Building/Apartment Name</Typography>
-                                                  <OutlinedInput
-                                                    id="component-outlined"
-                                                    type="text"
-                                                    value={vendor.cbuildingapartmentname}
-                                                    placeholder="Please Enter Building/Apartment Name"
-                                                    onChange={(e) => {
-                                                      setVendor({
-                                                        ...vendor,
-                                                        cbuildingapartmentname: e.target.value,
-                                                      });
-                                                    }}
-                                                  />
-                                                </FormControl>
-                                              </Grid>
-                                              <Grid item md={3} xs={12} sm={12}>
-                                                <FormControl fullWidth size="small">
-                                                  <Typography>Address 1</Typography>
-                                                  <OutlinedInput
-                                                    id="component-outlined"
-                                                    type="text"
-                                                    value={vendor.caddressone}
-                                                    placeholder="Please Enter Address 1"
-                                                    onChange={(e) => {
-                                                      setVendor({
-                                                        ...vendor,
-                                                        caddressone: e.target.value,
-                                                      });
-                                                    }}
-                                                  />
-                                                </FormControl>
-                                              </Grid>
-                                              <Grid item md={3} xs={12} sm={12}>
-                                                <FormControl fullWidth size="small">
-                                                  <Typography>Address 2</Typography>
-                                                  <OutlinedInput
-                                                    id="component-outlined"
-                                                    type="text"
-                                                    value={vendor.caddresstwo}
-                                                    placeholder="Please Enter Address 2"
-                                                    onChange={(e) => {
-                                                      setVendor({
-                                                        ...vendor,
-                                                        caddresstwo: e.target.value,
-                                                      });
-                                                    }}
-                                                  />
-                                                </FormControl>
-                                              </Grid>
-                                              <Grid item md={3} xs={12} sm={12}>
-                                                <FormControl fullWidth size="small">
-                                                  <Typography>Address 3</Typography>
-                                                  <OutlinedInput
-                                                    id="component-outlined"
-                                                    type="text"
-                                                    value={vendor.caddressthree}
-                                                    placeholder="Please Enter Address 3"
-                                                    onChange={(e) => {
-                                                      setVendor({
-                                                        ...vendor,
-                                                        caddressthree: e.target.value,
-                                                      });
-                                                    }}
-                                                  />
-                                                </FormControl>
-                                              </Grid>
                         </Grid>
                       </>
                     ) : (
@@ -5940,7 +6110,18 @@ paddressthree:vendor?.paddressthree || "",
                               </FormControl>
                             </Grid>
                           )}
-
+                          <Grid item md={3} sm={12} xs={12}>
+                            <FormControl size="small" fullWidth>
+                              <Typography>Post</Typography>
+                              <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ppost} />
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={3} sm={12} xs={12}>
+                            <FormControl size="small" fullWidth>
+                              <Typography>Taluk</Typography>
+                              <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ptaluk} />
+                            </FormControl>
+                          </Grid>
                           <Grid item md={3} sm={12} xs={12}>
                             <FormControl size="small" fullWidth>
                               <Typography>GPS Coordination</Typography>
@@ -5968,8 +6149,34 @@ paddressthree:vendor?.paddressthree || "",
                           </Grid>
                           <Grid item md={3} sm={12} xs={12}>
                             <FormControl fullWidth size="small">
+                              <Typography>Building/Apartment Name</Typography>
+                              <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor.pbuildingapartmentname} readOnly />
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={3} sm={12} xs={12}>
+                            <FormControl fullWidth size="small">
                               <Typography>Street/Road Name</Typography>
                               <OutlinedInput id="component-outlined" type="text" placeholder="Street/Road Name" value={vendor.streetroadname} readOnly />
+                            </FormControl>
+                          </Grid>
+
+
+                          <Grid item md={3} sm={12} xs={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Address 1</Typography>
+                              <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor.paddressone} readOnly />
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={3} sm={12} xs={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Address 2</Typography>
+                              <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor.paddresstwo} readOnly />
+                            </FormControl>
+                          </Grid>
+                          <Grid item md={3} sm={12} xs={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Address 3</Typography>
+                              <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor.paddressthree} readOnly />
                             </FormControl>
                           </Grid>
                           <Grid item md={3} sm={12} xs={12}>
@@ -5978,30 +6185,6 @@ paddressthree:vendor?.paddressthree || "",
                               <OutlinedInput id="component-outlined" type="text" placeholder="Locality/Area Name" value={vendor.localityareaname} readOnly />
                             </FormControl>
                           </Grid>
-                          <Grid item md={3} sm={12} xs={12}>
-                                                  <FormControl fullWidth size="small">
-                                                    <Typography>Building/Apartment Name</Typography>
-                                                    <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor.pbuildingapartmentname} readOnly />
-                                                  </FormControl>
-                                                </Grid>
-                                                <Grid item md={3} sm={12} xs={12}>
-                                                  <FormControl fullWidth size="small">
-                                                    <Typography>Address 1</Typography>
-                                                    <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor.paddressone} readOnly />
-                                                  </FormControl>
-                                                </Grid>
-                                                <Grid item md={3} sm={12} xs={12}>
-                                                  <FormControl fullWidth size="small">
-                                                    <Typography>Address 2</Typography>
-                                                    <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor.paddresstwo} readOnly />
-                                                  </FormControl>
-                                                </Grid>
-                                                <Grid item md={3} sm={12} xs={12}>
-                                                  <FormControl fullWidth size="small">
-                                                    <Typography>Address 3</Typography>
-                                                    <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor.paddressthree} readOnly />
-                                                  </FormControl>
-                                                </Grid>
                         </Grid>
                       </>
                     )}
@@ -6277,9 +6460,9 @@ paddressthree:vendor?.paddressthree || "",
                         <Selects
                           maxMenuHeight={300}
                           options={[...new Set(filteredAreas?.filter((item) => valueFloorLocationCat?.includes(item.floor) && valueBranchLocationCat?.includes(item.branch) &&
-                             item?.locationareastatus
+                            item?.locationareastatus
                             //  item?.boardingareastatus
-                            ).flatMap((item) => item.area))].map((location) => ({
+                          ).flatMap((item) => item.area))].map((location) => ({
                             label: location,
                             value: location,
                           }))}

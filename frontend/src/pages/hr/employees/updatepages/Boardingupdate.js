@@ -9,6 +9,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -195,12 +196,22 @@ function Boardingupdate() {
       ...empaddform,
       floor: 'Please Select Floor',
       area: 'Please Select Area',
+      shifttiming: 'Please Select Shift',
+      shifttype: "Please Select Shift Type",
+      shiftgrouping: 'Please Select Shift Group',
     });
+
     setPrimaryWorkStation('Please Select Primary Work Station');
     setPrimaryWorkStationLabel('Please Select Primary Work Station');
     setWorkstationTodoList([]);
     setSelectedOptionsWorkStation([]);
     setValueWorkStation([]);
+    setShiftOptions([]);
+    setTodo([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
   };
 
   const handleUnitChangeNew = (event) => {
@@ -217,7 +228,18 @@ function Boardingupdate() {
     const filteredTeams = team?.filter((t) => t.unit === event.value && t.branch === selectedBranch);
 
     setFilteredTeams(filteredTeams);
-
+    setEmpaddform({
+      ...empaddform,
+      shifttiming: 'Please Select Shift',
+      shifttype: "Please Select Shift Type",
+      shiftgrouping: 'Please Select Shift Group',
+    });
+    setShiftOptions([]);
+    setTodo([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
     setTeamOptions(
       filteredTeams?.map((item) => ({
         label: item.teamname,
@@ -227,13 +249,31 @@ function Boardingupdate() {
   };
 
   const handleTeamChangeNew = (event) => {
-    console.log("Hitted")
+    console.log('Hitted');
     const selectedTeam = event.value;
+    const user = {
+      company : selectedCompany,
+      branch : selectedBranch,
+      unit : selectedUnit,
+      department : empaddform.department,
+    }
     fetchUsernames(selectedTeam, 'new', oldUserCompanyname);
     setSelectedTeam(selectedTeam);
     checkHierarchyName(selectedTeam, 'Team');
-    fetchSuperVisorChangingHierarchy(selectedTeam, "Team");
-    fetchReportingToUserHierarchy(selectedTeam, "Team");
+    fetchSuperVisorChangingHierarchy(selectedTeam, 'Team');
+    fetchReportingToUserHierarchy(selectedTeam, 'Team');
+    setEmpaddform({
+      ...empaddform,
+      shifttiming: 'Please Select Shift',
+      shifttype: "Please Select Shift Type",
+      shiftgrouping: 'Please Select Shift Group',
+    });
+    setShiftOptions([]);
+    setTodo([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
   };
 
   // page refersh reload code
@@ -939,7 +979,7 @@ function Boardingupdate() {
       let ansGet = todo.shiftgrouping;
       let answerFirst = ansGet?.split('_')[0];
       let answerSecond = ansGet?.split('_')[1];
-
+      let boardingShift = await fetchBoardingShift([selectedCompany], [selectedBranch], [selectedUnit], [selectedTeam], [empaddform?.department], [selectedDesignation], [empaddform?.companyname, 'ALL']);
       let res = await axios.get(SERVICE.GETALLSHIFTGROUPS, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
@@ -947,16 +987,13 @@ function Boardingupdate() {
       });
       const shiftGroup = res?.data?.shiftgroupings.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
 
-      const options =
-        shiftGroup?.length > 0
-          ? shiftGroup
-            .flatMap((data) => data.shift)
-            ?.map((u) => ({
-              ...u,
-              label: u,
-              value: u,
-            }))
-          : [];
+      const shiftFlat = shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
+      const filteredShifts = shiftFlat.filter((shift) => boardingShift.includes(shift));
+
+      const options = filteredShifts.map((shift) => ({
+        label: shift,
+        value: shift,
+      }));
 
       return options;
     };
@@ -1345,7 +1382,20 @@ function Boardingupdate() {
 
     setUnitOptions([]);
     setTeamOptions([]);
-    setEmpaddform({ ...empaddform, floor: '' });
+    setEmpaddform({
+      ...empaddform,
+      shifttype: "Please Select Shift Type",
+      shifttiming: 'Please Select Shift',
+      shifttype: "Please Select Shift Type",
+      shiftgrouping: 'Please Select Shift Group',
+      floor: '',
+    });
+    setShiftOptions([]);
+    setTodo([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
   };
 
   const handleBranchChange = (options) => {
@@ -1429,7 +1479,7 @@ function Boardingupdate() {
   const [newDataTeamWise, setNewDataTeamWise] = useState([]);
   const fetchSuperVisorChangingHierarchy = async (value, page) => {
     try {
-      if ((olddesignation !== value || getingOlddatas?.department !== empaddform.department) && page === "Designation") {
+      if ((olddesignation !== value || getingOlddatas?.department !== empaddform.department) && page === 'Designation') {
         let designationGrpName = alldesignation?.find((data) => value === data?.name)?.group;
         let res = await axios.post(SERVICE.HIERARCHY_DEISGNATIONLOG_RELATION, {
           headers: {
@@ -1453,77 +1503,106 @@ function Boardingupdate() {
         setOldEmployeeHierData(oldDataEmp);
         const primaryDep = newdata[0]?.primaryDep?.filter(
           (item, index, self) =>
-            index === self.findIndex((t) => t.company === item.company &&
-              t.branch === item.branch
-              && t.unit === item.unit
-              && t.team === item.team
-              && t.designationgroup === item.designationgroup
-              && t.supervisorchoose?.length === item.supervisorchoose?.length
-              && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === item.company &&
+                t.branch === item.branch &&
+                t.unit === item.unit &&
+                t.team === item.team &&
+                t.designationgroup === item.designationgroup &&
+                t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+            )
         );
         const secondaryDep = newdata[0]?.secondaryDep?.filter(
           (item, index, self) =>
-            index === self.findIndex((t) => t.company === item.company &&
-              t.branch === item.branch
-              && t.unit === item.unit
-              && t.team === item.team
-              && t.designationgroup === item.designationgroup
-              && t.supervisorchoose?.length === item.supervisorchoose?.length
-              && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === item.company &&
+                t.branch === item.branch &&
+                t.unit === item.unit &&
+                t.team === item.team &&
+                t.designationgroup === item.designationgroup &&
+                t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+            )
         );
         const tertiary = newdata[0]?.tertiaryDep?.filter(
           (item, index, self) =>
-            index === self.findIndex((t) => t.company === item.company &&
-              t.branch === item.branch
-              && t.unit === item.unit
-              && t.team === item.team
-              && t.designationgroup === item.designationgroup
-              && t.supervisorchoose?.length === item.supervisorchoose?.length
-              && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === item.company &&
+                t.branch === item.branch &&
+                t.unit === item.unit &&
+                t.team === item.team &&
+                t.designationgroup === item.designationgroup &&
+                t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+            )
         );
         const primaryDepAll = newdata[0]?.primaryDepAll?.filter(
           (item, index, self) =>
-            index === self.findIndex((t) => t.company === item.company &&
-              t.branch === item.branch
-              && t.unit === item.unit
-              && t.team === item.team
-              && t.designationgroup === item.designationgroup
-              && t.supervisorchoose?.length === item.supervisorchoose?.length
-              && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === item.company &&
+                t.branch === item.branch &&
+                t.unit === item.unit &&
+                t.team === item.team &&
+                t.designationgroup === item.designationgroup &&
+                t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+            )
         );
         const secondaryDepAll = newdata[0]?.secondaryDepAll?.filter(
           (item, index, self) =>
-            index === self.findIndex((t) => t.company === item.company &&
-              t.branch === item.branch
-              && t.unit === item.unit
-              && t.team === item.team
-              && t.designationgroup === item.designationgroup
-              && t.supervisorchoose?.length === item.supervisorchoose?.length
-              && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === item.company &&
+                t.branch === item.branch &&
+                t.unit === item.unit &&
+                t.team === item.team &&
+                t.designationgroup === item.designationgroup &&
+                t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+            )
         );
         const tertiaryAll = newdata[0]?.tertiaryDepAll?.filter(
           (item, index, self) =>
-            index === self.findIndex((t) => t.company === item.company &&
-              t.branch === item.branch
-              && t.unit === item.unit
-              && t.team === item.team
-              && t.designationgroup === item.designationgroup
-              && t.supervisorchoose?.length === item.supervisorchoose?.length
-              && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === item.company &&
+                t.branch === item.branch &&
+                t.unit === item.unit &&
+                t.team === item.team &&
+                t.designationgroup === item.designationgroup &&
+                t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+            )
         );
-        const primaryWithoutDep = newdata[0]?.primaryNotDep.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
-        const secondaryWithoutDep = newdata[0]?.secondaryNotDep.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
-        const tertiaryWithoutDep = newdata[0]?.tertiaryNotDep.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+        const primaryWithoutDep = newdata[0]?.primaryNotDep.filter(
+          (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+        );
+        const secondaryWithoutDep = newdata[0]?.secondaryNotDep.filter(
+          (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+        );
+        const tertiaryWithoutDep = newdata[0]?.tertiaryNotDep.filter(
+          (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+        );
 
-        console.log(res?.data, primaryDep, secondaryDep, tertiary, primaryDepAll, secondaryDepAll, tertiaryAll, primaryWithoutDep, secondaryWithoutDep, tertiaryWithoutDep)
+        console.log(res?.data, primaryDep, secondaryDep, tertiary, primaryDepAll, secondaryDepAll, tertiaryAll, primaryWithoutDep, secondaryWithoutDep, tertiaryWithoutDep);
         setOldTeamData([]);
         setNewUpdateDataAll([]);
         setNewDataTeamWise([]);
-      } if (getingOlddatas?.team !== value && page === "Team") {
-        console.log(value, page, "value, page")
-        let designationGrpName = alldesignation?.find(
-          (data) => getingOlddatas?.designation === data?.name
-        )?.group;
+      }
+      if (getingOlddatas?.team !== value && page === 'Team') {
+        console.log(value, page, 'value, page');
+        let designationGrpName = alldesignation?.find((data) => getingOlddatas?.designation === data?.name)?.group;
         const userData = {
           company: getingOlddatas?.boardingLog?.length === 1 ? selectedCompany : getingOlddatas?.company,
           branch: getingOlddatas?.boardingLog?.length === 1 ? selectedBranch : getingOlddatas?.branch,
@@ -1531,7 +1610,7 @@ function Boardingupdate() {
           department: empaddform.department,
           team: getingOlddatas?.boardingLog?.length === 1 ? selectedTeam : getingOlddatas?.team,
           companyname: getingOlddatas?.companyname,
-        }
+        };
         let res = await axios.post(SERVICE.HIERARCHY_PROCESSALOOT_TEAM_RELATION, {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
@@ -1546,16 +1625,9 @@ function Boardingupdate() {
         console.log(res?.data, 'Team');
 
         const oldData = res?.data?.olddata?.length > 0 ? res?.data?.olddata : [];
-        const newDataAll =
-          res?.data?.newdata[0]?.all?.length > 0
-            ? res?.data?.newdata[0]?.all
-            : [];
-        const newDataRemaining =
-          res?.data?.newdata[0]?.team?.length > 0
-            ? res?.data?.newdata[0]?.team
-            : [];
-        const newDataAllSupervisor =
-          res?.data?.supData?.length > 0 ? res?.data?.supData : [];
+        const newDataAll = res?.data?.newdata[0]?.all?.length > 0 ? res?.data?.newdata[0]?.all : [];
+        const newDataRemaining = res?.data?.newdata[0]?.team?.length > 0 ? res?.data?.newdata[0]?.team : [];
+        const newDataAllSupervisor = res?.data?.supData?.length > 0 ? res?.data?.supData : [];
         setoldTeamSupervisor(newDataAllSupervisor);
         setOldTeamData(oldData);
         setNewUpdateDataAll(newDataAll);
@@ -1564,15 +1636,13 @@ function Boardingupdate() {
         setOldUpdatedData([]);
         setNewUpdatingData([]);
       }
-    }
-    catch (err) {
-      console.log(err, "err")
+    } catch (err) {
+      console.log(err, 'err');
     }
   };
 
   const fetchReportingToUserHierarchy = async (value, page) => {
-
-    if (page === "Designation" && getingOlddatas?.designation !== value) {
+    if (page === 'Designation' && getingOlddatas?.designation !== value) {
       let designationGrpName = alldesignation?.find((data) => value === data?.name)?.group;
       let res = await axios.post(SERVICE.REPORTINGTO_DESIGNATION_USER_HIERARCHY_RELATION, {
         headers: {
@@ -1590,31 +1660,23 @@ function Boardingupdate() {
       });
       const userResponse = res?.data?.newdata[0]?.result?.length > 0 ? res?.data?.newdata[0]?.result : [];
       setUserReportingToChange(userResponse);
-    } else if (page === "Team" && getingOlddatas?.team !== value) {
-      let designationGrpName = alldesignation?.find(
-        (data) => value === data?.name
-      )?.group;
-      let res = await axios.post(
-        SERVICE.REPORTINGTO_DESIGNATION_USER_HIERARCHY_RELATION,
-        {
-          headers: {
-            Authorization: `Bearer ${auth.APIToken}`,
-          },
-          olddesig: oldDesignationGroup,
-          designation: value,
-          desiggroup: designationGrpName,
-          user: getingOlddatas,
-          company: selectedCompany,
-          branch: selectedBranch,
-          unit: selectedUnit,
-          department: empaddform?.department,
-          team: selectedTeam,
-        }
-      );
-      const userResponse =
-        res?.data?.newdata[0]?.result?.length > 0
-          ? res?.data?.newdata[0]?.result
-          : [];
+    } else if (page === 'Team' && getingOlddatas?.team !== value) {
+      let designationGrpName = alldesignation?.find((data) => value === data?.name)?.group;
+      let res = await axios.post(SERVICE.REPORTINGTO_DESIGNATION_USER_HIERARCHY_RELATION, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        olddesig: oldDesignationGroup,
+        designation: value,
+        desiggroup: designationGrpName,
+        user: getingOlddatas,
+        company: selectedCompany,
+        branch: selectedBranch,
+        unit: selectedUnit,
+        department: empaddform?.department,
+        team: selectedTeam,
+      });
+      const userResponse = res?.data?.newdata[0]?.result?.length > 0 ? res?.data?.newdata[0]?.result : [];
       setUserReportingToChange(userResponse);
     } else {
       setUserReportingToChange([]);
@@ -1668,16 +1730,24 @@ function Boardingupdate() {
   ];
   const handleDesignationChange = (event) => {
     const selectedDesignation = event.value;
-    fetchSuperVisorChangingHierarchy(selectedDesignation, "Designation");
-    fetchReportingToUserHierarchy(selectedDesignation, "Designation");
+    fetchSuperVisorChangingHierarchy(selectedDesignation, 'Designation');
+    fetchReportingToUserHierarchy(selectedDesignation, 'Designation');
     setSelectedDesignation(selectedDesignation);
     fetchDesignationgroup(event);
     setEmpaddform({
       ...empaddform,
       reportingto: '',
       employeecount: event?.systemcount || '',
+      shifttiming: 'Please Select Shift',
+      shifttype: "Please Select Shift Type",
+      shiftgrouping: 'Please Select Shift Group',
     });
-
+    setShiftOptions([]);
+    setTodo([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
     fetchNewDesignationGroup(selectedDesignation);
     setSuperVisorChoosen('Please Select Supervisor');
     setChangeToDesign('Please Select New/Replace');
@@ -1702,9 +1772,41 @@ function Boardingupdate() {
   const [unitOptions, setUnitOptions] = useState([]);
   const [teamOptions, setTeamOptions] = useState([]);
 
+  //   const ShiftDropdwonsSecond = async (e) => {
+  //     setPageName(!pageName);
+  //     try {
+  //       let boardingShift =await fetchBoardingShift([selectedCompany],
+  // [selectedBranch],
+  // [selectedUnit],
+  // [selectedTeam],[empaddform?.department],[selectedDesignation],[empaddform?.companyname,"ALL"])
+  //       let ansGet = e;
+  //       let answerFirst = ansGet?.split('_')[0];
+  //       let answerSecond = ansGet?.split('_')[1];
+
+  //       let res = await axios.get(SERVICE.GETALLSHIFTGROUPS, {
+  //         headers: {
+  //           Authorization: `Bearer ${auth.APIToken}`,
+  //         },
+  //       });
+  //       const shiftGroup = res?.data?.shiftgroupings.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
+  //       const shiftFlat = shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
+  //       let options =
+  //         shiftFlat?.map((data) => ({
+  //           ...data,
+  //           label: data,
+  //           value: data,
+  //         }))
+
+  //       setShiftOptions(options);
+  //     } catch (err) {
+  //       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+  //     }
+  //   };
   const ShiftDropdwonsSecond = async (e) => {
     setPageName(!pageName);
     try {
+      let boardingShift = await fetchBoardingShift([selectedCompany], [selectedBranch], [selectedUnit], [selectedTeam], [empaddform?.department], [selectedDesignation], [empaddform?.companyname, 'ALL']);
+
       let ansGet = e;
       let answerFirst = ansGet?.split('_')[0];
       let answerSecond = ansGet?.split('_')[1];
@@ -1714,16 +1816,20 @@ function Boardingupdate() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      const shiftGroup = res?.data?.shiftgroupings.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
-      const shiftFlat = shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
 
-      setShiftOptions(
-        shiftFlat?.map((data) => ({
-          ...data,
-          label: data,
-          value: data,
-        }))
-      );
+      const shiftGroup = res?.data?.shiftgroupings?.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
+
+      const shiftFlat = shiftGroup?.length > 0 ? shiftGroup.flatMap((data) => data.shift) : [];
+
+      // ✅ Only include shifts that are present in `boardingShift`
+      const filteredShifts = shiftFlat.filter((shift) => boardingShift.includes(shift));
+
+      const options = filteredShifts.map((shift) => ({
+        label: shift,
+        value: shift,
+      }));
+
+      setShiftOptions(options);
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
@@ -1865,6 +1971,52 @@ function Boardingupdate() {
       },
     ],
   });
+  const fetchBoardingShift = async (company, branch, unit, team, department, designation, employee) => {
+    setPageName(!pageName);
+
+    try {
+      //         let companyMap = accessbranch?.map(d => d?.company) || [];
+      // let branchMap = accessbranch?.map(d => d?.branch) || [];
+      // let unitMap   = accessbranch?.map(d => d?.unit)   || [];
+
+      // let company = [...companyMap, isUserRoleAccess?.company].filter(Boolean);
+      // let branch  = [...branchMap, isUserRoleAccess?.branch].filter(Boolean);
+      // let unit    = [...unitMap,   isUserRoleAccess?.unit].filter(Boolean);
+      // let employee    = [isUserRoleAccess?.companyname,"ALL"].filter(Boolean);
+      let res_status = await axios.post(SERVICE.ALL_BOARDING_SHIFT, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        // assignbranch: accessbranch,
+        company,
+        branch,
+        unit,
+        // role: isUserRoleAccess?.role || [],
+        team,
+        department,
+        designation,
+        employee,
+      });
+
+      const resdata = res_status?.data?.boardingshift || [];
+
+      // Extract all shifts from all objects, flatten into a single array, and remove duplicates
+      const allShifts = [
+        ...new Set(
+          resdata
+            .flatMap((item) => item.shift || []) // flatten all shift arrays
+            .filter(Boolean) // remove null/undefined/empty values
+        ),
+      ];
+
+      return allShifts;
+    } catch (err) {
+      console.log(err);
+      // handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      return [];
+    }
+  };
+
   const getCode = async (e) => {
     setPageName(!pageName);
 
@@ -2233,17 +2385,18 @@ function Boardingupdate() {
   const [getDepartment, setGetDepartment] = useState('');
 
   // Floor Dropdowns
-  const fetchUsernames = async (team, check, user) => {
+    const fetchUsernames = async (team , check , user) => {
     const answer = boardingLog?.length > 1 ? false : true;
     if (answer && check === 'new') {
       let res = await axios.post(SERVICE.HIERARCHY_REPORTING_TO, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        team: team,
-        company: user?.company,
-        branch: user?.branch,
-        unit: user?.unit,
+      company: user?.company,
+      branch: user?.branch,
+      unit: user?.unit,
+      team: team,
+      department: user?.department,
       });
       const resultUsers = res?.data?.result?.length > 0 ? res?.data?.result[0]?.result?.supervisorchoose?.filter((data) => data !== user?.companyname) : [];
       const answer = allUsersData?.filter((data) => resultUsers?.includes(data?.companyname));
@@ -2253,10 +2406,11 @@ function Boardingupdate() {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
-        team: team,
-        company: user?.company,
-        branch: user?.branch,
-        unit: user?.unit,
+      company: user?.company,
+      branch: user?.branch,
+      unit: user?.unit,
+      team: team,
+      department: user?.department,
       });
       const resultUsers = res?.data?.result?.length > 0 ? res?.data?.result[0]?.result?.supervisorchoose?.filter((data) => data !== user?.companyname) : [];
       const answer = allUsersData?.filter((data) => resultUsers?.includes(data?.companyname));
@@ -2658,6 +2812,7 @@ function Boardingupdate() {
           rocketchatchannelid: empaddform?.rocketchatchannelid || [],
 
           hiconnectemail: createHiConnect?.hiconnectemail,
+          ldapDN: empaddform?.ldapDN || '',
           hiconnectid: empaddform?.hiconnectid || '',
           hiconnectroles: createHiConnect?.createhiconnect ? createHiConnect?.hiconnectroles?.map((data) => data?.value) : [],
           hiconnectteamid: empaddform?.hiconnectteamid || [],
@@ -2727,11 +2882,11 @@ function Boardingupdate() {
           },
         ],
       });
-      console.log(isBoadingDataLog?.length === 1, getingOlddatas?.designationlog?.length === 1, "hitted")
+      console.log(isBoadingDataLog?.length === 1, getingOlddatas?.designationlog?.length === 1, 'hitted');
       if (getingOlddatas?.designationlog?.length === 1 || getingOlddatas?.departmentlog?.length === 1) {
-        console.log("hitted")
+        console.log('hitted');
         if (identifySuperVisor) {
-          console.log(identifySuperVisor, "identifySuperVisor")
+          console.log(identifySuperVisor, 'identifySuperVisor');
           // Changing the old Supervisor to to new Group
           if (newUpdatingData?.length > 0) {
             const primaryDep = newUpdatingData[0]?.primaryDep;
@@ -2764,14 +2919,17 @@ function Boardingupdate() {
             if (primaryDep?.length > 0) {
               const uniqueEntries = primaryDep?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => 
-                    t.company === item.company &&
-                    t.branch === item.branch
-                    && t.unit === item.unit
-                    && t.team === item.team
-                    && t.designationgroup === item.designationgroup
-                    && t.supervisorchoose?.length === item.supervisorchoose?.length
-                    && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.designationgroup === item.designationgroup &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -2811,7 +2969,17 @@ function Boardingupdate() {
             if (secondaryDep?.length > 0) {
               const uniqueEntries = secondaryDep?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -2851,9 +3019,17 @@ function Boardingupdate() {
             if (tertiary?.length > 0) {
               const uniqueEntries = tertiary?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company &&
-                 t.branch === item.branch && t.designationgroup === item.designationgroup 
-                 && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.branch === item.branch &&
+                      t.designationgroup === item.designationgroup &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -2893,12 +3069,17 @@ function Boardingupdate() {
             if (primaryDepAll?.length > 0) {
               const uniqueEntries = primaryDepAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company 
-                && t.branch === item.branch 
-                && t.unit === item.unit 
-                && t.team === item.team 
-                && t.designationgroup === item.designationgroup
-                && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.designationgroup === item.designationgroup &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -2938,12 +3119,17 @@ function Boardingupdate() {
             if (secondaryDepAll?.length > 0) {
               const uniqueEntries = secondaryDepAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company 
-                && t.branch === item.branch 
-                && t.unit === item.unit 
-                && t.team === item.team 
-                && t.designationgroup === item.designationgroup
-                && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.designationgroup === item.designationgroup &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -2983,12 +3169,17 @@ function Boardingupdate() {
             if (tertiaryAll?.length > 0) {
               const uniqueEntries = tertiaryAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company 
-                && t.branch === item.branch 
-                && t.unit === item.unit 
-                && t.team === item.team 
-                && t.designationgroup === item.designationgroup
-                && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.designationgroup === item.designationgroup &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -3026,9 +3217,9 @@ function Boardingupdate() {
               );
             }
             if (primaryWithoutDep?.length > 0) {
-              const uniqueEntries = primaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => 
-                t.department === item.department && t.designationgroup === item?.designationgroup
-                && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = primaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -3065,8 +3256,9 @@ function Boardingupdate() {
               );
             }
             if (secondaryWithoutDep?.length > 0) {
-              const uniqueEntries = secondaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) =>
-                t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = secondaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -3103,8 +3295,9 @@ function Boardingupdate() {
               );
             }
             if (tertiaryWithoutDep?.length > 0) {
-              const uniqueEntries = tertiaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) =>
-                t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = tertiaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -3165,7 +3358,7 @@ function Boardingupdate() {
         }
         // Only for Employees
         if (!identifySuperVisor) {
-          console.log(identifySuperVisor, "!identifySuperVisor")
+          console.log(identifySuperVisor, '!identifySuperVisor');
           if (oldEmployeeHierData?.length > 0) {
             let ans = oldEmployeeHierData?.map((data) => {
               axios.delete(`${SERVICE.HIRERARCHI_SINGLE}/${data?._id}`, {
@@ -3205,12 +3398,17 @@ function Boardingupdate() {
             if (primaryDep?.length > 0) {
               const uniqueEntries = primaryDep?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company &&
-                    t.branch === item.branch &&
-                    t.unit === item.unit
-                    && t.team === item.team
-                    && t.designationgroup === item.designationgroup
-                    && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.designationgroup === item.designationgroup &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -3250,7 +3448,17 @@ function Boardingupdate() {
             if (secondaryDep?.length > 0) {
               const uniqueEntries = secondaryDep?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -3290,7 +3498,17 @@ function Boardingupdate() {
             if (tertiary?.length > 0) {
               const uniqueEntries = tertiary?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -3330,7 +3548,17 @@ function Boardingupdate() {
             if (primaryDepAll?.length > 0) {
               const uniqueEntries = primaryDepAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -3370,7 +3598,17 @@ function Boardingupdate() {
             if (secondaryDepAll?.length > 0) {
               const uniqueEntries = secondaryDepAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -3410,7 +3648,17 @@ function Boardingupdate() {
             if (tertiaryAll?.length > 0) {
               const uniqueEntries = tertiaryAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -3448,8 +3696,10 @@ function Boardingupdate() {
               );
             }
             if (primaryWithoutDep?.length > 0) {
-              const uniqueEntries = primaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
-              console.log(uniqueEntries, "uniqueEntries")
+              const uniqueEntries = primaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
+              console.log(uniqueEntries, 'uniqueEntries');
               let answer = uniqueEntries?.map(
                 async (data) =>
                   await axios.post(`${SERVICE.HIRERARCHI_CREATE}`, {
@@ -3485,8 +3735,9 @@ function Boardingupdate() {
               );
             }
             if (secondaryWithoutDep?.length > 0) {
-              const uniqueEntries = secondaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) =>
-                t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = secondaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -3523,8 +3774,9 @@ function Boardingupdate() {
               );
             }
             if (tertiaryWithoutDep?.length > 0) {
-              const uniqueEntries = tertiaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) =>
-                t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = tertiaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item?.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -3623,7 +3875,7 @@ function Boardingupdate() {
       setPopupSeverity('success');
       handleClickOpenPopup();
     } catch (err) {
-      console.log(err, 'err')
+      console.log(err, 'err');
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
@@ -4273,8 +4525,9 @@ function Boardingupdate() {
               onClick={() => {
                 getCode(params.data.id);
               }}
+              disabled={isEditOpen}
             >
-              <EditIcon style={{ fontsize: 'large' }} sx={buttonStyles.buttonedit} />
+              {isEditOpen ? <CircularProgress size={20} color="inherit" /> : <EditIcon style={{ fontsize: 'large' }} sx={buttonStyles.buttonedit} />}
             </Button>
           )}
           {isUserRoleCompare?.includes('iboardinginfoupdate') && (
@@ -5785,8 +6038,17 @@ function Boardingupdate() {
                             prod: e.prod,
                             employeecount: '0',
                             reportingto: '',
+                            shifttiming: 'Please Select Shift',
+                            shifttype: "Please Select Shift Type",
+                            shiftgrouping: 'Please Select Shift Group',
                           });
 
+                          setShiftOptions([]);
+                          setTodo([]);
+                          setValueCate([]);
+                          setSelectedOptionsCate([]);
+                          setValueCateWeeks([]);
+                          setSelectedOptionsCateWeeks([]);
                           fetchDptDesignation(e.value);
                           setGetDepartment(e.value);
                           setSelectedDesignation('');
@@ -5934,6 +6196,7 @@ function Boardingupdate() {
                           shifttiming: 'Please Select Shift',
                           shiftgrouping: 'Please Select Shift Group',
                         });
+                        setShiftOptions([]);
                         // handleAddTodo(e.value);
                         setTodo([]);
                         setValueCate([]);
@@ -7463,7 +7726,9 @@ function Boardingupdate() {
                             value: row?.companyname,
                           }))
                           : allUsersData
-                            ?.filter((data) => data?.role?.includes('Manager') && data?.company === selectedCompany && data?.branch === selectedBranch && data?.unit === selectedUnit && data?.team === selectedTeam)
+                            ?.filter((data) => data?.role?.includes('Manager')
+                              // && data?.company === selectedCompany && data?.branch === selectedBranch && data?.unit === selectedUnit && data?.team === selectedTeam
+                            )
                             ?.map((row) => ({
                               label: row?.companyname,
                               value: row?.companyname,

@@ -1611,6 +1611,7 @@ exports.getUnmatchedUsersAttendanceReportsCheck = catchAsyncErrors(
         {
           $match: {
             cloudIDC: { $in: serialNos?.[0]?.serials },
+             status: { $ne: "Visitor" }
           },
         },
         {
@@ -1742,7 +1743,248 @@ exports.getUnmatchedUsersAttendanceReportsCheck = catchAsyncErrors(
       ]);
 
       const groupedUsers = groupDataByDate(usersCollection, fromdate, todate);
-      console.log(groupedUsers);
+     
+      const attendanceSummary = calculateAttendanceCheck(groupedUsers);
+
+      return res.status(200).json({
+        answer: attendanceSummary,
+        usersCollection,
+        filteredData: groupedUsers,
+      });
+    } catch (err) {
+      console.log(err, "err");
+      return next(new ErrorHandler("Records not found!", 500));
+    }
+  }
+);
+exports.getBiometricVisitorsAttendanceReport = catchAsyncErrors(
+  async (req, res, next) => {
+    let answer,
+      usersCollection,
+      filteredData = [];
+    let {
+      company,
+      branch,
+      unit,
+      usernames,
+      type,
+      userDates,
+      workmode,
+      fromdate,
+      todate,
+    } = req.body;
+    try {
+      let query = {
+        ...(company?.length && { company: { $in: company } }),
+        ...(branch?.length && { branch: { $in: branch } }),
+        ...(unit?.length && { unit: { $in: unit } }),
+      };
+
+      if (Object.keys(query).length) {
+        query = {
+          ...query,
+          $or: [
+            { visitorinone: true },
+            { visitoroutone: true },
+            { visitorinoutone: true },
+            { visitorintwo: true },
+            { visitoroutwo: true },
+            { visitorinouttwo: true },
+            { exitintwo: true },
+            { exitoutwo: true },
+            { exitinouttwo: true },
+            { exitione: true },
+            { exitoone: true },
+            { exitinouone: true },
+          ],
+        };
+      }
+
+      // const devicenames = await BiometricDeviceManagement.find(query, { biometricserialno: 1 });
+      const serialNos = await BiometricPairedDevicesGrouping.aggregate([
+        {
+          $match: query,
+        },
+        {
+          $project: {
+            devices: ["$paireddeviceone", "$paireddevicetwo"],
+          },
+        },
+
+        // 3. Flatten devices array
+        { $unwind: "$devices" },
+
+        // 4. Filter out null/empty device names
+        { $match: { devices: { $ne: null, $ne: "" } } },
+
+        // 5. Lookup in BiometricDeviceManagement
+        {
+          $lookup: {
+            from: "biometricdevicemanagements", // check actual collection name
+            localField: "devices",
+            foreignField: "biometriccommonname",
+            as: "matchedDevice",
+          },
+        },
+
+        // 6. Flatten lookup result
+        { $unwind: "$matchedDevice" },
+
+        // 7. Collect only serial numbers (deduped)
+        {
+          $group: {
+            _id: null,
+            serials: { $addToSet: "$matchedDevice.biometricserialno" },
+          },
+        },
+
+        // 8. Final projection: return only array
+        {
+          $project: {
+            _id: 0,
+            serials: 1,
+          },
+        },
+      ]);
+
+      console.log(query , serialNos?.[0]?.serials , "serialNos?.[0]?.serials")
+      const answer = await Biouploaduserinfo.aggregate([
+        {
+          $match: {
+            cloudIDC: { $in: serialNos?.[0]?.serials },
+            status:"Visitor"
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "staffNameC",
+            foreignField: "username",
+            as: "userDetails",
+          },
+        },
+        {
+          $match: {
+            userDetails: { $eq: [] }, // Find records where staffNameC has no match in users collection
+          },
+        },
+        {
+          $project: {
+            biometricUserIDC: 1,
+            staffNameC: 1, // Only keep the usernames that didn't match
+            _id: 0,
+          },
+        },
+      ]);
+
+      // console.log(serialNos, answer?.length, 'serialNos')
+      const unmatchedUsernames = answer.map((user) => user.staffNameC);
+      // console.log(unmatchedUsernames, 'unmatchedUsernames')
+      const unmatchedUsernamesIDC = answer.map((user) => user.biometricUserIDC);
+      usersCollection = await Biometricattlog.aggregate([
+        {
+          $match: {
+            staffNameC: { $in: unmatchedUsernames },
+            cloudIDC: { $in: serialNos?.[0]?.serials },
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "staffNameC",
+            foreignField: "username",
+            as: "userDetails",
+          },
+        },
+        {
+          $lookup: {
+            from: "biometricdevicemanagements",
+            localField: "cloudIDC",
+            foreignField: "biometricserialno",
+            as: "biometricDevice",
+          },
+        },
+        {
+          $lookup: {
+            from: "biometricpaireddevicesgroupings",
+            let: {
+              commonName: {
+                $arrayElemAt: ["$biometricDevice.biometriccommonname", 0],
+              },
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [
+                      { $eq: ["$paireddeviceone", "$$commonName"] },
+                      { $eq: ["$paireddevicetwo", "$$commonName"] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "deviceMatched",
+          },
+        },
+        {
+          $addFields: {
+            empcode: { $arrayElemAt: ["$userDetails.empcode", 0] },
+            company: { $arrayElemAt: ["$userDetails.company", 0] },
+            branch: { $arrayElemAt: ["$userDetails.branch", 0] },
+            unit: { $arrayElemAt: ["$userDetails.unit", 0] },
+            team: { $arrayElemAt: ["$userDetails.team", 0] },
+            department: { $arrayElemAt: ["$userDetails.department", 0] },
+            companyname: { $arrayElemAt: ["$userDetails.companyname", 0] },
+            biometriccommonname: {
+              $arrayElemAt: ["$biometricDevice.biometriccommonname", 0],
+            },
+
+            // 🔹 Conditional assignment based on matching device
+            isDeviceOne: {
+              $eq: [
+                { $first: "$deviceMatched.paireddeviceone" },
+                { $first: "$biometricDevice.biometriccommonname" },
+              ],
+            },
+          },
+        },
+        {
+          $addFields: {
+            indevice: {
+              $cond: [
+                "$isDeviceOne",
+                { $first: "$deviceMatched.visitorinone" },
+                { $first: "$deviceMatched.visitorintwo" },
+              ],
+            },
+            outdevice: {
+              $cond: [
+                "$isDeviceOne",
+                { $first: "$deviceMatched.visitoroutone" },
+                { $first: "$deviceMatched.visitorouttwo" },
+              ],
+            },
+            inoutdevice: {
+              $cond: [
+                "$isDeviceOne",
+                { $first: "$deviceMatched.visitorinoutone" },
+                { $first: "$deviceMatched.visitorinouttwo" },
+              ],
+            },
+          },
+        },
+        {
+          $project: {
+            userDetails: 0,
+            biometricDevice: 0,
+            deviceMatched: 0,
+          },
+        },
+      ]);
+
+      const groupedUsers = groupDataByDate(usersCollection, fromdate, todate);
+      console.log(groupedUsers[0]);
       const attendanceSummary = calculateAttendanceCheck(groupedUsers);
 
       return res.status(200).json({

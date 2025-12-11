@@ -3,7 +3,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import ImageIcon from '@mui/icons-material/Image';
 import SendIcon from '@mui/icons-material/Send';
 import AggridTable from "../../components/AggridTable";
-
 import AggregatedSearchBar from '../../components/AggregatedSearchBar';
 import {
     Box, Button, Checkbox, Dialog,

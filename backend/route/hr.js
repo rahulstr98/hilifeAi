@@ -234,8 +234,9 @@ hrmoduleRoute.route("/manualkeywordpreparation/:id").get(getSingleManualKeywords
 
 
 
-const { getAllTemplatecontrolpanelModel, getAllDuplicateTemplatecontrolpanel, getAaccessibleBranchAllTemplatecontrolpanelModel, deleteSingleObject, getAllFilterTemplatecontrolpanelModel, getSingleTemplatecontrolpanelModel, getAllUserDetailsDocuments, updateTemplatecontrolpanelModel, createTemplatecontrolpanelModel, deleteTemplatecontrolpanelModel } = require("../controller/modules/documents/Templatecontrolpanel");
+const { getAllTemplatecontrolpanelModel, getAllDuplicateTemplatecontrolpanel,getBranchBasedTemplate, getAaccessibleBranchAllTemplatecontrolpanelModel, deleteSingleObject, getAllFilterTemplatecontrolpanelModel, getSingleTemplatecontrolpanelModel, getAllUserDetailsDocuments, updateTemplatecontrolpanelModel, createTemplatecontrolpanelModel, deleteTemplatecontrolpanelModel } = require("../controller/modules/documents/Templatecontrolpanel");
 hrmoduleRoute.route("/templatecontrolpanel").get(getAllTemplatecontrolpanelModel);
+hrmoduleRoute.route('/branchtemplatecontrolpanel').post(getBranchBasedTemplate);
 hrmoduleRoute.route("/accessibletemplatecontrolpanel").post(getAaccessibleBranchAllTemplatecontrolpanelModel);
 hrmoduleRoute.route("/filtertemplatecontrolpanel").post(getAllFilterTemplatecontrolpanelModel);
 hrmoduleRoute.route("/duplicatetemplatecontrolpanel").get(getAllDuplicateTemplatecontrolpanel);

@@ -32,7 +32,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { StyledTableRow, StyledTableCell } from '../../../components/Table';
 import { Country, State, City } from 'country-state-city';
-import { address_type, personal_prefix, permanent_address_type, landmark_and_positional_prefix } from '../../../components/Componentkeyword';
+import { address_type, personal_prefix, permanent_address_type, landmark_and_positional_prefix, handleRestrictedWords } from '../../../components/Componentkeyword';
 import FullAddressCard from '../../../components/FullAddressCard.js';
 import PincodeButton from '../../../components/PincodeButton.js';
 import { getPincodeDetails } from '../../../components/getPincodeDetails';
@@ -133,14 +133,18 @@ function VisitorInformationMasterEdit() {
         houseflatnumber: '',
         streetroadname: '',
         localityareaname: '',
-           pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+        pbuildingapartmentname: "",
+        paddressone: "",
+        paddresstwo: "",
+        paddressthree: "",
+        caddressone: "",
+        caddresstwo: "",
+        caddressthree: "",
+        cbuildingapartmentname: "",
+        ppost: '',
+        cpost: '',
+        ptaluk: '',
+        ctaluk: '',
         pcountry: '',
         pstate: '',
         pcity: '',
@@ -220,14 +224,18 @@ cbuildingapartmentname:"",
                 houseflatnumber: '',
                 streetroadname: '',
                 localityareaname: '',
-                   pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+                pbuildingapartmentname: "",
+                paddressone: "",
+                paddresstwo: "",
+                paddressthree: "",
+                caddressone: "",
+                caddresstwo: "",
+                caddressthree: "",
+                cbuildingapartmentname: "",
+                ppost: '',
+                cpost: '',
+                ptaluk: '',
+                ctaluk: '',
                 pcountry: '',
                 pstate: '',
                 pcity: '',
@@ -714,14 +722,18 @@ cbuildingapartmentname:"",
                 houseflatnumber: singleCandidate?.houseflatnumber || '',
                 streetroadname: singleCandidate?.streetroadname || '',
                 localityareaname: singleCandidate?.localityareaname || '',
-                 pbuildingapartmentname:singleCandidate?.pbuildingapartmentname || "",
-paddressone:singleCandidate?.paddressone || "",
-paddresstwo:singleCandidate?.paddresstwo || "",
-paddressthree:singleCandidate?.paddressthree || "",
-caddressone:singleCandidate?.caddressone || "",
-caddresstwo:singleCandidate?.caddresstwo || "",
-caddressthree:singleCandidate?.caddressthree || "",
-cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
+                pbuildingapartmentname: singleCandidate?.pbuildingapartmentname || "",
+                paddressone: singleCandidate?.paddressone || "",
+                paddresstwo: singleCandidate?.paddresstwo || "",
+                paddressthree: singleCandidate?.paddressthree || "",
+                caddressone: singleCandidate?.caddressone || "",
+                caddresstwo: singleCandidate?.caddresstwo || "",
+                caddressthree: singleCandidate?.caddressthree || "",
+                cbuildingapartmentname: singleCandidate?.cbuildingapartmentname || "",
+                ppost: singleCandidate?.ppost || "",
+                cpost: singleCandidate?.cpost || "",
+                ptaluk: singleCandidate?.ptaluk || "",
+                ctaluk: singleCandidate?.ctaluk || "",
                 ppincode: singleCandidate?.ppincode || '',
                 gpscoordinate: singleCandidate?.gpscoordinate || '',
 
@@ -1804,8 +1816,12 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
                 landmarkname: String(vendor.landmarkname),
                 houseflatnumber: String(vendor.houseflatnumber),
                 streetroadname: String(vendor.streetroadname),
-                localityareaname: String(vendor.localityareaname),
-                pcountry: String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
+                // localityareaname: String(vendor.localityareaname),
+                localityareaname: vendor?.localityareaname
+                    ? String(vendor.localityareaname)
+                    : vendor?.pgenerateviapincode
+                        ? vendor?.pvillageorcity
+                        : selectedCityp?.name, pcountry: String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
                 pstate: String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
                 pcity: String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
                 ppincode: String(vendor.ppincode),
@@ -1820,23 +1836,37 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
                 clandmarkname: !vendor.samesprmnt ? String(vendor.clandmarkname) : String(vendor.landmarkname),
                 chouseflatnumber: !vendor.samesprmnt ? String(vendor.chouseflatnumber) : String(vendor.houseflatnumber),
                 cstreetroadname: !vendor.samesprmnt ? String(vendor.cstreetroadname) : String(vendor.streetroadname),
-                clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+                // clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+                clocalityareaname: vendor.samesprmnt
+                    ? (vendor?.localityareaname
+                        ? String(vendor.localityareaname)
+                        : vendor?.pgenerateviapincode
+                            ? vendor?.pvillageorcity
+                            : selectedCityp?.name)
+                    : (vendor?.clocalityareaname
+                        ? String(vendor.clocalityareaname)
+                        : vendor?.cgenerateviapincode
+                            ? vendor?.cvillageorcity
+                            : selectedCityc?.name),
                 ccountry: !vendor.samesprmnt ? String(selectedCountryc?.name == undefined ? '' : selectedCountryc?.name) : String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
                 cstate: !vendor.samesprmnt ? String(selectedStatec?.name == undefined ? '' : selectedStatec?.name) : String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
                 ccity: !vendor.samesprmnt ? String(selectedCityc?.name == undefined ? '' : selectedCityc?.name) : String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
                 cpincode: !vendor.samesprmnt ? String(vendor.cpincode) : String(vendor.ppincode),
                 cgpscoordinate: !vendor.samesprmnt ? String(vendor.cgpscoordinate) : String(vendor.gpscoordinate),
 
-                         pbuildingapartmentname:String(vendor?.pbuildingapartmentname || ""),
-paddressone:String(vendor?.paddressone || ""),
-paddresstwo:String(vendor?.paddresstwo || ""),
-paddressthree:String(vendor?.paddressthree || ""),
+                pbuildingapartmentname: String(vendor?.pbuildingapartmentname || ""),
+                paddressone: String(vendor?.paddressone || ""),
+                paddresstwo: String(vendor?.paddresstwo || ""),
+                paddressthree: String(vendor?.paddressthree || ""),
 
-caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
-caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
-caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
-cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
-
+                caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
+                caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
+                caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
+                cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
+                ppost: String(vendor?.ppost || ""),
+                ptaluk: String(vendor?.ptaluk || ""),
+                cpost: !vendor.samesprmnt ? String(vendor?.cpost || '') : String(vendor?.ppost || ''),
+                ctaluk: !vendor.samesprmnt ? String(vendor?.ctaluk || '') : String(vendor?.ptaluk || ''),
                 pgenerateviapincode: Boolean(vendor?.pgenerateviapincode || false),
                 pvillageorcity: String(vendor?.pvillageorcity || ''),
                 pdistrict: String(vendor?.pdistrict || ''),
@@ -3484,9 +3514,44 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
                                                     </FormControl>
                                                 </Grid>
                                             )}
+
+                                            <Grid item md={3} sm={12} xs={12}>
+                                                <FormControl fullWidth size="small">
+                                                    <Typography>Post</Typography>
+                                                    <OutlinedInput
+                                                        id="component-outlined"
+                                                        type="text"
+                                                        placeholder="Post"
+                                                        value={vendor?.ppost}
+                                                        onChange={(e) => {
+                                                            setVendor({
+                                                                ...vendor,
+                                                                ppost: e.target.value,
+                                                            });
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item md={3} sm={12} xs={12}>
+                                                <FormControl fullWidth size="small">
+                                                    <Typography>Taluk</Typography>
+                                                    <OutlinedInput
+                                                        id="component-outlined"
+                                                        type="text"
+                                                        placeholder="Taluk"
+                                                        value={vendor?.ptaluk}
+                                                        onChange={(e) => {
+                                                            setVendor({
+                                                                ...vendor,
+                                                                ptaluk: e.target.value,
+                                                            });
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
                                             <Grid item md={3} xs={12} sm={12}>
                                                 <FormControl fullWidth size="small">
-                                                    <Typography>GPS Coordinate</Typography>
+                                                    <Typography>GPS Coordination</Typography>
                                                     <OutlinedInput
                                                         id="component-outlined"
                                                         type="text"
@@ -3534,6 +3599,15 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
                                                                 landmarkname: e.target.value,
                                                             });
                                                         }}
+                                                        onBlur={(e) => {
+                                                            handleRestrictedWords(
+                                                                e.target.value,
+                                                                (cleanedValue) =>
+                                                                    setVendor({ ...vendor, landmarkname: cleanedValue }),
+                                                                "Landmark",
+                                                                setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert
+                                                            );
+                                                        }}
                                                     />
                                                 </FormControl>
                                             </Grid>
@@ -3556,6 +3630,23 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
                                             </Grid>
                                             <Grid item md={3} xs={12} sm={12}>
                                                 <FormControl fullWidth size="small">
+                                                    <Typography>Building/Apartment Name</Typography>
+                                                    <OutlinedInput
+                                                        id="component-outlined"
+                                                        type="text"
+                                                        value={vendor.pbuildingapartmentname}
+                                                        placeholder="Please Enter Building/Apartment Name"
+                                                        onChange={(e) => {
+                                                            setVendor({
+                                                                ...vendor,
+                                                                pbuildingapartmentname: e.target.value,
+                                                            });
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item md={3} xs={12} sm={12}>
+                                                <FormControl fullWidth size="small">
                                                     <Typography>Street/Road Name</Typography>
                                                     <OutlinedInput
                                                         id="component-outlined"
@@ -3566,6 +3657,59 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
                                                             setVendor({
                                                                 ...vendor,
                                                                 streetroadname: e.target.value,
+                                                            });
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
+
+
+                                            <Grid item md={3} xs={12} sm={12}>
+                                                <FormControl fullWidth size="small">
+                                                    <Typography>Address 1</Typography>
+                                                    <OutlinedInput
+                                                        id="component-outlined"
+                                                        type="text"
+                                                        value={vendor.paddressone}
+                                                        placeholder="Please Enter Address 1"
+                                                        onChange={(e) => {
+                                                            setVendor({
+                                                                ...vendor,
+                                                                paddressone: e.target.value,
+                                                            });
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item md={3} xs={12} sm={12}>
+                                                <FormControl fullWidth size="small">
+                                                    <Typography>Address 2</Typography>
+                                                    <OutlinedInput
+                                                        id="component-outlined"
+                                                        type="text"
+                                                        value={vendor.paddresstwo}
+                                                        placeholder="Please Enter Address 2"
+                                                        onChange={(e) => {
+                                                            setVendor({
+                                                                ...vendor,
+                                                                paddresstwo: e.target.value,
+                                                            });
+                                                        }}
+                                                    />
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item md={3} xs={12} sm={12}>
+                                                <FormControl fullWidth size="small">
+                                                    <Typography>Address 3</Typography>
+                                                    <OutlinedInput
+                                                        id="component-outlined"
+                                                        type="text"
+                                                        value={vendor.paddressthree}
+                                                        placeholder="Please Enter Address 3"
+                                                        onChange={(e) => {
+                                                            setVendor({
+                                                                ...vendor,
+                                                                paddressthree: e.target.value,
                                                             });
                                                         }}
                                                     />
@@ -3588,74 +3732,6 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
                                                     />
                                                 </FormControl>
                                             </Grid>
-                                             <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                                                              <FormControl fullWidth size="small">
-                                                                                                                                                                                                                                <Typography>Building/Apartment Name</Typography>
-                                                                                                                                                                                                                                <OutlinedInput
-                                                                                                                                                                                                                                  id="component-outlined"
-                                                                                                                                                                                                                                  type="text"
-                                                                                                                                                                                                                                  value={vendor.pbuildingapartmentname}
-                                                                                                                                                                                                                                  placeholder="Please Enter Building/Apartment Name"
-                                                                                                                                                                                                                                  onChange={(e) => {
-                                                                                                                                                                                                                                    setVendor({
-                                                                                                                                                                                                                                      ...vendor,
-                                                                                                                                                                                                                                      pbuildingapartmentname: e.target.value,
-                                                                                                                                                                                                                                    });
-                                                                                                                                                                                                                                  }}
-                                                                                                                                                                                                                                />
-                                                                                                                                                                                                                              </FormControl>
-                                                                                                                                                                                                                            </Grid>
-                                                                                                                                                                                                                            <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                                                              <FormControl fullWidth size="small">
-                                                                                                                                                                                                                                <Typography>Address 1</Typography>
-                                                                                                                                                                                                                                <OutlinedInput
-                                                                                                                                                                                                                                  id="component-outlined"
-                                                                                                                                                                                                                                  type="text"
-                                                                                                                                                                                                                                  value={vendor.paddressone}
-                                                                                                                                                                                                                                  placeholder="Please Enter Address 1"
-                                                                                                                                                                                                                                  onChange={(e) => {
-                                                                                                                                                                                                                                    setVendor({
-                                                                                                                                                                                                                                      ...vendor,
-                                                                                                                                                                                                                                      paddressone: e.target.value,
-                                                                                                                                                                                                                                    });
-                                                                                                                                                                                                                                  }}
-                                                                                                                                                                                                                                />
-                                                                                                                                                                                                                              </FormControl>
-                                                                                                                                                                                                                            </Grid>
-                                                                                                                                                                                                                            <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                                                              <FormControl fullWidth size="small">
-                                                                                                                                                                                                                                <Typography>Address 2</Typography>
-                                                                                                                                                                                                                                <OutlinedInput
-                                                                                                                                                                                                                                  id="component-outlined"
-                                                                                                                                                                                                                                  type="text"
-                                                                                                                                                                                                                                  value={vendor.paddresstwo}
-                                                                                                                                                                                                                                  placeholder="Please Enter Address 2"
-                                                                                                                                                                                                                                  onChange={(e) => {
-                                                                                                                                                                                                                                    setVendor({
-                                                                                                                                                                                                                                      ...vendor,
-                                                                                                                                                                                                                                      paddresstwo: e.target.value,
-                                                                                                                                                                                                                                    });
-                                                                                                                                                                                                                                  }}
-                                                                                                                                                                                                                                />
-                                                                                                                                                                                                                              </FormControl>
-                                                                                                                                                                                                                            </Grid>
-                                                                                                                                                                                                                            <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                                                              <FormControl fullWidth size="small">
-                                                                                                                                                                                                                                <Typography>Address 3</Typography>
-                                                                                                                                                                                                                                <OutlinedInput
-                                                                                                                                                                                                                                  id="component-outlined"
-                                                                                                                                                                                                                                  type="text"
-                                                                                                                                                                                                                                  value={vendor.paddressthree}
-                                                                                                                                                                                                                                  placeholder="Please Enter Address 3"
-                                                                                                                                                                                                                                  onChange={(e) => {
-                                                                                                                                                                                                                                    setVendor({
-                                                                                                                                                                                                                                      ...vendor,
-                                                                                                                                                                                                                                      paddressthree: e.target.value,
-                                                                                                                                                                                                                                    });
-                                                                                                                                                                                                                                  }}
-                                                                                                                                                                                                                                />
-                                                                                                                                                                                                                              </FormControl>
-                                                                                                                                                                                                                            </Grid>
                                         </Grid>
                                         <Grid item md={12} sm={12} xs={12}>
                                             <FullAddressCard
@@ -3676,10 +3752,12 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
                                                     ppincode: vendor?.ppincode,
                                                     pgpscoordination: vendor?.gpscoordinate,
 
-                                                     pbuildingapartmentname:vendor?.pbuildingapartmentname || "",
-paddressone:vendor?.paddressone || "",
-paddresstwo:vendor?.paddresstwo || "",
-paddressthree:vendor?.paddressthree || "",
+                                                    pbuildingapartmentname: vendor?.pbuildingapartmentname || "",
+                                                    paddressone: vendor?.paddressone || "",
+                                                    paddresstwo: vendor?.paddresstwo || "",
+                                                    paddressthree: vendor?.paddressthree || "",
+                                                    ppost: vendor?.ppost || "",
+                                                    ptaluk: vendor?.ptaluk || "",
                                                 }}
                                             />
                                         </Grid>
@@ -3963,7 +4041,40 @@ paddressthree:vendor?.paddressthree || "",
                                                         </FormControl>
                                                     </Grid>
                                                 )}
-
+                                                <Grid item md={3} sm={12} xs={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Post</Typography>
+                                                        <OutlinedInput
+                                                            id="component-outlined"
+                                                            type="text"
+                                                            placeholder="Post"
+                                                            value={vendor?.cpost}
+                                                            onChange={(e) => {
+                                                                setVendor({
+                                                                    ...vendor,
+                                                                    cpost: e.target.value,
+                                                                });
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item md={3} sm={12} xs={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Taluk</Typography>
+                                                        <OutlinedInput
+                                                            id="component-outlined"
+                                                            type="text"
+                                                            placeholder="Taluk"
+                                                            value={vendor?.ctaluk}
+                                                            onChange={(e) => {
+                                                                setVendor({
+                                                                    ...vendor,
+                                                                    ctaluk: e.target.value,
+                                                                });
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                </Grid>
                                                 <Grid item md={3} sm={12} xs={12}>
                                                     <FormControl fullWidth size="small">
                                                         <Typography>GPS Coordination</Typography>
@@ -4011,6 +4122,15 @@ paddressthree:vendor?.paddressthree || "",
                                                                     clandmarkname: e.target.value,
                                                                 });
                                                             }}
+                                                            onBlur={(e) => {
+                                                                handleRestrictedWords(
+                                                                    e.target.value,
+                                                                    (cleanedValue) =>
+                                                                        setVendor({ ...vendor, clandmarkname: cleanedValue }),
+                                                                    "Landmark",
+                                                                    setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert
+                                                                );
+                                                            }}
                                                         />
                                                     </FormControl>
                                                 </Grid>
@@ -4026,6 +4146,23 @@ paddressthree:vendor?.paddressthree || "",
                                                                 setVendor({
                                                                     ...vendor,
                                                                     chouseflatnumber: e.target.value,
+                                                                });
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item md={3} xs={12} sm={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Building/Apartment Name</Typography>
+                                                        <OutlinedInput
+                                                            id="component-outlined"
+                                                            type="text"
+                                                            value={vendor.cbuildingapartmentname}
+                                                            placeholder="Please Enter Building/Apartment Name"
+                                                            onChange={(e) => {
+                                                                setVendor({
+                                                                    ...vendor,
+                                                                    cbuildingapartmentname: e.target.value,
                                                                 });
                                                             }}
                                                         />
@@ -4048,6 +4185,59 @@ paddressthree:vendor?.paddressthree || "",
                                                         />
                                                     </FormControl>
                                                 </Grid>
+
+
+                                                <Grid item md={3} xs={12} sm={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Address 1</Typography>
+                                                        <OutlinedInput
+                                                            id="component-outlined"
+                                                            type="text"
+                                                            value={vendor.caddressone}
+                                                            placeholder="Please Enter Address 1"
+                                                            onChange={(e) => {
+                                                                setVendor({
+                                                                    ...vendor,
+                                                                    caddressone: e.target.value,
+                                                                });
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item md={3} xs={12} sm={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Address 2</Typography>
+                                                        <OutlinedInput
+                                                            id="component-outlined"
+                                                            type="text"
+                                                            value={vendor.caddresstwo}
+                                                            placeholder="Please Enter Address 2"
+                                                            onChange={(e) => {
+                                                                setVendor({
+                                                                    ...vendor,
+                                                                    caddresstwo: e.target.value,
+                                                                });
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item md={3} xs={12} sm={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Address 3</Typography>
+                                                        <OutlinedInput
+                                                            id="component-outlined"
+                                                            type="text"
+                                                            value={vendor.caddressthree}
+                                                            placeholder="Please Enter Address 3"
+                                                            onChange={(e) => {
+                                                                setVendor({
+                                                                    ...vendor,
+                                                                    caddressthree: e.target.value,
+                                                                });
+                                                            }}
+                                                        />
+                                                    </FormControl>
+                                                </Grid>
                                                 <Grid item md={3} sm={12} xs={12}>
                                                     <FormControl fullWidth size="small">
                                                         <Typography>Locality/Area Name</Typography>
@@ -4062,74 +4252,6 @@ paddressthree:vendor?.paddressthree || "",
                                                         />
                                                     </FormControl>
                                                 </Grid>
-                                                 <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                                                                                          <Typography>Building/Apartment Name</Typography>
-                                                                                                                                                                                                                          <OutlinedInput
-                                                                                                                                                                                                                            id="component-outlined"
-                                                                                                                                                                                                                            type="text"
-                                                                                                                                                                                                                            value={vendor.cbuildingapartmentname}
-                                                                                                                                                                                                                            placeholder="Please Enter Building/Apartment Name"
-                                                                                                                                                                                                                            onChange={(e) => {
-                                                                                                                                                                                                                              setVendor({
-                                                                                                                                                                                                                                ...vendor,
-                                                                                                                                                                                                                                cbuildingapartmentname: e.target.value,
-                                                                                                                                                                                                                              });
-                                                                                                                                                                                                                            }}
-                                                                                                                                                                                                                          />
-                                                                                                                                                                                                                        </FormControl>
-                                                                                                                                                                                                                      </Grid>
-                                                                                                                                                                                                                      <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                                                                                          <Typography>Address 1</Typography>
-                                                                                                                                                                                                                          <OutlinedInput
-                                                                                                                                                                                                                            id="component-outlined"
-                                                                                                                                                                                                                            type="text"
-                                                                                                                                                                                                                            value={vendor.caddressone}
-                                                                                                                                                                                                                            placeholder="Please Enter Address 1"
-                                                                                                                                                                                                                            onChange={(e) => {
-                                                                                                                                                                                                                              setVendor({
-                                                                                                                                                                                                                                ...vendor,
-                                                                                                                                                                                                                                caddressone: e.target.value,
-                                                                                                                                                                                                                              });
-                                                                                                                                                                                                                            }}
-                                                                                                                                                                                                                          />
-                                                                                                                                                                                                                        </FormControl>
-                                                                                                                                                                                                                      </Grid>
-                                                                                                                                                                                                                      <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                                                                                          <Typography>Address 2</Typography>
-                                                                                                                                                                                                                          <OutlinedInput
-                                                                                                                                                                                                                            id="component-outlined"
-                                                                                                                                                                                                                            type="text"
-                                                                                                                                                                                                                            value={vendor.caddresstwo}
-                                                                                                                                                                                                                            placeholder="Please Enter Address 2"
-                                                                                                                                                                                                                            onChange={(e) => {
-                                                                                                                                                                                                                              setVendor({
-                                                                                                                                                                                                                                ...vendor,
-                                                                                                                                                                                                                                caddresstwo: e.target.value,
-                                                                                                                                                                                                                              });
-                                                                                                                                                                                                                            }}
-                                                                                                                                                                                                                          />
-                                                                                                                                                                                                                        </FormControl>
-                                                                                                                                                                                                                      </Grid>
-                                                                                                                                                                                                                      <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                                                                                          <Typography>Address 3</Typography>
-                                                                                                                                                                                                                          <OutlinedInput
-                                                                                                                                                                                                                            id="component-outlined"
-                                                                                                                                                                                                                            type="text"
-                                                                                                                                                                                                                            value={vendor.caddressthree}
-                                                                                                                                                                                                                            placeholder="Please Enter Address 3"
-                                                                                                                                                                                                                            onChange={(e) => {
-                                                                                                                                                                                                                              setVendor({
-                                                                                                                                                                                                                                ...vendor,
-                                                                                                                                                                                                                                caddressthree: e.target.value,
-                                                                                                                                                                                                                              });
-                                                                                                                                                                                                                            }}
-                                                                                                                                                                                                                          />
-                                                                                                                                                                                                                        </FormControl>
-                                                                                                                                                                                                                      </Grid>
                                             </Grid>
                                         </>
                                     ) : (
@@ -4235,7 +4357,18 @@ paddressthree:vendor?.paddressthree || "",
                                                         </FormControl>
                                                     </Grid>
                                                 )}
-
+                                                <Grid item md={3} sm={12} xs={12}>
+                                                    <FormControl size="small" fullWidth>
+                                                        <Typography>Post</Typography>
+                                                        <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ppost} />
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item md={3} sm={12} xs={12}>
+                                                    <FormControl size="small" fullWidth>
+                                                        <Typography>Taluk</Typography>
+                                                        <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ptaluk} />
+                                                    </FormControl>
+                                                </Grid>
                                                 <Grid item md={3} sm={12} xs={12}>
                                                     <FormControl size="small" fullWidth>
                                                         <Typography>GPS Coordination</Typography>
@@ -4263,8 +4396,34 @@ paddressthree:vendor?.paddressthree || "",
                                                 </Grid>
                                                 <Grid item md={3} sm={12} xs={12}>
                                                     <FormControl fullWidth size="small">
+                                                        <Typography>Building/Apartment Name</Typography>
+                                                        <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.pbuildingapartmentname || ""} readOnly />
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item md={3} sm={12} xs={12}>
+                                                    <FormControl fullWidth size="small">
                                                         <Typography>Street/Road Name</Typography>
                                                         <OutlinedInput id="component-outlined" type="text" placeholder="Street/Road Name" value={vendor.streetroadname} readOnly />
+                                                    </FormControl>
+                                                </Grid>
+
+
+                                                <Grid item md={3} sm={12} xs={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Address 1</Typography>
+                                                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.paddressone || ""} readOnly />
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item md={3} sm={12} xs={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Address 2</Typography>
+                                                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.paddresstwo || ""} readOnly />
+                                                    </FormControl>
+                                                </Grid>
+                                                <Grid item md={3} sm={12} xs={12}>
+                                                    <FormControl fullWidth size="small">
+                                                        <Typography>Address 3</Typography>
+                                                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.paddressthree || ""} readOnly />
                                                     </FormControl>
                                                 </Grid>
                                                 <Grid item md={3} sm={12} xs={12}>
@@ -4273,30 +4432,6 @@ paddressthree:vendor?.paddressthree || "",
                                                         <OutlinedInput id="component-outlined" type="text" placeholder="Locality/Area Name" value={vendor.localityareaname} readOnly />
                                                     </FormControl>
                                                 </Grid>
-                                                   <Grid item md={3} sm={12} xs={12}>
-                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                          <Typography>Building/Apartment Name</Typography>
-                                                                                                                                                          <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.pbuildingapartmentname || ""} readOnly />
-                                                                                                                                                        </FormControl>
-                                                                                                                                                      </Grid>
-                                                                                                                                                      <Grid item md={3} sm={12} xs={12}>
-                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                          <Typography>Address 1</Typography>
-                                                                                                                                                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.paddressone || ""} readOnly />
-                                                                                                                                                        </FormControl>
-                                                                                                                                                      </Grid>
-                                                                                                                                                      <Grid item md={3} sm={12} xs={12}>
-                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                          <Typography>Address 2</Typography>
-                                                                                                                                                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.paddresstwo || ""} readOnly />
-                                                                                                                                                        </FormControl>
-                                                                                                                                                      </Grid>
-                                                                                                                                                      <Grid item md={3} sm={12} xs={12}>
-                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                          <Typography>Address 3</Typography>
-                                                                                                                                                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.paddressthree || ""} readOnly />
-                                                                                                                                                        </FormControl>
-                                                                                                                                                      </Grid>
                                             </Grid>
                                         </>
                                     )}

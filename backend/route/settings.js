@@ -4,12 +4,13 @@ const organizationDocumentMulter = require("../middleware/organizationDocument")
 
 
 //status master name route
-const { updateOverAllSettings, createOverAllSettings, getLastOverAllSettings,getOverAllSettings, getOverAllSettingsAssignBranch, getOverAllSettingsLastIndex, getSingleOverAllSettings } = require("../controller/modules/settings/ControlPanelController");
+const { updateOverAllSettings, createOverAllSettings,getLogoOverAllSettings, getLastOverAllSettings,getOverAllSettings, getOverAllSettingsAssignBranch, getOverAllSettingsLastIndex, getSingleOverAllSettings } = require("../controller/modules/settings/ControlPanelController");
 // settingsRoute.route('/updatetwofaswitch/:id').put(updateTwofaSwitch);
 // settingsRoute.route('/updatetwofaswitchuser/:id').get(getTwoFAupdateduser);
 settingsRoute.route("/getoverallsettings").get(getOverAllSettings);
 settingsRoute.route("/lastgetoverallsettings").get(getLastOverAllSettings);
 settingsRoute.route("/createoverallsettings").post(createOverAllSettings);
+settingsRoute.route('/getlogooverallsettings').get(getLogoOverAllSettings);
 settingsRoute.route("/getoverallsettingslastindex").get(getOverAllSettingsLastIndex);
 settingsRoute.route("/singleoverallsettings/:id").put(updateOverAllSettings).get(getSingleOverAllSettings);
 settingsRoute.route("/getoverallsettingsassignbranch").post(getOverAllSettingsAssignBranch);

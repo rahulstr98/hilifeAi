@@ -21,7 +21,7 @@ import Checkoutaction from '../webpages/checkoutaction';
 import Checkinvisitor from '../webpages/checkinvisitor';
 import Visitorsregister from '../webpages/visitorsregistor';
 import Visitorsinformationregister from '../webpages/visitorinformationregister';
-// import VisitorInformation from '../webpages/visitorinformation';
+import VisitorInformation from '../webpages/visitorinformation';
 
 // import Addcandidates from '../webpages/Addcandidates';
 // import BDCard from '../webpages/BDayCard';
@@ -76,7 +76,7 @@ function Webstock() {
           <Route path="/Visitorsregister/:company/:branch" element={<Visitorsregister />} />
           <Route path="/Visitorsinformationregister/:company/:branch" element={<Visitorsinformationregister />} />
           <Route path="/Checkinvisitor/:company/:branch" element={<Checkinvisitor />} />
-          {/* <Route path="/visitorinformation/:company/:branch" element={<VisitorInformation />} /> */}
+          <Route path="/visitorinformation/:company/:branch" element={<VisitorInformation />} />
           <Route path="/checkoutaction/:company/:branch" element={<Checkoutaction />} />
           {/* <Route path="birthdaycard" element={<BDCard />} /> */}
           {/* <Route path="exitinterview/exitinterviewendpage" element={<ExitInterviewEndPage />} /> */}

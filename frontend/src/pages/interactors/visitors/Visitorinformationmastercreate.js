@@ -42,7 +42,7 @@ import RaiseTicketRequestDocument from './RaiseTicketRequestDocument.js';
 import ExistingVisitor from './ExistingVisitorCheck';
 import { Country, State, City } from 'country-state-city';
 import { getPincodeDetails } from '../../../components/getPincodeDetails';
-import { address_type, permanent_address_type, personal_prefix, landmark_and_positional_prefix } from '../../../components/Componentkeyword';
+import { address_type, permanent_address_type, personal_prefix, landmark_and_positional_prefix, handleRestrictedWords } from '../../../components/Componentkeyword';
 import FullAddressCard from '../../../components/FullAddressCard.js';
 import PincodeButton from '../../../components/PincodeButton.js';
 import { getCurrentServerTime } from '../../../components/getCurrentServerTime';
@@ -148,14 +148,18 @@ function VisitorInformationMasterCreate() {
     houseflatnumber: '',
     streetroadname: '',
     localityareaname: '',
-       pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+    pbuildingapartmentname: "",
+    paddressone: "",
+    paddresstwo: "",
+    paddressthree: "",
+    caddressone: "",
+    caddresstwo: "",
+    caddressthree: "",
+    cbuildingapartmentname: "",
+    ppost: '',
+    cpost: '',
+    ptaluk: '',
+    ctaluk: '',
     pcountry: selectedCountryp?.name,
     pstate: selectedStatep?.name,
     pcity: selectedCityp?.name,
@@ -240,14 +244,18 @@ cbuildingapartmentname:"",
         houseflatnumber: '',
         streetroadname: '',
         localityareaname: '',
-           pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+        pbuildingapartmentname: "",
+        paddressone: "",
+        paddresstwo: "",
+        paddressthree: "",
+        caddressone: "",
+        caddresstwo: "",
+        caddressthree: "",
+        cbuildingapartmentname: "",
+        ppost: '',
+        cpost: '',
+        ptaluk: '',
+        ctaluk: '',
         pcountry: selectedCountryp?.name,
         pstate: selectedStatep?.name,
         pcity: selectedCityp?.name,
@@ -492,23 +500,23 @@ cbuildingapartmentname:"",
       // setCroppedImage(response?.data?.image);
       from === 'upload'
         ? setRefImage((prev) => {
-            let updated = [...prev];
-            let currentObject = {
-              ...updated[index],
-              preview: `${response?.data?.image}`,
-            };
-            updated[index] = currentObject;
-            return updated;
-          })
+          let updated = [...prev];
+          let currentObject = {
+            ...updated[index],
+            preview: `${response?.data?.image}`,
+          };
+          updated[index] = currentObject;
+          return updated;
+        })
         : setCapturedImages((prev) => {
-            let updated = [...prev];
-            let currentObject = {
-              ...updated[index],
-              preview: `${response?.data?.image}`,
-            };
-            updated[index] = currentObject;
-            return updated;
-          });
+          let updated = [...prev];
+          let currentObject = {
+            ...updated[index],
+            preview: `${response?.data?.image}`,
+          };
+          updated[index] = currentObject;
+          return updated;
+        });
     } catch (error) {
       console.error('Error uploading image:', error);
     } finally {
@@ -593,35 +601,35 @@ cbuildingapartmentname:"",
 
   const accessbranch = isUserRoleAccess?.role?.includes('Manager')
     ? isAssignBranch?.map((data) => ({
+      branch: data.branch,
+      company: data.company,
+      unit: data.unit,
+    }))
+    : isAssignBranch
+      ?.filter((data) => {
+        let fetfinalurl = [];
+        if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+          fetfinalurl = data.subsubpagenameurl;
+        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+          fetfinalurl = data.subpagenameurl;
+        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+          fetfinalurl = data.mainpagenameurl;
+        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
+          fetfinalurl = data.submodulenameurl;
+        } else if (data?.modulenameurl?.length !== 0) {
+          fetfinalurl = data.modulenameurl;
+        } else {
+          fetfinalurl = [];
+        }
+        const remove = [window.location.pathname?.substring(1), window.location.pathname];
+
+        return fetfinalurl?.some((item) => remove?.includes(item));
+      })
+      ?.map((data) => ({
         branch: data.branch,
         company: data.company,
         unit: data.unit,
-      }))
-    : isAssignBranch
-        ?.filter((data) => {
-          let fetfinalurl = [];
-          if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-            fetfinalurl = data.subsubpagenameurl;
-          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-            fetfinalurl = data.subpagenameurl;
-          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-            fetfinalurl = data.mainpagenameurl;
-          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-            fetfinalurl = data.submodulenameurl;
-          } else if (data?.modulenameurl?.length !== 0) {
-            fetfinalurl = data.modulenameurl;
-          } else {
-            fetfinalurl = [];
-          }
-          const remove = [window.location.pathname?.substring(1), window.location.pathname];
-
-          return fetfinalurl?.some((item) => remove?.includes(item));
-        })
-        ?.map((data) => ({
-          branch: data.branch,
-          company: data.company,
-          unit: data.unit,
-        }));
+      }));
 
   const filteredAreas = allareagrouping?.filter((area) => accessbranch.some((access) => access.company === area.company && access.branch === area.branch && access.unit === area.unit));
 
@@ -986,7 +994,7 @@ cbuildingapartmentname:"",
         // }
         setBtnUpload(false);
       }
-    } catch (err) {}
+    } catch (err) { }
   }
 
   function handleChangeImageDrag(e) {
@@ -1345,7 +1353,7 @@ cbuildingapartmentname:"",
     setRefImageDragedit([]);
     setCapturedImagesedit([]);
   };
-  const handleDragOveredit = (event) => {};
+  const handleDragOveredit = (event) => { };
   const handleDropedit = (event) => {
     event.preventDefault();
     previewFileedit(event.dataTransfer.files[0]);
@@ -1760,8 +1768,12 @@ cbuildingapartmentname:"",
         landmarkname: String(vendor.landmarkname),
         houseflatnumber: String(vendor.houseflatnumber),
         streetroadname: String(vendor.streetroadname),
-        localityareaname: String(vendor.localityareaname),
-        pcountry: String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
+        // localityareaname: String(vendor.localityareaname),
+        localityareaname: vendor?.localityareaname
+          ? String(vendor.localityareaname)
+          : vendor?.pgenerateviapincode
+            ? vendor?.pvillageorcity
+            : selectedCityp?.name, pcountry: String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
         pstate: String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
         pcity: String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
         ppincode: String(vendor.ppincode),
@@ -1776,23 +1788,37 @@ cbuildingapartmentname:"",
         clandmarkname: !vendor.samesprmnt ? String(vendor.clandmarkname) : String(vendor.landmarkname),
         chouseflatnumber: !vendor.samesprmnt ? String(vendor.chouseflatnumber) : String(vendor.houseflatnumber),
         cstreetroadname: !vendor.samesprmnt ? String(vendor.cstreetroadname) : String(vendor.streetroadname),
-        clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+        // clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+        clocalityareaname: vendor.samesprmnt
+          ? (vendor?.localityareaname
+            ? String(vendor.localityareaname)
+            : vendor?.pgenerateviapincode
+              ? vendor?.pvillageorcity
+              : selectedCityp?.name)
+          : (vendor?.clocalityareaname
+            ? String(vendor.clocalityareaname)
+            : vendor?.cgenerateviapincode
+              ? vendor?.cvillageorcity
+              : selectedCityc?.name),
         ccountry: !vendor.samesprmnt ? String(selectedCountryc?.name == undefined ? '' : selectedCountryc?.name) : String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
         cstate: !vendor.samesprmnt ? String(selectedStatec?.name == undefined ? '' : selectedStatec?.name) : String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
         ccity: !vendor.samesprmnt ? String(selectedCityc?.name == undefined ? '' : selectedCityc?.name) : String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
         cpincode: !vendor.samesprmnt ? String(vendor.cpincode) : String(vendor.ppincode),
         cgpscoordinate: !vendor.samesprmnt ? String(vendor.cgpscoordinate) : String(vendor.gpscoordinate),
 
-         pbuildingapartmentname:String(vendor?.pbuildingapartmentname || ""),
-paddressone:String(vendor?.paddressone || ""),
-paddresstwo:String(vendor?.paddresstwo || ""),
-paddressthree:String(vendor?.paddressthree || ""),
+        pbuildingapartmentname: String(vendor?.pbuildingapartmentname || ""),
+        paddressone: String(vendor?.paddressone || ""),
+        paddresstwo: String(vendor?.paddresstwo || ""),
+        paddressthree: String(vendor?.paddressthree || ""),
 
-caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
-caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
-caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
-cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
-
+        caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
+        caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
+        caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
+        cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
+        ppost: String(vendor?.ppost || ""),
+        ptaluk: String(vendor?.ptaluk || ""),
+        cpost: !vendor.samesprmnt ? String(vendor?.cpost || '') : String(vendor?.ppost || ''),
+        ctaluk: !vendor.samesprmnt ? String(vendor?.ctaluk || '') : String(vendor?.ptaluk || ''),
         date: String(vendor.date),
         requestvisitorfollowupdate: visitorsTypeOption?.filter((item) => item?.interactorstype === vendor.visitortype && item?.interactorspurpose?.includes(vendor.visitorpurpose))[0]?.requestdocument || false ? String(vendor.requestvisitorfollowupdate) : '',
         prefix: String(vendor.prefix),
@@ -2090,14 +2116,18 @@ cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentna
       houseflatnumber: '',
       streetroadname: '',
       localityareaname: '',
-         pbuildingapartmentname:"",
-paddressone:"",
-paddresstwo:"",
-paddressthree:"",
-caddressone:"",
-caddresstwo:"",
-caddressthree:"",
-cbuildingapartmentname:"",
+      pbuildingapartmentname: "",
+      paddressone: "",
+      paddresstwo: "",
+      paddressthree: "",
+      caddressone: "",
+      caddresstwo: "",
+      caddressthree: "",
+      cbuildingapartmentname: "",
+      ppost: '',
+      cpost: '',
+      ptaluk: '',
+      ctaluk: '',
       pcountry: country?.name,
       pstate: state?.name,
       pcity: city?.name,
@@ -2206,24 +2236,24 @@ cbuildingapartmentname:"",
         prefixString?.length == 1
           ? `000${prefixString}`
           : prefixString?.length == 2
-          ? `00${prefixString}`
-          : prefixString?.length == 3
-          ? `0${prefixString}`
-          : prefixString?.length == 4
-          ? `0${prefixString}`
-          : prefixString?.length == 5
-          ? `0${prefixString}`
-          : prefixString?.length == 6
-          ? `0${prefixString}`
-          : prefixString?.length == 7
-          ? `0${prefixString}`
-          : prefixString?.length == 8
-          ? `0${prefixString}`
-          : prefixString?.length == 9
-          ? `0${prefixString}`
-          : prefixString?.length == 10
-          ? `0${prefixString}`
-          : prefixString;
+            ? `00${prefixString}`
+            : prefixString?.length == 3
+              ? `0${prefixString}`
+              : prefixString?.length == 4
+                ? `0${prefixString}`
+                : prefixString?.length == 5
+                  ? `0${prefixString}`
+                  : prefixString?.length == 6
+                    ? `0${prefixString}`
+                    : prefixString?.length == 7
+                      ? `0${prefixString}`
+                      : prefixString?.length == 8
+                        ? `0${prefixString}`
+                        : prefixString?.length == 9
+                          ? `0${prefixString}`
+                          : prefixString?.length == 10
+                            ? `0${prefixString}`
+                            : prefixString;
 
       let newval = 'VISIT#' + postfixLength;
       setVisitorCode(newval);
@@ -2251,24 +2281,24 @@ cbuildingapartmentname:"",
           prefixString.length == 1
             ? `000${prefixString}`
             : prefixString.length == 2
-            ? `00${prefixString}`
-            : prefixString.length == 3
-            ? `0${prefixString}`
-            : prefixString.length == 4
-            ? `0${prefixString}`
-            : prefixString.length == 5
-            ? `0${prefixString}`
-            : prefixString.length == 6
-            ? `0${prefixString}`
-            : prefixString.length == 7
-            ? `0${prefixString}`
-            : prefixString.length == 8
-            ? `0${prefixString}`
-            : prefixString.length == 9
-            ? `0${prefixString}`
-            : prefixString.length == 10
-            ? `0${prefixString}`
-            : prefixString;
+              ? `00${prefixString}`
+              : prefixString.length == 3
+                ? `0${prefixString}`
+                : prefixString.length == 4
+                  ? `0${prefixString}`
+                  : prefixString.length == 5
+                    ? `0${prefixString}`
+                    : prefixString.length == 6
+                      ? `0${prefixString}`
+                      : prefixString.length == 7
+                        ? `0${prefixString}`
+                        : prefixString.length == 8
+                          ? `0${prefixString}`
+                          : prefixString.length == 9
+                            ? `0${prefixString}`
+                            : prefixString.length == 10
+                              ? `0${prefixString}`
+                              : prefixString;
         let newval = 'VISITIN#' + postfixLength;
         return newval;
       } else {
@@ -2538,14 +2568,14 @@ cbuildingapartmentname:"",
       houseflatnumber: e?.houseflatnumber || '',
       streetroadname: e?.streetroadname || '',
       localityareaname: e?.localityareaname || '',
-          pbuildingapartmentname: e?.pbuildingapartmentname || "",
-paddressone: e?.paddressone || "",
-paddresstwo: e?.paddresstwo || "",
-paddressthree: e?.paddressthree || "",
-caddressone: e?.caddressone || "",
-caddresstwo: e?.caddresstwo || "",
-caddressthree: e?.caddressthree || "",
-cbuildingapartmentname: e?.cbuildingapartmentname || "",
+      pbuildingapartmentname: e?.pbuildingapartmentname || "",
+      paddressone: e?.paddressone || "",
+      paddresstwo: e?.paddresstwo || "",
+      paddressthree: e?.paddressthree || "",
+      caddressone: e?.caddressone || "",
+      caddresstwo: e?.caddresstwo || "",
+      caddressthree: e?.caddressthree || "",
+      cbuildingapartmentname: e?.cbuildingapartmentname || "",
       pcountry: e?.pcountry || selectedCountryp?.name,
       pstate: e?.pstate || selectedStatep?.name,
       pcity: e?.pcity || selectedCityp?.name,
@@ -2862,14 +2892,18 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
       houseflatnumber: e?.houseflatnumber || '',
       streetroadname: e?.streetroadname || '',
       localityareaname: e?.localityareaname || '',
-          pbuildingapartmentname: e?.pbuildingapartmentname || "",
-paddressone: e?.paddressone || "",
-paddresstwo: e?.paddresstwo || "",
-paddressthree: e?.paddressthree || "",
-caddressone: e?.caddressone || "",
-caddresstwo: e?.caddresstwo || "",
-caddressthree: e?.caddressthree || "",
-cbuildingapartmentname: e?.cbuildingapartmentname || "",
+      pbuildingapartmentname: e?.pbuildingapartmentname || "",
+      paddressone: e?.paddressone || "",
+      paddresstwo: e?.paddresstwo || "",
+      paddressthree: e?.paddressthree || "",
+      caddressone: e?.caddressone || "",
+      caddresstwo: e?.caddresstwo || "",
+      caddressthree: e?.caddressthree || "",
+      cbuildingapartmentname: e?.cbuildingapartmentname || "",
+      ppost: String(e?.ppost || ""),
+      ptaluk: String(e?.ptaluk || ""),
+      cpost: String(e?.cpost || ""),
+      ctaluk: String(e?.ctaluk || ""),
       pcountry: e?.pcountry || selectedCountryp?.name,
       pstate: e?.pstate || selectedStatep?.name,
       pcity: e?.pcity || selectedCityp?.name,
@@ -3343,81 +3377,81 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                   {
                     // isWebcamCapture == true
                     capturedImages?.length > 0 &&
-                      capturedImages?.map((image, index) => (
-                        <Grid container key={index}>
-                          <Typography>&nbsp;</Typography>
+                    capturedImages?.map((image, index) => (
+                      <Grid container key={index}>
+                        <Typography>&nbsp;</Typography>
 
-                          <Grid item md={2} sm={2} xs={12}>
-                            <Box
-                              style={{
-                                isplay: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                marginLeft: '37px',
-                              }}
-                            >
-                              <img src={image?.preview} alt={image?.name} height={50} style={{ maxWidth: '-webkit-fill-available' }} />
-                            </Box>
-                          </Grid>
-                          <Grid
-                            item
-                            md={7}
-                            sm={7}
-                            xs={12}
-                            sx={{
-                              display: 'flex',
+                        <Grid item md={2} sm={2} xs={12}>
+                          <Box
+                            style={{
+                              isplay: 'flex',
                               justifyContent: 'center',
                               alignItems: 'center',
+                              marginLeft: '37px',
                             }}
                           >
-                            <Typography variant="subtitle2"> {image.name} </Typography>
-                          </Grid>
-                          <Grid item md={1} sm={1} xs={12}>
-                            <Grid sx={{ display: 'flex' }}>
-                              <Button
-                                sx={{
-                                  marginTop: '15px !important',
-                                  padding: '14px 14px',
-                                  minWidth: '40px !important',
-                                  borderRadius: '50% !important',
-                                  ':hover': {
-                                    backgroundColor: '#80808036', // theme.palette.primary.main
-                                  },
+                            <img src={image?.preview} alt={image?.name} height={50} style={{ maxWidth: '-webkit-fill-available' }} />
+                          </Box>
+                        </Grid>
+                        <Grid
+                          item
+                          md={7}
+                          sm={7}
+                          xs={12}
+                          sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                          }}
+                        >
+                          <Typography variant="subtitle2"> {image.name} </Typography>
+                        </Grid>
+                        <Grid item md={1} sm={1} xs={12}>
+                          <Grid sx={{ display: 'flex' }}>
+                            <Button
+                              sx={{
+                                marginTop: '15px !important',
+                                padding: '14px 14px',
+                                minWidth: '40px !important',
+                                borderRadius: '50% !important',
+                                ':hover': {
+                                  backgroundColor: '#80808036', // theme.palette.primary.main
+                                },
+                              }}
+                              onClick={() => renderFilePreview(image)}
+                            >
+                              <VisibilityOutlinedIcon
+                                style={{
+                                  fontsize: '12px',
+                                  color: '#357AE8',
+                                  marginTop: '35px !important',
                                 }}
-                                onClick={() => renderFilePreview(image)}
-                              >
-                                <VisibilityOutlinedIcon
-                                  style={{
-                                    fontsize: '12px',
-                                    color: '#357AE8',
-                                    marginTop: '35px !important',
-                                  }}
-                                />
-                              </Button>
-                              <Button
-                                sx={{
-                                  marginTop: '15px !important',
-                                  padding: '14px 14px',
-                                  minWidth: '40px !important',
-                                  borderRadius: '50% !important',
-                                  ':hover': {
-                                    backgroundColor: '#80808036',
-                                  },
+                              />
+                            </Button>
+                            <Button
+                              sx={{
+                                marginTop: '15px !important',
+                                padding: '14px 14px',
+                                minWidth: '40px !important',
+                                borderRadius: '50% !important',
+                                ':hover': {
+                                  backgroundColor: '#80808036',
+                                },
+                              }}
+                              onClick={() => removeCapturedImage(index)}
+                            >
+                              <FaTrash
+                                style={{
+                                  color: '#a73131',
+                                  fontSize: '12px',
+                                  marginTop: '35px !important',
                                 }}
-                                onClick={() => removeCapturedImage(index)}
-                              >
-                                <FaTrash
-                                  style={{
-                                    color: '#a73131',
-                                    fontSize: '12px',
-                                    marginTop: '35px !important',
-                                  }}
-                                />
-                              </Button>
-                            </Grid>
+                              />
+                            </Button>
                           </Grid>
                         </Grid>
-                      ))
+                      </Grid>
+                    ))
                   }
                   {refImage?.map((file, index) => (
                     <Grid container key={index}>
@@ -4552,9 +4586,44 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                           </FormControl>
                         </Grid>
                       )}
+                      <Grid item md={3} sm={12} xs={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Post</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            placeholder="Post"
+                            value={vendor?.ppost}
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                ppost: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={3} sm={12} xs={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Taluk</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            placeholder="Taluk"
+                            value={vendor?.ptaluk}
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                ptaluk: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+
                       <Grid item md={3} xs={12} sm={12}>
                         <FormControl fullWidth size="small">
-                          <Typography>GPS Coordinate</Typography>
+                          <Typography>GPS Coordination</Typography>
                           <OutlinedInput
                             id="component-outlined"
                             type="text"
@@ -4602,6 +4671,15 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                                 landmarkname: e.target.value,
                               });
                             }}
+                            onBlur={(e) => {
+                              handleRestrictedWords(
+                                e.target.value,
+                                (cleanedValue) =>
+                                  setVendor({ ...vendor, landmarkname: cleanedValue }),
+                                "Landmark",
+                                setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert
+                              );
+                            }}
                           />
                         </FormControl>
                       </Grid>
@@ -4624,6 +4702,23 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                       </Grid>
                       <Grid item md={3} xs={12} sm={12}>
                         <FormControl fullWidth size="small">
+                          <Typography>Building/Apartment Name</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            value={vendor.pbuildingapartmentname}
+                            placeholder="Please Enter Building/Apartment Name"
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                pbuildingapartmentname: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
                           <Typography>Street/Road Name</Typography>
                           <OutlinedInput
                             id="component-outlined"
@@ -4634,6 +4729,59 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                               setVendor({
                                 ...vendor,
                                 streetroadname: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+
+
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Address 1</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            value={vendor.paddressone}
+                            placeholder="Please Enter Address 1"
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                paddressone: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Address 2</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            value={vendor.paddresstwo}
+                            placeholder="Please Enter Address 2"
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                paddresstwo: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Address 3</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            value={vendor.paddressthree}
+                            placeholder="Please Enter Address 3"
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                paddressthree: e.target.value,
                               });
                             }}
                           />
@@ -4656,74 +4804,6 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                           />
                         </FormControl>
                       </Grid>
-                        <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                  <FormControl fullWidth size="small">
-                                                                                                                                                                                    <Typography>Building/Apartment Name</Typography>
-                                                                                                                                                                                    <OutlinedInput
-                                                                                                                                                                                      id="component-outlined"
-                                                                                                                                                                                      type="text"
-                                                                                                                                                                                      value={vendor.pbuildingapartmentname}
-                                                                                                                                                                                      placeholder="Please Enter Building/Apartment Name"
-                                                                                                                                                                                      onChange={(e) => {
-                                                                                                                                                                                        setVendor({
-                                                                                                                                                                                          ...vendor,
-                                                                                                                                                                                          pbuildingapartmentname: e.target.value,
-                                                                                                                                                                                        });
-                                                                                                                                                                                      }}
-                                                                                                                                                                                    />
-                                                                                                                                                                                  </FormControl>
-                                                                                                                                                                                </Grid>
-                                                                                                                                                                                <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                  <FormControl fullWidth size="small">
-                                                                                                                                                                                    <Typography>Address 1</Typography>
-                                                                                                                                                                                    <OutlinedInput
-                                                                                                                                                                                      id="component-outlined"
-                                                                                                                                                                                      type="text"
-                                                                                                                                                                                      value={vendor.paddressone}
-                                                                                                                                                                                      placeholder="Please Enter Address 1"
-                                                                                                                                                                                      onChange={(e) => {
-                                                                                                                                                                                        setVendor({
-                                                                                                                                                                                          ...vendor,
-                                                                                                                                                                                          paddressone: e.target.value,
-                                                                                                                                                                                        });
-                                                                                                                                                                                      }}
-                                                                                                                                                                                    />
-                                                                                                                                                                                  </FormControl>
-                                                                                                                                                                                </Grid>
-                                                                                                                                                                                <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                  <FormControl fullWidth size="small">
-                                                                                                                                                                                    <Typography>Address 2</Typography>
-                                                                                                                                                                                    <OutlinedInput
-                                                                                                                                                                                      id="component-outlined"
-                                                                                                                                                                                      type="text"
-                                                                                                                                                                                      value={vendor.paddresstwo}
-                                                                                                                                                                                      placeholder="Please Enter Address 2"
-                                                                                                                                                                                      onChange={(e) => {
-                                                                                                                                                                                        setVendor({
-                                                                                                                                                                                          ...vendor,
-                                                                                                                                                                                          paddresstwo: e.target.value,
-                                                                                                                                                                                        });
-                                                                                                                                                                                      }}
-                                                                                                                                                                                    />
-                                                                                                                                                                                  </FormControl>
-                                                                                                                                                                                </Grid>
-                                                                                                                                                                                <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                                  <FormControl fullWidth size="small">
-                                                                                                                                                                                    <Typography>Address 3</Typography>
-                                                                                                                                                                                    <OutlinedInput
-                                                                                                                                                                                      id="component-outlined"
-                                                                                                                                                                                      type="text"
-                                                                                                                                                                                      value={vendor.paddressthree}
-                                                                                                                                                                                      placeholder="Please Enter Address 3"
-                                                                                                                                                                                      onChange={(e) => {
-                                                                                                                                                                                        setVendor({
-                                                                                                                                                                                          ...vendor,
-                                                                                                                                                                                          paddressthree: e.target.value,
-                                                                                                                                                                                        });
-                                                                                                                                                                                      }}
-                                                                                                                                                                                    />
-                                                                                                                                                                                  </FormControl>
-                                                                                                                                                                                </Grid>
                     </Grid>
                     <Grid item md={12} sm={12} xs={12}>
                       <FullAddressCard
@@ -4744,10 +4824,12 @@ cbuildingapartmentname: e?.cbuildingapartmentname || "",
                           ppincode: vendor?.ppincode,
                           pgpscoordination: vendor?.gpscoordinate,
 
-                                     pbuildingapartmentname:vendor?.pbuildingapartmentname || "",
-paddressone:vendor?.paddressone || "",
-paddresstwo:vendor?.paddresstwo || "",
-paddressthree:vendor?.paddressthree || "",
+                          pbuildingapartmentname: vendor?.pbuildingapartmentname || "",
+                          paddressone: vendor?.paddressone || "",
+                          paddresstwo: vendor?.paddresstwo || "",
+                          paddressthree: vendor?.paddressthree || "",
+                          ppost: vendor?.ppost || "",
+                          ptaluk: vendor?.ptaluk || "",
                         }}
                       />
                     </Grid>
@@ -5037,7 +5119,40 @@ paddressthree:vendor?.paddressthree || "",
                             </FormControl>
                           </Grid>
                         )}
-
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Post</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Post"
+                              value={vendor?.cpost}
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  cpost: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Taluk</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Taluk"
+                              value={vendor?.ctaluk}
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  ctaluk: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
                         <Grid item md={3} sm={12} xs={12}>
                           <FormControl fullWidth size="small">
                             <Typography>GPS Coordination</Typography>
@@ -5085,6 +5200,15 @@ paddressthree:vendor?.paddressthree || "",
                                   clandmarkname: e.target.value,
                                 });
                               }}
+                              onBlur={(e) => {
+                                handleRestrictedWords(
+                                  e.target.value,
+                                  (cleanedValue) =>
+                                    setVendor({ ...vendor, clandmarkname: cleanedValue }),
+                                  "Landmark",
+                                  setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert
+                                );
+                              }}
                             />
                           </FormControl>
                         </Grid>
@@ -5100,6 +5224,23 @@ paddressthree:vendor?.paddressthree || "",
                                 setVendor({
                                   ...vendor,
                                   chouseflatnumber: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} xs={12} sm={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Building/Apartment Name</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              value={vendor.cbuildingapartmentname}
+                              placeholder="Please Enter Building/Apartment Name"
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  cbuildingapartmentname: e.target.value,
                                 });
                               }}
                             />
@@ -5122,6 +5263,59 @@ paddressthree:vendor?.paddressthree || "",
                             />
                           </FormControl>
                         </Grid>
+
+
+                        <Grid item md={3} xs={12} sm={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 1</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              value={vendor.caddressone}
+                              placeholder="Please Enter Address 1"
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  caddressone: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} xs={12} sm={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 2</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              value={vendor.caddresstwo}
+                              placeholder="Please Enter Address 2"
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  caddresstwo: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} xs={12} sm={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 3</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              value={vendor.caddressthree}
+                              placeholder="Please Enter Address 3"
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  caddressthree: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
                         <Grid item md={3} sm={12} xs={12}>
                           <FormControl fullWidth size="small">
                             <Typography>Locality/Area Name</Typography>
@@ -5136,74 +5330,6 @@ paddressthree:vendor?.paddressthree || "",
                             />
                           </FormControl>
                         </Grid>
-                         <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                                          <Typography>Building/Apartment Name</Typography>
-                                                                                                                                                                          <OutlinedInput
-                                                                                                                                                                            id="component-outlined"
-                                                                                                                                                                            type="text"
-                                                                                                                                                                            value={vendor.cbuildingapartmentname}
-                                                                                                                                                                            placeholder="Please Enter Building/Apartment Name"
-                                                                                                                                                                            onChange={(e) => {
-                                                                                                                                                                              setVendor({
-                                                                                                                                                                                ...vendor,
-                                                                                                                                                                                cbuildingapartmentname: e.target.value,
-                                                                                                                                                                              });
-                                                                                                                                                                            }}
-                                                                                                                                                                          />
-                                                                                                                                                                        </FormControl>
-                                                                                                                                                                      </Grid>
-                                                                                                                                                                      <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                                          <Typography>Address 1</Typography>
-                                                                                                                                                                          <OutlinedInput
-                                                                                                                                                                            id="component-outlined"
-                                                                                                                                                                            type="text"
-                                                                                                                                                                            value={vendor.caddressone}
-                                                                                                                                                                            placeholder="Please Enter Address 1"
-                                                                                                                                                                            onChange={(e) => {
-                                                                                                                                                                              setVendor({
-                                                                                                                                                                                ...vendor,
-                                                                                                                                                                                caddressone: e.target.value,
-                                                                                                                                                                              });
-                                                                                                                                                                            }}
-                                                                                                                                                                          />
-                                                                                                                                                                        </FormControl>
-                                                                                                                                                                      </Grid>
-                                                                                                                                                                      <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                                          <Typography>Address 2</Typography>
-                                                                                                                                                                          <OutlinedInput
-                                                                                                                                                                            id="component-outlined"
-                                                                                                                                                                            type="text"
-                                                                                                                                                                            value={vendor.caddresstwo}
-                                                                                                                                                                            placeholder="Please Enter Address 2"
-                                                                                                                                                                            onChange={(e) => {
-                                                                                                                                                                              setVendor({
-                                                                                                                                                                                ...vendor,
-                                                                                                                                                                                caddresstwo: e.target.value,
-                                                                                                                                                                              });
-                                                                                                                                                                            }}
-                                                                                                                                                                          />
-                                                                                                                                                                        </FormControl>
-                                                                                                                                                                      </Grid>
-                                                                                                                                                                      <Grid item md={3} xs={12} sm={12}>
-                                                                                                                                                                        <FormControl fullWidth size="small">
-                                                                                                                                                                          <Typography>Address 3</Typography>
-                                                                                                                                                                          <OutlinedInput
-                                                                                                                                                                            id="component-outlined"
-                                                                                                                                                                            type="text"
-                                                                                                                                                                            value={vendor.caddressthree}
-                                                                                                                                                                            placeholder="Please Enter Address 3"
-                                                                                                                                                                            onChange={(e) => {
-                                                                                                                                                                              setVendor({
-                                                                                                                                                                                ...vendor,
-                                                                                                                                                                                caddressthree: e.target.value,
-                                                                                                                                                                              });
-                                                                                                                                                                            }}
-                                                                                                                                                                          />
-                                                                                                                                                                        </FormControl>
-                                                                                                                                                                      </Grid>
                       </Grid>
                     </>
                   ) : (
@@ -5309,7 +5435,18 @@ paddressthree:vendor?.paddressthree || "",
                             </FormControl>
                           </Grid>
                         )}
-
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl size="small" fullWidth>
+                            <Typography>Post</Typography>
+                            <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ppost} />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl size="small" fullWidth>
+                            <Typography>Taluk</Typography>
+                            <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ptaluk} />
+                          </FormControl>
+                        </Grid>
                         <Grid item md={3} sm={12} xs={12}>
                           <FormControl size="small" fullWidth>
                             <Typography>GPS Coordination</Typography>
@@ -5337,8 +5474,34 @@ paddressthree:vendor?.paddressthree || "",
                         </Grid>
                         <Grid item md={3} sm={12} xs={12}>
                           <FormControl fullWidth size="small">
+                            <Typography>Building/Apartment Name</Typography>
+                            <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.pbuildingapartmentname || ""} readOnly />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
                             <Typography>Street/Road Name</Typography>
                             <OutlinedInput id="component-outlined" type="text" placeholder="Street/Road Name" value={vendor.streetroadname} readOnly />
+                          </FormControl>
+                        </Grid>
+
+
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 1</Typography>
+                            <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.paddressone || ""} readOnly />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 2</Typography>
+                            <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.paddresstwo || ""} readOnly />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Address 3</Typography>
+                            <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.paddressthree || ""} readOnly />
                           </FormControl>
                         </Grid>
                         <Grid item md={3} sm={12} xs={12}>
@@ -5347,30 +5510,6 @@ paddressthree:vendor?.paddressthree || "",
                             <OutlinedInput id="component-outlined" type="text" placeholder="Locality/Area Name" value={vendor.localityareaname} readOnly />
                           </FormControl>
                         </Grid>
-                        <Grid item md={3} sm={12} xs={12}>
-                                                                                                        <FormControl fullWidth size="small">
-                                                                                                          <Typography>Building/Apartment Name</Typography>
-                                                                                                          <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.pbuildingapartmentname || ""} readOnly />
-                                                                                                        </FormControl>
-                                                                                                      </Grid>
-                                                                                                      <Grid item md={3} sm={12} xs={12}>
-                                                                                                        <FormControl fullWidth size="small">
-                                                                                                          <Typography>Address 1</Typography>
-                                                                                                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.paddressone || ""} readOnly />
-                                                                                                        </FormControl>
-                                                                                                      </Grid>
-                                                                                                      <Grid item md={3} sm={12} xs={12}>
-                                                                                                        <FormControl fullWidth size="small">
-                                                                                                          <Typography>Address 2</Typography>
-                                                                                                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.paddresstwo || ""} readOnly />
-                                                                                                        </FormControl>
-                                                                                                      </Grid>
-                                                                                                      <Grid item md={3} sm={12} xs={12}>
-                                                                                                        <FormControl fullWidth size="small">
-                                                                                                          <Typography>Address 3</Typography>
-                                                                                                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.paddressthree || ""} readOnly />
-                                                                                                        </FormControl>
-                                                                                                      </Grid>
                       </Grid>
                     </>
                   )}
@@ -5646,7 +5785,7 @@ paddressthree:vendor?.paddressthree || "",
 
       {/* UPLOAD IMAGE DIALOG */}
       <Dialog open={uploadPopupOpen} onClose={handleUploadPopupClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="md" fullWidth={true} sx={{ marginTop: '80px' }}>
-        <DialogTitle id="customized-dialog-title1" sx={{ backgroundColor: '#e0e0e0', color: '#000', display: 'flex' }} onClick={() => {}}>
+        <DialogTitle id="customized-dialog-title1" sx={{ backgroundColor: '#e0e0e0', color: '#000', display: 'flex' }} onClick={() => { }}>
           Upload Image
         </DialogTitle>
         <DialogContent sx={{ minWidth: '750px', height: '850px' }}>
@@ -5769,133 +5908,133 @@ paddressthree:vendor?.paddressthree || "",
               {
                 // isWebcamCapture == true
                 capturedImages?.length > 0 &&
-                  capturedImages?.map((image, index) => (
-                    <Grid container key={index}>
-                      <Grid item md={2} sm={2} xs={12}>
-                        <Box
-                          style={{
-                            isplay: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginLeft: '37px',
-                          }}
-                        >
-                          <img src={image.preview} alt={image.name} height={50} style={{ maxWidth: '-webkit-fill-available' }} />
-                        </Box>
-                      </Grid>
-                      <Grid
-                        item
-                        md={7}
-                        sm={7}
-                        xs={12}
-                        sx={{
-                          display: 'flex',
+                capturedImages?.map((image, index) => (
+                  <Grid container key={index}>
+                    <Grid item md={2} sm={2} xs={12}>
+                      <Box
+                        style={{
+                          isplay: 'flex',
                           justifyContent: 'center',
                           alignItems: 'center',
+                          marginLeft: '37px',
                         }}
                       >
-                        <Typography variant="subtitle2"> {image.name} </Typography>
-                      </Grid>
-                      <Grid item md={1} sm={1} xs={12}>
-                        <Grid sx={{ display: 'flex' }}>
-                          <Button
-                            sx={{
-                              marginTop: '15px !important',
-                              padding: '14px 14px',
-                              minWidth: '40px !important',
-                              borderRadius: '50% !important',
-                              ':hover': {
-                                backgroundColor: '#80808036', // theme.palette.primary.main
-                              },
+                        <img src={image.preview} alt={image.name} height={50} style={{ maxWidth: '-webkit-fill-available' }} />
+                      </Box>
+                    </Grid>
+                    <Grid
+                      item
+                      md={7}
+                      sm={7}
+                      xs={12}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Typography variant="subtitle2"> {image.name} </Typography>
+                    </Grid>
+                    <Grid item md={1} sm={1} xs={12}>
+                      <Grid sx={{ display: 'flex' }}>
+                        <Button
+                          sx={{
+                            marginTop: '15px !important',
+                            padding: '14px 14px',
+                            minWidth: '40px !important',
+                            borderRadius: '50% !important',
+                            ':hover': {
+                              backgroundColor: '#80808036', // theme.palette.primary.main
+                            },
+                          }}
+                          onClick={() => renderFilePreview(image)}
+                        >
+                          <VisibilityOutlinedIcon
+                            style={{
+                              fontsize: '12px',
+                              color: '#357AE8',
+                              marginTop: '35px !important',
                             }}
-                            onClick={() => renderFilePreview(image)}
-                          >
-                            <VisibilityOutlinedIcon
-                              style={{
-                                fontsize: '12px',
-                                color: '#357AE8',
-                                marginTop: '35px !important',
-                              }}
-                            />
-                          </Button>
-                          <Button
-                            sx={{
-                              marginTop: '15px !important',
-                              padding: '14px 14px',
-                              minWidth: '40px !important',
-                              borderRadius: '50% !important',
-                              ':hover': {
-                                backgroundColor: '#80808036',
-                              },
+                          />
+                        </Button>
+                        <Button
+                          sx={{
+                            marginTop: '15px !important',
+                            padding: '14px 14px',
+                            minWidth: '40px !important',
+                            borderRadius: '50% !important',
+                            ':hover': {
+                              backgroundColor: '#80808036',
+                            },
+                          }}
+                          onClick={() => removeCapturedImage(index)}
+                        >
+                          <FaTrash
+                            style={{
+                              color: '#a73131',
+                              fontSize: '12px',
+                              marginTop: '35px !important',
                             }}
-                            onClick={() => removeCapturedImage(index)}
-                          >
-                            <FaTrash
+                          />
+                        </Button>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {/* Color Picker */}
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <Typography
+                              variant="body1"
                               style={{
-                                color: '#a73131',
-                                fontSize: '12px',
-                                marginTop: '35px !important',
+                                color: '#555',
+                                fontSize: '10px',
                               }}
-                            />
-                          </Button>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                            {/* Color Picker */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                              <Typography
-                                variant="body1"
-                                style={{
-                                  color: '#555',
-                                  fontSize: '10px',
-                                }}
-                              >
-                                BG Color
-                              </Typography>
-                              <input
-                                type="color"
-                                value={color[index]}
-                                onChange={(e) => {
-                                  handleColorChangeCaptured(e, index);
-                                }}
-                                style={{
-                                  width: '30px',
-                                  height: '30px',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  borderRadius: '5px',
-                                }}
-                              />
-                            </div>
-
-                            {/* Submit Button */}
-                            <LoadingButton
-                              onClick={(e) => {
-                                handleSubmitNew(index, 'captured');
+                            >
+                              BG Color
+                            </Typography>
+                            <input
+                              type="color"
+                              value={color[index]}
+                              onChange={(e) => {
+                                handleColorChangeCaptured(e, index);
                               }}
-                              loading={bgbtnCaptured[index]}
-                              variant="contained"
-                              color="primary"
-                              endIcon={<FormatColorFillIcon />}
-                              sx={{
-                                padding: '10px 10px',
-                                fontSize: '8px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
+                              style={{
+                                width: '30px',
+                                height: '30px',
+                                border: 'none',
+                                cursor: 'pointer',
                                 borderRadius: '5px',
-                                color: isLightColorCaptured[index] ? 'black' : 'white',
-                                fontWeight: '600',
-                                backgroundColor: colorCaptured[index], // Dynamically set the background color
-                                '&:hover': {
-                                  backgroundColor: `${colorCaptured[index]}90`, // Slightly transparent on hover for a nice effect
-                                },
-                                border: '1px solid  black',
                               }}
-                            ></LoadingButton>
+                            />
                           </div>
-                        </Grid>
+
+                          {/* Submit Button */}
+                          <LoadingButton
+                            onClick={(e) => {
+                              handleSubmitNew(index, 'captured');
+                            }}
+                            loading={bgbtnCaptured[index]}
+                            variant="contained"
+                            color="primary"
+                            endIcon={<FormatColorFillIcon />}
+                            sx={{
+                              padding: '10px 10px',
+                              fontSize: '8px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              borderRadius: '5px',
+                              color: isLightColorCaptured[index] ? 'black' : 'white',
+                              fontWeight: '600',
+                              backgroundColor: colorCaptured[index], // Dynamically set the background color
+                              '&:hover': {
+                                backgroundColor: `${colorCaptured[index]}90`, // Slightly transparent on hover for a nice effect
+                              },
+                              border: '1px solid  black',
+                            }}
+                          ></LoadingButton>
+                        </div>
                       </Grid>
                     </Grid>
-                  ))
+                  </Grid>
+                ))
               }
               {refImage?.map((file, index) => (
                 <Grid container key={index}>

@@ -21,7 +21,8 @@ async function handleProfileImage(profileImage, name) {
     byteNumbers[i] = byteCharacters.charCodeAt(i);
   }
   const byteArray = new Uint8Array(byteNumbers);
-  const blob = new Blob([byteArray], { type: "image/png" });
+const mimeType = profileImage.match(/data:(image\/[a-zA-Z]+);base64/)?.[1] || "image/png";
+const blob = new Blob([byteArray], { type: mimeType });
 
   // 3️⃣ Compress image
   const options = {
@@ -32,40 +33,54 @@ async function handleProfileImage(profileImage, name) {
   const compressedBlob = await imageCompression(blob, options);
 
   // 4️⃣ Convert back to Base64 (for backend)
-  const compressedBase64 = await imageCompression.getDataUrlFromFile(compressedBlob);
+  const compressedBase64 = await imageCompression.getDataUrlFromFile(
+    compressedBlob
+  );
   const compressedBase64Data = compressedBase64.split(",")[1];
 
   return compressedBase64Data;
 }
 
-const BiometricVisitorAddition = async ({ company, branch, name, photo, date }) => {
-  const { auth } = useContext(AuthContext);
+const BiometricVisitorAddition = async ({
+  company,
+  branch,
+  unit,
+  floor,
+  area,
+  visitorid,
+  name,
+  photo,
+  date,
+  intime,
+  visitoremail,
+  visitorcontactnumber,
+}) => {
+  // const { auth } = useContext(AuthContext);
   try {
     // ✅ await handleProfileImage()
     const profileImage = await handleProfileImage(photo, "ProfilePhoto");
 
     // ✅ axios.post syntax fix — data first, then headers in config
-    const visitorAdd = await axios.post(
-      SERVICE.BIOMETRIC_VISITOR_ADDITION,
-      {
-        company,
-        branch,
-        name,
-        photo: profileImage,
-        expirydate: date,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-      }
-    );
+    const visitorAdd = await axios.post(SERVICE.BIOMETRIC_VISITOR_ADDITION, {
+      company,
+      branch,
+      unit,
+      floor,
+      area,
+      visitorid,
+      name,
+      // photo: profileImage,
+      photo,
+      expirydate: date,
+      intime,
+      visitoremail,
+      visitorcontactnumber,
+    });
 
     console.log("Visitor added:", visitorAdd.data);
   } catch (err) {
     console.error("Biometric Visitor Error:", err.message);
   }
 };
-
 
 export default BiometricVisitorAddition;

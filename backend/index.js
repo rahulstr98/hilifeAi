@@ -78,25 +78,28 @@ const TaskForUser = require("./model/modules/task/taskforuser");
 const { initWebSocket  , sendCommandToDeviceAttendance} = require('./controller/modules/deviceSocket.js');
 const { fetchDeviceLogs } = require('./controller/modules/BiometricF51A.js');
 const BiometricUnregisteredUsers = require('./model/modules/biometric/biometricUnregistered.js');
-
+const Biometriconlinestatus = require('./model/modules/biometric/biometriconlinestatus');
+const BiometricOfflineHistory = require('./model/modules/biometric/BiometricOfflineHistory');
+const BiometricDeviceManagement = require("./model/modules/BiometricDeviceManagementModel");
 // const BiometricDeviceManagementModel = require('./model/modules/BiometricDeviceManagementModel');
 const { getAttendanceDetails , getUserListForAllUsers , getUserListForAllVisitors ,deleteMultipleVisitor} = require('./route/bowerBiometric.js');
 
 
-const { fetchDeviceRecords } = require('./controller/modules/BiometricOpenApi.js');
+const { fetchDeviceRecords ,sendToDeviceGatewayStatus} = require('./controller/modules/BiometricOpenApi.js');
 // cron.schedule("* * * * *", async () => {
 //   try {
 //     const OpenApiDetails = await fetchDeviceRecords("42001");
-
 //     if (OpenApiDetails?.length > 0) {
-//       const uniqueLogs = await removeDuplicateLogsForUserAddition(OpenApiDetails);
+//       // const uniqueLogs = await removeDuplicateLogsForUserAddition(OpenApiDetails);
+//      console.log(OpenApiDetails , "OpenApiDetails")
 //       if(uniqueLogs?.length){
-//                const response = await axios.post(
-//           `http://192.168.1.5:7001/api/biometricattlog/new`,
-//           uniqueLogs
-//         );
+//         //        const response = await axios.post(
+//         //   `http://192.168.1.5:7001/api/biometricattlog/new`,
+//         //   uniqueLogs
+//         // );
+//         console.log(uniqueLogs , "uniqueLogs")
 //       }
-//       console.log(uniqueLogs, "uniqueLogs");
+  
 //     } else {
 //       console.log("No records found.");
 //     }
@@ -104,6 +107,70 @@ const { fetchDeviceRecords } = require('./controller/modules/BiometricOpenApi.js
 //     console.error("Error running cron job:", error);
 //   }
 // });
+
+
+
+
+
+// // 📌 Run every 10 min
+// cron.schedule("*/20 * * * *", async () => {
+//     console.log("Cron Running:", new Date().toLocaleString());
+
+//     const devices = await Biometriconlinestatus.find({});
+
+//     for (const dev of devices) {
+//         if (!dev.lastOnlineTimeC) continue;
+// let deviceNameID = await BiometricDeviceManagement.findOne({biometricserialno:dev.cloudIDC},{_id:1})
+//         const lastOnline = moment(dev.lastOnlineTimeC, "DD-MM-YYYY HH:mm:ss");
+//         const now = moment();
+//         const diffMinutes = now.diff(lastOnline, "minutes");
+
+//         // If offline more than 10 minutes
+//         if (diffMinutes >= 10) {
+//  console.log("Hitted 1");
+//             const today = moment().format("YYYY-MM-DD");
+//             const offlineTimeNow = moment().format("DD-MM-YYYY HH:mm:ss");
+
+//             let existingDay = await BiometricOfflineHistory.findOne({ cloudIDC: dev.cloudIDC, date: today });
+//  console.log(existingDay, "Hitted 2");
+//             // 1️⃣ Create new entry for today
+//             if (!existingDay) {
+//                console.log("Hitted 3");
+//                 await BiometricOfflineHistory.create({
+//                     cloudIDC: dev.cloudIDC,
+//                     devicid:deviceNameID ? deviceNameID?._id : "",
+//                     date: today,
+//                     offlineHistory: [{
+//                         lastOnline: dev.lastOnlineTimeC,
+//                         offlineTime: offlineTimeNow
+//                     }]
+//                 });
+//                 console.log(`📌 New history created for device ${dev.cloudIDC}`);
+//                 continue;
+//             }
+
+//             // 2️⃣ Already today's entry exists → Check last record
+//             let lastRecord = existingDay.offlineHistory[existingDay.offlineHistory.length - 1];
+
+//             if (lastRecord.lastOnline === dev.lastOnlineTimeC) {
+//                 // Update same slot offline time
+//                 lastRecord.offlineTime = offlineTimeNow;
+//             } else {
+//                 // Push new entry if it's a different latest time
+//                 existingDay.offlineHistory.push({
+//                     lastOnline: dev.lastOnlineTimeC,
+//                     offlineTime: offlineTimeNow
+//                 });
+//             }
+
+//             await existingDay.save();
+//             console.log(`📌 Updated history for device ${dev.cloudIDC}`);
+//         }
+//     }
+
+//     console.log("⏳ Cron Completed");
+// });
+
 
 async function urlToBase64(url) {
   try {
@@ -680,6 +747,41 @@ const getHierarchyCombinedDatas = async () => {
 
 
 
+  // //biometric attendance details
+  // cron.schedule('* * * * *', async () => {
+  //   console.log('🔄 Running attendance fetch at', new Date().toLocaleString());
+  //   const biometricdevicemanagement = await BiometricDeviceManagement.find({biometricassignedip:"192.168.11.126"  , branch:"TTS-TRICHY", brand: 'Bowee' }, { biometricassignedip: 1 });
+
+  //   const IPAddresss = biometricdevicemanagement?.map((data) => `http://${data?.biometricassignedip}`);
+  //   console.log(IPAddresss , 'IPAddresss');
+  //   if (IPAddresss?.length > 0) {
+  //     const deviceUrls = IPAddresss;
+
+  //     for (const url of deviceUrls) {
+  //       try {
+  //         const result = await getAttendanceDetails(url);
+
+  //         if (result.success) {
+  //           //  let answer =
+  //            console.log(result.ArrayRecords)
+  //           // removeDuplicateLogs(result.ArrayRecords);
+  //           // main(result)
+  //           console.log(`✅ Attendance fetched from ${url}`);
+  //         } else {
+  //           console.error(`❌ Failed to fetch from ${url}:`, result.message);
+  //         }
+  //       } catch (err) {
+  //         console.error(`🔥 Error fetching from ${url}:`, err.message);
+  //       }
+  //     }
+
+  //  }
+  // });
+
+
+
+
+
 const removeDuplicateLogs = async (logs) => {
     try {
         const response = await axios.post("http://192.168.1.5:7001/api/duplicatebiometriclogs", {
@@ -834,7 +936,7 @@ const userDetailsList = async () => {
   }
 };
 
-const BiometricDeviceManagement = require("./model/modules/BiometricDeviceManagementModel");
+
 
 // Deleting the Visitor
 cron.schedule('0 0 * * *', async () => {
@@ -2182,19 +2284,6 @@ app.post("/api/schedule-weddingemail", (req, res) => {
     `
 
   };
-
-  // // Schedule the email to be sent at the specified time
-  // cron.schedule(scheduledTime.format("m H D M d"), () => {
-  //   transporters.sendMail(mailOptions, (error, info) => {
-  //     if (error) {
-  //       res
-  //         .status(500)
-  //         .json({ message: "An error occurred while sending the email." });
-  //     } else {
-  //       res.json({ message: "Email sent successfully!" });
-  //     }
-  //   });
-  // });
 
   // Send a response to the client
   res.json({ message: "Email scheduled successfully!" });

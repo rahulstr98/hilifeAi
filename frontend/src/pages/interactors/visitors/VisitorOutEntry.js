@@ -1161,14 +1161,18 @@ function VisitorOutEntry() {
         houseflatnumber: singleCandidate?.houseflatnumber || '',
         streetroadname: singleCandidate?.streetroadname || '',
         localityareaname: singleCandidate?.localityareaname || '',
-         pbuildingapartmentname:singleCandidate?.pbuildingapartmentname || "",
-paddressone:singleCandidate?.paddressone || "",
-paddresstwo:singleCandidate?.paddresstwo || "",
-paddressthree:singleCandidate?.paddressthree || "",
-caddressone:singleCandidate?.caddressone || "",
-caddresstwo:singleCandidate?.caddresstwo || "",
-caddressthree:singleCandidate?.caddressthree || "",
-cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
+        pbuildingapartmentname: singleCandidate?.pbuildingapartmentname || "",
+        paddressone: singleCandidate?.paddressone || "",
+        paddresstwo: singleCandidate?.paddresstwo || "",
+        paddressthree: singleCandidate?.paddressthree || "",
+        caddressone: singleCandidate?.caddressone || "",
+        caddresstwo: singleCandidate?.caddresstwo || "",
+        caddressthree: singleCandidate?.caddressthree || "",
+        cbuildingapartmentname: singleCandidate?.cbuildingapartmentname || "",
+        ppost: singleCandidate?.ppost || "",
+        cpost: singleCandidate?.cpost || "",
+        ptaluk: singleCandidate?.ptaluk || "",
+        ctaluk: singleCandidate?.ctaluk || "",
         ppincode: singleCandidate?.ppincode || '',
         pcity: singleCandidate?.pcity || '',
         pstate: singleCandidate?.pstate || '',
@@ -1208,14 +1212,18 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
         houseflatnumber: singleCandidate?.houseflatnumber || '',
         streetroadname: singleCandidate?.streetroadname || '',
         localityareaname: singleCandidate?.localityareaname || '',
-         pbuildingapartmentname:singleCandidate?.pbuildingapartmentname || "",
-paddressone:singleCandidate?.paddressone || "",
-paddresstwo:singleCandidate?.paddresstwo || "",
-paddressthree:singleCandidate?.paddressthree || "",
-caddressone:singleCandidate?.caddressone || "",
-caddresstwo:singleCandidate?.caddresstwo || "",
-caddressthree:singleCandidate?.caddressthree || "",
-cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
+        pbuildingapartmentname: singleCandidate?.pbuildingapartmentname || "",
+        paddressone: singleCandidate?.paddressone || "",
+        paddresstwo: singleCandidate?.paddresstwo || "",
+        paddressthree: singleCandidate?.paddressthree || "",
+        caddressone: singleCandidate?.caddressone || "",
+        caddresstwo: singleCandidate?.caddresstwo || "",
+        caddressthree: singleCandidate?.caddressthree || "",
+        cbuildingapartmentname: singleCandidate?.cbuildingapartmentname || "",
+        ppost: singleCandidate?.ppost || "",
+        cpost: singleCandidate?.cpost || "",
+        ptaluk: singleCandidate?.ptaluk || "",
+        ctaluk: singleCandidate?.ctaluk || "",
         ppincode: singleCandidate?.ppincode || '',
         pcity: singleCandidate?.pcity || '',
         pstate: singleCandidate?.pstate || '',
@@ -1288,14 +1296,18 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
         houseflatnumber: singleCandidate?.houseflatnumber || '',
         streetroadname: singleCandidate?.streetroadname || '',
         localityareaname: singleCandidate?.localityareaname || '',
-         pbuildingapartmentname:singleCandidate?.pbuildingapartmentname || "",
-paddressone:singleCandidate?.paddressone || "",
-paddresstwo:singleCandidate?.paddresstwo || "",
-paddressthree:singleCandidate?.paddressthree || "",
-caddressone:singleCandidate?.caddressone || "",
-caddresstwo:singleCandidate?.caddresstwo || "",
-caddressthree:singleCandidate?.caddressthree || "",
-cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
+        pbuildingapartmentname: singleCandidate?.pbuildingapartmentname || "",
+        paddressone: singleCandidate?.paddressone || "",
+        paddresstwo: singleCandidate?.paddresstwo || "",
+        paddressthree: singleCandidate?.paddressthree || "",
+        caddressone: singleCandidate?.caddressone || "",
+        caddresstwo: singleCandidate?.caddresstwo || "",
+        caddressthree: singleCandidate?.caddressthree || "",
+        cbuildingapartmentname: singleCandidate?.cbuildingapartmentname || "",
+        ppost: singleCandidate?.ppost || "",
+        cpost: singleCandidate?.cpost || "",
+        ptaluk: singleCandidate?.ptaluk || "",
+        ctaluk: singleCandidate?.ctaluk || "",
         ppincode: singleCandidate?.ppincode || '',
         pcity: singleCandidate?.pcity || '',
         pstate: singleCandidate?.pstate || '',
@@ -1394,6 +1406,13 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
           },
         ],
       });
+
+      const resBiometric = await axios.post(SERVICE.BIOMETRIC_VISITOR_DELETION_DETAILS,{headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        id : updateVisitor,
+        outtime: String(vendor.outtime),
+      })
       setAdvancedFilter(null);
       setAdditionalFilters([]);
       handleResetSearch();
@@ -3285,7 +3304,18 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
                                 </FormControl>
                               </Grid>
                             )}
-
+                            <Grid item md={3} sm={12} xs={12}>
+                              <FormControl size="small" fullWidth>
+                                <Typography>Post</Typography>
+                                <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ppost} />
+                              </FormControl>
+                            </Grid>
+                            <Grid item md={3} sm={12} xs={12}>
+                              <FormControl size="small" fullWidth>
+                                <Typography>Taluk</Typography>
+                                <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ptaluk} />
+                              </FormControl>
+                            </Grid>
                             <Grid item md={3} sm={12} xs={12}>
                               <FormControl size="small" fullWidth>
                                 <Typography>GPS Coordinations</Typography>
@@ -3312,8 +3342,33 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
                             </Grid>
                             <Grid item md={3} sm={12} xs={12}>
                               <FormControl fullWidth size="small">
+                                <Typography>Building/Apartment Name</Typography>
+                                <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.pbuildingapartmentname || ""} readOnly />
+                              </FormControl>
+                            </Grid>
+                            <Grid item md={3} sm={12} xs={12}>
+                              <FormControl fullWidth size="small">
                                 <Typography>Street/Road Name</Typography>
                                 <OutlinedInput id="component-outlined" type="text" readOnly value={vendor?.streetroadname || ''} />
+                              </FormControl>
+                            </Grid>
+
+                            <Grid item md={3} sm={12} xs={12}>
+                              <FormControl fullWidth size="small">
+                                <Typography>Address 1</Typography>
+                                <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.paddressone || ""} readOnly />
+                              </FormControl>
+                            </Grid>
+                            <Grid item md={3} sm={12} xs={12}>
+                              <FormControl fullWidth size="small">
+                                <Typography>Address 2</Typography>
+                                <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.paddresstwo || ""} readOnly />
+                              </FormControl>
+                            </Grid>
+                            <Grid item md={3} sm={12} xs={12}>
+                              <FormControl fullWidth size="small">
+                                <Typography>Address 3</Typography>
+                                <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.paddressthree || ""} readOnly />
                               </FormControl>
                             </Grid>
                             <Grid item md={3} sm={12} xs={12}>
@@ -3322,30 +3377,6 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
                                 <OutlinedInput id="component-outlined" type="text" readOnly value={vendor?.localityareaname || ''} />
                               </FormControl>
                             </Grid>
- <Grid item md={3} sm={12} xs={12}>
-                        <FormControl fullWidth size="small">
-                          <Typography>Building/Apartment Name</Typography>
-                          <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.pbuildingapartmentname || ""} readOnly />
-                        </FormControl>
-                      </Grid>
-                      <Grid item md={3} sm={12} xs={12}>
-                        <FormControl fullWidth size="small">
-                          <Typography>Address 1</Typography>
-                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.paddressone || ""} readOnly />
-                        </FormControl>
-                      </Grid>
-                      <Grid item md={3} sm={12} xs={12}>
-                        <FormControl fullWidth size="small">
-                          <Typography>Address 2</Typography>
-                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.paddresstwo || ""} readOnly />
-                        </FormControl>
-                      </Grid>
-                      <Grid item md={3} sm={12} xs={12}>
-                        <FormControl fullWidth size="small">
-                          <Typography>Address 3</Typography>
-                          <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.paddressthree || ""} readOnly />
-                        </FormControl>
-                      </Grid>
                             <Grid item md={12} sm={12} xs={12}>
                               <FullAddressCard
                                 employee={{
@@ -3365,10 +3396,12 @@ cbuildingapartmentname:singleCandidate?.cbuildingapartmentname || "",
                                   ppincode: vendor?.ppincode || '',
                                   pgpscoordination: vendor?.gpscoordinate || '',
 
-                                   pbuildingapartmentname:vendor?.pbuildingapartmentname || "",
-paddressone:vendor?.paddressone || "",
-paddresstwo:vendor?.paddresstwo || "",
-paddressthree:vendor?.paddressthree || "",
+                                  pbuildingapartmentname: vendor?.pbuildingapartmentname || "",
+                                  paddressone: vendor?.paddressone || "",
+                                  paddresstwo: vendor?.paddresstwo || "",
+                                  paddressthree: vendor?.paddressthree || "",
+                                  ppost: vendor?.ppost || "",
+                                  ptaluk: vendor?.ptaluk || "",
                                 }}
                               />
                             </Grid>
@@ -3446,7 +3479,18 @@ paddressthree:vendor?.paddressthree || "",
                                   </FormControl>
                                 </Grid>
                               )}
-
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl size="small" fullWidth>
+                                  <Typography>Post</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.cpost} />
+                                </FormControl>
+                              </Grid>
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl size="small" fullWidth>
+                                  <Typography>Taluk</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ctaluk} />
+                                </FormControl>
+                              </Grid>
                               <Grid item md={3} sm={12} xs={12}>
                                 <FormControl size="small" fullWidth>
                                   <Typography>GPS Coordinations</Typography>
@@ -3473,8 +3517,33 @@ paddressthree:vendor?.paddressthree || "",
                               </Grid>
                               <Grid item md={3} sm={12} xs={12}>
                                 <FormControl fullWidth size="small">
+                                  <Typography>Building/Apartment Name</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.cbuildingapartmentname || ""} readOnly />
+                                </FormControl>
+                              </Grid>
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl fullWidth size="small">
                                   <Typography>Street/Road Name</Typography>
                                   <OutlinedInput id="component-outlined" type="text" readOnly value={vendor?.cstreetroadname || ''} />
+                                </FormControl>
+                              </Grid>
+
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl fullWidth size="small">
+                                  <Typography>Address 1</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.caddressone || ""} readOnly />
+                                </FormControl>
+                              </Grid>
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl fullWidth size="small">
+                                  <Typography>Address 2</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.caddresstwo || ""} readOnly />
+                                </FormControl>
+                              </Grid>
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl fullWidth size="small">
+                                  <Typography>Address 3</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.caddressthree || ""} readOnly />
                                 </FormControl>
                               </Grid>
                               <Grid item md={3} sm={12} xs={12}>
@@ -3483,30 +3552,6 @@ paddressthree:vendor?.paddressthree || "",
                                   <OutlinedInput id="component-outlined" type="text" readOnly value={vendor?.clocalityareaname || ''} />
                                 </FormControl>
                               </Grid>
-                              <Grid item md={3} sm={12} xs={12}>
-                                                                                                                                                                                                                                              <FormControl fullWidth size="small">
-                                                                                                                                                                                                                                                <Typography>Building/Apartment Name</Typography>
-                                                                                                                                                                                                                                                <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.cbuildingapartmentname || ""} readOnly />
-                                                                                                                                                                                                                                              </FormControl>
-                                                                                                                                                                                                                                            </Grid>
-                                                                                                                                                                                                                                            <Grid item md={3} sm={12} xs={12}>
-                                                                                                                                                                                                                                              <FormControl fullWidth size="small">
-                                                                                                                                                                                                                                                <Typography>Address 1</Typography>
-                                                                                                                                                                                                                                                <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.caddressone || ""} readOnly />
-                                                                                                                                                                                                                                              </FormControl>
-                                                                                                                                                                                                                                            </Grid>
-                                                                                                                                                                                                                                            <Grid item md={3} sm={12} xs={12}>
-                                                                                                                                                                                                                                              <FormControl fullWidth size="small">
-                                                                                                                                                                                                                                                <Typography>Address 2</Typography>
-                                                                                                                                                                                                                                                <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.caddresstwo || ""} readOnly />
-                                                                                                                                                                                                                                              </FormControl>
-                                                                                                                                                                                                                                            </Grid>
-                                                                                                                                                                                                                                            <Grid item md={3} sm={12} xs={12}>
-                                                                                                                                                                                                                                              <FormControl fullWidth size="small">
-                                                                                                                                                                                                                                                <Typography>Address 3</Typography>
-                                                                                                                                                                                                                                                <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.caddressthree || ""} readOnly />
-                                                                                                                                                                                                                                              </FormControl>
-                                                                                                                                                                                                                                            </Grid>
                             </Grid>
                           </>
                         ) : (
@@ -3574,7 +3619,18 @@ paddressthree:vendor?.paddressthree || "",
                                   </FormControl>
                                 </Grid>
                               )}
-
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl size="small" fullWidth>
+                                  <Typography>Post</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ppost} />
+                                </FormControl>
+                              </Grid>
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl size="small" fullWidth>
+                                  <Typography>Taluk</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={vendor?.ptaluk} />
+                                </FormControl>
+                              </Grid>
                               <Grid item md={3} sm={12} xs={12}>
                                 <FormControl size="small" fullWidth>
                                   <Typography>GPS Coordinations</Typography>
@@ -3601,8 +3657,33 @@ paddressthree:vendor?.paddressthree || "",
                               </Grid>
                               <Grid item md={3} sm={12} xs={12}>
                                 <FormControl fullWidth size="small">
+                                  <Typography>Building/Apartment Name</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.pbuildingapartmentname || ""} readOnly />
+                                </FormControl>
+                              </Grid>
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl fullWidth size="small">
                                   <Typography>Street/Road Name</Typography>
                                   <OutlinedInput id="component-outlined" type="text" readOnly value={vendor?.streetroadname || ''} />
+                                </FormControl>
+                              </Grid>
+
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl fullWidth size="small">
+                                  <Typography>Address 1</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.paddressone || ""} readOnly />
+                                </FormControl>
+                              </Grid>
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl fullWidth size="small">
+                                  <Typography>Address 2</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.paddresstwo || ""} readOnly />
+                                </FormControl>
+                              </Grid>
+                              <Grid item md={3} sm={12} xs={12}>
+                                <FormControl fullWidth size="small">
+                                  <Typography>Address 3</Typography>
+                                  <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.paddressthree || ""} readOnly />
                                 </FormControl>
                               </Grid>
                               <Grid item md={3} sm={12} xs={12}>
@@ -3611,30 +3692,6 @@ paddressthree:vendor?.paddressthree || "",
                                   <OutlinedInput id="component-outlined" type="text" readOnly value={vendor?.localityareaname || ''} />
                                 </FormControl>
                               </Grid>
-                               <Grid item md={3} sm={12} xs={12}>
-                                                      <FormControl fullWidth size="small">
-                                                        <Typography>Building/Apartment Name</Typography>
-                                                        <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={vendor?.pbuildingapartmentname || ""} readOnly />
-                                                      </FormControl>
-                                                    </Grid>
-                                                    <Grid item md={3} sm={12} xs={12}>
-                                                      <FormControl fullWidth size="small">
-                                                        <Typography>Address 1</Typography>
-                                                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={vendor?.paddressone || ""} readOnly />
-                                                      </FormControl>
-                                                    </Grid>
-                                                    <Grid item md={3} sm={12} xs={12}>
-                                                      <FormControl fullWidth size="small">
-                                                        <Typography>Address 2</Typography>
-                                                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={vendor?.paddresstwo || ""} readOnly />
-                                                      </FormControl>
-                                                    </Grid>
-                                                    <Grid item md={3} sm={12} xs={12}>
-                                                      <FormControl fullWidth size="small">
-                                                        <Typography>Address 3</Typography>
-                                                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={vendor?.paddressthree || ""} readOnly />
-                                                      </FormControl>
-                                                    </Grid>
                             </Grid>
                           </>
                         )}

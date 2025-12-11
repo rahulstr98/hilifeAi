@@ -8,6 +8,51 @@ async function sendToDeviceGateway(interType) {
             deviceSn: "ZY20240822028",
             pageNo: 1,
             pageSize: 500,
+            startNoteTime: "2025-11-24",
+            endNoteTime: "2025-11-24",
+        };
+        const form = new FormData();
+        form.append("agentNo", "82391038574");
+        form.append("charset", "UTF-8");
+        form.append("content", JSON.stringify(content)); // content is an object
+        form.append("deviceSn", "ZY20240822028");
+        form.append("interType", interType);
+        form.append("requestId", "7864874687489789");
+        form.append("sign", "sfdsfdsfds");
+        form.append("signType", "RSA");
+        form.append("version", "1.0.0");
+
+        const response = await axios.post(
+            DEVICE_API,
+            form,
+            {
+                headers: {
+                    ...form.getHeaders()
+                }
+            }
+        );
+
+        console.log(response.data , "response.data")
+        const ArrayRecords = response.data?.data?.records?.map(item => ({
+            biometricUserIDC: item.employeeId,
+            clockDateTimeD: item.noteTime,
+            verifyC: getVerificationMethod(item.noteWay),
+            staffNameC: item.employeeName,
+            cloudIDC: item?.deviceSn
+        }));
+        console.log('✅ API response from gateway:', ArrayRecords, ArrayRecords?.length);
+        return response.data?.code === 200 || response.data?.data === "success";
+    } catch (error) {
+        // console.error('❌ Error sending data to device gateway:', error.message);
+        throw error;
+    }
+}
+async function sendToDeviceGatewayStatus(interType) {
+    try {
+        const content = {
+            deviceSn: "ZY20240822028",
+            pageNo: 1,
+            pageSize: 500,
             startNoteTime: "2025-09-11",
             endNoteTime: "2025-09-11"
         };
@@ -31,17 +76,13 @@ async function sendToDeviceGateway(interType) {
                 }
             }
         );
-        const ArrayRecords = response.data?.data?.records?.map(item => ({
-            biometricUserIDC: item.employeeId,
-            clockDateTimeD: item.noteTime,
-            verifyC: getVerificationMethod(item.noteWay),
-            staffNameC: item.employeeName,
-            cloudIDC: item?.deviceSn
-        }));
-        console.log('✅ API response from gateway:', ArrayRecords, ArrayRecords?.length);
-        return response.data?.code === 200 || response.data?.data === "success";
+
+        console.log(response.data , "response.data")
+        const ArrayRecords = response.data?.data;
+        // console.log('✅ API response from gateway:', ArrayRecords, ArrayRecords?.length);
+        return response.data?.data === "ON-LINE";
     } catch (error) {
-        console.error('❌ Error sending data to device gateway:', error.message);
+        // console.error('❌ Error sending data to device gateway:', error.message);
         throw error;
     }
 }
@@ -61,8 +102,10 @@ async function fetchDeviceRecords(interType) {
             deviceSn: "ZY20240822028",
             pageNo: 1,
             pageSize: 500,
-            startNoteTime: getTodayDate(),
-            endNoteTime: getTodayDate()
+            // startNoteTime: getTodayDate(),
+            // endNoteTime: getTodayDate()
+            startNoteTime: "2025-11-25",
+            endNoteTime: "2025-11-28",
         };
         const form = new FormData();
         form.append("agentNo", "82391038574");
@@ -153,4 +196,4 @@ const getVerificationMethod = (recordType) => {
         case '1': return "CARD";
     }
 }
-module.exports = { sendToDeviceGateway, fetchDeviceRecords, sendToDeviceGatewayAddUser };
+module.exports = { sendToDeviceGateway, fetchDeviceRecords, sendToDeviceGatewayStatus , sendToDeviceGatewayAddUser };

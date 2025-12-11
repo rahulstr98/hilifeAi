@@ -190,7 +190,7 @@ function BiometricDevicesPairing() {
                 "pairdevicestable": data?.pairdevices?.map((item, index) => `${index + 1}. ${item} `).toString()
             })) : []
             setLoader(false);
-            setPairingDevicesArray([])
+            setPairingDevicesArray(answer)
         } catch (err) {
             console.log(err, 'err')
             setLoader(false);

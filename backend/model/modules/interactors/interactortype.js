@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const InteractorTypeSchema = new Schema({
   name: {
@@ -6,11 +6,10 @@ const InteractorTypeSchema = new Schema({
     required: false,
   },
   prevprojectname: {
-    
-      type: String,
-      required: false
-    },
-  
+    type: String,
+    required: false,
+  },
+
   addedby: [
     {
       name: {
@@ -18,8 +17,8 @@ const InteractorTypeSchema = new Schema({
         required: false,
       },
       date: {
-        type: String,
-        required: false,
+        type: Date,
+        default: Date.now,
       },
     },
   ],
@@ -30,8 +29,8 @@ const InteractorTypeSchema = new Schema({
         required: false,
       },
       date: {
-        type: String,
-        required: false,
+        type: Date,
+        default: Date.now,
       },
     },
   ],
@@ -40,4 +39,4 @@ const InteractorTypeSchema = new Schema({
     default: Date.now,
   },
 });
-module.exports = mongoose.model("interactortype", InteractorTypeSchema);
+module.exports = mongoose.model('interactortype', InteractorTypeSchema);

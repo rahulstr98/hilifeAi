@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ManagetypepurposegroupingSchema = new Schema({
   interactorstype: {
@@ -13,6 +13,14 @@ const ManagetypepurposegroupingSchema = new Schema({
     type: Boolean,
     required: false,
   },
+  requestdocument: {
+    type: Boolean,
+    required: false,
+  },
+  duedays: {
+    type: String,
+    required: false,
+  },
   addedby: [
     {
       name: {
@@ -20,8 +28,8 @@ const ManagetypepurposegroupingSchema = new Schema({
         required: false,
       },
       date: {
-        type: String,
-        required: false,
+        type: Date,
+        default: Date.now,
       },
     },
   ],
@@ -32,8 +40,8 @@ const ManagetypepurposegroupingSchema = new Schema({
         required: false,
       },
       date: {
-        type: String,
-        required: false,
+        type: Date,
+        default: Date.now,
       },
     },
   ],
@@ -42,4 +50,4 @@ const ManagetypepurposegroupingSchema = new Schema({
     default: Date.now,
   },
 });
-module.exports = mongoose.model("Managetypepurposegrouping", ManagetypepurposegroupingSchema);
+module.exports = mongoose.model('Managetypepurposegrouping', ManagetypepurposegroupingSchema);

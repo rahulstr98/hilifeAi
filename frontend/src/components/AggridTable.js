@@ -1,24 +1,18 @@
-import { ClientSideRowModelModule } from "@ag-grid-community/client-side-row-model";
-import { ModuleRegistry } from "@ag-grid-community/core";
-import FirstPageIcon from "@mui/icons-material/FirstPage";
-import LastPageIcon from "@mui/icons-material/LastPage";
-import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import { Box, Button, Skeleton } from "@mui/material";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-quartz.css";
-import { AgGridReact } from "ag-grid-react";
-import debounce from "lodash/debounce";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import styled from "styled-components";
-import { userStyle } from "../pageStyle";
-import Pagination from "./Pagination";
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model';
+import { ModuleRegistry } from '@ag-grid-community/core';
+import FirstPageIcon from '@mui/icons-material/FirstPage';
+import LastPageIcon from '@mui/icons-material/LastPage';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { Box, Button, Skeleton } from '@mui/material';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-quartz.css';
+import { AgGridReact } from 'ag-grid-react';
+import debounce from 'lodash/debounce';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { userStyle } from '../pageStyle';
+import Pagination from './Pagination';
 
 const AgGridContainer = styled.div`
   .ag-theme-quartz {
@@ -60,12 +54,22 @@ function AggridTable({
   setColumnVisibility,
   isHandleChange,
   items,
+  setSelectedRowsBulkerror,
+  selectedRowsBulkerror,
+  setSelectedRowsPenaltyerror,
+  selectedRowsPenaltyerror,
+  setSelectedRowsPenaltytotalfield,
+  selectedRowsPenaltytotalfield,
+  selectedRowsRequestPurchase,
+  setSelectedRowsRequestPurchase,
   selectedRows,
   setSelectedRows,
   selectedRowsBulk,
   setSelectedRowsBulk,
   selectedRowsBulkTemp,
   setSelectedRowsBulkTemp,
+  setSelectedRowsBulkPaymentList,
+  selectedRowsBulkPaymentList,
   selectedRowsCat,
   setSelectedRowsCat,
   selectedRowsGrp,
@@ -90,6 +94,10 @@ function AggridTable({
   setSelectedRowsUOM,
   selectedAttModeNameDelt,
   setSelectedAttModeNameDelt,
+  selectedRowsLeaveType,
+  setSelectedRowsLeaveType,
+  selectedRowsItemCode,
+  setSelectedRowsItemCode,
   pagenamecheck,
   gridRefTable,
   paginated,
@@ -110,44 +118,40 @@ function AggridTable({
 
   const [loading, setLoading] = useState(false);
   const [sortingNames, setSortingNames] = useState(null);
+
+  const [productionPages, setProductionPages] = useState(['dayidlehourcalcuclation']);
+
   // const getRowStyle = (params) => {
-  //   if (pagenamecheck === "Validation Error Entry" && params.node.data.greentext == true) {
-  //     return { backgroundColor: '#4caf5057' };
-  //   }
   //   if (params.node.rowIndex % 2 === 0) {
-  //     return { background: "#f0f0f0" }; // Even row
+  //     if (pagenamecheck === 'Validation Error Entry' && (params.node.data.status == 'Valid' || params.node.data.status == 'Invalid')) {
+  //       return { backgroundColor: '#4caf5057' };
+  //     }
+  //     if (pagenamecheck === 'Invaild Error Entry' && params.node.data.invalidcheck == true) {
+  //       return { backgroundColor: '#4caf5057' };
+  //     }
+  //     if (pagenamecheck === 'vaild Error Entry' && params.node.data.validcheck == true) {
+  //       return { backgroundColor: '#4caf5057' };
+  //     }
+  //     if ((pagenamecheck === 'Client Error Forward' || pagenamecheck === 'Client Error Waiver Approval' || pagenamecheck === 'Approval Employee Waiver') && params.node.data.level == 'Primary') {
+  //       return { backgroundColor: '#4caf5057' };
+  //     }
+  //     return { background: '#f0f0f0' }; // Even row
   //   } else {
-  //     return { background: "#ffffff" }; // Odd row
+  //     if (pagenamecheck === 'Validation Error Entry' && (params.node.data.status == 'Valid' || params.node.data.status == 'Invalid')) {
+  //       return { backgroundColor: '#4caf5057' };
+  //     }
+  //     if (pagenamecheck === 'Invaild Error Entry' && params.node.data.invalidcheck == true) {
+  //       return { backgroundColor: '#4caf5057' };
+  //     }
+  //     if (pagenamecheck === 'vaild Error Entry' && params.node.data.validcheck == true) {
+  //       return { backgroundColor: '#4caf5057' };
+  //     }
+  //     if ((pagenamecheck === 'Client Error Forward' || pagenamecheck === 'Client Error Waiver Approval' || pagenamecheck === 'Approval Employee Waiver') && params.node.data.level == 'Primary') {
+  //       return { backgroundColor: '#4caf5057' };
+  //     }
+  //     return { background: '#ffffff' }; // Odd row
   //   }
   // };
-
-  const getRowStyle = (params) => {
-    // console.log(params.node.data.status, "stataus")
-    if (params.node.rowIndex % 2 === 0) {
-      if (pagenamecheck === "Validation Error Entry" && (params.node.data.status == "Valid" || params.node.data.status == "Invalid")) {
-        return { backgroundColor: '#4caf5057' };
-      }
-      if (pagenamecheck === "Invaild Error Entry" && params.node.data.invalidcheck == true) {
-        return { backgroundColor: '#4caf5057' };
-      }
-      if (pagenamecheck === "vaild Error Entry" && params.node.data.validcheck == true) {
-        return { backgroundColor: '#4caf5057' };
-      }
-      return { background: "#f0f0f0" }; // Even row
-    } else {
-      if (pagenamecheck === "Validation Error Entry" && (params.node.data.status == "Valid" || params.node.data.status == "Invalid")) {
-        return { backgroundColor: '#4caf5057' };
-      }
-      if (pagenamecheck === "Invaild Error Entry" && params.node.data.invalidcheck == true) {
-        return { backgroundColor: '#4caf5057' };
-      }
-      if (pagenamecheck === "vaild Error Entry" && params.node.data.validcheck == true) {
-        return { backgroundColor: '#4caf5057' };
-      }
-      return { background: "#ffffff" }; // Odd row
-    }
-  };
-
 
   // const getRowHeight = (params) => {
   //   if (pagenamecheck === "Client Error CheckList" && params.node.data.errorstatus !== "Approved") {
@@ -170,62 +174,319 @@ function AggridTable({
   //   return rowHeight;
   // };
 
+  // const getRowHeight = (params) => {
+  //   if (pagenamecheck === 'Client Error CheckList' && params.node.data.errorstatus !== 'Approved') {
+  //     return 85;
+  //   } else if (pagenamecheck === 'Client Error Waiver_Current') {
+  //     if (params.data?.reason?.length > 100) {
+  //       const lineCount = params.data.reason.length;
+  //       return lineCount > 100 ? lineCount : 110;
+  //     }
+  //     return 110;
+  //   } else if (pagenamecheck === 'Client Error Waiver_Recheck') {
+  //     if (params.data?.reason?.length > 100) {
+  //       const lineCount = params.data.reason.length;
+  //       return lineCount > 100 ? lineCount : 110;
+  //     }
+  //     return 110;
+  //   } else if (pagenamecheck === 'Client Error Forward') {
+  //     if (params.data?.reason?.length > 100) {
+  //       const lineCount = params.data.reason.length;
+  //       return lineCount > 100 ? lineCount : 110;
+  //     } else if (params.data?.requestreason?.length > 100) {
+  //       const lineCount = params.data.requestreason.length;
+  //       return lineCount > 100 ? lineCount : 110;
+  //     } else if (params.data?.forwardreason?.length > 100) {
+  //       const lineCount = params.data.forwardreason.length;
+  //       return lineCount > 100 ? lineCount : 110;
+  //     }
+  //     return 110;
+  //   } else if (pagenamecheck === 'Client Error Waiver Approval') {
+  //     if (params.data?.category?.length > 100) {
+  //       const lineCount = params.data.category.length;
+  //       return lineCount > 100 ? lineCount : 130;
+  //     } else if (params.data?.overallhistory?.length > 100) {
+  //       const lineCount = params.data.overallhistory.length;
+  //       return lineCount > 100 ? lineCount : 130;
+  //     } else if (params.data?.monthhistory?.length > 100) {
+  //       const lineCount = params.data.monthhistory.length;
+  //       return lineCount > 100 ? lineCount : 130;
+  //     } else if (params.data?.requestreason?.length > 100) {
+  //       const lineCount = params.data.requestreason.length;
+  //       return lineCount > 100 ? lineCount : 130;
+  //     } else if (params.data?.forwardreason?.length > 100) {
+  //       const lineCount = params.data.forwardreason.length;
+  //       return lineCount > 100 ? lineCount : 130;
+  //     }
+  //     return 130;
+  //   } else if (pagenamecheck === 'Approval Employee Waiver') {
+  //     if (params.data?.category?.length > 100) {
+  //       const lineCount = params.data.category.length;
+  //       return lineCount > 100 ? lineCount : 150;
+  //     } else if (params.data?.overallhistory?.length > 100) {
+  //       const lineCount = params.data.overallhistory.length;
+  //       return lineCount > 100 ? lineCount : 150;
+  //     } else if (params.data?.monthhistory?.length > 100) {
+  //       const lineCount = params.data.monthhistory.length;
+  //       return lineCount > 100 ? lineCount : 150;
+  //     } else if (params.data?.requestreason?.length > 100) {
+  //       const lineCount = params.data.requestreason.length;
+  //       return lineCount > 100 ? lineCount : 150;
+  //     } else if (params.data?.forwardreason?.length > 100) {
+  //       const lineCount = params.data.forwardreason.length;
+  //       return lineCount > 100 ? lineCount : 150;
+  //     }
+  //     return 150;
+  //   }
+  //   return rowHeight;
+  // };
 
+  const getRowStyle = (params) => {
+    if (params.node.rowIndex % 2 === 0) {
+      if (pagenamecheck === 'Validation Error Entry' && (params.node.data.status == 'Valid' || params.node.data.status == 'Invalid')) {
+        return { backgroundColor: '#4caf5057' };
+      }
+      if (pagenamecheck === 'Invaild Error Entry' && params.node.data.invalidcheck == true) {
+        return { backgroundColor: '#4caf5057' };
+      }
+      if (pagenamecheck === 'vaild Error Entry' && params.node.data.validcheck == true) {
+        return { backgroundColor: '#4caf5057' };
+      }
+      if (
+        (pagenamecheck === 'Client Error Forward' ||
+          pagenamecheck === 'Client Error Waiver Approval' ||
+          pagenamecheck === 'Approval Employee Waiver' ||
+          pagenamecheck === 'Error Valid Approval Entry' ||
+          pagenamecheck === 'Error InValid Approval Entry' ||
+          pagenamecheck === 'Error Upload Conrim All' ||
+          pagenamecheck === 'Production Manual Entry Filter' ||
+          pagenamecheck === 'Team Production Base Attendance' ||
+          pagenamecheck === 'Temp Team Production Base Attendance' ||
+          pagenamecheck === 'Team Nonproduction List' ||
+          pagenamecheck === 'Team Nonproductionchecklist List' ||
+          pagenamecheck === 'Quality Team Review') &&
+        params.node.data.level == 'Primary'
+      ) {
+        return { backgroundColor: '#4caf5057' };
+      }
+      return { background: '#f0f0f0' }; // Even row
+    } else {
+      if (pagenamecheck === 'Validation Error Entry' && (params.node.data.status == 'Valid' || params.node.data.status == 'Invalid')) {
+        return { backgroundColor: '#4caf5057' };
+      }
+      if (pagenamecheck === 'Invaild Error Entry' && params.node.data.invalidcheck == true) {
+        return { backgroundColor: '#4caf5057' };
+      }
+      if (pagenamecheck === 'vaild Error Entry' && params.node.data.validcheck == true) {
+        return { backgroundColor: '#4caf5057' };
+      }
+      if (
+        (pagenamecheck === 'Client Error Forward' ||
+          pagenamecheck === 'Client Error Waiver Approval' ||
+          pagenamecheck === 'Approval Employee Waiver' ||
+          pagenamecheck === 'Error Valid Approval Entry' ||
+          pagenamecheck === 'Error InValid Approval Entry' ||
+          pagenamecheck === 'Error Upload Conrim All' ||
+          pagenamecheck === 'Production Manual Entry Filter' ||
+          pagenamecheck === 'Team Production Base Attendance' ||
+          pagenamecheck === 'Temp Team Production Base Attendance' ||
+          pagenamecheck === 'Team Nonproduction List' ||
+          pagenamecheck === 'Team Nonproductionchecklist List' ||
+          pagenamecheck === 'Quality Team Review') &&
+        params.node.data.level == 'Primary'
+      ) {
+        return { backgroundColor: '#4caf5057' };
+      }
+      return { background: '#ffffff' }; // Odd row
+    }
+  };
   const getRowHeight = (params) => {
-    if (pagenamecheck === "Client Error CheckList" && params.node.data.errorstatus !== "Approved") {
+    if (pagenamecheck === 'Client Error CheckList' && params.node.data.errorstatus !== 'Approved') {
       return 85;
-    }
-    else if (pagenamecheck === "Client Error Waiver_Current") {
-      if (params.data?.reason) {
-        const lineCount = params.data.reason.length;
-        return lineCount > 100 ? lineCount : 110;
+    } else if (pagenamecheck === 'Customer Op Balance Report') {
+      return 150;
+    } else if (pagenamecheck === 'Item Paired Grouping') {
+      return 150;
+    } else if (pagenamecheck === 'Sales Paid Report') {
+      return 150;
+    } else if (pagenamecheck === 'Client Error Waiver_Current') {
+      // if (params.data?.reason?.length > 100) {
+      //   const lineCount = params.data.reason.length;
+      //   return lineCount > 100 ? lineCount : 110;
+      // }
+      // return 110;
+
+      const reason = params.data?.reason || '';
+      const reasonLength = reason.length;
+
+      const charsPerLine = 30;
+      const defaultLines = 8;
+      const defaultHeight = 150;
+      const lineHeight = defaultHeight / defaultLines;
+
+      const totalLines = Math.ceil(reasonLength / charsPerLine);
+
+      if (totalLines <= defaultLines) {
+        return defaultHeight;
       }
-      return 110;
-    }
-    else if (pagenamecheck === "Client Error Waiver_Recheck") {
-      if (params.data?.reason) {
-        const lineCount = params.data.reason.length;
-        return lineCount > 100 ? lineCount : 110;
+
+      const extraLines = totalLines - defaultLines;
+      const extraHeight = extraLines * lineHeight;
+
+      return defaultHeight + extraHeight;
+    } else if (pagenamecheck === 'Client Error Waiver_Recheck') {
+      // if (params.data?.reason?.length > 100) {
+      //   const lineCount = params.data.reason.length;
+      //   return lineCount > 100 ? lineCount : 110;
+      // }
+      // return 110;
+      const reason = params.data?.reason || '';
+      const reasonLength = reason.length;
+
+      const charsPerLine = 30;
+      const defaultLines = 7.5;
+      const defaultHeight = 150;
+      const lineHeight = defaultHeight / defaultLines;
+
+      const totalLines = Math.ceil(reasonLength / charsPerLine);
+
+      if (totalLines <= defaultLines) {
+        return defaultHeight;
       }
-      return 110;
-    }
-    else if (pagenamecheck === "Client Error Forward") {
-      if (params.data?.reason) {
-        const lineCount = params.data.reason.length;
-        return lineCount > 100 ? lineCount : 110;
+
+      const extraLines = totalLines - defaultLines;
+      const extraHeight = extraLines * lineHeight;
+
+      return defaultHeight + extraHeight;
+    } else if (pagenamecheck === 'Client Error Forward') {
+      // if (params.data?.reason?.length > 100) {
+      //   const lineCount = params.data.reason.length;
+      //   return lineCount > 100 ? lineCount : 150;
+      // } else if (params.data?.requestreason?.length > 100) {
+      //   const lineCount = params.data.requestreason.length;
+      //   return lineCount > 100 ? lineCount : 110;
+      // } else if (params.data?.forwardreason?.length > 100) {
+      //   const lineCount = params.data.forwardreason.length;
+      //   return lineCount > 100 ? lineCount : 110;
+      // }
+      // return 110;
+
+      const reason = params.data?.reason?.length > 100 ? params.data?.reason : params.data?.requestreason?.length > 100 ? params.data?.requestreason : params.data?.forwardreason?.length > 100 ? params.data?.forwardreason : '';
+      const reasonLength = reason.length;
+
+      const charsPerLine = 30;
+      const defaultLines = 7.5;
+      const defaultHeight = 150;
+      const lineHeight = defaultHeight / defaultLines;
+
+      const totalLines = Math.ceil(reasonLength / charsPerLine);
+
+      if (totalLines <= defaultLines) {
+        return defaultHeight;
       }
-      else if (params.data?.requestreason) {
-        const lineCount = params.data.requestreason.length;
-        return lineCount > 100 ? lineCount : 110;
+
+      const extraLines = totalLines - defaultLines;
+      const extraHeight = extraLines * lineHeight;
+
+      return defaultHeight + extraHeight;
+    } else if (pagenamecheck === 'Client Error Waiver Approval') {
+      // if (params.data?.category?.length > 100) {
+      //   const lineCount = params.data.category.length;
+      //   return lineCount > 100 ? lineCount : 130;
+      // } else if (params.data?.overallhistory?.length > 100) {
+      //   const lineCount = params.data.overallhistory.length;
+      //   return lineCount > 100 ? lineCount : 130;
+      // } else if (params.data?.monthhistory?.length > 100) {
+      //   const lineCount = params.data.monthhistory.length;
+      //   return lineCount > 100 ? lineCount : 130;
+      // } else if (params.data?.requestreason?.length > 100) {
+      //   const lineCount = params.data.requestreason.length;
+      //   return lineCount > 100 ? lineCount : 130;
+      // } else if (params.data?.forwardreason?.length > 100) {
+      //   const lineCount = params.data.forwardreason.length;
+      //   return lineCount > 100 ? lineCount : 130;
+      // }
+      // return 130;
+      const reason =
+        params.data?.category?.length > 100
+          ? params.data?.category
+          : params.data?.overallhistory?.length > 100
+          ? params.data?.overallhistory
+          : params.data?.monthhistory?.length > 100
+          ? params.data?.monthhistory
+          : params.data?.requestreason?.length > 100
+          ? params.data?.requestreason
+          : params.data?.forwardreason?.length > 100
+          ? params.data?.forwardreason
+          : '';
+      const reasonLength = reason.length;
+
+      const charsPerLine = 30;
+      const defaultLines = 7.5;
+      const defaultHeight = 150;
+      const lineHeight = defaultHeight / defaultLines;
+
+      const totalLines = Math.ceil(reasonLength / charsPerLine);
+
+      if (totalLines <= defaultLines) {
+        return defaultHeight;
       }
-      else if (params.data?.forwardreason) {
-        const lineCount = params.data.forwardreason.length;
-        return lineCount > 100 ? lineCount : 110;
+
+      const extraLines = totalLines - defaultLines;
+      const extraHeight = extraLines * lineHeight;
+
+      return defaultHeight + extraHeight;
+    } else if (pagenamecheck === 'Approval Employee Waiver') {
+      // if (params.data?.category?.length > 100) {
+      //   const lineCount = params.data.category.length;
+      //   return lineCount > 100 ? lineCount : 150;
+      // }
+      // else if (params.data?.overallhistory?.length > 100) {
+      //   const lineCount = params.data.overallhistory.length;
+      //   return lineCount > 100 ? lineCount : 150;
+      // }
+      // else if (params.data?.monthhistory?.length > 100) {
+      //   const lineCount = params.data.monthhistory.length;
+      //   return lineCount > 100 ? lineCount : 150;
+      // }
+      // else if (params.data?.requestreason?.length > 100) {
+      //   const lineCount = params.data.requestreason.length;
+      //   return lineCount > 100 ? lineCount : 150;
+      // }
+      // else if (params.data?.forwardreason?.length > 100) {
+      //   const lineCount = params.data.forwardreason.length;
+      //   return lineCount > 100 ? lineCount : 150;
+      // }
+      // return 150;
+      const reason =
+        params.data?.category?.length > 100
+          ? params.data?.category
+          : params.data?.overallhistory?.length > 100
+          ? params.data?.overallhistory
+          : params.data?.monthhistory?.length > 100
+          ? params.data?.monthhistory
+          : params.data?.requestreason?.length > 100
+          ? params.data?.requestreason
+          : params.data?.forwardreason?.length > 100
+          ? params.data?.forwardreason
+          : '';
+      const reasonLength = reason.length;
+
+      const charsPerLine = 30;
+      const defaultLines = 7.5;
+      const defaultHeight = 150;
+      const lineHeight = defaultHeight / defaultLines;
+
+      const totalLines = Math.ceil(reasonLength / charsPerLine);
+
+      if (totalLines <= defaultLines) {
+        return defaultHeight;
       }
-      return 110;
-    }
-    else if (pagenamecheck === "Client Error Waiver Approval") {
-      if (params.data?.category) {
-        const lineCount = params.data.category.length;
-        return lineCount > 100 ? lineCount : 130;
-      }
-      else if (params.data?.overallhistory) {
-        const lineCount = params.data.overallhistory.length;
-        return lineCount > 100 ? lineCount : 130;
-      }
-      else if (params.data?.monthhistory) {
-        const lineCount = params.data.monthhistory.length;
-        return lineCount > 100 ? lineCount : 130;
-      }
-      else if (params.data?.requestreason) {
-        const lineCount = params.data.requestreason.length;
-        return lineCount > 100 ? lineCount : 130;
-      }
-      else if (params.data?.forwardreason) {
-        const lineCount = params.data.forwardreason.length;
-        return lineCount > 100 ? lineCount : 130;
-      }
-      return 130;
+
+      const extraLines = totalLines - defaultLines;
+      const extraHeight = extraLines * lineHeight;
+
+      return defaultHeight + extraHeight;
     }
     return rowHeight;
   };
@@ -235,17 +496,19 @@ function AggridTable({
       filter: true,
       resizable: true,
       filterParams: {
-        buttons: ["apply", "reset", "cancel"], // Show Apply, Reset, and Cancel (X) buttons in the filter popup
+        buttons: ['apply', 'reset', 'cancel'], // Show Apply, Reset, and Cancel (X) buttons in the filter popup
         closeOnApply: true, // Filter popup closes only when you click "Apply"
       },
       // flex: 1,
       // minWidth: 90,
       // sortable: true,
+      wrapHeaderText: productionPages?.includes(pagenamecheck),
+      autoHeaderHeight: productionPages?.includes(pagenamecheck),
     };
   }, []);
 
   const selection = {
-    mode: "multiRow",
+    mode: 'multiRow',
     headerCheckbox: false,
   };
 
@@ -295,114 +558,159 @@ function AggridTable({
 
   const handlePageChange = (newPage) => {
     // Store current scroll position
-    scrollPositionRef.current =
-      window.scrollY || document.documentElement.scrollTop;
+    scrollPositionRef.current = window.scrollY || document.documentElement.scrollTop;
     setLoading(true);
-    setSortingNames(null)
+    setSortingNames(null);
 
-    if (pagenamecheck === "EB Services Master List") {
+    if (pagenamecheck === 'EB Services Master List') {
       const selectedRowsNewCat = gridRefTable?.current?.api?.getSelectedRows();
       // const extractedIdsCat = selectedRowsNewCat.map((item) => item.servicenumber);
       if (selectedRowsNewCat.some((item) => item.servicenumber)) {
-        setSelectedRowsCat([])
+        setSelectedRowsCat([]);
       }
     }
-    if (pagenamecheck === "Group Master") {
+    if (pagenamecheck === 'Bulk Error Upload') {
+      const selectedRowsNewbulkerror = gridRefTable?.current?.api?.getSelectedRows();
+      // const extractedIdsCat = selectedRowsNewCat.map((item) => item.servicenumber);
+      if (selectedRowsNewbulkerror.some((item) => item)) {
+        setSelectedRowsBulkerror([]);
+      }
+    }
+
+    if (pagenamecheck === 'Peanlty Error Upload') {
+      const selectedRowsNewpenaltyerror = gridRefTable?.current?.api?.getSelectedRows();
+      // const extractedIdsCat = selectedRowsNewCat.map((item) => item.servicenumber);
+      if (selectedRowsNewpenaltyerror.some((item) => item)) {
+        setSelectedRowsPenaltyerror([]);
+      }
+    }
+
+    if (pagenamecheck === 'Penalty Total Field') {
+      const selectedRowsNewpenaltytotalfield = gridRefTable?.current?.api?.getSelectedRows();
+      // const extractedIdsCat = selectedRowsNewCat.map((item) => item.servicenumber);
+      if (selectedRowsNewpenaltytotalfield.some((item) => item)) {
+        setSelectedRowsPenaltytotalfield([]);
+      }
+    }
+
+    if (pagenamecheck === 'Group Master') {
       const selectedRowsNewGrp = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsNewGrp.some((item) => item.name)) {
-        setSelectedRowsGrp([])
+        setSelectedRowsGrp([]);
       }
     }
-    if (pagenamecheck === "Account Head") {
+    if (pagenamecheck === 'Account Head') {
       const selectedRowsHead = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsHead.some((item) => item.accountname)) {
-        setSelectedRowsHead([])
+        setSelectedRowsHead([]);
       }
     }
 
-    if (pagenamecheck === "Account Head Linked") {
+    if (pagenamecheck === 'Account Head Linked') {
       const selectedRowsHeadLinked = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsHeadLinked.some((item) => item.headname)) {
-        setSelectedRowsHeadLinked([])
+        setSelectedRowsHeadLinked([]);
       }
     }
-    if (pagenamecheck === "Type Master") {
+    if (pagenamecheck === 'Type Master') {
       const selectedRowsTypeMaster = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsTypeMaster.some((item) => item.name)) {
-        setSelectedRowsTypeMaster([])
+        setSelectedRowsTypeMaster([]);
       }
     }
 
-    if (pagenamecheck === "Asset Material") {
+    if (pagenamecheck === 'Asset Material') {
       const selectedRowsAssetMaterial = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsAssetMaterial.some((item) => item.name)) {
-        setSelectedRowsAssetMaterial([])
+        setSelectedRowsAssetMaterial([]);
       }
     }
 
-    if (pagenamecheck === "Asset Specification") {
+    if (pagenamecheck === 'Asset Specification') {
       const selectedRowsAssetSpecification = gridRefTable?.current?.api?.getSelectedRows();
       const selectedRowsAssetSpecificationsub = gridRefTable?.current?.api?.getSelectedRows();
 
       if (selectedRowsAssetSpecification.map((item) => ({ component: item.categoryname, subcomponent: item.subcategoryname }))) {
-        setSelectedRowsAssetSpecification([])
+        setSelectedRowsAssetSpecification([]);
       }
       // if (selectedRowsAssetSpecificationsub.some((item) => item.subcategorynamelist)) {
       //     setSelectedRowsAssetSpecificationsub([])
       // }
     }
 
-    if (pagenamecheck === "Vendor Details") {
+    if (pagenamecheck === 'Vendor Details') {
       const selectedRowsVendorMaster = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsVendorMaster.some((item) => item.vendorname)) {
-        setSelectedRowsVendorMaster([])
+        setSelectedRowsVendorMaster([]);
       }
     }
 
-    if (pagenamecheck === "Vendor Grouping") {
+    if (pagenamecheck === 'Vendor Grouping') {
       const selectedRowsVendorGrouping = gridRefTable?.current?.api?.getSelectedRows();
-      if (selectedRowsVendorGrouping.some((item) => item.name)) {
-        setSelectedRowsVendorGrouping([])
+      // if (selectedRowsVendorGrouping.some((item) => item.name)) {
+      //     setSelectedRowsVendorGrouping([])
+      // }
+      if (selectedRowsVendorGrouping.map((item) => ({ name: item.name, vendor: item.vendor }))) {
+        setSelectedRowsVendorGrouping([]);
       }
     }
-    if (pagenamecheck === "Frequency Master") {
+    if (pagenamecheck === 'Frequency Master') {
       const selectedRowsFrequency = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsFrequency.some((item) => item.name)) {
-        setSelectedRowsFrequency([])
+        setSelectedRowsFrequency([]);
       }
     }
 
-    if (pagenamecheck === "Uom Master") {
+    if (pagenamecheck === 'Uom Master') {
       const selectedRowsUOM = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsUOM.some((item) => item.name)) {
-        setSelectedRowsUOM([])
+        setSelectedRowsUOM([]);
       }
     }
-
 
     // bulk delete check linked for att mode master
-    if (pagenamecheck === "Attendance Mode List") {
+    if (pagenamecheck === 'Attendance Mode List') {
       const selectedRowsAttModeNameDelt = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsAttModeNameDelt.some((item) => item.name)) {
-        setSelectedAttModeNameDelt([])
+        setSelectedAttModeNameDelt([]);
       }
     }
 
-    if (pagenamecheck === "Production Original Bulk") {
+    if (pagenamecheck === 'Leave Type') {
+      const selectedRowsLeaveType = gridRefTable?.current?.api?.getSelectedRows();
+      if (selectedRowsLeaveType.some((item) => item.leavetype)) {
+        setSelectedRowsLeaveType([]);
+      }
+    }
+
+    if (pagenamecheck === 'Production Original Bulk') {
       const selectedRowsBulks = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsBulks.some((item) => item)) {
-        setSelectedRowsBulk([])
+        setSelectedRowsBulk([]);
       }
     }
 
-    if (pagenamecheck === "Production Temp Bulk") {
+    if (pagenamecheck === 'Production Temp Bulk') {
       const selectedRowsBulks = gridRefTable?.current?.api?.getSelectedRows();
       if (selectedRowsBulks.some((item) => item)) {
-        setSelectedRowsBulkTemp([])
+        setSelectedRowsBulkTemp([]);
+      }
+    }
+    if (pagenamecheck === 'stockitemlabel') {
+      const selectedRowsBulks = gridRefTable?.current?.api?.getSelectedRows();
+      if (selectedRowsBulks.some((item) => item)) {
+        setSelectedRowsItemCode([]);
       }
     }
 
-    setSelectedRows([])
+    if (pagenamecheck === 'Payment List') {
+      const selectedRowsBulks = gridRefTable?.current?.api?.getSelectedRows();
+      if (selectedRowsBulks.some((item) => item)) {
+        setSelectedRowsBulkPaymentList([]);
+      }
+    }
+
+    setSelectedRows([]);
 
     // setSelectedRowsCat([])
 
@@ -423,7 +731,7 @@ function AggridTable({
         // Scroll to the previously stored position
         window.scrollTo({
           top: scrollPositionRef.current,
-          behavior: "auto", // Change to 'smooth' if you want smooth scrolling
+          behavior: 'auto', // Change to 'smooth' if you want smooth scrolling
         });
       });
     }, 50); // Adjust timeout based on the real load time
@@ -433,6 +741,7 @@ function AggridTable({
     const selectedRowsNew = gridRefTable?.current?.api?.getSelectedRows();
     const selectedRowsNewCat = gridRefTable?.current?.api?.getSelectedRows();
     const selectedRowsAttModeNameDelt = gridRefTable?.current?.api?.getSelectedRows();
+    const selectedRowsNewLeaveType = gridRefTable?.current?.api?.getSelectedRows();
     const selectedRowsNewGrp = gridRefTable?.current?.api?.getSelectedRows();
     const selectedRowsNewHead = gridRefTable?.current?.api?.getSelectedRows();
     const selectedRowsNewHeadLinked = gridRefTable?.current?.api?.getSelectedRows();
@@ -448,95 +757,111 @@ function AggridTable({
     const selectedRowsoriginalbulk = gridRefTable?.current?.api?.getSelectedRows();
     const selectedRowstempbulk = gridRefTable?.current?.api?.getSelectedRows();
 
+    const filterRowsPaymentList = gridRefTable?.current?.api?.getSelectedRows();
+    const selectedRowsPaymentList = filterRowsPaymentList.filter((data) => data?.salesstatus === 'Sold' && data?.paymentstatus === 'Unpaid' && Number(data?.netamount) > 0);
+
+    const selectedRowsNewbulkerror = gridRefTable?.current?.api?.getSelectedRows();
+    const selectedRowsNewpenaltyerror = gridRefTable?.current?.api?.getSelectedRows();
+    const selectedRowsNewpenaltytotalfield = gridRefTable?.current?.api?.getSelectedRows();
+
     const extractedIds = selectedRowsNew.map((item) => item.id);
 
+    const selectedRowsStockItemCode = gridRefTable?.current?.api?.getSelectedRows();
+
     // const extractedIdsCat = selectedRowsNewCat.map((item) => item.servicenumber);
-    if (pagenamecheck === "EB Services Master List" && selectedRowsNewCat.some((item) => item.servicenumber)) {
+    if (pagenamecheck === 'EB Services Master List' && selectedRowsNewCat.some((item) => item.servicenumber)) {
       const extractedIdsCat = selectedRowsNewCat.map((item) => item.servicenumber);
       if (JSON.stringify(extractedIdsCat) !== JSON.stringify(selectedRowsCat)) {
         setSelectedRowsCat(extractedIdsCat); // Update the state
       }
     }
 
-    if (pagenamecheck === "Group Master" && selectedRowsNewGrp.some((item) => item.name)) {
+    if (pagenamecheck === 'Bulk Error Upload' && selectedRowsNewbulkerror.some((item) => item)) {
+      const extractedIdsbulkerror = selectedRowsNewbulkerror.map((item) => item);
+      if (JSON.stringify(extractedIdsbulkerror) !== JSON.stringify(selectedRowsBulkerror)) {
+        setSelectedRowsBulkerror(extractedIdsbulkerror); // Update the state
+      }
+    }
+
+    if (pagenamecheck === 'Penalty Error Upload' && selectedRowsNewpenaltyerror.some((item) => item)) {
+      const extractedIdspenaltyerror = selectedRowsNewpenaltyerror.map((item) => item);
+      if (JSON.stringify(extractedIdspenaltyerror) !== JSON.stringify(selectedRowsPenaltyerror)) {
+        setSelectedRowsPenaltyerror(extractedIdspenaltyerror); // Update the state
+      }
+    }
+
+    if (pagenamecheck === 'Penalty Total Field' && selectedRowsNewpenaltytotalfield.some((item) => item)) {
+      const extractedIdspenaltytotalfield = selectedRowsNewpenaltytotalfield.map((item) => item);
+      if (JSON.stringify(extractedIdspenaltytotalfield) !== JSON.stringify(selectedRowsPenaltytotalfield)) {
+        setSelectedRowsPenaltytotalfield(extractedIdspenaltytotalfield); // Update the state
+      }
+    }
+
+    if (pagenamecheck === 'Group Master' && selectedRowsNewGrp.some((item) => item.name)) {
       const extractedIdsCat = selectedRowsNewGrp.map((item) => item.name);
       if (JSON.stringify(extractedIdsCat) !== JSON.stringify(selectedRowsGrp)) {
         setSelectedRowsGrp(extractedIdsCat); // Update the state
       }
     }
 
-    if (pagenamecheck === "Account Head" && selectedRowsNewHead.some((item) => item.accountname)) {
+    if (pagenamecheck === 'Account Head' && selectedRowsNewHead.some((item) => item.accountname)) {
       const extractedIdsHead = selectedRowsNewHead.map((item) => item.accountname);
-      console.log(extractedIdsHead, "extractedIdsHead")
       if (JSON.stringify(extractedIdsHead) !== JSON.stringify(selectedRowsHead)) {
         setSelectedRowsHead(extractedIdsHead); // Update the state
       }
     }
 
-    if (pagenamecheck === "Account Head Linked" && selectedRowsNewHeadLinked.some((item) => item.headname)) {
+    if (pagenamecheck === 'Account Head Linked' && selectedRowsNewHeadLinked.some((item) => item.headname)) {
       const extractedIdsHeadLinked = selectedRowsNewHeadLinked.map((item) => item.headname);
-      console.log(extractedIdsHeadLinked, "extractedIdsHeadLinked")
       if (JSON.stringify(extractedIdsHeadLinked) !== JSON.stringify(selectedRowsHeadLinked)) {
         setSelectedRowsHeadLinked(extractedIdsHeadLinked); // Update the state
       }
     }
 
-    if (pagenamecheck === "Type Master" && selectedRowsNewTypeMaster.some((item) => item.name)) {
+    if (pagenamecheck === 'Type Master' && selectedRowsNewTypeMaster.some((item) => item.name)) {
       const extractedIdsTypeMaster = selectedRowsNewTypeMaster.map((item) => item.name);
-      console.log(extractedIdsTypeMaster, "extractedIdsTypeMaster")
       if (JSON.stringify(extractedIdsTypeMaster) !== JSON.stringify(selectedRowsTypeMaster)) {
         setSelectedRowsTypeMaster(extractedIdsTypeMaster);
       }
     }
 
-    if (pagenamecheck === "Asset Material" && selectedRowsNewAssetMaterial.some((item) => item.name)) {
+    if (pagenamecheck === 'Asset Material' && selectedRowsNewAssetMaterial.some((item) => item.name)) {
       const extractedIdsAssetMaterial = selectedRowsNewAssetMaterial.map((item) => item.name);
-      console.log(extractedIdsAssetMaterial, "extractedIdsAssetMaterial")
       if (JSON.stringify(extractedIdsAssetMaterial) !== JSON.stringify(selectedRowsAssetMaterial)) {
         setSelectedRowsAssetMaterial(extractedIdsAssetMaterial);
       }
     }
 
-    if (pagenamecheck === "Asset Specification" &&
-      selectedRowsNewAssetSpecification.some((item) => item.categoryname)
-    ) {
-
-
-
+    if (pagenamecheck === 'Asset Specification' && selectedRowsNewAssetSpecification.some((item) => item.categoryname)) {
       const extractedIdsAssetSpecification = selectedRowsNewAssetSpecification.map((item) => ({ component: item.categoryname, subcomponent: item.subcategoryname }));
       const extractedIdsAssetSpecificationsub = selectedRowsNewAssetSpecificationsub.map((item) => item.subcategoryname);
 
       if (JSON.stringify(extractedIdsAssetSpecification) !== JSON.stringify(selectedRowsAssetSpecification)) {
         setSelectedRowsAssetSpecification(extractedIdsAssetSpecification);
-
       }
     }
 
-
-    if (pagenamecheck === "Vendor Details" && selectedRowsNewVendorMaster.some((item) => item.vendorname)) {
+    if (pagenamecheck === 'Vendor Details' && selectedRowsNewVendorMaster.some((item) => item.vendorname)) {
       const extractedIdsVendorMaster = selectedRowsNewVendorMaster.map((item) => item.vendorname);
-      console.log(extractedIdsVendorMaster, "extractedIdsVendorMaster")
       if (JSON.stringify(extractedIdsVendorMaster) !== JSON.stringify(selectedRowsVendorMaster)) {
         setSelectedRowsVendorMaster(extractedIdsVendorMaster);
       }
     }
-    if (pagenamecheck === "Vendor Grouping" && selectedRowsNewVendorGrouping.some((item) => item.name)) {
-      const extractedIdsVendorGrouping = selectedRowsNewVendorGrouping.map((item) => item.name);
-      // console.log(extractedIdsVendorGrouping, "extractedIdsVendorGrouping")
+    if (pagenamecheck === 'Vendor Grouping') {
+      const extractedIdsVendorGrouping = selectedRowsNewVendorGrouping.map((item) => ({ name: item.name, vendor: item.vendor }));
       if (JSON.stringify(extractedIdsVendorGrouping) !== JSON.stringify(selectedRowsVendorGrouping)) {
         setSelectedRowsVendorGrouping(extractedIdsVendorGrouping);
       }
     }
 
-    if (pagenamecheck === "Frequency Master" && selectedRowsNewFrequency.some((item) => item.name)) {
+    if (pagenamecheck === 'Frequency Master' && selectedRowsNewFrequency.some((item) => item.name)) {
       const extractedIdsFrequency = selectedRowsNewFrequency.map((item) => item.name);
-      console.log(extractedIdsFrequency, "extractedIdsFrequency")
       if (JSON.stringify(extractedIdsFrequency) !== JSON.stringify(selectedRowsFrequency)) {
         setSelectedRowsFrequency(extractedIdsFrequency);
       }
     }
 
-    if (pagenamecheck === "Uom Master" && selectedRowsNewUOM.some((item) => item.name)) {
+    if (pagenamecheck === 'Uom Master' && selectedRowsNewUOM.some((item) => item.name)) {
       const extractedIdsUOM = selectedRowsNewUOM.map((item) => item.name);
       if (JSON.stringify(extractedIdsUOM) !== JSON.stringify(selectedRowsUOM)) {
         setSelectedRowsUOM(extractedIdsUOM);
@@ -544,36 +869,67 @@ function AggridTable({
     }
 
     // attenda mode master bulk delete check
-    if (pagenamecheck === "Attendance Mode List" && selectedRowsAttModeNameDelt.some((item) => item.name)) {
+    if (pagenamecheck === 'Attendance Mode List' && selectedRowsAttModeNameDelt.some((item) => item.name)) {
       const extractedIdsCat = selectedRowsAttModeNameDelt.map((item) => item.name);
       if (JSON.stringify(extractedIdsCat) !== JSON.stringify(selectedAttModeNameDelt)) {
         setSelectedAttModeNameDelt(extractedIdsCat); // Update the state
       }
     }
 
-    if (pagenamecheck === "Production Original Bulk") {
+    if (pagenamecheck === 'Leave Type' && selectedRowsNewLeaveType.some((item) => item.leavetype)) {
+      const extractedIdsLeaveType = selectedRowsNewLeaveType.map((item) => item.leavetype);
+      if (JSON.stringify(extractedIdsLeaveType) !== JSON.stringify(selectedRowsLeaveType)) {
+        setSelectedRowsLeaveType(extractedIdsLeaveType);
+      }
+    }
+
+    if (pagenamecheck === 'Production Original Bulk') {
       const extractedIdsBulk = selectedRowsoriginalbulk.map((item) => item);
       if (JSON.stringify(extractedIdsBulk) !== JSON.stringify(selectedRowsBulk)) {
         setSelectedRowsBulk(extractedIdsBulk); // Update the state
       }
     }
 
-    if (pagenamecheck === "Production Temp Bulk") {
+    if (pagenamecheck === 'Production Temp Bulk') {
       const extractedIdsTempBulk = selectedRowstempbulk.map((item) => item);
       if (JSON.stringify(extractedIdsTempBulk) !== JSON.stringify(selectedRowsBulkTemp)) {
         setSelectedRowsBulkTemp(extractedIdsTempBulk); // Update the state
+      }
+    }
+    // console.log(pagenamecheck, 'pagenamecheck');
+    if (pagenamecheck === 'stockitemlabel') {
+      const extractedIdsItemCode = selectedRowsStockItemCode.map((item) => ({ itemcoderunningnumber: item.itemcoderunningnumber, id: item._id }));
+      if (JSON.stringify(extractedIdsItemCode) !== JSON.stringify(selectedRowsItemCode)) {
+        setSelectedRowsItemCode(extractedIdsItemCode); // Update the state
+      }
+    }
+
+    if (pagenamecheck === 'Payment List') {
+      const extractedIdsPaymentList = selectedRowsPaymentList.map((item) => ({
+        ...item,
+        id: item.id,
+        customername: item.customername?.trim(),
+        customercontact: item.customercontact?.split('-')[1],
+        customercontactprefix: item.customercontact?.split('-')[0],
+        netamount: item.netamount,
+        dueamount: item.dueamount,
+        paymentarray: item.paymentarray,
+        updatedby: item.updatedby,
+        paymentstatus: item.paymentstatus,
+      }));
+      if (JSON.stringify(extractedIdsPaymentList) !== JSON.stringify(selectedRowsBulkPaymentList)) {
+        setSelectedRowsBulkPaymentList(extractedIdsPaymentList); // Update the state
       }
     }
     // Only update if selected rows have changed
     if (JSON.stringify(extractedIds) !== JSON.stringify(selectedRows)) {
       setSelectedRows(extractedIds); // Update the state
     }
-
   };
 
   const onSortChanged = (params) => {
     const allColumns = params?.columns[0]?.sort;
-    setSortingNames(allColumns)
+    setSortingNames(allColumns);
   };
   useEffect(() => {
     // Sync the grid selection with the state if necessary
@@ -595,7 +951,6 @@ function AggridTable({
   const onGridReady = useCallback((params) => {
     setGridApi(params.api);
     setColumnApi(params.columnApi);
-
   }, []);
 
   const handleColumnMoved = useCallback(
@@ -605,9 +960,7 @@ function AggridTable({
       const visible_columns = event.columnApi
         .getAllColumns()
         .filter((col) => {
-          const colState = event.columnApi
-            .getColumnState()
-            .find((state) => state.colId === col.colId);
+          const colState = event.columnApi.getColumnState().find((state) => state.colId === col.colId);
           return colState && !colState.hide;
         })
         .map((col) => col.colId);
@@ -636,22 +989,20 @@ function AggridTable({
     }));
   }, []);
 
-  const [columFiltershowing, setColumFiltershowing] = useState(false)
-
+  const [columFiltershowing, setColumFiltershowing] = useState(false);
 
   const onFilterChanged = () => {
-
     if (gridApi) {
       const filterModel = gridApi.getFilterModel(); // Get the current filter model
       // Check if filters are active
       if (Object.keys(filterModel).length === 0) {
-        setFilteredChanges(null)
+        setFilteredChanges(null);
         // No filters active, clear the filtered data state
         setFilteredRowData([]);
-        setPage(1)
+        setPage(1);
         setColumFiltershowing(false);
       } else {
-        setFilteredChanges("changes")
+        setFilteredChanges('changes');
 
         const filteredData = itemsList?.filter((item) => {
           return Object?.keys(filterModel)?.every((field) => {
@@ -659,13 +1010,10 @@ function AggridTable({
             if (!filterValue) return true; // No specific filter, so include all
 
             // Simple filter example: adjust based on filter type and requirements
-            return item[field]
-              ?.toString()
-              ?.includes(filterValue);
+            return item[field]?.toString()?.includes(filterValue);
           });
         });
 
-        // console.log(filteredData, "filteredData")
         if (filteredData?.length === 0) {
           setColumFiltershowing(true);
         }
@@ -688,17 +1036,16 @@ function AggridTable({
 
     // If there are more pages after the last visible page, show ellipsis
     if (endPage < FinalPages) {
-      pageNumbers.push("...");
+      pageNumbers.push('...');
     }
 
     return pageNumbers;
   };
 
-
   const handleColumnPinned = useCallback(
     (event) => {
       if (!gridApi) {
-        console.error("Grid API is not initialized");
+        console.error('Grid API is not initialized');
         return;
       }
 
@@ -707,22 +1054,20 @@ function AggridTable({
 
       // Check if columnState is null or undefined
       if (!columnState) {
-        console.error("Column state is null, check column definitions");
+        console.error('Column state is null, check column definitions');
         return;
       }
 
       // Filter the pinned columns
-      const pinnedColumns = columnState.filter((col) => col.pinned === "left");
+      const pinnedColumns = columnState.filter((col) => col.pinned === 'left');
 
       // If more than 4 columns are pinned, unpin the last one
       if (pinnedColumns.length > 5) {
-        alert("Only 4 columns can be pinned.");
+        alert('Only 4 columns can be pinned.');
 
         handleShowAllColumns();
         gridApi.applyColumnState({
-          state: columnState.map((col) =>
-            col.colId === event.column.colId ? { ...col, pinned: null } : col
-          ),
+          state: columnState.map((col) => (col.colId === event.column.colId ? { ...col, pinned: null } : col)),
           applyOrder: true,
         });
 
@@ -735,13 +1080,12 @@ function AggridTable({
     [gridApi]
   );
 
-
   return (
     <>
       <Box
         style={{
-          width: "100%",
-          overflowY: "hidden", // Hide the y-axis scrollbar
+          width: '100%',
+          overflowY: 'hidden', // Hide the y-axis scrollbar
         }}
       >
         {loading ? (
@@ -750,8 +1094,7 @@ function AggridTable({
         ) : (
           <AgGridContainer>
             <div
-              className={"ag-theme-quartz"}
-
+              className={'ag-theme-quartz'}
               // style={{
               //   height: "100%",
               //   width: "100%",
@@ -761,36 +1104,31 @@ function AggridTable({
               ref={gridRefTableImg}
             >
               <AgGridReact
-                rowData={sortingNames === null ?
-                  filteredChanges ? filteredRowData : rowDataTable
-                  : paginated ? filteredChanges ? filteredRowData : itemsList
-                    : items}
-                columnDefs={
-                  columnDataTable?.filter(
-                    (column) => columnVisibility[column.field]
-                  )?.map((data) => {
+                rowData={sortingNames === null ? (filteredChanges ? filteredRowData : rowDataTable) : paginated ? (filteredChanges ? filteredRowData : itemsList) : items}
+                columnDefs={columnDataTable
+                  ?.filter((column) => columnVisibility[column.field])
+                  ?.map((data) => {
                     return {
                       ...data,
-                      headerName: data.field === "checkbox" ? "" : data.headerName,
-                      filter: ["checkbox", 'actions'].includes(data.field) ? false : data.filter // Disable filter for checkbox
+                      headerName: data.field === 'checkbox' ? '' : data.headerName,
+                      filter: ['checkbox', 'actions'].includes(data.field) ? false : data.filter, // Disable filter for checkbox
                     };
-                  })
-                }
+                  })}
                 ref={gridRefTable}
                 defaultColDef={{
                   ...defaultColDef,
                   filter: true,
                 }}
-                domLayout={"autoHeight"}
+                domLayout={'autoHeight'}
                 selection={selection}
                 rowSelection="multiple"
                 onSelectionChanged={handleSelectionChange}
                 getRowStyle={getRowStyle}
                 getRowClass={(params) => {
                   if (params.data.roleback) {
-                    return "roleback-row";
+                    return 'roleback-row';
                   }
-                  return "";
+                  return '';
                 }}
                 // Pagination settings
                 pagination={true} // Enable pagination
@@ -804,7 +1142,7 @@ function AggridTable({
                 suppressHorizontalScroll={false}
                 suppressSizeToFit={true}
                 suppressAutoSize={true}
-                colResizeDefault={"shift"}
+                colResizeDefault={'shift'}
                 suppressResizeObserver={false}
                 suppressAnimationFrame={true}
                 // onColumnPinned={handleColumnPinned}
@@ -821,37 +1159,21 @@ function AggridTable({
       {paginated ? (
         <>
           <Pagination
-            page={columFiltershowing ? 1 : searchQuery !== "" || filteredRowData?.length !== 0 ? 1 : page}
+            page={columFiltershowing ? 1 : searchQuery !== '' || filteredRowData?.length !== 0 ? 1 : page}
             pageSize={columFiltershowing ? 0 : pageSize}
-            totalPages={columFiltershowing ? 1 : searchQuery !== "" || filteredRowData?.length !== 0 ? 1 : totalPages}
+            totalPages={columFiltershowing ? 1 : searchQuery !== '' || filteredRowData?.length !== 0 ? 1 : totalPages}
             onPageChange={handlePageChange}
             pageItemLength={columFiltershowing ? 0 : filteredDatas?.length}
-            totalProjects={columFiltershowing ? 0 :
-              searchQuery !== "" ? filteredDatas?.length : filteredRowData?.length !== 0 ? filteredRowData?.length : totalDatas
-            }
+            totalProjects={columFiltershowing ? 0 : searchQuery !== '' ? filteredDatas?.length : filteredRowData?.length !== 0 ? filteredRowData?.length : totalDatas}
           />
         </>
       ) : (
         <>
           <Box style={userStyle.dataTablestyle}>
             <Box>
-              Showing{" "}
-              {filteredChanges !== null ? filteredRowData?.length : filteredRowData.length > 0
-                ? filteredRowData.length > 0
-                  ? (page - 1) * pageSize + 1
-                  : 0
-                : rowDataTable.length > 0
-                  ? (page - 1) * pageSize + 1
-                  : 0}{" "}
-              to{" "}
-              {filteredChanges !== null ? filteredRowData?.length : filteredRowData.length > 0
-                ? Math.min(page * pageSize, filteredRowData.length)
-                : Math.min(page * pageSize, filteredDatas.length)}{" "}
-              of{" "}
-              {filteredChanges !== null ? filteredRowData?.length : filteredRowData.length > 0
-                ? filteredRowData.length
-                : items.length}{" "}
-              entries {/* Use rowDataTable.length here for consistency */}
+              Showing {filteredChanges !== null ? filteredRowData?.length : filteredRowData.length > 0 ? (filteredRowData.length > 0 ? (page - 1) * pageSize + 1 : 0) : rowDataTable.length > 0 ? (page - 1) * pageSize + 1 : 0} to{' '}
+              {filteredChanges !== null ? filteredRowData?.length : filteredRowData.length > 0 ? Math.min(page * pageSize, filteredRowData.length) : Math.min(page * pageSize, filteredDatas.length)} of{' '}
+              {filteredChanges !== null ? filteredRowData?.length : filteredRowData.length > 0 ? filteredRowData.length : items.length} entries {/* Use rowDataTable.length here for consistency */}
             </Box>
 
             {/* Pagination Controls */}
@@ -866,41 +1188,21 @@ function AggridTable({
               >
                 <FirstPageIcon />
               </Button>
-              <Button
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1 || FinalPages === 0}
-                sx={userStyle.paginationbtn}
-              >
+              <Button onClick={() => handlePageChange(page - 1)} disabled={page === 1 || FinalPages === 0} sx={userStyle.paginationbtn}>
                 <NavigateBeforeIcon />
               </Button>
 
               {/* Display the dynamic page numbers */}
               {getVisiblePageNumbers().map((pageNumber, index) => (
-                <Button
-                  key={index}
-                  onClick={() =>
-                    pageNumber !== "..." && handlePageChange(pageNumber)
-                  }
-                  sx={userStyle.paginationbtn}
-                  className={page === pageNumber ? "active" : ""}
-                  disabled={page === pageNumber || pageNumber === "..." || FinalPages === 0}
-                >
+                <Button key={index} onClick={() => pageNumber !== '...' && handlePageChange(pageNumber)} sx={userStyle.paginationbtn} className={page === pageNumber ? 'active' : ''} disabled={page === pageNumber || pageNumber === '...' || FinalPages === 0}>
                   {pageNumber}
                 </Button>
               ))}
 
-              <Button
-                onClick={() => handlePageChange(page + 1)}
-                disabled={(filteredChanges !== null ? filteredRowData?.length === FinalPages : page === FinalPages) || FinalPages === 0}
-                sx={userStyle.paginationbtn}
-              >
+              <Button onClick={() => handlePageChange(page + 1)} disabled={(filteredChanges !== null ? filteredRowData?.length === FinalPages : page === FinalPages) || FinalPages === 0} sx={userStyle.paginationbtn}>
                 <NavigateNextIcon />
               </Button>
-              <Button
-                onClick={() => handlePageChange(FinalPages)}
-                disabled={(filteredChanges !== null ? filteredRowData?.length === FinalPages : page === FinalPages) || FinalPages === 0}
-                sx={userStyle.paginationbtn}
-              >
+              <Button onClick={() => handlePageChange(FinalPages)} disabled={(filteredChanges !== null ? filteredRowData?.length === FinalPages : page === FinalPages) || FinalPages === 0} sx={userStyle.paginationbtn}>
                 <LastPageIcon />
               </Button>
             </Box>

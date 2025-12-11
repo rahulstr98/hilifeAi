@@ -5,6 +5,23 @@ const TemplatecontrolpanelModel = require("../../../model/modules/documents/Temp
 const mongoose = require("mongoose");
 const TemplateCreation = require("../../../model/modules/TemplateCreationModel");
 
+
+exports.getBranchBasedTemplate = catchAsyncErrors(async (req, res, next) => {
+  let templatecontrolpanel;
+  try {
+    templatecontrolpanel = await TemplatecontrolpanelModel.find({ branch: req.body.branch }, { company: 1, branch: 1, _id: 1, companyurl: 1, companyname: 1, address: 1 }).lean();
+    if (!templatecontrolpanel) {
+      return res.status(200).json({
+        templatecontrolpanel: [],
+      });
+    }
+    return res.status(200).json({
+      templatecontrolpanel,
+    });
+  } catch (err) {
+    return next(new ErrorHandler('Records not found!', 500));
+  }
+});
 // Get TemplatecontrolpanelModel  => /api/TemplatecontrolpanelModel
 exports.getAllTemplatecontrolpanelModel = catchAsyncErrors(
   async (req, res, next) => {

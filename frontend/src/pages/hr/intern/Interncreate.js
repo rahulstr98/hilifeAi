@@ -5100,12 +5100,16 @@ function Interncreate() {
     const resultUsers = res?.data?.hirerarchi;
     setHierarchy(resultUsers?.length > 0 ? true : false);
   };
-  const fetchSuperVisorDropdowns = async (team) => {
+  const fetchSuperVisorDropdowns = async (company , branch , unit , team , department) => {
     let res = await axios.post(SERVICE.HIERARCHY_REPORTING_TO, {
       headers: {
         Authorization: `Bearer ${auth.APIToken}`,
       },
-      team: team,
+          company: company,
+          branch: branch,
+          unit: unit,
+          team: team,
+          department: department,
     });
 
     const resultUsers = res?.data?.result?.length > 0 ? res?.data?.result[0]?.result?.supervisorchoose : [];
@@ -5272,7 +5276,7 @@ function Interncreate() {
     //   ...assignExperience,
     //   assignExpMode: "Auto Increment",
     // });
-    fetchSuperVisorDropdowns(selectedTeam);
+    fetchSuperVisorDropdowns(selectedCompany , selectedBranch , selectedUnit , selectedTeam ,employee?.department);
     setEmployee((prev) => ({
       ...prev,
       reportingto: '',

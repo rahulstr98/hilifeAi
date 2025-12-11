@@ -207,9 +207,9 @@ export const menuItems = [
         access: true,
       },
       {
-        title: 'Attendance Mode Report',
-        dbname: 'menuattendancemodereport',
-        url: '/attendancemodereport',
+        title: "Attendance Mode Report",
+        dbname: "menuattendancemodereport",
+        url: "/attendancemodereport",
         access: true,
       },
       {
@@ -666,9 +666,9 @@ export const menuItems = [
                     url: "/employee/longabsentrestrictionhierarchylist",
                   },
                   {
-                    title: 'Team Auto Clockout Restriction List',
-                    dbname: 'menuteamautoclockoutrestrictionlist',
-                    url: '/employee/teamautoclockoutrestrictionlist',
+                    title: "Team Auto Clockout Restriction List",
+                    dbname: "menuteamautoclockoutrestrictionlist",
+                    url: "/employee/teamautoclockoutrestrictionlist",
                   },
                   {
                     title: "Temporary Login",
@@ -959,6 +959,12 @@ export const menuItems = [
                 access: true,
               },
               {
+                title: "Biometric Device Offline History",
+                dbname: "menubiometricdeviceofflinehistory",
+                url: "/biometricdeviceofflinehistory",
+                access: true,
+              },
+              {
                 title: "Biometric Users Pending Report",
                 dbname: "menubiometricuserspendingreport",
                 url: "/biometricuserspendingreport",
@@ -967,6 +973,16 @@ export const menuItems = [
                 title: "Biometric Users Grouping",
                 dbname: "menubiometricusersgrouping",
                 url: "/biometricusersgrouping",
+              },
+              {
+                title: "Visitor Biometric Approval",
+                dbname: "menuvisitorbiometricapproval",
+                url: "/visitorbiometricapproval",
+              },
+              {
+                title: "Biometric Visitors Attendance Report",
+                dbname: "menubiometricvisitorsattendancereport",
+                url: "/biometricvisitorsattendancereport",
               },
               {
                 title: "Biometric Devices Pairing",
@@ -979,9 +995,9 @@ export const menuItems = [
                 url: "/biometricpaireddevicesgrouping",
               },
               {
-                title: 'Biometric Brand-Model',
-                dbname: 'menubiometricbrand-model',
-                url: '/biometric/brandmodel',
+                title: "Biometric Brand-Model",
+                dbname: "menubiometricbrand-model",
+                url: "/biometric/brandmodel",
                 access: false,
               },
               {
@@ -991,9 +1007,9 @@ export const menuItems = [
                 access: true,
               },
               {
-                title: 'Biometric Remote Control',
-                dbname: 'menubiometricremotecontrol',
-                url: '/biometricremotecontrol',
+                title: "Biometric Remote Control",
+                dbname: "menubiometricremotecontrol",
+                url: "/biometricremotecontrol",
                 access: true,
               },
               {
@@ -1892,8 +1908,10 @@ export const menuItems = [
             url: "/excel/otherworkorderhierarchylist",
           },
           {
-            title: "Consolidated(primary/secondary/tertiary) Hierarchy WorkOrder List",
-            dbname: "menuconsolidated(primary/secondary/tertiary)hierarchyworkorderlist",
+            title:
+              "Consolidated(primary/secondary/tertiary) Hierarchy WorkOrder List",
+            dbname:
+              "menuconsolidated(primary/secondary/tertiary)hierarchyworkorderlist",
             url: "/excel/consolidatedworkorderhierarchylist",
           },
           {
@@ -1930,8 +1948,10 @@ export const menuItems = [
             access: true,
           },
           {
-            title: "Consolidated(primary/secondary/tertiary) Individual Work Order List",
-            dbname: "menuconsolidated(primary/secondary/tertiary)individualworkorderlist",
+            title:
+              "Consolidated(primary/secondary/tertiary) Individual Work Order List",
+            dbname:
+              "menuconsolidated(primary/secondary/tertiary)individualworkorderlist",
             url: "/excel/consolidatedindividualprimarysecondarytertiary",
             access: true,
           },
@@ -2312,14 +2332,14 @@ export const menuItems = [
                 url: "/production/productionunitrateunallot",
               },
               {
-                title: 'Zero Unitrate Master assigned/unassigned',
-                dbname: 'menuzerounitratemasterassigned/unassigned',
-                url: '/production/zerounitrateassignedunassigned',
+                title: "Zero Unitrate Master assigned/unassigned",
+                dbname: "menuzerounitratemasterassigned/unassigned",
+                url: "/production/zerounitrateassignedunassigned",
               },
               {
-                title: 'Zero Unit Newrate Overall report',
-                dbname: 'menuzerounitnewrateoverallreport',
-                url: '/production/newrateoverallreport',
+                title: "Zero Unit Newrate Overall report",
+                dbname: "menuzerounitnewrateoverallreport",
+                url: "/production/newrateoverallreport",
               },
               {
                 title: "Original Mismatch",
@@ -2357,9 +2377,9 @@ export const menuItems = [
                 url: "/production/productionoriginalsummary",
               },
               {
-                title: 'Production Month Upload',
-                dbname: 'menuproductionmonthupload',
-                url: '/production/productionmonthoriginalupload',
+                title: "Production Month Upload",
+                dbname: "menuproductionmonthupload",
+                url: "/production/productionmonthoriginalupload",
               },
               {
                 title: "Production Month Upload List",
@@ -2523,9 +2543,9 @@ export const menuItems = [
             dbname: "menuoriginal",
             submenu: [
               {
-                title: 'Overall Report',
-                dbname: 'menuoverallreport',
-                url: '/production/overallreport',
+                title: "Overall Report",
+                dbname: "menuoverallreport",
+                url: "/production/overallreport",
               },
               {
                 title: "Individual Production Report",
@@ -2653,55 +2673,55 @@ export const menuItems = [
     ],
   },
   {
-    title: 'LDAP',
-    dbname: 'menuldap',
-    url: '',
+    title: "LDAP",
+    dbname: "menuldap",
+    url: "",
     navmenu: true,
     submenu: [
       {
-        title: 'LDAP Setting',
-        dbname: 'menuldapsetting',
-        url: '/ldap/ldapsetting',
+        title: "LDAP Setting",
+        dbname: "menuldapsetting",
+        url: "/ldap/ldapsetting",
       },
       {
-        title: 'Organizational Unit',
-        dbname: 'menuorganizationalunit',
-        url: '/ldap/organizationalunit',
+        title: "Organizational Unit",
+        dbname: "menuorganizationalunit",
+        url: "/ldap/organizationalunit",
       },
       {
-        title: 'Organizational Unit Grouping',
-        dbname: 'menuorganizationalunitgrouping',
-        url: '/ldap/organizationalunitgrouping',
+        title: "Organizational Unit Grouping",
+        dbname: "menuorganizationalunitgrouping",
+        url: "/ldap/organizationalunitgrouping",
       },
       {
-        title: 'Domain Users List',
-        dbname: 'menudomainuserslist',
-        url: '/ldap/domainuserslist',
+        title: "Domain Users List",
+        dbname: "menudomainuserslist",
+        url: "/ldap/domainuserslist",
       },
       {
-        title: 'Locked Users List',
-        dbname: 'menulockeduserslist',
-        url: '/ldap/lockeduserslist',
+        title: "Locked Users List",
+        dbname: "menulockeduserslist",
+        url: "/ldap/lockeduserslist",
       },
       {
-        title: 'Disabled Users List',
-        dbname: 'menudisableduserslist',
-        url: '/ldap/disableduserslist',
+        title: "Disabled Users List",
+        dbname: "menudisableduserslist",
+        url: "/ldap/disableduserslist",
       },
       {
-        title: 'Hierarchy Disabled Users List',
-        dbname: 'menuhierarchydisableduserslist',
-        url: '/ldap/hierarchydisableduserslist',
+        title: "Hierarchy Disabled Users List",
+        dbname: "menuhierarchydisableduserslist",
+        url: "/ldap/hierarchydisableduserslist",
       },
       {
-        title: 'Hierarchy Domain Users List',
-        dbname: 'menuhierarchydomainuserslist',
-        url: '/ldap/hierarchydomainuserslist',
+        title: "Hierarchy Domain Users List",
+        dbname: "menuhierarchydomainuserslist",
+        url: "/ldap/hierarchydomainuserslist",
       },
       {
-        title: 'Hierarchy Locked Users List',
-        dbname: 'menuhierarchylockeduserslist',
-        url: '/ldap/hierarchylockeduserslist',
+        title: "Hierarchy Locked Users List",
+        dbname: "menuhierarchylockeduserslist",
+        url: "/ldap/hierarchylockeduserslist",
       },
     ],
   },
@@ -3017,8 +3037,10 @@ export const menuItems = [
             access: true,
           },
           {
-            title: "Achieved Accuracy Individual Review Internal Status Summary List",
-            dbname: "menuachievedaccuracyindividualreviewinternalstatussummarylist",
+            title:
+              "Achieved Accuracy Individual Review Internal Status Summary List",
+            dbname:
+              "menuachievedaccuracyindividualreviewinternalstatussummarylist",
             url: "/quality/accuracy/achievedaccuracyindividualreviewinternalstatussummarylist",
           },
           {
@@ -3432,8 +3454,6 @@ export const menuItems = [
             dbname: "menusourceofpayments",
             url: "/expense/sourceofpayments",
           },
-
-
         ],
       },
       {
@@ -3749,7 +3769,7 @@ export const menuItems = [
                 dbname: "menucolours",
                 url: "/assetspecification/colours",
               },
-            ]
+            ],
           },
           {
             title: "Software Specification",
@@ -3766,7 +3786,6 @@ export const menuItems = [
           //         dbname: "menuassetsoftwaregrouping",
           //         url: "/assetspecification/software/assetsoftwaregrouping",
           // },
-
         ],
       },
       {
@@ -4093,7 +4112,6 @@ export const menuItems = [
         dbname: "menuebreadingreport",
         url: "/eb/ebreadingreport",
         access: true,
-
       },
       {
         title: "EB Material Usage Details",
@@ -4670,31 +4688,31 @@ export const menuItems = [
             access: true,
           },
           {
-            title: 'Team Work From Home Verification',
-            dbname: 'menuteamworkfromhomeverification',
-            url: '/workfromhome/teamworkfromhomeverification',
+            title: "Team Work From Home Verification",
+            dbname: "menuteamworkfromhomeverification",
+            url: "/workfromhome/teamworkfromhomeverification",
             access: true,
           },
         ],
       },
       {
-        title: 'Approve Document',
-        dbname: 'menuapprovedocument',
-        url: '',
+        title: "Approve Document",
+        dbname: "menuapprovedocument",
+        url: "",
         submenu: [
           {
-            title: 'User Document Upload',
-            dbname: 'menuuserdocumentupload',
-            url: '/userdocumentupload',
+            title: "User Document Upload",
+            dbname: "menuuserdocumentupload",
+            url: "/userdocumentupload",
             access: true,
           },
           {
-            title: 'Assign User Document Upload',
+            title: "Assign User Document Upload",
           },
           {
-            title: 'User Document Upload Filter',
-            dbname: 'menuuserdocumentuploadfilter',
-            url: '/userdocumentuploadfilter',
+            title: "User Document Upload Filter",
+            dbname: "menuuserdocumentuploadfilter",
+            url: "/userdocumentuploadfilter",
             access: true,
           },
         ],
@@ -4934,35 +4952,35 @@ export const menuItems = [
   },
 
   {
-    title: 'Interactors',
-    dbname: 'menuinteractors',
-    url: '',
+    title: "Interactors",
+    dbname: "menuinteractors",
+    url: "",
     navmenu: true,
     submenu: [
       {
-        title: 'Master Setup',
-        dbname: 'menumastersetup',
-        url: '',
+        title: "Master Setup",
+        dbname: "menumastersetup",
+        url: "",
         submenu: [
           {
-            title: 'Interactor Type',
-            dbname: 'menuinteractortype',
-            url: 'interactor/master/interactortype',
+            title: "Interactor Type",
+            dbname: "menuinteractortype",
+            url: "interactor/master/interactortype",
           },
           {
-            title: 'Interactor Mode',
-            dbname: 'menuinteractormode',
-            url: 'interactor/master/interactormode',
+            title: "Interactor Mode",
+            dbname: "menuinteractormode",
+            url: "interactor/master/interactormode",
           },
           {
-            title: 'Type & Purpose Grouping',
-            dbname: 'menutype&purposegrouping',
-            url: 'interactor/master/managetype&purposegrouping',
+            title: "Type & Purpose Grouping",
+            dbname: "menutype&purposegrouping",
+            url: "interactor/master/managetype&purposegrouping",
           },
           {
-            title: 'Interactor Purpose',
-            dbname: 'menuinteractorpurpose',
-            url: 'interactor/master/interactorpurpose',
+            title: "Interactor Purpose",
+            dbname: "menuinteractorpurpose",
+            url: "interactor/master/interactorpurpose",
           },
         ],
       },

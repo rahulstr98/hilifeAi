@@ -96,12 +96,12 @@ function UserDocumentUpload() {
   const [AccessdropEdit, setAccesDropEdit] = useState('Employee');
 
   let onlyShow = {
-    module: ['Human Resources', 'Leave&Permission'],
-    submodule: ['HR', 'Leave', 'Permission', 'Work From Home'],
-    mainpage: ['Employee', 'Apply Leave', 'Apply Permission', 'Apply Work From Home'],
-    subpage: ['Employee details', 'Employee Status Details', 'Notice Period'],
-    subsubpage: ['Long Absent Restriction List', 'Notice Period Apply', 'Remote Employee List', 'Remote Employee Details List'],
-  }
+    module: ['Human Resources', 'Leave&Permission', 'Quality'],
+    submodule: ['HR', 'Leave', 'Permission', 'Work From Home', 'Penalty'],
+    mainpage: ['Employee', 'Apply Leave', 'Apply Permission', 'Apply Work From Home', 'Penalty Waiver'],
+    subpage: ['Employee Status Details', 'Notice Period', 'Client Error Waiver Approval', 'Approval Employee Waiver'],
+    subsubpage: ['Long Absent Restriction List', 'Employee Login Status', 'Notice Period Apply'],
+  };
 
   const [userDocument, setUserDocument] = useState({
     employeename: 'Please Select Employee Name',
@@ -206,51 +206,29 @@ function UserDocumentUpload() {
     setUploadEdit((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
   const [rolesNewList, setRolesNewList] = useState([]);
-  const [selectedModuleName, setSelectedModuleName] = useState([]);
-  let [valueModule, setValueModule] = useState([]);
   const [subModuleOptions, setSubModuleOptions] = useState([]);
-  const [selectedSubModuleName, setSelectedSubModuleName] = useState([]);
   let [valueSubModule, setSubValueModule] = useState([]);
   const [mainPageoptions, setMainPageoptions] = useState([]);
   const [selectedMainPageName, setSelectedMainPageName] = useState([]);
   let [valueMainPage, setValueMainPage] = useState([]);
   const [subPageoptions, setSubPageoptions] = useState([]);
   const [subSubPageoptions, setsubSubPageoptions] = useState([]);
-  const [selectedSubPageName, setSelectedSubPageName] = useState([]);
-  const [selectedSubSubPageName, setSelectedSubSubPageName] = useState([]);
   let [valueSubPage, setValueSubPage] = useState([]);
   let [valueSubSubPage, setValueSubSubPage] = useState([]);
-  const [selectedControls, setSelectedControls] = useState([]);
   const [moduleTitleNames, setModuleTitleNames] = useState([]);
   const [subModuleTitleNames, setSubModuleTitleNames] = useState([]);
   const [mainPageTitleNames, setMainPageTitleNames] = useState([]);
   const [subPageTitleNames, setSubPageTitleNames] = useState([]);
   const [subsubPageTitleNames, setSubSubPageTitleNames] = useState([]);
-  const [controlTitleNames, setControlTitleNames] = useState([]);
   const [mainPageDbNames, setMainPageDbNames] = useState([]);
   //edit
-  const [rolesNewListEdit, setRolesNewListEdit] = useState([]);
-  const [selectedModuleNameEdit, setSelectedModuleNameEdit] = useState([]);
-  let [valueModuleEdit, setValueModuleEdit] = useState([]);
   const [subModuleOptionsEdit, setSubModuleOptionsEdit] = useState([]);
-  const [selectedSubModuleNameEdit, setSelectedSubModuleNameEdit] = useState([]);
-  let [valueSubModuleEdit, setSubValueModuleEdit] = useState([]);
   const [mainPageoptionsEdit, setMainPageoptionsEdit] = useState([]);
   const [selectedMainPageNameEdit, setSelectedMainPageNameEdit] = useState([]);
   let [valueMainPageEdit, setValueMainPageEdit] = useState([]);
   const [subPageoptionsEdit, setSubPageoptionsEdit] = useState([]);
   const [subSubPageoptionsEdit, setsubSubPageoptionsEdit] = useState([]);
-  const [selectedSubPageNameEdit, setSelectedSubPageNameEdit] = useState([]);
-  const [selectedSubSubPageNameEdit, setSelectedSubSubPageNameEdit] = useState([]);
-  let [valueSubPageEdit, setValueSubPageEdit] = useState([]);
-  let [valueSubSubPageEdit, setValueSubSubPageEdit] = useState([]);
-  const [selectedControlsEdit, setSelectedControlsEdit] = useState([]);
-  const [moduleTitleNamesEdit, setModuleTitleNamesEdit] = useState([]);
-  const [subModuleTitleNamesEdit, setSubModuleTitleNamesEdit] = useState([]);
   const [mainPageTitleNamesEdit, setMainPageTitleNamesEdit] = useState([]);
-  const [subPageTitleNamesEdit, setSubPageTitleNamesEdit] = useState([]);
-  const [subsubPageTitleNamesEdit, setSubSubPageTitleNamesEdit] = useState([]);
-  const [controlTitleNamesEdit, setControlTitleNamesEdit] = useState([]);
   const [mainPageDbNamesEdit, setMainPageDbNamesEdit] = useState([]);
   useEffect(() => {
     fetchNewRoleList();
@@ -304,8 +282,6 @@ function UserDocumentUpload() {
           }
         });
       });
-
-      console.log(mergedObject, 'mergedObject')
       setRolesNewList([mergedObject]);
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -327,8 +303,6 @@ function UserDocumentUpload() {
       });
 
     setSubModuleOptions(filteredSubModulename);
-
-    // setSelectedModuleName(options);
   };
 
   //single select fetch Main page
@@ -360,7 +334,6 @@ function UserDocumentUpload() {
     const filteredMenuitemsMainPage = filteredMenuitemsSubModuleName[0]?.submenu?.filter((item) => item.title === mainpage);
 
     const subpagerole = rolesNewList[0]?.subpagename?.map((item) => item);
-    console.log(filteredMenuitemsMainPage[0]?.submenu, "subpagerole")
 
     const filteredSubModulename = filteredMenuitemsMainPage[0]?.submenu
       ?.filter((item) => subpagerole.includes(item.title))
@@ -370,7 +343,7 @@ function UserDocumentUpload() {
           value: item.title,
         };
       });
-    console.log(filteredSubModulename, "filteredSubModulename")
+
     setSubPageoptions(filteredSubModulename);
   };
 
@@ -416,7 +389,7 @@ function UserDocumentUpload() {
       });
     setMainPageDbNames(dbNames);
     let mainPageFilt = mainPageoptions.filter((data) => mainpageAns.includes(data.title));
-    // console.log(mainPageoptions , mainPageFilt,'mainPageoptions')
+
     let mainPage =
       mainPageFilt.length > 0 &&
       mainPageFilt
@@ -438,8 +411,6 @@ function UserDocumentUpload() {
           value: data.title,
         }))
         : [];
-
-    // console.log(subPageDropDown , 'subPageDropDown')
     setSubPageoptions(subPageDropDown);
     setSelectedMainPageName(options);
   };
@@ -460,8 +431,6 @@ function UserDocumentUpload() {
       });
 
     setSubModuleOptionsEdit(filteredSubModulename);
-
-    // setSelectedModuleName(options);
   };
 
   //single select fetch Main page
@@ -1231,14 +1200,15 @@ function UserDocumentUpload() {
     // singleSelectValues.subpage
     // singleSelectValues.subsubpage
 
-    const isNameMatch = userDocuments.some((item) =>
-      item.employeename === user &&
-      item.module === singleSelectValues.module &&
-      item.submodule === singleSelectValues.submodule &&
-      item.mainpage === (singleSelectValues.mainpage === 'Please Select Main Page' ? '' : singleSelectValues.mainpage) &&
-      item.subpage === (singleSelectValues.subpage === 'Please Select Sub Page' ? '' : singleSelectValues.subpage) &&
-      item.subsubpage === (singleSelectValues.subsubpage === 'Please Select Sub Sub Page' ? '' : singleSelectValues.subsubpage) &&
-      (item.subsubpage === "Notice Period Apply" ? true : item.date === moment(userDocument.date).format('DD-MM-YYYY'))
+    const isNameMatch = userDocuments.some(
+      (item) =>
+        item.employeename === user &&
+        item.module === singleSelectValues.module &&
+        item.submodule === singleSelectValues.submodule &&
+        item.mainpage === (singleSelectValues.mainpage === 'Please Select Main Page' ? '' : singleSelectValues.mainpage) &&
+        item.subpage === (singleSelectValues.subpage === 'Please Select Sub Page' ? '' : singleSelectValues.subpage) &&
+        item.subsubpage === (singleSelectValues.subsubpage === 'Please Select Sub Sub Page' ? '' : singleSelectValues.subsubpage) &&
+        (['Notice Period Apply', 'Employee Login Status']?.includes(item.subsubpage) ? true : item.date === moment(userDocument.date).format('DD-MM-YYYY'))
     );
 
     if (Accessdrop === 'HR' && selectedOptionsCompany.length === 0) {
@@ -1265,43 +1235,31 @@ function UserDocumentUpload() {
       setPopupContentMalert('Please Select Module');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if (singleSelectValues.submodule === 'Please Select Sub Module' || singleSelectValues.submodule === '') {
+    } else if (singleSelectValues.submodule === 'Please Select Sub Module' || singleSelectValues.submodule === '') {
       setPopupContentMalert('Please Select Sub Module');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if ((singleSelectValues.mainpage === 'Please Select Main Page' || singleSelectValues.mainpage === '') &&
-      mainPageoptions?.filter(item => onlyShow.mainpage.includes(item.value))?.length > 0
-    ) {
+    } else if ((singleSelectValues.mainpage === 'Please Select Main Page' || singleSelectValues.mainpage === '') && mainPageoptions?.filter((item) => onlyShow.mainpage.includes(item.value))?.length > 0) {
       setPopupContentMalert('Please Select Main Page');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if ((singleSelectValues.subpage === 'Please Select Sub Page' || singleSelectValues.subpage === '') &&
-      subPageoptions?.filter(item => onlyShow.subpage.includes(item.value))?.length > 0
-    ) {
+    } else if ((singleSelectValues.subpage === 'Please Select Sub Page' || singleSelectValues.subpage === '') && subPageoptions?.filter((item) => onlyShow.subpage.includes(item.value))?.length > 0) {
       setPopupContentMalert('Please Select Sub Page');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if ((singleSelectValues.subsubpage === 'Please Select Sub Sub Page' || singleSelectValues.subsubpage === '') &&
-      subSubPageoptions?.filter(item => onlyShow.subsubpage.includes(item.value))?.length > 0
-    ) {
+    } else if ((singleSelectValues.subsubpage === 'Please Select Sub Sub Page' || singleSelectValues.subsubpage === '') && subSubPageoptions?.filter((item) => onlyShow.subsubpage.includes(item.value))?.length > 0) {
       setPopupContentMalert('Please Select Sub Sub Page');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if (!["Remote Employee List", "Remote Employee Details List"]?.includes(singleSelectValues.subsubpage) && userDocument.date === '') {
+    } else if (!['Notice Period Apply', 'Employee Login Status']?.includes(singleSelectValues.subsubpage) && userDocument.date === '') {
       setPopupContentMalert('Please Select Date');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-    else if (upload.length < 1) {
+    } else if (upload.length < 1) {
       setPopupContentMalert('Please Upload Files');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } else if (isNameMatch) {
+    } else if (singleSelectValues.subsubpage !== "Employee Login Status" && isNameMatch) {
       setPopupContentMalert('Data Already Exists!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
@@ -1327,18 +1285,6 @@ function UserDocumentUpload() {
     setValueTeamCat([]);
     setSelectedOptionsTeam([]);
     setEmpname([]);
-
-
-    // setSelectedModuleName([]);
-    // setSelectedSubModuleName([]);
-    // setSelectedMainPageName([]);
-    // setSelectedSubPageName([]);
-    // setSelectedControls([]);
-    // setMainPageDbNames([]);
-    // setControlTitleNames([]);
-    // setSelectedSubSubPageName([]);
-
-    setValueModule([]);
     setModuleTitleNames([]);
 
     setSubValueModule([]);
@@ -1356,7 +1302,6 @@ function UserDocumentUpload() {
     setValueSubSubPage([]);
     setSubSubPageTitleNames([]);
     setsubSubPageoptions([]);
-
 
     setSingleSelectValues({
       module: 'Please Select Module',
@@ -1403,7 +1348,7 @@ function UserDocumentUpload() {
 
   const getMultipleFilesAsObjects = async (filenames, type, uniqueId) => {
     const files = [];
-console.log(filenames, type, uniqueId , 'filenames, type, uniqueId')
+
     for (const name of filenames) {
       const res = await axios.post(
         SERVICE.USERDOCUMENTS_EDIT_FETCH,
@@ -1415,7 +1360,7 @@ console.log(filenames, type, uniqueId , 'filenames, type, uniqueId')
           responseType: 'blob',
         }
       );
-console.log()
+
       const blob = res.data;
       const file = new File([blob], name, { type: blob.type });
       files.push(file);
@@ -1427,7 +1372,6 @@ console.log()
   const [getimgbillcode, setGetImgbillcode] = useState([]);
 
   const handleFetchBill = (data, remarks) => {
-    console.log(data , "data")
     const files = Array.from(data); // Ensure it's an array
 
     const fileReaders = [];
@@ -1540,51 +1484,6 @@ console.log()
 
   let subprojectsid = userDocumentEdit?._id;
   //editing the single data...
-  // const sendEditRequest = async () => {
-  //   setPageName(!pageName);
-  //   let employee = Accessdrop === 'HR' ? String(userDocumentEdit.employeename) : isUserRoleAccess.companyname;
-  //   let ans = allUsersData?.find((data) => data.companyname === employee);
-
-  //   try {
-  //     let res = await axios.put(`${SERVICE.USERDOCUMENTUPLOAD_SINGLE}/${subprojectsid}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${auth.APIToken}`,
-  //       },
-  //       // company: comp,
-  //       access: AccessdropEdit,
-  //       company: String(ans.company),
-  //       branch: String(ans.branch),
-  //       unit: String(ans.unit),
-  //       team: String(ans.team),
-
-  //       employeename: AccessdropEdit === 'HR' ? String(ans.companyname) : isUserRoleAccess.companyname,
-
-  //       modulename: singleSelectValuesEdit.module,
-  //       submodulename: singleSelectValuesEdit.submodule,
-  //       mainpagename: singleSelectValuesEdit.mainpage === 'Please Select Main Page' ? '' : singleSelectValuesEdit.mainpage,
-  //       subpagename: singleSelectValuesEdit.subpage === 'Please Select Sub Page' ? '' : singleSelectValuesEdit.subpage,
-  //       subsubpagename: singleSelectValuesEdit.subsubpage === 'Please Select Sub Sub Page' ? '' : singleSelectValuesEdit.subsubpage,
-
-  //       uniqueId: userDocumentEdit.uniqueId,
-  //       files: uploadEdit?.map((item) => item.name),
-  //       updatedby: [
-  //         ...updateby,
-  //         {
-  //           name: String(isUserRoleAccess.companyname),
-  //           date: String(new Date()),
-  //         },
-  //       ],
-  //     });
-
-  //     await handleFileDeleteOld(oldfileNamesBill);
-  //     await handleFileUpload(uploadEdit, 'userdocuments', userDocumentEdit.uniqueId);
-
-  //     await fetchApplyleave();
-  //     handleCloseModEdit();
-  //   } catch (err) {
-  //     handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
-  //   }
-  // };
   const sendEditRequest = async () => {
     setPageName(!pageName);
     let employee = Accessdrop === 'HR' ? String(userDocumentEdit.employeename) : isUserRoleAccess.companyname;
@@ -1595,14 +1494,13 @@ console.log()
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
+        // company: comp,
         access: AccessdropEdit,
-        company: String(ans?.company),
-        branch: String(ans?.branch),
-        unit: String(ans?.unit),
-        team: String(ans?.team),
-
-        employeename: AccessdropEdit === 'HR' ? String(ans?.companyname) : isUserRoleAccess.companyname,
-        date: String(userDocumentEdit.date),
+        company: String(ans.company),
+        branch: String(ans.branch),
+        unit: String(ans.unit),
+        team: String(ans.team),
+        employeename: AccessdropEdit === 'HR' ? String(ans.companyname) : isUserRoleAccess.companyname,
 
         modulename: singleSelectValuesEdit.module,
         submodulename: singleSelectValuesEdit.submodule,
@@ -1611,7 +1509,7 @@ console.log()
         subsubpagename: singleSelectValuesEdit.subsubpage === 'Please Select Sub Sub Page' ? '' : singleSelectValuesEdit.subsubpage,
 
         uniqueId: userDocumentEdit.uniqueId,
-        files: Array.isArray(uploadEdit) && uploadEdit.length > 0 ? uploadEdit.map(item => item.name) : undefined,
+        files: uploadEdit?.map((item) => item.name),
         updatedby: [
           ...updateby,
           {
@@ -1621,13 +1519,8 @@ console.log()
         ],
       });
 
-      if (Array.isArray(oldfileNamesBill) && oldfileNamesBill.length > 0) {
-        await handleFileDeleteOld(oldfileNamesBill);
-      }
-
-      if (Array.isArray(uploadEdit) && uploadEdit.length > 0) {
-        await handleFileUpload(uploadEdit, 'userdocuments', userDocumentEdit.uniqueId);
-      }
+      await handleFileDeleteOld(oldfileNamesBill);
+      await handleFileUpload(uploadEdit, 'userdocuments', userDocumentEdit.uniqueId);
 
       await fetchApplyleave();
       handleCloseModEdit();
@@ -1635,7 +1528,6 @@ console.log()
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
-
 
   const handleFileDeleteOld = async (filenames) => {
     try {
@@ -1652,19 +1544,21 @@ console.log()
     e.preventDefault();
 
     let user = AccessdropEdit === 'HR' ? userDocumentEdit.employeename : isUserRoleAccess.companyname;
-    console.log(subSubPageoptionsEdit?.filter(item => onlyShow.subsubpage.includes(item.value)))
-    console.log((singleSelectValuesEdit.subsubpage === 'Please Select Sub Sub Page' || singleSelectValuesEdit.subsubpage === '') &&
-      subSubPageoptionsEdit?.filter(item => onlyShow.subsubpage.includes(item.value))?.length > 0)
+    console.log(subSubPageoptionsEdit?.filter((item) => onlyShow.subsubpage.includes(item.value)));
+    console.log((singleSelectValuesEdit.subsubpage === 'Please Select Sub Sub Page' || singleSelectValuesEdit.subsubpage === '') && subSubPageoptionsEdit?.filter((item) => onlyShow.subsubpage.includes(item.value))?.length > 0);
 
-    const isNameMatch = userDocuments?.filter(data => data?.id !== userDocumentEdit?._id)?.some((item) =>
-      item.employeename === user &&
-      item.module === singleSelectValuesEdit.module &&
-      item.submodule === singleSelectValuesEdit.submodule &&
-      item.mainpage === singleSelectValuesEdit.mainpage &&
-      item.subpage === singleSelectValuesEdit.subpage &&
-      item.subsubpage === singleSelectValuesEdit.subsubpage &&
-      (item.subsubpage === "Notice Period Apply" ? true : item.date === moment(userDocumentEdit.date).format('DD-MM-YYYY'))
-    );
+    const isNameMatch = userDocuments
+      ?.filter((data) => data?.id !== userDocumentEdit?._id)
+      ?.some(
+        (item) =>
+          item.employeename === user &&
+          item.module === singleSelectValuesEdit.module &&
+          item.submodule === singleSelectValuesEdit.submodule &&
+          item.mainpage === singleSelectValuesEdit.mainpage &&
+          item.subpage === singleSelectValuesEdit.subpage &&
+          item.subsubpage === singleSelectValuesEdit.subsubpage &&
+          (item.subsubpage === 'Notice Period Apply' ? true : item.date === moment(userDocumentEdit.date).format('DD-MM-YYYY'))
+      );
 
     if (AccessdropEdit === 'HR' && userDocumentEdit.company === 'Please Select Company') {
       setPopupContentMalert('Please Select Company');
@@ -1686,50 +1580,35 @@ console.log()
       setPopupContentMalert('Please Select Employee Name');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } 
-    else if (singleSelectValuesEdit.module === 'Please Select Module' || singleSelectValuesEdit.module === '') {
+    } else if (singleSelectValuesEdit.module === 'Please Select Module' || singleSelectValuesEdit.module === '') {
       setPopupContentMalert('Please Select Module');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if (singleSelectValuesEdit.submodule === 'Please Select Sub Module' || singleSelectValuesEdit.submodule === '') {
+    } else if (singleSelectValuesEdit.submodule === 'Please Select Sub Module' || singleSelectValuesEdit.submodule === '') {
       setPopupContentMalert('Please Select Sub Module');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if ((singleSelectValuesEdit.mainpage === 'Please Select Main Page' || singleSelectValuesEdit.mainpage === '') &&
-      mainPageoptionsEdit?.filter(item => onlyShow.mainpage.includes(item.value))?.length > 0
-    ) {
+    } else if ((singleSelectValuesEdit.mainpage === 'Please Select Main Page' || singleSelectValuesEdit.mainpage === '') && mainPageoptionsEdit?.filter((item) => onlyShow.mainpage.includes(item.value))?.length > 0) {
       setPopupContentMalert('Please Select Main Page');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if ((singleSelectValuesEdit.subpage === 'Please Select Sub Page' || singleSelectValuesEdit.subpage === '') &&
-      subPageoptionsEdit?.filter(item => onlyShow.subpage.includes(item.value))?.length > 0
-    ) {
+    } else if ((singleSelectValuesEdit.subpage === 'Please Select Sub Page' || singleSelectValuesEdit.subpage === '') && subPageoptionsEdit?.filter((item) => onlyShow.subpage.includes(item.value))?.length > 0) {
       setPopupContentMalert('Please Select Sub Page');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    else if ((singleSelectValuesEdit.subsubpage === 'Please Select Sub Sub Page' || singleSelectValuesEdit.subsubpage === '') &&
-      subSubPageoptionsEdit?.filter(item => onlyShow.subsubpage.includes(item.value))?.length > 0
-    ) {
+    } else if ((singleSelectValuesEdit.subsubpage === 'Please Select Sub Sub Page' || singleSelectValuesEdit.subsubpage === '') && subSubPageoptionsEdit?.filter((item) => onlyShow.subsubpage.includes(item.value))?.length > 0) {
       setPopupContentMalert('Please Select Sub Sub Page');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    }
-    
-    else if (!["Remote Employee List", "Remote Employee Details List"]?.includes(singleSelectValuesEdit.subsubpage) && userDocumentEdit.date === '') {
+    } else if (!['Notice Period Apply', 'Employee Login Status']?.includes(singleSelectValuesEdit.subsubpage) && userDocumentEdit.date === '') {
       setPopupContentMalert('Please Select Date');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-    
-    else if (uploadEdit.length == 0) {
+    } else if (uploadEdit.length == 0) {
       setPopupContentMalert('Please Upload Files');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (isNameMatch) {
+    } else if (singleSelectValuesEdit.subsubpage !== "Employee Login Status" && isNameMatch) {
       setPopupContentMalert('Data Already Exists!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
@@ -1782,7 +1661,6 @@ console.log()
 
   //get all Sub vendormasters.
 
-
   //id for login...
   let loginid = localStorage.LoginUserId;
   let authToken = localStorage.APIToken;
@@ -1794,8 +1672,6 @@ console.log()
   useEffect(() => {
     fetchApplyleave();
   }, []);
-
-
 
   useEffect(() => {
     const beforeUnloadHandler = (event) => handleBeforeUnload(event);
@@ -2473,7 +2349,7 @@ console.log()
                 </>
               ) : (
                 <>
-                  <Grid item md={3} xs={12} sm={12}>
+                  <Grid item md={4} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography>Employee Name</Typography>
                       <OutlinedInput id="component-outlined" type="text" value={isUserRoleAccess.companyname} />
@@ -2482,16 +2358,18 @@ console.log()
                 </>
               )}
 
-              <Grid item md={3} sm={12} xs={12}>
+              <Grid item md={4} sm={12} xs={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
                     Module Name <b style={{ color: 'red' }}>*</b>
                   </Typography>
 
                   <Selects
-                    options={rolesNewList[0]?.modulename?.filter(item => onlyShow.module.includes(item))?.map((item) => {
-                      return { label: item, value: item };
-                    })}
+                    options={rolesNewList[0]?.modulename
+                      ?.filter((item) => onlyShow.module.includes(item))
+                      ?.map((item) => {
+                        return { label: item, value: item };
+                      })}
                     styles={colourStyles}
                     value={{
                       label: singleSelectValues.module,
@@ -2516,14 +2394,15 @@ console.log()
                   />
                 </FormControl>
               </Grid>
-              <Grid item md={3} sm={12} xs={12}>
+
+              <Grid item md={4} sm={12} xs={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
                     Sub Module Name<b style={{ color: 'red' }}>*</b>
                   </Typography>
 
                   <Selects
-                    options={subModuleOptions?.filter(item => onlyShow.submodule.includes(item.value))}
+                    options={subModuleOptions?.filter((item) => onlyShow.submodule.includes(item.value))}
                     styles={colourStyles}
                     value={{
                       label: singleSelectValues.submodule,
@@ -2546,12 +2425,13 @@ console.log()
                   />
                 </FormControl>
               </Grid>
-              <Grid item md={3} sm={12} xs={12}>
+
+              <Grid item md={4} sm={12} xs={12}>
                 <FormControl fullWidth size="small">
                   <Typography>Main Page</Typography>
 
                   <Selects
-                    options={mainPageoptions?.filter(item => onlyShow.mainpage.includes(item.value))}
+                    options={mainPageoptions?.filter((item) => onlyShow.mainpage.includes(item.value))}
                     styles={colourStyles}
                     value={{
                       label: singleSelectValues.mainpage,
@@ -2573,12 +2453,13 @@ console.log()
                   />
                 </FormControl>
               </Grid>
-              <Grid item md={3} sm={12} xs={12}>
+
+              <Grid item md={4} sm={12} xs={12}>
                 <FormControl fullWidth size="small">
                   <Typography>Sub Page</Typography>
 
                   <Selects
-                    options={subPageoptions?.filter(item => onlyShow.subpage.includes(item.value))}
+                    options={subPageoptions?.filter((item) => onlyShow.subpage.includes(item.value))}
                     styles={colourStyles}
                     value={{
                       label: singleSelectValues.subpage,
@@ -2597,11 +2478,12 @@ console.log()
                   />
                 </FormControl>
               </Grid>
-              <Grid item md={3} sm={12} xs={12}>
+
+              <Grid item md={4} sm={12} xs={12}>
                 <FormControl fullWidth size="small">
                   <Typography>Sub Sub-Page</Typography>
                   <Selects
-                    options={subSubPageoptions?.filter(item => onlyShow.subsubpage.includes(item.value))}
+                    options={subSubPageoptions?.filter((item) => onlyShow.subsubpage.includes(item.value))}
                     styles={colourStyles}
                     value={{
                       label: singleSelectValues.subsubpage,
@@ -2618,22 +2500,28 @@ console.log()
                   />
                 </FormControl>
               </Grid>
-              {!["Remote Employee List", "Remote Employee Details List"]?.includes(singleSelectValues.subsubpage) && 
-              <Grid item md={3} xs={12} sm={12}>
-                <FormControl fullWidth size="small">
-                  <Typography>
-                    Date<b style={{ color: 'red' }}>*</b>
-                  </Typography>
-                  <OutlinedInput
-                    id="component-outlined"
-                    type="date"
-                    value={userDocument.date}
-                    onChange={(e) => {
-                      setUserDocument({ ...userDocument, date: e.target.value });
-                    }}
-                  />
-                </FormControl>
-              </Grid>}
+              {
+                // singleSelectValues.subsubpage !== 'Notice Period Apply'
+                !['Notice Period Apply', 'Employee Login Status']?.includes(singleSelectValues.subsubpage)
+                && (
+                  <>
+                    <Grid item md={3} xs={12} sm={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          Date<b style={{ color: 'red' }}>*</b>
+                        </Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="date"
+                          value={userDocument.date}
+                          onChange={(e) => {
+                            setUserDocument({ ...userDocument, date: e.target.value });
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                  </>
+                )}
               <Grid item md={12} xs={12} sm={12}></Grid>
               <br />
               <Grid item xs={12} sx={{ margin: '20px 0px 10px 0px' }}>
@@ -3153,9 +3041,11 @@ console.log()
                     </Typography>
 
                     <Selects
-                      options={rolesNewList[0]?.modulename?.filter(item => onlyShow.module.includes(item))?.map((item) => {
-                        return { label: item, value: item };
-                      })}
+                      options={rolesNewList[0]?.modulename
+                        ?.filter((item) => onlyShow.module.includes(item))
+                        ?.map((item) => {
+                          return { label: item, value: item };
+                        })}
                       styles={colourStyles}
                       value={{
                         label: singleSelectValuesEdit.module !== '' ? singleSelectValuesEdit.module : 'Please Select Module',
@@ -3179,7 +3069,6 @@ console.log()
                   </FormControl>
                 </Grid>
 
-
                 <Grid item md={4} sm={12} xs={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
@@ -3187,7 +3076,7 @@ console.log()
                     </Typography>
 
                     <Selects
-                      options={subModuleOptionsEdit?.filter(item => onlyShow.submodule.includes(item.value))}
+                      options={subModuleOptionsEdit?.filter((item) => onlyShow.submodule.includes(item.value))}
                       styles={colourStyles}
                       value={{
                         label: singleSelectValuesEdit.submodule !== '' ? singleSelectValuesEdit.submodule : 'Please Select Sub Module',
@@ -3214,7 +3103,7 @@ console.log()
                     <Typography>Main Page</Typography>
 
                     <Selects
-                      options={mainPageoptionsEdit?.filter(item => onlyShow.mainpage.includes(item.value))}
+                      options={mainPageoptionsEdit?.filter((item) => onlyShow.mainpage.includes(item.value))}
                       styles={colourStyles}
                       value={{
                         label: singleSelectValuesEdit.mainpage !== '' ? singleSelectValuesEdit.mainpage : 'Please Select Main Page',
@@ -3240,7 +3129,7 @@ console.log()
                     <Typography>Sub Page</Typography>
 
                     <Selects
-                      options={subPageoptionsEdit?.filter(item => onlyShow.subpage.includes(item.value))}
+                      options={subPageoptionsEdit?.filter((item) => onlyShow.subpage.includes(item.value))}
                       styles={colourStyles}
                       value={{
                         label: singleSelectValuesEdit.subpage !== '' ? singleSelectValuesEdit.subpage : 'Please Select Sub Page',
@@ -3257,11 +3146,12 @@ console.log()
                     />
                   </FormControl>
                 </Grid>
+
                 <Grid item md={4} sm={12} xs={12}>
                   <FormControl fullWidth size="small">
                     <Typography>Sub Sub-Page</Typography>
                     <Selects
-                      options={subSubPageoptionsEdit?.filter(item => onlyShow.subsubpage.includes(item.value))}
+                      options={subSubPageoptionsEdit?.filter((item) => onlyShow.subsubpage.includes(item.value))}
                       styles={colourStyles}
                       value={{
                         label: singleSelectValuesEdit.subsubpage !== '' ? singleSelectValuesEdit.subsubpage : 'Please Select Sub Sub Page',
@@ -3278,23 +3168,27 @@ console.log()
                     />
                   </FormControl>
                 </Grid>
-                 {!["Remote Employee List", "Remote Employee Details List"]?.includes(singleSelectValuesEdit.subsubpage) && 
-                <Grid item md={4} xs={12} sm={12}>
-                  <FormControl fullWidth size="small">
-                    <Typography>
-                      Date<b style={{ color: 'red' }}>*</b>
-                    </Typography>
-                    <OutlinedInput
-                      id="component-outlined"
-                      type="date"
-                      value={userDocumentEdit.date}
-                      onChange={(e) => {
-                        setUserdocumentEdit({ ...userDocumentEdit, date: e.target.value });
-                      }}
-                    />
-                  </FormControl>
-                </Grid>
-}
+                {
+                  // singleSelectValuesEdit.subsubpage !== 'Notice Period Apply'
+                  !['Notice Period Apply', 'Employee Login Status']?.includes(singleSelectValuesEdit.subsubpage) && (
+                    <>
+                      <Grid item md={4} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>
+                            Date<b style={{ color: 'red' }}>*</b>
+                          </Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="date"
+                            value={userDocumentEdit.date}
+                            onChange={(e) => {
+                              setUserdocumentEdit({ ...userDocumentEdit, date: e.target.value });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+                    </>
+                  )}
                 <br />
 
                 <br />
@@ -3424,7 +3318,7 @@ console.log()
                 <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <Typography variant="h6">Date</Typography>
-                    <Typography>{userDocumentEdit?.date ? moment(userDocumentEdit?.date)?.format("DD-MM-YYYY") : ""}</Typography>
+                    <Typography>{userDocumentEdit?.date ? moment(userDocumentEdit?.date)?.format('DD-MM-YYYY') : ''}</Typography>
                   </FormControl>
                 </Grid>
                 <Grid item md={3} xs={12} sm={12}>

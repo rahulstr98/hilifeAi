@@ -20,6 +20,19 @@ exports.getOverAllSettings = catchAsyncErrors(async (req, res, next) => {
     });
 
 })
+exports.getLogoOverAllSettings = catchAsyncErrors(async (req, res, next) => {
+  try {
+    let overallsettings;
+    overallsettings = await AdminOverAllSettings.find({}, { companylogo: 1, companylogoshape: 1, companyname: 1 });
+    return res.status(200).json({
+      count: overallsettings.length,
+      overallsettings,
+    });
+  } catch (err) {
+    return next(new ErrorHandler('Records not found!', 500));
+  }
+});
+
 
 // Create overallsettings  => /api/createoverallsettings
 exports.createOverAllSettings = catchAsyncErrors(async (req, res, next) => {

@@ -1,7 +1,6 @@
-
-const ErrorHandler = require('../utils/errorhandler');
-const catchAsyncErrors = require('../middleware/catchAsyncError');
-const crypto = require('crypto');
+const ErrorHandler = require("../utils/errorhandler");
+const catchAsyncErrors = require("../middleware/catchAsyncError");
+const crypto = require("crypto");
 const axios = require("axios");
 const multer = require("multer");
 const FormData = require("form-data");
@@ -9,46 +8,52 @@ const QRCode = require("qrcode");
 const fs = require("fs");
 // Configure multer
 const storage = multer.memoryStorage(); // keeps file in memory
-const upload = multer({ storage })
+const upload = multer({ storage });
 const BiometricDeviceManagement = require("../model/modules/BiometricDeviceManagementModel");
 const nodemailer = require("nodemailer");
 const path = require("path");
+const Biouploaduserinfo = require("../model/modules/biometric/uploaduserinfo");
+const BiometricPairedDevicesGrouping = require("../model/modules/biometric/BiometricPairedDevicesGroupingModel");
 
 const performLogin = async (url) => {
-
   if (!url) {
-    return null
+    return null;
   }
   const adminPassword = process.env.BOWER_DEVICE_PASSWORD;
   const hash = crypto.randomUUID();
   const saltedPassword = hash + adminPassword + hash;
-  const hashedPassword = crypto.createHash('md5').update(saltedPassword).digest('hex').toUpperCase();
+  const hashedPassword = crypto
+    .createHash("md5")
+    .update(saltedPassword)
+    .digest("hex")
+    .toUpperCase();
 
   const payload = {
     password: hashedPassword,
-    Hash: hash
+    Hash: hash,
   };
   // console.log(payload ,adminPassword, "url")
   try {
     const response = await axios.post(`${url}/api/User/Login`, payload, {
       headers: {
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     });
 
     const token = response.data.content.token;
     return token; // 🔸 return the token
   } catch (err) {
-    console.log('Login failed:', err.response?.data || err.message);
+    console.log("Login failed:", err.response?.data || err.message);
     throw err;
   }
 };
 
-
 // Get New User Id from the BOWER Biometric Device to add an user
 exports.getNewUserIdList = catchAsyncErrors(async (req, res, next) => {
   try {
-    const deviceIpAddress = await BiometricDeviceManagement.findOne({ biometricserialno: req?.body?.biometricdevicename })
+    const deviceIpAddress = await BiometricDeviceManagement.findOne({
+      biometricserialno: req?.body?.biometricdevicename,
+    });
     const deviceURL = `http://${deviceIpAddress?.biometricassignedip}`;
     const token = await performLogin(deviceURL);
 
@@ -64,9 +69,9 @@ exports.getNewUserIdList = catchAsyncErrors(async (req, res, next) => {
       {},
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
     );
 
@@ -80,13 +85,12 @@ exports.getNewUserIdList = catchAsyncErrors(async (req, res, next) => {
     } else {
       return res.status(400).json({
         success: false,
-        message: result?.error || 'Failed to retrieve NewUserID',
+        message: result?.error || "Failed to retrieve NewUserID",
         errCode: result?.errCode || 10001,
       });
     }
-
   } catch (err) {
-    console.log('Error in getNewUserIdList:', err);
+    console.log("Error in getNewUserIdList:", err);
     return next(new ErrorHandler("Records not found!", 500));
   }
 });
@@ -94,28 +98,46 @@ exports.getNewUserIdList = catchAsyncErrors(async (req, res, next) => {
 // Adding new user to the BOWER Biometric Device
 exports.addNewUserToDevice = catchAsyncErrors(async (req, res, next) => {
   try {
-    const deviceIpAddress = await BiometricDeviceManagement.findOne({ biometricserialno: req?.body?.biometricdevicename })
+    const deviceIpAddress = await BiometricDeviceManagement.findOne({
+      biometricserialno: req?.body?.biometricdevicename,
+    });
     const deviceURL = `http://${deviceIpAddress?.biometricassignedip}`;
     /*const deviceURL = req?.body?.biometricdevicename === "FC-8190H25031119" ? process.env.BOWER_DEVICE_URL : req?.body?.biometricdevicename === "FC-8190H25031124" ? process.env.BOWER_DEVICE_URL2 : "";*/
 
     const token = await performLogin(deviceURL);
     if (!token) {
-      return res.status(401).json({ success: false, message: "Token not received" });
+      return res
+        .status(401)
+        .json({ success: false, message: "Token not received" });
     }
 
     const rawPeopleJson = req.body.PeopleJson;
     // console.log(rawPeopleJson , "rawPeopleJson")
     const base64Photo = req.file; // This is base64 string
     if (!rawPeopleJson) {
-      return res.status(400).json({ success: false, message: "PeopleJson is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "PeopleJson is required" });
     }
-console.log(rawPeopleJson?.photo?.slice(0,20) , rawPeopleJson?.Photo?.slice(0,20) , "base64Photo")
-    const response = await addNewUserToDevice(rawPeopleJson, base64Photo, token, deviceURL); // Use `await` here
+    console.log(
+      rawPeopleJson?.photo?.slice(0, 20),
+      rawPeopleJson?.Photo?.slice(0, 20),
+      "base64Photo"
+    );
+    const response = await addNewUserToDevice(
+      rawPeopleJson,
+      base64Photo,
+      token,
+      deviceURL
+    ); // Use `await` here
 
     if (response.success) {
       return res.status(200).json({ success: true, data: response.content });
     } else {
-      return res.status(500).json({ success: false, message: response.error || "User is not Added" });
+      return res.status(500).json({
+        success: false,
+        message: response.error || "User is not Added",
+      });
     }
   } catch (err) {
     console.error("Error in addNewUserToDevice:", err);
@@ -125,32 +147,32 @@ console.log(rawPeopleJson?.photo?.slice(0,20) , rawPeopleJson?.Photo?.slice(0,20
 
 function addNewUserToDevice(peopleObj, photoPath, token, deviceurl) {
   const form = new FormData();
-  form.append('PeopleJson', JSON.stringify(peopleObj));
+  form.append("PeopleJson", JSON.stringify(peopleObj));
   if (photoPath && photoPath.buffer) {
-    form.append('Photo', photoPath.buffer, {
+    form.append("Photo", photoPath.buffer, {
       filename: photoPath.originalname,
-      contentType: photoPath.mimetype
+      contentType: photoPath.mimetype,
     });
   }
   const headers = {
     ...form.getHeaders(),
-    'Authorization': `Bearer ${token}`, // 🔑 Authorization is required
-    'Content-Length': form.getLengthSync(), // Optional but helps
+    Authorization: `Bearer ${token}`, // 🔑 Authorization is required
+    "Content-Length": form.getLengthSync(), // Optional but helps
   };
-  return axios.post(`${deviceurl}/api/People/New`, form, {
-    headers,
-    timeout: 10000, // Optional: set timeout
-    maxBodyLength: Infinity,
-    maxContentLength: Infinity
-  })
-    .then(res => {
+  return axios
+    .post(`${deviceurl}/api/People/New`, form, {
+      headers,
+      timeout: 10000, // Optional: set timeout
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
+    })
+    .then((res) => {
       return { success: res.data?.result, content: res.data?.content };
     })
-    .catch(err => {
-      console.error('Error:', err.response?.data || err.message);
+    .catch((err) => {
+      console.error("Error:", err.response?.data || err.message);
       return { success: false, error: err.response?.data || err.message };
     });
-
 }
 
 // Remote Commands from Biometric Remote Control UI page
@@ -162,24 +184,18 @@ exports.sendCommandToBoweeDevice = async (command, url) => {
         success: false,
         message: "Token not received",
       });
-
     }
-    const response = await axios.post(
-      `${url}/api/Device/Remote`,
-      command,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    return response?.status === 200
+    const response = await axios.post(`${url}/api/Device/Remote`, command, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response?.status === 200;
+  } catch (error) {
+    return false;
   }
-  catch (error) {
-    return false
-  }
-}
+};
 
 // Delete the user from HRMS to the DEVICE
 exports.deleteSingleBoweeUser = async (userid, url) => {
@@ -192,24 +208,19 @@ exports.deleteSingleBoweeUser = async (userid, url) => {
       });
     }
     const command = {
-      "UserIDs": [String(userid)]
-    }
-    const response = await axios.post(
-      `${url}/api/People/Delete`,
-      command,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    return response?.status === 200
+      UserIDs: [String(userid)],
+    };
+    const response = await axios.post(`${url}/api/People/Delete`, command, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response?.status === 200;
+  } catch (error) {
+    return false;
   }
-  catch (error) {
-    return false
-  }
-}
+};
 
 exports.deleteMultipleVisitor = async (userid, url) => {
   try {
@@ -221,25 +232,19 @@ exports.deleteMultipleVisitor = async (userid, url) => {
       });
     }
     const command = {
-      "UserIDs": userid
-    }
-    const response = await axios.post(
-      `${url}/api/People/Delete`,
-      command,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-    return response?.status === 200
+      UserIDs: userid,
+    };
+    const response = await axios.post(`${url}/api/People/Delete`, command, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response?.status === 200;
+  } catch (error) {
+    return false;
   }
-  catch (error) {
-    return false
-  }
-}
-
+};
 
 exports.getUserDetailsFromBoweeDevice = async (id, url) => {
   try {
@@ -249,29 +254,23 @@ exports.getUserDetailsFromBoweeDevice = async (id, url) => {
         success: false,
         message: "Token not received",
       });
-
     }
 
     let command = {
-      "UserID": String(id)
-    }
-    const response = await axios.post(
-      `${url}/api/People/GetDetail`,
-      command,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+      UserID: String(id),
+    };
+    const response = await axios.post(`${url}/api/People/GetDetail`, command, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
 
-    return response?.data?.content
+    return response?.data?.content;
+  } catch (error) {
+    return error?.message;
   }
-  catch (error) {
-    return error?.message
-  }
-}
+};
 
 exports.sendUserDetailsToDevice = async (rawPeopleJson, base64Photo, url) => {
   try {
@@ -281,21 +280,23 @@ exports.sendUserDetailsToDevice = async (rawPeopleJson, base64Photo, url) => {
         success: false,
         message: "Token not received",
       };
-
     }
-    const response = await addNewUserToDevice(rawPeopleJson, base64Photo, token, url); // Use `await` here
+    const response = await addNewUserToDevice(
+      rawPeopleJson,
+      base64Photo,
+      token,
+      url
+    ); // Use `await` here
     if (response.success) {
-      return response.success
+      return response.success;
     } else {
-      return false
+      return false;
     }
+  } catch (error) {
+    console.log(error, "error");
+    return false;
   }
-  catch (error) {
-    console.log(error, "error")
-    return false
-  }
-}
-
+};
 
 // exports.getAttendanceDetails = catchAsyncErrors(async (req, res, next) => {
 //   try {
@@ -360,9 +361,6 @@ exports.sendUserDetailsToDevice = async (rawPeopleJson, base64Photo, url) => {
 //   }
 // });
 
-
-
-
 // Get Attendance Details
 exports.getAttendanceDetails = async (url) => {
   try {
@@ -374,13 +372,13 @@ exports.getAttendanceDetails = async (url) => {
     }
 
     const nowInSeconds = Math.floor(Date.now() / 1000); // current time in seconds
-    const oneHourAgoInSeconds = nowInSeconds - 1440000;     // 2 hours ago
+    const oneHourAgoInSeconds = nowInSeconds - 7200; // 2 hours ago
 
     const command = {
       PageIndex: 1,
       PageSize: 1000,
       BeginDate: oneHourAgoInSeconds,
-      EndDate: nowInSeconds
+      EndDate: nowInSeconds,
     };
 
     const devicename = await axios.get(`${url}/api/GetDeviceSN`);
@@ -389,54 +387,55 @@ exports.getAttendanceDetails = async (url) => {
       command,
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       }
     );
 
     const result = response?.data;
     // console.log(result?.content?.DataList , "result?.content?.DataList")
     if (result?.result === true) {
-      const ArrayRecords = result?.content?.DataList?.map(item => ({
+      const ArrayRecords = result?.content?.DataList?.map((item) => ({
         biometricUserIDC: item.UserID,
         clockDateTimeD: formatUnixToDateTime(item.RecordDate),
         verifyC: getVerificationMethod(item.RecordType),
         staffNameC: item.Name,
-        cloudIDC: devicename?.data?.result ? devicename?.data?.content : ""
+        cloudIDC: devicename?.data?.result ? devicename?.data?.content : "",
       }));
-      const ArrayUnRegisterRecords = result?.content?.DataList?.filter(data => data?.UserID === "0")?.map(item => ({
+      const ArrayUnRegisterRecords = result?.content?.DataList?.filter(
+        (data) => data?.UserID === "0"
+      )?.map((item) => ({
         biometricUserIDC: item.UserID,
         dateformat: formatUnixToDate(item.RecordDate),
         clockDateTimeD: formatUnixToDateTime(item.RecordDate),
         verifyC: getVerificationMethod(item.RecordType),
         staffNameC: item.Name,
         cloudIDC: devicename?.data?.result ? devicename?.data?.content : "",
-        photoC: `${url}${item.Photo}`
+        photoC: `${url}${item.Photo}`,
       }));
 
       return {
         success: true,
         DataList: result.content,
         ArrayRecords,
-        ArrayUnRegisterRecords
+        ArrayUnRegisterRecords,
       };
     } else {
       return {
         success: false,
-        message: result?.error || 'Failed to retrieve NewUserID',
-        errCode: result?.errCode || 10001
+        message: result?.error || "Failed to retrieve NewUserID",
+        errCode: result?.errCode || 10001,
       };
     }
   } catch (err) {
-    console.error('Error in fetchAttendanceDetails:', err);
+    console.error("Error in fetchAttendanceDetails:", err);
     return {
       success: false,
-      message: "Records not found!"
+      message: "Records not found!",
     };
   }
 };
-
 
 exports.getUserListForAllUsers = async (url) => {
   try {
@@ -458,19 +457,15 @@ exports.getUserListForAllUsers = async (url) => {
     do {
       const command = {
         PageIndex: pageIndex,
-        PageSize: pageSize
+        PageSize: pageSize,
       };
 
-      const response = await axios.post(
-        `${url}/api/People/Search`,
-        command,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await axios.post(`${url}/api/People/Search`, command, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       const result = response?.data;
 
@@ -483,20 +478,20 @@ exports.getUserListForAllUsers = async (url) => {
           totalPages = Math.ceil(totalCount / pageSize);
         }
 
-        const formattedData = dataList.map(item => ({
+        const formattedData = dataList.map((item) => ({
           biometricUserIDC: item.UserID,
           downloadedFaceTemplateN: item?.photo ? 1 : 0,
           privilegeC: item?.AccessType === 1 ? "Administrator" : "User",
           isFaceEnrolledC: item?.photo ? "Yes" : "No",
           isEnabledC: item?.OpenTimes === 65535 ? "Yes" : "No",
           staffNameC: item.Name,
-          cloudIDC: deviceID
+          cloudIDC: deviceID,
         }));
 
         allUsers.push(...formattedData);
         pageIndex++;
       } else {
-        console.error('Error in response:', result?.error);
+        console.error("Error in response:", result?.error);
         break;
       }
     } while (pageIndex <= totalPages);
@@ -504,17 +499,16 @@ exports.getUserListForAllUsers = async (url) => {
     return {
       success: true,
       DataList: allUsers,
-      TotalCount: allUsers.length
+      TotalCount: allUsers.length,
     };
   } catch (err) {
-    console.error('Error in getUserListForAllUsers:', err);
+    console.error("Error in getUserListForAllUsers:", err);
     return {
       success: false,
-      message: "Records not found!"
+      message: "Records not found!",
     };
   }
 };
-
 
 exports.getUserListForAllVisitors = async (url) => {
   try {
@@ -536,19 +530,15 @@ exports.getUserListForAllVisitors = async (url) => {
     do {
       const command = {
         PageIndex: pageIndex,
-        PageSize: pageSize
+        PageSize: pageSize,
       };
 
-      const response = await axios.post(
-        `${url}/api/People/Search`,
-        command,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await axios.post(`${url}/api/People/Search`, command, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       const result = response?.data;
 
@@ -562,8 +552,10 @@ exports.getUserListForAllVisitors = async (url) => {
         }
 
         const formattedData = dataList
-          ?.filter(data => data?.ExpirationDate < Math.floor(Date.now() / 1000))
-          .map(item => ({
+          ?.filter(
+            (data) => data?.ExpirationDate < Math.floor(Date.now() / 1000)
+          )
+          .map((item) => ({
             biometricUserIDC: item.UserID,
             downloadedFaceTemplateN: item?.photo ? 1 : 0,
             privilegeC: item?.AccessType === 1 ? "Administrator" : "User",
@@ -577,7 +569,7 @@ exports.getUserListForAllVisitors = async (url) => {
         allUsers.push(...formattedData);
         pageIndex++;
       } else {
-        console.error('Error in response:', result?.error);
+        console.error("Error in response:", result?.error);
         break;
       }
     } while (pageIndex <= totalPages);
@@ -585,39 +577,44 @@ exports.getUserListForAllVisitors = async (url) => {
     return {
       success: true,
       DataList: allUsers,
-      TotalCount: allUsers.length
+      TotalCount: allUsers.length,
     };
   } catch (err) {
-    console.error('Error in getUserListForAllUsers:', err);
+    console.error("Error in getUserListForAllUsers:", err);
     return {
       success: false,
-      message: "Records not found!"
+      message: "Records not found!",
     };
   }
 };
 
-
-
 // Helper to format Unix timestamp (seconds) to dd-MM-yyyy HH:mm:ss
 function formatUnixToDateTime(timestamp) {
   const date = new Date(timestamp * 1000); // Convert to milliseconds
-  const pad = n => n.toString().padStart(2, '0');
-  return `${pad(date.getDate())}-${pad(date.getMonth() + 1)}-${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  const pad = (n) => n.toString().padStart(2, "0");
+  return `${pad(date.getDate())}-${pad(
+    date.getMonth() + 1
+  )}-${date.getFullYear()} ${pad(date.getHours())}:${pad(
+    date.getMinutes()
+  )}:${pad(date.getSeconds())}`;
 }
 function formatUnixToDate(timestamp) {
   const date = new Date(timestamp * 1000); // Convert to milliseconds
-  const pad = n => n.toString().padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+  const pad = (n) => n.toString().padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}`;
 }
-
 
 function getEndOfTodayUnix(date) {
   // Convert to Date object if it's not already one
   const now = date ? new Date(date) : new Date();
-console.log(now , "now")
+  console.log(now, "now");
   if (isNaN(now.getTime())) {
     // Invalid date fallback
-    console.warn("Invalid date passed to getEndOfTodayUnix, using current date instead.");
+    console.warn(
+      "Invalid date passed to getEndOfTodayUnix, using current date instead."
+    );
     return Math.floor(new Date().setHours(23, 59, 59, 999) / 1000);
   }
 
@@ -625,16 +622,15 @@ console.log(now , "now")
     now.getFullYear(),
     now.getMonth(),
     now.getDate(),
-    23, 59, 59
+    23,
+    59,
+    59
   );
 
   return Math.floor(endOfDay.getTime() / 1000);
 }
 
-
 const nowInSeconds = Math.floor(Date.now() / 1000);
-
-
 
 function encodeWrinfo(userId, time) {
   const text = `user_id=${userId}_time=${time}`;
@@ -803,7 +799,6 @@ console.log(encoded);
 //         }
 //       );
 
-
 //       return {
 //         success: true,
 //         content: res.data?.content,
@@ -885,34 +880,61 @@ console.log(encoded);
 //   console.log("Email sent successfully with embedded QR codes in grid layout!");
 // }
 
-
-
-
-
-
-
 // Helper to convert RecordType to verifyC
-
 
 exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
   try {
     let deviceSerials = [];
-    // req.body.deviceSerials || [
-    //   "FC-8190H25065069",
-    //   "FC-8245H25047289",
-    //   // "FC-8245H25047260"
-    // ];
-    const { company, branch } = req?.body;
-    console.log(req?.body , "body")
-    const BioDeviceDetails = await BiometricDeviceManagement.find({ company, branch, isVisitor: true }, { biometricserialno: 1 });
-     console.log(BioDeviceDetails?.length , "BioDeviceDetails")
+    const { company, branch, unit, floor, area } = req?.body;
+    const clean = (arr) => (Array.isArray(arr) ? arr.filter(Boolean) : []);
+    const matchCondition = {
+      ...(clean(company).length ? { company: { $in: clean(company) } } : {}),
+      ...(clean(branch).length ? { branch: { $in: clean(branch) } } : {}),
+      ...(clean(unit).length ? { unit: { $in: clean(unit) } } : {}),
+      ...(clean(floor).length ? { floor: { $in: clean(floor) } } : {}),
+      ...(clean(area).length ? { area: { $in: clean(area) } } : {}),
+    };
+
+    console.log(matchCondition, "matchCondition");
+    const BioDevicePairedDetails = await BiometricPairedDevicesGrouping.find(
+      {
+        company: { $in: company },
+        branch: { $in: branch },
+        $or: [
+          { exitinone: true },
+          { exitoutone: true },
+          { exitinoutone: true },
+          { exitintwo: true },
+          { exitouttwo: true },
+          { exitinouttwo: true },
+        ],
+      },
+      { paireddeviceone: 1, paireddevicetwo: 1 }
+    );
+
+    const pairedDevices = BioDevicePairedDetails.flatMap((item) => [
+      item.paireddeviceone,
+      item.paireddevicetwo,
+    ]).filter(Boolean); // remove null/undefined
+
+    console.log(pairedDevices, "pairedDevices");
+    const BioDeviceDetails = await BiometricDeviceManagement.find(
+      {
+        ...matchCondition,
+        $or: [
+          { isVisitor: true },
+          { biometriccommonname: { $in: pairedDevices } },
+        ],
+      },
+      { biometricserialno: 1 }
+    );
+    // console.log(BioDeviceDetails?.length, "BioDeviceDetails");
     if (BioDeviceDetails?.length > 0) {
-      deviceSerials = BioDeviceDetails?.map(data => data?.biometricserialno)
+      deviceSerials = BioDeviceDetails?.map((data) => data?.biometricserialno);
     }
-    console.log(deviceSerials , "deviceSerials")
+    console.log(deviceSerials, "deviceSerials");
     const base64Photo = req.file; // if photo uploaded
     const results = [];
-
     for (const serial of deviceSerials) {
       let attempt = 0;
       let success = false;
@@ -921,7 +943,9 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
       while (attempt < 2 && !success) {
         attempt++;
         try {
-          const deviceIpAddress = await BiometricDeviceManagement.findOne({ biometricserialno: serial });
+          const deviceIpAddress = await BiometricDeviceManagement.findOne({
+            biometricserialno: serial,
+          });
           if (!deviceIpAddress) {
             results.push({ serial, success: false, error: "Device not found" });
             break;
@@ -931,7 +955,11 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
           const token = await performLogin(deviceURL);
 
           if (!token) {
-            results.push({ serial, success: false, error: "Token not received" });
+            results.push({
+              serial,
+              success: false,
+              error: "Token not received",
+            });
             break;
           }
 
@@ -940,7 +968,10 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
             `${deviceURL}/api/People/GetNewID`,
             {},
             {
-              headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
             }
           );
           const uniqueUserID = useridRes.data?.content?.NewUserID;
@@ -950,128 +981,253 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
             Name: req.body.name || "visitor1",
             Job: req.body.job || "Staff",
             AccessType: 0,
-            OpenTimes: 65535,
+            OpenTimes: 0,
             Photo: req?.body.photo,
-            ExpirationDate: expirationToday
+            // ExpirationDate: expirationToday
           };
 
           // Add the visitor to the device
-          const response = await addVisitorToDeviceSimple(PeopleJson, base64Photo, token, deviceURL);
+          const response = await addVisitorToDeviceSimple(
+            PeopleJson,
+            base64Photo,
+            token,
+            deviceURL
+          );
+
+          const BioUploadUserInfo = {
+            cloudIDC: serial,
+            biometricUserIDC: uniqueUserID,
+            staffNameC: req.body.name || "visitor1",
+            isFaceEnrolledC: req?.body.photo ? "Yes" : "No",
+            privilegeC: "User",
+            isEnabledC: "No",
+            status: "Visitor",
+            visitorintime: req?.body?.intime,
+            visitorCreatedDate: req?.body?.expirydate,
+            startdate: req?.body?.expirydate,
+            expirytime: addHoursWithLimit(req?.body?.intime, 4),
+            visitoremail: req?.body?.visitoremail,
+            visitorcontactnumber: req?.body?.visitorcontactnumber,
+            visitorid: req?.body?.visitorid,
+          };
 
           if (response.success) {
             success = true;
+            console.log(success, "success");
+            const created = await Biouploaduserinfo.findOneAndUpdate(
+              {
+                cloudIDC: serial,
+                biometricUserIDC: uniqueUserID,
+                startdate: req?.body?.expirydate,
+              },
+              { $setOnInsert: BioUploadUserInfo },
+              { new: true, upsert: true }
+            );
+
             results.push({ serial, success: true, data: response.content });
           } else {
             lastError = response.error || "User not added";
             if (attempt < 2) continue;
             results.push({ serial, success: false, error: lastError });
+            // const created = await Biouploaduserinfo.findOneAndUpdate(
+            //   {
+            //     cloudIDC: serial,
+            //     biometricUserIDC: uniqueUserID,
+            //   },
+            //   { $setOnInsert: BioUploadUserInfo },
+            //   { new: true, upsert: true }
+            // );
           }
-
         } catch (err) {
           lastError = err.message;
-          if (attempt < 2 && (err.response?.status === 401 || err.message.includes("token"))) continue;
+          if (
+            attempt < 2 &&
+            (err.response?.status === 401 || err.message.includes("token"))
+          )
+            continue;
           results.push({ serial, success: false, error: lastError });
         }
       }
     }
-
-    const allSucceeded = results.every(r => r.success);
-    return res.status(allSucceeded ? 200 : 207).json({ success: allSucceeded, results });
-
+    const allSucceeded = results.every((r) => r.success);
+    return res
+      .status(allSucceeded ? 200 : 207)
+      .json({ success: allSucceeded, results });
   } catch (err) {
     console.error("Error in addNewVisitorToDevice:", err.message);
     return next(new ErrorHandler("Internal server error", 500));
   }
 });
 
+function addHoursWithLimit(time, hoursToAdd) {
+  // Parse input time
+  const [h, m] = time.split(":").map(Number);
+
+  // Create a today date with the given time
+  const date = new Date();
+  date.setHours(h, m, 0, 0);
+
+  // Add hours
+  date.setHours(date.getHours() + hoursToAdd);
+
+  // Cut-off time - 18:00 today
+  const cutoff = new Date();
+  cutoff.setHours(18, 0, 0, 0);
+
+  // If calculated time < 18:00 → return "18:00"
+  if (date < cutoff) {
+    return "18:00";
+  }
+
+  // Otherwise return the new calculated time (HH:mm)
+  const hh = date.getHours().toString().padStart(2, "0");
+  const mm = date.getMinutes().toString().padStart(2, "0");
+
+  return `${hh}:${mm}`;
+}
+
 // --- Simplified function to add visitor to a device ---
-async function addVisitorToDeviceSimple(peopleObj, photoPath, token, deviceURL) {
+async function addVisitorToDeviceSimple(
+  peopleObj,
+  photoPath,
+  token,
+  deviceURL
+) {
   try {
     const form = new FormData();
-    form.append('PeopleJson', JSON.stringify(peopleObj));
+    form.append("PeopleJson", JSON.stringify(peopleObj));
 
     if (photoPath && photoPath.buffer) {
-      form.append('Photo', photoPath.buffer, {
+      form.append("Photo", photoPath.buffer, {
         filename: photoPath.originalname,
-        contentType: photoPath.mimetype
+        contentType: photoPath.mimetype,
       });
     }
 
     const headers = {
       ...form.getHeaders(),
-      'Authorization': `Bearer ${token}`,
-      'Content-Length': form.getLengthSync()
+      Authorization: `Bearer ${token}`,
+      "Content-Length": form.getLengthSync(),
     };
 
     const res = await axios.post(`${deviceURL}/api/People/New`, form, {
       headers,
       timeout: 10000,
       maxBodyLength: Infinity,
-      maxContentLength: Infinity
+      maxContentLength: Infinity,
     });
 
     if (res.data?.result) {
       return { success: true, content: res.data?.content };
     } else {
-      return { success: false, content: res.data?.content || "People/New failed" };
+      return {
+        success: false,
+        content: res.data?.content || "People/New failed",
+      };
     }
-
   } catch (err) {
-    console.error('Error adding visitor:', err.response?.data || err.message);
+    console.error("Error adding visitor:", err.response?.data || err.message);
     return { success: false, error: err.response?.data || err.message };
   }
 }
 
-
 function getVerificationMethod(recordType) {
   switch (recordType) {
-    case 1: return "Card";
-    case 2: return "Fingerprint";
-    case 3: return "FACE";
-    case 4: return "Card + Fingerprint";
-    case 5: return "FACE + Fingerprint";
-    case 6: return "Card + FACE";
-    case 7: return "Card + Password";
-    case 8: return "FACE + Password";
-    case 9: return "Fingerprint + Password";
-    case 10: return "Password verification (User ID + Password)";
-    case 11: return "Card + Fingerprint + Password";
-    case 12: return "Card + FACE + Password";
-    case 13: return "Fingerprint + FACE + Password";
-    case 14: return "Card + Fingerprint + FACE";
-    case 15: return "Repeat Verification";
-    case 16: return "Expired";
-    case 17: return "Opening Period Expired";
-    case 18: return "Not Open on Holidays";
-    case 19: return "Unregistered User";
-    case 20: return "Detection Lock";
-    case 21: return "Valid Times Used Up";
-    case 22: return "Locked - Prohibit Door Open";
-    case 23: return "Reported Lost Card";
-    case 24: return "Blacklist Card";
-    case 25: return "Open Door Without Verification";
-    case 26: return "Card Swiping Disabled";
-    case 27: return "Fingerprint Disabled";
-    case 28: return "Controller Expired";
-    case 29: return "Valid - Expiry Soon";
-    case 30: return "High Body Temp - Denied";
-    case 31: return "Visitor Password";
-    case 32: return "QR Code";
-    case 33: return "User Added via Device";
-    case 34: return "User Modified via Device";
-    case 35: return "User Deleted via Device";
-    case 36: return "Palmprint";
-    case 37: return "Card + Palmprint + FACE";
-    case 38: return "Palmprint + Password";
-    case 39: return "Card + Palmprint";
-    case 40: return "FACE + Palmprint";
-    case 41: return "Card + Palmprint + Password";
-    case 42: return "Palmprint + FACE + Password";
-    case 43: return "Fingerprint + Palmprint + FACE";
-    case 44: return "Combined Verification - Wait";
-    case 45: return "Combined Verification Failed";
-    case 46: return "Combined Verification Completed";
-    case 47: return "Person + Identity Card";
-    default: return "Unknown";
+    case 1:
+      return "Card";
+    case 2:
+      return "Fingerprint";
+    case 3:
+      return "FACE";
+    case 4:
+      return "Card + Fingerprint";
+    case 5:
+      return "FACE + Fingerprint";
+    case 6:
+      return "Card + FACE";
+    case 7:
+      return "Card + Password";
+    case 8:
+      return "FACE + Password";
+    case 9:
+      return "Fingerprint + Password";
+    case 10:
+      return "Password verification (User ID + Password)";
+    case 11:
+      return "Card + Fingerprint + Password";
+    case 12:
+      return "Card + FACE + Password";
+    case 13:
+      return "Fingerprint + FACE + Password";
+    case 14:
+      return "Card + Fingerprint + FACE";
+    case 15:
+      return "Repeat Verification";
+    case 16:
+      return "Expired";
+    case 17:
+      return "Opening Period Expired";
+    case 18:
+      return "Not Open on Holidays";
+    case 19:
+      return "Unregistered User";
+    case 20:
+      return "Detection Lock";
+    case 21:
+      return "Valid Times Used Up";
+    case 22:
+      return "Locked - Prohibit Door Open";
+    case 23:
+      return "Reported Lost Card";
+    case 24:
+      return "Blacklist Card";
+    case 25:
+      return "Open Door Without Verification";
+    case 26:
+      return "Card Swiping Disabled";
+    case 27:
+      return "Fingerprint Disabled";
+    case 28:
+      return "Controller Expired";
+    case 29:
+      return "Valid - Expiry Soon";
+    case 30:
+      return "High Body Temp - Denied";
+    case 31:
+      return "Visitor Password";
+    case 32:
+      return "QR Code";
+    case 33:
+      return "User Added via Device";
+    case 34:
+      return "User Modified via Device";
+    case 35:
+      return "User Deleted via Device";
+    case 36:
+      return "Palmprint";
+    case 37:
+      return "Card + Palmprint + FACE";
+    case 38:
+      return "Palmprint + Password";
+    case 39:
+      return "Card + Palmprint";
+    case 40:
+      return "FACE + Palmprint";
+    case 41:
+      return "Card + Palmprint + Password";
+    case 42:
+      return "Palmprint + FACE + Password";
+    case 43:
+      return "Fingerprint + Palmprint + FACE";
+    case 44:
+      return "Combined Verification - Wait";
+    case 45:
+      return "Combined Verification Failed";
+    case 46:
+      return "Combined Verification Completed";
+    case 47:
+      return "Person + Identity Card";
+    default:
+      return "Unknown";
   }
 }

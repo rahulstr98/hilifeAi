@@ -353,16 +353,53 @@ exports.getFilteredUserdocumentuploads = catchAsyncErrors(async (req, res, next)
       employeename,
       // date: { $in: pastThreeDays },
     };
-    if (subsubpagename !== 'Notice Period Apply') {
-      query.date = { $in: pastThreeDays };
-    }
+    // if (subsubpagename !== 'Notice Period Apply') {
+    //   query.date = { $in: pastThreeDays };
+    // }
 
+    console.log(query  , "query")
     const userdocumentuploads = await Userdocumentupload.find(query).lean();
 
     if (!userdocumentuploads || userdocumentuploads.length === 0) {
       return res.status(200).json({
         success: false,
         userdocumentuploads: [],
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      userdocumentuploads,
+    });
+  } catch (err) {
+    console.error(err);
+    return next(new ErrorHandler('Error fetching records', 500));
+  }
+});
+exports.getFilteredUserdocumentuploadsLoginStatus = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { modulename, submodulename, mainpagename, subpagename, subsubpagename, employeename } = req.body;
+
+    const query = {
+      modulename,
+      submodulename,
+      mainpagename,
+      subpagename,
+      subsubpagename,
+      employeename,
+      // date: { $in: pastThreeDays },
+    };
+
+    console.log(query  , "query")
+    const userdocumentuploads = await Userdocumentupload
+  .findOne(query)
+  .sort({ _id: -1 })   // newest first
+  .lean();
+
+    if (!userdocumentuploads) {
+      return res.status(200).json({
+        success: false,
+        userdocumentuploads:{},
       });
     }
 

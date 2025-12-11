@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const InteractorPurposeSchema = new Schema({
   name: {
@@ -7,7 +7,7 @@ const InteractorPurposeSchema = new Schema({
   },
   prevprojectname: {
     type: String,
-    required: false
+    required: false,
   },
   addcandidate: {
     type: Boolean,
@@ -20,8 +20,8 @@ const InteractorPurposeSchema = new Schema({
         required: false,
       },
       date: {
-        type: String,
-        required: false,
+        type: Date,
+        default: Date.now,
       },
     },
   ],
@@ -32,8 +32,8 @@ const InteractorPurposeSchema = new Schema({
         required: false,
       },
       date: {
-        type: String,
-        required: false,
+        type: Date,
+        default: Date.now,
       },
     },
   ],
@@ -42,4 +42,4 @@ const InteractorPurposeSchema = new Schema({
     default: Date.now,
   },
 });
-module.exports = mongoose.model("interactorpurpose", InteractorPurposeSchema);
+module.exports = mongoose.model('interactorpurpose', InteractorPurposeSchema);
