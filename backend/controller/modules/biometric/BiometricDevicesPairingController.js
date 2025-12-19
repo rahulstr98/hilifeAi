@@ -80,6 +80,28 @@ exports.getAllBiometricDevicesAreaBased = catchAsyncErrors(async (req, res, next
     return next(new ErrorHandler("Records not found!", 500));
   }
 })
+exports.getAllBiometricDevicesAreaRfidBased = catchAsyncErrors(async (req, res, next) => {
+  let biodevices;
+  const { company, branch, unit, floor, area } = req?.body
+  try {
+    const query ={
+      company: {$in: company},
+      branch: {$in: branch},
+      unit: {$in: unit},
+      floor: {$in: floor},
+      area:area,
+    }
+    biodevices = await BiometricDeviceManagement.find(query).lean();
+
+    return res.status(200).json({
+      biodevices
+    });
+
+  } catch (err) {
+    console.log(err, "err")
+    return next(new ErrorHandler("Records not found!", 500));
+  }
+})
 exports.getAllBiometricPairedDevicesAreaBased = catchAsyncErrors(async (req, res, next) => {
   let biodevices;
   const { company, branch, unit, floor, area } = req?.body

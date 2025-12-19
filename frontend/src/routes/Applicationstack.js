@@ -902,6 +902,7 @@ const BiometricDeviceManagement = React.lazy(() => import("../pages/biometric/Bi
 const BiometricDevicesPairing = React.lazy(() => import("../pages/biometric/BiometricDevicesPairing.js"));
 const Biometricremotecontrol = React.lazy(() => import('../pages/biometric/Biometricremotecontrol.js'));
 const Biometricbrandmodel = React.lazy(() => import('../pages/biometric/Biometricbrandmodel'));
+const PendingReleaveExitList = React.lazy(() => import('../pages/hr/noticeperiod/PendingReleaveExitList.js'));
 
 
 
@@ -1902,7 +1903,7 @@ const App = () => {
             <Route path="/biometricdevicespairing" element={<BiometricDevicesPairing />} />
             <Route path="/biometricremotecontrol" element={<Biometricremotecontrol />} />
             <Route path="/biometric/brandmodel" element={<Biometricbrandmodel />} />
-
+  <Route path="/updatepages/pendingreleaveexitlist" element={<PendingReleaveExitList />} />
 
             <Route path="/biometricdeviceofflinehistory" element={<BiometricDeviceOfflineHistory />} />
             <Route path="/biometricstatuslist" element={<BiometricstatusList />} />

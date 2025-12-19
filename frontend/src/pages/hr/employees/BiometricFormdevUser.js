@@ -151,7 +151,7 @@ const BiometricFormdevUser = ({ employee, BiometricDeviceOptions, setEmployee, a
     const fetchBioInfoStatus = async (device) => {
         try {
 
-            if (!["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(device.brand)) {
+            if (!["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(device.brand)) {
                 await axios.post(SERVICE.BIOMETRIC_GET_SEND_COMMAND, {
                     headers: { Authorization: `Bearer ${auth.APIToken}` },
                     deviceCommandN: "2",
@@ -206,7 +206,7 @@ const BiometricFormdevUser = ({ employee, BiometricDeviceOptions, setEmployee, a
         else {
 
             setLoadingBiometric(true);
-            if (["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(deviceDetails?.brand)) {
+            if (["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(deviceDetails?.brand)) {
                 setLoadingBiometric(false);
                 fetchUsersAvailability(deviceDetails, employee?.biometricdevicename);
             } else {
@@ -244,7 +244,7 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
 
     const fetchUsersAvailability = async (device, biometricdevicename) => {
         try {
-            if (["Brand1", "Brand2", "Brand3"]?.includes(device.brand)) {
+            if (["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan"]?.includes(device.brand)) {
                 const [res] = await Promise.all([
                     axios.post(SERVICE.BIOMETRIC_USER_ID_CHECK, {
                         headers: { Authorization: `Bearer ${auth.APIToken}` }, device
@@ -342,12 +342,12 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
             setPopupSeverityMalert("warning");
             handleClickOpenPopupMalert();
         }
-        else if (deviceDetails?.brand === "Brand1" && employee?.biometricrole === "Administrator" && !documentFiles) {
+        else if (deviceDetails?.brand === "Bio-Socket" && employee?.biometricrole === "Administrator" && !documentFiles) {
             setPopupContentMalert("Please Add Face Image");
             setPopupSeverityMalert("warning");
             handleClickOpenPopupMalert();
         }
-        else if (deviceDetails?.brand === "Brand3") {
+        else if (deviceDetails?.brand === "Bowee-Chandichan") {
             setPopupContentMalert("Currently Not is Use");
             setPopupSeverityMalert("warning");
             handleClickOpenPopupMalert();
@@ -363,7 +363,7 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
             handleClickOpenPopupMalert();
         }
         else {
-            if (["Brand1", "Brand2", "Brand3"]?.includes(deviceDetails.brand)) {
+            if (["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan"]?.includes(deviceDetails.brand)) {
                 handleAddNewBiometricDevices();
             }
             else if (["Bowee"]?.includes(deviceDetails.brand)) {
@@ -489,7 +489,7 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
             setBiometricPostDevice({
                 biometricUserIDC: BiometricId,
                 cloudIDC: employee.biometricdevicename,
-                devicetype: "boxtel",
+                devicetype: "Boxtell",
             });
 
             setEmployee((prev) => ({
@@ -581,9 +581,9 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
                     "signType": "RSA",
                     "version": "1.0.0"
                 }
-                let finalCommand = deviceDetails.brand === "Brand1" ? brand1CommandAddUser :
-                    deviceDetails.brand === "Brand2" ? brand2Command :
-                        deviceDetails.brand === "Brand3" ? brand3Command : "";
+                let finalCommand = deviceDetails.brand === "Bio-Socket" ? brand1CommandAddUser :
+                    deviceDetails.brand === "Bowee-Witzee" ? brand2Command :
+                        deviceDetails.brand === "Bowee-Chandichan" ? brand3Command : "";
                 let res = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD_NEW, {
                     headers: { Authorization: `Bearer ${auth.APIToken}` },
                     command: finalCommand,
@@ -591,17 +591,17 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
                     brand1: brand1CommandImage,
 
                 });
-                if (deviceDetails?.brand === "Brand1" ? res?.data?.alldeviceinfo?.result : deviceDetails?.brand === "Brand2" ? res?.data?.alldeviceinfo : false) {
+                if (deviceDetails?.brand === "Bio-Socket" ? res?.data?.alldeviceinfo?.result : deviceDetails?.brand === "Bowee-Witzee" ? res?.data?.alldeviceinfo : false) {
                     let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
                         headers: { Authorization: `Bearer ${auth.APIToken}` },
                         biometricUserIDC: BiometricId,
                         cloudIDC: deviceDetails.biometricserialno,
                         dataupload: "new",
-                        downloadedFaceTemplateN: (deviceDetails.brand === "Brand1" && documentFiles?.data) ? 1 : 0,
+                        downloadedFaceTemplateN: (deviceDetails.brand === "Bio-Socket" && documentFiles?.data) ? 1 : 0,
                         downloadedFingerTemplateN: 0,
                         fingerCountN: 0,
                         isEnabledC: "Yes",
-                        isFaceEnrolledC: (deviceDetails.brand === "Brand1" && documentFiles?.data) ? "Yes" : "No",
+                        isFaceEnrolledC: (deviceDetails.brand === "Bio-Socket" && documentFiles?.data) ? "Yes" : "No",
                         privilegeC: employee.biometricrole,
                         pwdc: "",
                         staffNameC: enableLoginName ? String(third) : employee.username,
@@ -1171,7 +1171,7 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
             </Grid>
 
             {/* Upload Section (only show when documentFiles is null) */}
-            {!documentFiles && ["Brand1", "Bowee"]?.includes(deviceDetails?.brand) && (
+            {!documentFiles && ["Bio-Socket", "Bowee"]?.includes(deviceDetails?.brand) && (
                 <Grid item xs={12} sm={12} md={3}>
                     <FormControl fullWidth size="small">
                         <Typography mb={1}>Upload Profile</Typography>
@@ -1234,7 +1234,7 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
                         Biometric Role<b style={{ color: "red" }}>*</b>
                     </Typography>
                     <Selects
-                        options={["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(deviceDetails?.brand) ?
+                        options={["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(deviceDetails?.brand) ?
                             [{ label: "User", value: "User" }, { label: "Administrator", value: "Administrator" }]
                             :
                             [{ label: "User", value: "User" }, { label: "Manager", value: "Manager" }, { label: "Administrator", value: "Administrator" }]

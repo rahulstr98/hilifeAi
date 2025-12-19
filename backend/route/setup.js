@@ -92,13 +92,29 @@ companyRoute
 
 
 // connect Notice period apply form controller
-const { getAllNoticeperiodapply, addNoticeperiodapply,getAllChecklistNoticeperiodapply,getAllNoticeperiodapplyByAssignBranch, getNoticeperiodapplyForLeave, updateNoticeperiodapply, getSingleNoticeperiodapply, deleteNoticeperiodapply } = require("../controller/modules/recruitment/noticeperiodapply");
-companyRoute.route("/noticeperiodapplies").get(getAllNoticeperiodapply);
-companyRoute.route("/noticeperiodapply/new").post(addNoticeperiodapply);
-companyRoute.route("/noticeperiodappliesforleave").post(getNoticeperiodapplyForLeave);
-companyRoute.route("/noticeperiodapply/:id").get(getSingleNoticeperiodapply).put(updateNoticeperiodapply).delete(deleteNoticeperiodapply);
-companyRoute.route("/checklistnoticeperiodapplies").get(getAllChecklistNoticeperiodapply);
-companyRoute.route("/noticeperiodappliesbyassignbranch").post(getAllNoticeperiodapplyByAssignBranch);
+const {
+  getAllNoticeperiodapply,
+  addNoticeperiodapply,
+  getAllChecklistNoticeperiodapply,
+  getAllNoticeperiodapplyByAssignBranch,
+  getAllNoticeperiodapplyByAssignBranchHome,
+  getNoticeperiodapplyForLeave,
+  updateNoticeperiodapply,
+  getSingleNoticeperiodapply,
+  deleteNoticeperiodapply,
+  getAllNoticePeriodApplyByPagination,
+  dynamicQueryNoticeController,
+} = require('../controller/modules/recruitment/noticeperiodapply');
+companyRoute.route('/noticeperiodapplies').get(getAllNoticeperiodapply);
+companyRoute.route('/noticeperiodapply/new').post(addNoticeperiodapply);
+companyRoute.route('/noticeperiodappliesforleave').post(getNoticeperiodapplyForLeave);
+companyRoute.route('/noticeperiodapply/:id').get(getSingleNoticeperiodapply).put(updateNoticeperiodapply).delete(deleteNoticeperiodapply);
+companyRoute.route('/checklistnoticeperiodapplies').get(getAllChecklistNoticeperiodapply);
+companyRoute.route('/noticeperiodappliesbyassignbranch').post(getAllNoticeperiodapplyByAssignBranch);
+companyRoute.route('/noticeperiodappliesbyassignbranchhome').post(getAllNoticeperiodapplyByAssignBranchHome);
+//15.04.2025
+companyRoute.route('/dynamicnoticeperiodapplycontroller').post(dynamicQueryNoticeController);
+companyRoute.route('/noticeperiodappliesbypagination').post(getAllNoticePeriodApplyByPagination);
 
 const { addScheduleEvents, deleteScheduleEvents, getAllScheduleEventsFilter, getAllScheduleEvents, getTeam, getUnit, getSingleScheduleEvents, updateScheduleEvents, getParticipants } = require("../controller/modules/setup/EventsController");
 companyRoute.route("/allscheduleevents").post(getAllScheduleEvents);

@@ -2366,6 +2366,8 @@ function AddVisitorin() {
               intime: String(vendor.intime),
               visitoremail: String(vendor.email),
               visitorcontactnumber: String(vendor.mobile),
+              page:"Visitor In",
+              pagedetails:"Visitor Without QR"
             });
       if (requestCheck && ticketid) {
         let res = await axios.put(`${SERVICE.RAISETICKET_SINGLE}/${ticketid}`, {

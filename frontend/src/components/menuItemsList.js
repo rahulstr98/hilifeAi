@@ -902,6 +902,12 @@ export const menuItems = [
                     url: "/updatepages/exitlist",
                     access: true,
                   },
+
+                    {
+                    title: 'Pending Releave Exit List',
+                    dbname: 'menupendingreleaveexitlist',
+                    url: '/updatepages/pendingreleaveexitlist',
+                  },
                 ],
               },
               // {

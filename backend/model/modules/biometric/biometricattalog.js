@@ -30,6 +30,10 @@ const biometricattlogSchema = new Schema({
         type: String,
         required: false,
     },
+    clockDateOnly: {
+        type: String,
+        required: false,
+    },
     staffNameC: {
         type: String,
         required: false,
@@ -80,4 +84,10 @@ biometricattlogSchema.index(
   { clockDateTimeD: 1, staffNameC: 1, biometricUserIDC: 1, cloudIDC: 1 },
   { unique: true }
 );
+biometricattlogSchema.index({
+  clockDateOnly: 1,
+  staffNameC: 1,
+  cloudIDC: 1
+})
+
 module.exports = mongoose.model('biometricattlog', biometricattlogSchema);

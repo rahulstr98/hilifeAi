@@ -3,7 +3,37 @@ import React, { useRef, useCallback, useContext, useState } from "react";
 import Webcam from "react-webcam";
 // import { Box } from "@material-ui/core";
 
-import { Box, Typography, OutlinedInput, Dialog, TextField, InputLabel, Popover, IconButton, List, ListItem, ListItemText, TableBody, Checkbox, TextareaAutosize, FormControlLabel, TableRow, TableCell, Select, MenuItem, DialogContent, DialogActions, FormControl, Grid, Paper, Table, TableHead, DialogTitle, TableContainer, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  OutlinedInput,
+  Dialog,
+  TextField,
+  InputLabel,
+  Popover,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  TableBody,
+  Checkbox,
+  TextareaAutosize,
+  FormControlLabel,
+  TableRow,
+  TableCell,
+  Select,
+  MenuItem,
+  DialogContent,
+  DialogActions,
+  FormControl,
+  Grid,
+  Paper,
+  Table,
+  TableHead,
+  DialogTitle,
+  TableContainer,
+  Button,
+} from "@mui/material";
 import { userStyle, colourStyles } from "../../pageStyle";
 import { SERVICE } from "../../services/Baseservice";
 import { FaPrint, FaFilePdf, FaTrash } from "react-icons/fa";
@@ -38,10 +68,24 @@ function Webcamimage({
   setCapturedImagesedit,
 }) {
   const { auth, setAuth } = useContext(AuthContext);
-  const { isUserRoleCompare, isUserRoleAccess } = useContext(UserRoleAccessContext);
+  const { isUserRoleCompare, isUserRoleAccess } = useContext(
+    UserRoleAccessContext
+  );
 
   const webcamRef = useRef(null);
   const [isFlip, setIsFlip] = useState(false);
+  function base64ToFile(base64String, fileName) {
+    const arr = base64String.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], fileName, { type: mime });
+  }
 
   const videoConstraints = {
     // width: 1280,
@@ -56,12 +100,13 @@ function Webcamimage({
 
     if (Array.isArray(capturedImages)) {
       let newSelectedFiles = [...capturedImages];
+      const fileObj = base64ToFile(imageSrc, `capture_${valNum}.jpg`);
       newSelectedFiles.push({
-        name: `capture.img (${valNum})`,
-        size: "",
-        type: "image/jpeg",
+        file: fileObj,
+        name: fileObj.name,
+        size: fileObj.size,
+        type: fileObj.type,
         preview: imageSrc,
-        base64: imageSrc?.split(",")[1],
       });
       setValNum(valNum + 1);
       setCapturedImages(newSelectedFiles);
@@ -75,12 +120,13 @@ function Webcamimage({
 
     if (Array.isArray(capturedImagesedit)) {
       let newSelectedFiles = [...capturedImagesedit];
+      const fileObj = base64ToFile(imageSrc, `capture_${valNum}.jpg`);
       newSelectedFiles.push({
-        name: `capture.img (${valNumedit})`,
-        size: "",
-        type: "image/jpeg",
+        file: fileObj,
+        name: fileObj.name,
+        size: fileObj.size,
+        type: fileObj.type,
         preview: imageSrc,
-        base64: imageSrc?.split(",")[1],
       });
       setValNumedit(valNumedit + 1);
       setCapturedImagesedit(newSelectedFiles);
@@ -114,8 +160,22 @@ function Webcamimage({
         </Typography>
         <br />
         <Grid container>
-          <Grid item lg={6} md={6} sm={12} xs={12} sx={{ justifyContent: "center", textAlign: "center" }}>
-            <Webcam audio={false} height={200} ref={webcamRef} screenshotFormat="image/jpeg" width={500} videoConstraints={videoConstraints} />
+          <Grid
+            item
+            lg={6}
+            md={6}
+            sm={12}
+            xs={12}
+            sx={{ justifyContent: "center", textAlign: "center" }}
+          >
+            <Webcam
+              audio={false}
+              height={200}
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              width={500}
+              videoConstraints={videoConstraints}
+            />
           </Grid>
         </Grid>
 
@@ -171,8 +231,12 @@ function Webcamimage({
         </Grid>
         <br />
         <Box>
-          {name == "edit" && <img src={getImgedit} id="productimage" width="100" height="100" />}
-          {name == "create" && <img src={getImg} id="productimage" width="100" height="100" />}
+          {name == "edit" && (
+            <img src={getImgedit} id="productimage" width="100" height="100" />
+          )}
+          {name == "create" && (
+            <img src={getImg} id="productimage" width="100" height="100" />
+          )}
         </Box>
       </Box>
     </>

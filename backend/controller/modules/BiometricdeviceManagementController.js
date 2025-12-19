@@ -1,13 +1,12 @@
 const BiometricDeviceManagement = require("../../model/modules/BiometricDeviceManagementModel");
 const ErrorHandler = require("../../utils/errorhandler");
 const catchAsyncErrors = require("../../middleware/catchAsyncError");
-const Area = require('../../model/modules/area');
+const Area = require("../../model/modules/area");
 const Hardwarespecification = require("../../model/modules/account/Hardwarespecification");
-const Assetdetail = require('../../model/modules/account/assetdetails');
+const Assetdetail = require("../../model/modules/account/assetdetails");
 const IpMaster = require("../../model/modules/account/ipmodel");
-const BiometricDevicesPairing = require('../../model/modules/biometric/BiometricDevicesPairingModel');
-const BiometricPairedDevicesGrouping = require('../../model/modules/biometric/BiometricPairedDevicesGroupingModel');
-
+const BiometricDevicesPairing = require("../../model/modules/biometric/BiometricDevicesPairingModel");
+const BiometricPairedDevicesGrouping = require("../../model/modules/biometric/BiometricPairedDevicesGroupingModel");
 
 // const { sendCommandToDevice } = require('./deviceSocket');
 
@@ -34,638 +33,836 @@ const BiometricPairedDevicesGrouping = require('../../model/modules/biometric/Bi
 //     }
 // };
 
-
-
 // get All BiometricDeviceManagement Name => /api/biometricdevicemanagement
-exports.getAllBiometricDeviceManagement = catchAsyncErrors(async (req, res, next) => {
+exports.getAllBiometricDeviceManagement = catchAsyncErrors(
+  async (req, res, next) => {
     let biometricdevicemanagement;
     try {
-        biometricdevicemanagement = await BiometricDeviceManagement.find();
+      biometricdevicemanagement = await BiometricDeviceManagement.find();
     } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
+      return next(new ErrorHandler("Records not found!", 404));
     }
     if (!biometricdevicemanagement) {
-        return next(new ErrorHandler("BiometricDeviceManagement Name not found!", 404));
+      return next(
+        new ErrorHandler("BiometricDeviceManagement Name not found!", 404)
+      );
     }
     return res.status(200).json({
-        // count: products.length,
-        biometricdevicemanagement,
+      // count: products.length,
+      biometricdevicemanagement,
     });
-});
+  }
+);
 
 // Bulk Delete
-exports.getOverallBulkBiometricDevicesDelete = catchAsyncErrors(async (req, res, next) => {
+exports.getOverallBulkBiometricDevicesDelete = catchAsyncErrors(
+  async (req, res, next) => {
     let biometricdevicemanagement, result, count;
     let id = req.body.id;
     try {
-        biometricdevicemanagement = await BiometricDeviceManagement.find();
-        const answer = biometricdevicemanagement?.filter(data => id?.includes(data._id?.toString()));
+      biometricdevicemanagement = await BiometricDeviceManagement.find();
+      const answer = biometricdevicemanagement?.filter((data) =>
+        id?.includes(data._id?.toString())
+      );
 
+      const devicePairing = await BiometricDevicesPairing.find({});
+      const biometricPairedDevices = await BiometricPairedDevicesGrouping.find(
+        {}
+      );
 
-        const devicePairing = await BiometricDevicesPairing.find({})
-        const biometricPairedDevices = await BiometricPairedDevicesGrouping.find({})
-
-
-
-        const pairingDevice = answer.filter(answers => devicePairing?.some(data => data.pairdevices?.includes(answers?.biometriccommonname)))?.map(data => data._id?.toString());
-        const pairedDevice = answer.filter(answers => biometricPairedDevices?.some(data => (data?.paireddeviceone === answers?.biometriccommonname) || (data?.paireddevicetwo === answers?.biometriccommonname)))?.map(data => data._id?.toString());
-        const duplicateId = [...pairingDevice, ...pairedDevice]
-        result = id?.filter(data => !duplicateId?.includes(data))
-        count = id?.filter(data => !duplicateId?.includes(data))?.length
-
+      const pairingDevice = answer
+        .filter((answers) =>
+          devicePairing?.some((data) =>
+            data.pairdevices?.includes(answers?.biometriccommonname)
+          )
+        )
+        ?.map((data) => data._id?.toString());
+      const pairedDevice = answer
+        .filter((answers) =>
+          biometricPairedDevices?.some(
+            (data) =>
+              data?.paireddeviceone === answers?.biometriccommonname ||
+              data?.paireddevicetwo === answers?.biometriccommonname
+          )
+        )
+        ?.map((data) => data._id?.toString());
+      const duplicateId = [...pairingDevice, ...pairedDevice];
+      result = id?.filter((data) => !duplicateId?.includes(data));
+      count = id?.filter((data) => !duplicateId?.includes(data))?.length;
     } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
+      return next(new ErrorHandler("Records not found!", 404));
     }
 
     return res.status(200).json({
-        count: count,
-        result
+      count: count,
+      result,
     });
-});
-exports.getSingleBulkBiometricDevicesDelete = catchAsyncErrors(async (req, res, next) => {
+  }
+);
+exports.getSingleBulkBiometricDevicesDelete = catchAsyncErrors(
+  async (req, res, next) => {
     let devicename = req.body.oldname;
-    let devicepairing = [], paireddevice = []
+    let devicepairing = [],
+      paireddevice = [];
     try {
-        devicepairing = await BiometricDevicesPairing.find({ pairdevices: { $in: devicename } })
-        paireddevice = await BiometricPairedDevicesGrouping.find({
-            $or: [
-                { paireddeviceone: devicename },
-                { paireddeviceone: devicename }
-            ]
-        });
-
+      devicepairing = await BiometricDevicesPairing.find({
+        pairdevices: { $in: devicename },
+      });
+      paireddevice = await BiometricPairedDevicesGrouping.find({
+        $or: [{ paireddeviceone: devicename }, { paireddeviceone: devicename }],
+      });
     } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
+      return next(new ErrorHandler("Records not found!", 404));
     }
 
     return res.status(200).json({
-        count: devicepairing?.length + paireddevice?.length,
-        devicepairing, paireddevice
+      count: devicepairing?.length + paireddevice?.length,
+      devicepairing,
+      paireddevice,
     });
-});
+  }
+);
 
 // Get All Com/Bran/Unit Based Attendance Devices
-exports.getAllBiometricAttendanceDevices = catchAsyncErrors(async (req, res, next) => {
+exports.getAllBiometricAttendanceDevices = catchAsyncErrors(
+  async (req, res, next) => {
     let biometricdevices = [];
     try {
-        biometricdevices = await BiometricPairedDevicesGrouping.aggregate([
-            {
-                $project: {
-                    originalid: "$_id",
-                    company: 1,
-                    branch: 1,
-                    unit: 1,
-                    floor: 1,
-                    area: 1,
-                    devices: {
-                        $concatArrays: [
-                            [
-                                {
-                                    paireddevice: "$paireddeviceone",
-                                    pairedstatus: "$pairedstatus",
-                                    attendancein: "$attendanceinone",
-                                    attendanceout: "$attendanceoutone",
-                                    attendanceinout: "$attendanceinoutone",
-                                    exitin: "$exitinone",
-                                    exitout: "$exitoutone",
-                                    exitinout: "$exitinoutone",
-                                    break: "$breakone"
-                                }
-                            ],
-                            [
-                                {
-                                    paireddevice: "$paireddevicetwo",
-                                    pairedstatus: "$pairedstatus",
-                                    attendancein: "$attendanceintwo",
-                                    attendanceout: "$attendanceouttwo",
-                                    attendanceinout: "$attendanceinouttwo",
-                                    exitin: "$exitintwo",
-                                    exitout: "$exitouttwo",
-                                    exitinout: "$exitinouttwo",
-                                    break: "$breaktwo"
-                                }
-                            ]
-                        ]
-                    }
-                }
+      biometricdevices = await BiometricPairedDevicesGrouping.aggregate([
+        {
+          $project: {
+            originalid: "$_id",
+            company: 1,
+            branch: 1,
+            unit: 1,
+            floor: 1,
+            area: 1,
+            devices: {
+              $concatArrays: [
+                [
+                  {
+                    paireddevice: "$paireddeviceone",
+                    pairedstatus: "$pairedstatus",
+                    attendancein: "$attendanceinone",
+                    attendanceout: "$attendanceoutone",
+                    attendanceinout: "$attendanceinoutone",
+                    exitin: "$exitinone",
+                    exitout: "$exitoutone",
+                    exitinout: "$exitinoutone",
+                    break: "$breakone",
+                  },
+                ],
+                [
+                  {
+                    paireddevice: "$paireddevicetwo",
+                    pairedstatus: "$pairedstatus",
+                    attendancein: "$attendanceintwo",
+                    attendanceout: "$attendanceouttwo",
+                    attendanceinout: "$attendanceinouttwo",
+                    exitin: "$exitintwo",
+                    exitout: "$exitouttwo",
+                    exitinout: "$exitinouttwo",
+                    break: "$breaktwo",
+                  },
+                ],
+              ],
             },
-            {
-                $unwind: "$devices"
-            },
-            {
-                $match: {
-                    "devices.paireddevice": { $ne: null, $ne: "" }
-                }
-            },
-            {
-                $project: {
-                    originalid: 1,
-                    company: 1,
-                    branch: 1,
-                    unit: 1,
-                    floor: 1,
-                    area: 1,
-                    paireddevice: "$devices.paireddevice",
-                    pairedstatus: "$devices.pairedstatus",
-                    attendancein: "$devices.attendancein",
-                    attendanceout: "$devices.attendanceout",
-                    attendanceinout: "$devices.attendanceinout",
-                    exitin: "$devices.exitin",
-                    exitout: "$devices.exitout",
-                    exitinout: "$devices.exitinout",
-                    break: "$devices.break"
-                }
-            }
-        ]);
+          },
+        },
+        {
+          $unwind: "$devices",
+        },
+        {
+          $match: {
+            "devices.paireddevice": { $ne: null, $ne: "" },
+          },
+        },
+        {
+          $project: {
+            originalid: 1,
+            company: 1,
+            branch: 1,
+            unit: 1,
+            floor: 1,
+            area: 1,
+            paireddevice: "$devices.paireddevice",
+            pairedstatus: "$devices.pairedstatus",
+            attendancein: "$devices.attendancein",
+            attendanceout: "$devices.attendanceout",
+            attendanceinout: "$devices.attendanceinout",
+            exitin: "$devices.exitin",
+            exitout: "$devices.exitout",
+            exitinout: "$devices.exitinout",
+            break: "$devices.break",
+          },
+        },
+      ]);
     } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
+      return next(new ErrorHandler("Records not found!", 404));
     }
     return res.status(200).json({
-        // count: products.length,
-        biometricdevices,
+      // count: products.length,
+      biometricdevices,
     });
-});
+  }
+);
 
-
-
-exports.getBiometricAssignedIpAsset = catchAsyncErrors(async (req, res, next) => {
+exports.getBiometricAssignedIpAsset = catchAsyncErrors(
+  async (req, res, next) => {
     let assignedip;
-    const { codename } = req?.body
+    const { codename } = req?.body;
     try {
-        assignedip = await IpMaster.aggregate([
-            { $unwind: "$ipconfig" },
-            { $match: { "ipconfig.assetmaterialcode": codename, "ipconfig.status": "assigned" } },
-            { $replaceRoot: { newRoot: "$ipconfig" } },
-            { $limit: 1 }
-        ]);
-
+      assignedip = await IpMaster.aggregate([
+        { $unwind: "$ipconfig" },
+        {
+          $match: {
+            "ipconfig.assetmaterialcode": codename,
+            "ipconfig.status": "assigned",
+          },
+        },
+        { $replaceRoot: { newRoot: "$ipconfig" } },
+        { $limit: 1 },
+      ]);
     } catch (err) {
-        console.log(err, 'err')
-        return next(new ErrorHandler("Records not found!", 404));
+      console.log(err, "err");
+      return next(new ErrorHandler("Records not found!", 404));
     }
     return res.status(200).json({
-        // count: products.length,
-        assignedip,
+      // count: products.length,
+      assignedip,
     });
-});
+  }
+);
 
-
-
-exports.getBiometricSerialNumberAssets = catchAsyncErrors(async (req, res, next) => {
+exports.getBiometricSerialNumberAssets = catchAsyncErrors(
+  async (req, res, next) => {
     let serialnumber, ser, result;
     try {
-        result = await Assetdetail.aggregate([
-            // 1. Filter Assetdetail where biometric is "Yes"
-            {
+      result = await Assetdetail.aggregate([
+        // 1. Filter Assetdetail where biometric is "Yes"
+        {
+          $match: {
+            biometric: "Yes",
+          },
+        },
+        // 2. Create codename = material + "-" + code
+        {
+          $addFields: {
+            codename: { $concat: ["$material", "-", "$code"] },
+          },
+        },
+        // 3. Lookup into assetips where ip: true and codename is in component
+        {
+          $lookup: {
+            from: "assetips",
+            let: { cname: "$codename" },
+            pipeline: [
+              {
                 $match: {
-                    biometric: "Yes"
-                }
-            },
-            // 2. Create codename = material + "-" + code
-            {
-                $addFields: {
-                    codename: { $concat: ["$material", "-", "$code"] }
-                }
-            },
-            // 3. Lookup into assetips where ip: true and codename is in component
-            {
-                $lookup: {
-                    from: "assetips",
-                    let: { cname: "$codename" },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        { $eq: ["$ip", true] },
-                                        { $in: ["$$cname", "$component"] }
-                                    ]
-                                }
-                            }
-                        }
+                  $expr: {
+                    $and: [
+                      { $eq: ["$ip", true] },
+                      { $in: ["$$cname", "$component"] },
                     ],
-                    as: "matchedMaterials"
-                }
+                  },
+                },
+              },
+            ],
+            as: "matchedMaterials",
+          },
+        },
+        // 4. Ensure there is at least one matched material
+        {
+          $match: {
+            $expr: {
+              $gt: [{ $size: "$matchedMaterials" }, 0],
             },
-            // 4. Ensure there is at least one matched material
-            {
-                $match: {
-                    $expr: {
-                        $gt: [{ $size: "$matchedMaterials" }, 0]
-                    }
-                }
-            },
-            // 5. Project desired fields
-            {
-                $project: {
-                    _id: 0,
-                    floor: 1,
-                    company: 1,
-                    branch: 1,
-                    unit: 1,
-                    area: 1,
-                    brand: { $arrayElemAt: ["$subcomponent.brand", 0] },
-                    model: { $arrayElemAt: ["$subcomponent.model", 0] },
-                    subcomponent: 1,
-                    component: 1,
-                    codename: 1,
-                    code: 1,
-                    material: 1
-                }
-            }
-        ]);
-
-
+          },
+        },
+        // 5. Project desired fields
+        {
+          $project: {
+            _id: 0,
+            floor: 1,
+            company: 1,
+            branch: 1,
+            unit: 1,
+            area: 1,
+            brand: { $arrayElemAt: ["$subcomponent.brand", 0] },
+            model: { $arrayElemAt: ["$subcomponent.model", 0] },
+            subcomponent: 1,
+            component: 1,
+            codename: 1,
+            code: 1,
+            material: 1,
+          },
+        },
+      ]);
     } catch (err) {
-        console.log(err, 'err')
-        return next(new ErrorHandler("Records not found!", 404));
+      console.log(err, "err");
+      return next(new ErrorHandler("Records not found!", 404));
     }
 
     return res.status(200).json({
-        // count: products.length,
-        serialnumber, ser, result
+      // count: products.length,
+      serialnumber,
+      ser,
+      result,
     });
-});
-exports.getDuplicateBiometricDeviceGrouping = catchAsyncErrors(async (req, res, next) => {
+  }
+);
+exports.getDuplicateBiometricDeviceGrouping = catchAsyncErrors(
+  async (req, res, next) => {
     let { company, branch, unit, floor, area } = req?.body?.deviceData;
     try {
-        const deviceLocation = await BiometricDeviceManagement.find({ company, branch, unit, floor, area });
+      const deviceLocation = await BiometricDeviceManagement.find({
+        company,
+        branch,
+        unit,
+        floor,
+        area,
+      });
 
-        if (deviceLocation?.length > 1) {
-            return res.status(200).json({
-                message: "Paired Devices Added",
-                result: false
-            });
-        } else if (deviceLocation?.length === 1) {
-            const firstDevice = deviceLocation[0];
-            const secondDevice = req?.body?.deviceData;
+      if (deviceLocation?.length > 1) {
+        return res.status(200).json({
+          message: "Paired Devices Added",
+          result: false,
+        });
+      } else if (deviceLocation?.length === 1) {
+        const firstDevice = deviceLocation[0];
+        const secondDevice = req?.body?.deviceData;
 
-            let isAllowed = true;
-            let allowedCombination = "";
+        let isAllowed = true;
+        let allowedCombination = "";
 
-            if (firstDevice.biometricinoutattendance) {
-                allowedCombination = "Second device: all attendance buttons must be false";
-                if (
-                    secondDevice.biometricinattendance ||
-                    secondDevice.biometricoutattendance ||
-                    secondDevice.biometricinoutattendance
-                ) {
-                    isAllowed = false;
-                }
-            }
-
-            else if (firstDevice.biometricinattendance) {
-                allowedCombination = "Second device: only biometricoutattendance may be true";
-                if (
-                    secondDevice.biometricinattendance || // same flag not allowed
-                    secondDevice.biometricinoutattendance // inout not allowed
-                ) {
-                    isAllowed = false;
-                }
-            }
-
-            else if (firstDevice.biometricoutattendance) {
-                console.log(deviceLocation, "deviceLocation")
-                allowedCombination = "Second device: only biometricinattendance may be true";
-                if (
-                    secondDevice.biometricoutattendance || // same flag not allowed
-                    secondDevice.biometricinoutattendance // inout not allowed
-                ) {
-                    isAllowed = false;
-                }
-            }
-
-            if (!isAllowed) {
-                return res.status(200).json({
-                    message: `${allowedCombination}`,
-                    result: isAllowed
-                });
-            } else {
-                return res.status(200).json({
-                    message: `success`,
-                    result: isAllowed
-                });
-            }
-
-
-        } else {
-            return res.status(200).json({
-                message: `success`,
-                result: true
-            });
+        if (firstDevice.biometricinoutattendance) {
+          allowedCombination =
+            "Second device: all attendance buttons must be false";
+          if (
+            secondDevice.biometricinattendance ||
+            secondDevice.biometricoutattendance ||
+            secondDevice.biometricinoutattendance
+          ) {
+            isAllowed = false;
+          }
+        } else if (firstDevice.biometricinattendance) {
+          allowedCombination =
+            "Second device: only biometricoutattendance may be true";
+          if (
+            secondDevice.biometricinattendance || // same flag not allowed
+            secondDevice.biometricinoutattendance // inout not allowed
+          ) {
+            isAllowed = false;
+          }
+        } else if (firstDevice.biometricoutattendance) {
+          console.log(deviceLocation, "deviceLocation");
+          allowedCombination =
+            "Second device: only biometricinattendance may be true";
+          if (
+            secondDevice.biometricoutattendance || // same flag not allowed
+            secondDevice.biometricinoutattendance // inout not allowed
+          ) {
+            isAllowed = false;
+          }
         }
 
-
+        if (!isAllowed) {
+          return res.status(200).json({
+            message: `${allowedCombination}`,
+            result: isAllowed,
+          });
+        } else {
+          return res.status(200).json({
+            message: `success`,
+            result: isAllowed,
+          });
+        }
+      } else {
+        return res.status(200).json({
+          message: `success`,
+          result: true,
+        });
+      }
     } catch (err) {
-        console.log(err, 'err')
-        return next(new ErrorHandler("Records not found!", 404));
+      console.log(err, "err");
+      return next(new ErrorHandler("Records not found!", 404));
     }
-});
-exports.getcompanyBranchbasedBiometricDevices = catchAsyncErrors(async (req, res, next) => {
-    let { company, branch , unit} = req?.body;
+  }
+);
+exports.getcompanyBranchbasedBiometricDevices = catchAsyncErrors(
+  async (req, res, next) => {
+    let { company, branch, unit } = req?.body;
     deviceNames = [];
     try {
-        let query = {};
-        if(company?.length > 0){
-            query.company = company
-        }
-        if(branch?.length > 0){
-            query.branch = branch
-        }
-        if(unit?.length > 0){
-            query.unit = unit
-        }
+      let query = {};
+      if (company?.length > 0) {
+        query.company = company;
+      }
+      if (branch?.length > 0) {
+        query.branch = branch;
+      }
+      if (unit?.length > 0) {
+        query.unit = unit;
+      }
 
-        // console.log(query, "query")
-       deviceNames= await BiometricDeviceManagement.find(query,{biometriccommonname:1,biometricserialno:1});
-    return res.status(200).json({
+      // console.log(query, "query")
+      deviceNames = await BiometricDeviceManagement.find(query, {
+        biometriccommonname: 1,
+        biometricserialno: 1,
+      });
+      return res.status(200).json({
         // count: products.length,
         deviceNames,
-    });
-
+      });
     } catch (err) {
-        console.log(err, 'err')
-        return next(new ErrorHandler("Records not found!", 404));
+      console.log(err, "err");
+      return next(new ErrorHandler("Records not found!", 404));
     }
-});
+  }
+);
 
-
-exports.getBiometricBrandModelAssets = catchAsyncErrors(async (req, res, next) => {
+exports.getBiometricBrandModelAssets = catchAsyncErrors(
+  async (req, res, next) => {
     let brandnames, modelnames;
-    console.log("Hitted")
+    console.log("Hitted");
     try {
-        const result = await Hardwarespecification.aggregate([
-            {
-                $match: {
-                    type: { $in: ["Brand Master", "Asset Model"] }
-                }
-            },
-            {
-                $facet: {
-                    brandnames: [
-                        { $match: { type: "Brand Master" } }
-                    ],
-                    modelnames: [
-                        { $match: { type: "Asset Model" } }
-                    ]
-                }
-            }
-        ]);
+      const result = await Hardwarespecification.aggregate([
+        {
+          $match: {
+            type: { $in: ["Brand Master", "Asset Model"] },
+          },
+        },
+        {
+          $facet: {
+            brandnames: [{ $match: { type: "Brand Master" } }],
+            modelnames: [{ $match: { type: "Asset Model" } }],
+          },
+        },
+      ]);
 
-        brandnames = result[0].brandnames;
-        modelnames = result[0].modelnames;
+      brandnames = result[0].brandnames;
+      modelnames = result[0].modelnames;
     } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
+      return next(new ErrorHandler("Records not found!", 404));
     }
     return res.status(200).json({
-        // count: products.length,
-        brandnames, modelnames
+      // count: products.length,
+      brandnames,
+      modelnames,
     });
-});
-
-
+  }
+);
 
 exports.biometricdevicelastindex = catchAsyncErrors(async (req, res, next) => {
-    let biocode, areacode;
-    let { area } = req?.body;
-    try {
-        biocode = await BiometricDeviceManagement
-            .find({}, { biometriccommonname: 1 })
-            .sort({ createdAt: -1 })  // Fetch the latest entry
-            .lean();
-        areacode = await Area.findOne({ name: area }, { _id: 0, code: 1 }).lean();
-    } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
-    }
+  let biocode, areacode;
+  let { area } = req?.body;
+  try {
+    biocode = await BiometricDeviceManagement.find(
+      {},
+      { biometriccommonname: 1 }
+    )
+      .sort({ createdAt: -1 }) // Fetch the latest entry
+      .lean();
+    areacode = await Area.findOne({ name: area }, { _id: 0, code: 1 }).lean();
+  } catch (err) {
+    return next(new ErrorHandler("Records not found!", 404));
+  }
 
-    return res.status(200).json({
-        biocode, areacode
-    });
+  return res.status(200).json({
+    biocode,
+    areacode,
+  });
 });
 
 // Create new BiometricDeviceManagement=> /api/operatingsystem/new
-exports.addBiometricDeviceManagement = catchAsyncErrors(async (req, res, next) => {
-    let abiometricdevicemanagement = await BiometricDeviceManagement.create(req.body);
-    return res.status(200).json({
-        message: "Successfully added!",
+exports.addBiometricDeviceManagement = catchAsyncErrors(
+  async (req, res, next) => {
+    // Parse JSON inside "data"
+    let parsedData = {};
+    try {
+      parsedData = req.body.data ? JSON.parse(req.body.data) : {};
+    } catch (err) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid JSON format in data",
+      });
+    }
+
+    // rfidnumber will be an object like { "0": "abc", "1": "xyz" }
+    const rfidNumbers = req.body.rfidnumber || {};
+
+    // Prepare final grouped structure
+    const rfidData = [];
+
+    // Build initial structure
+    Object.keys(rfidNumbers).forEach((index) => {
+      rfidData[index] = {
+        rfidnumber: rfidNumbers[index],
+        files: [],
+      };
     });
-});
+
+    // Assign uploaded files to correct RFID index
+    req.files.forEach((file) => {
+      // Extract number from "files[0]" → 0
+      const match = file.fieldname.match(/files\[(\d+)\]/);
+      if (match) {
+        const index = match[1];
+        rfidData[index].files.push({
+          filename: file.filename,
+          path: file.path,
+        });
+      }
+    });
+
+    // Attach to parsedData
+    parsedData.rfidData = rfidData;
+
+    console.log(parsedData, "FINAL DATA");
+    let abiometridevice = await BiometricDeviceManagement.create(parsedData);
+    return res.status(200).json({
+      success: true,
+      message: "Successfully added!",
+      data: abiometridevice,
+    });
+  }
+);
 
 // get Signle BiometricDeviceManagement => /api/operatingsystem/:id
-exports.getSingleBiometricDeviceManagement = catchAsyncErrors(async (req, res, next) => {
+exports.getSingleBiometricDeviceManagement = catchAsyncErrors(
+  async (req, res, next) => {
     const id = req.params.id;
 
-    let sbiometricdevicemanagement = await BiometricDeviceManagement.findById(id);
+    let sbiometricdevicemanagement = await BiometricDeviceManagement.findById(
+      id
+    );
 
     if (!sbiometricdevicemanagement) {
-        return next(new ErrorHandler("BiometricDeviceManagement Name not found!", 404));
+      return next(
+        new ErrorHandler("BiometricDeviceManagement Name not found!", 404)
+      );
     }
     return res.status(200).json({
-        sbiometricdevicemanagement,
+      sbiometricdevicemanagement,
     });
-});
+  }
+);
 
 // update BiometricDeviceManagement by id => /api/operatingsystem/:id
-exports.updateBiometricDeviceManagement = catchAsyncErrors(async (req, res, next) => {
-    const id = req.params.id;
-    let ubiometricdevicemanagement = await BiometricDeviceManagement.findByIdAndUpdate(id, req.body);
-    if (!ubiometricdevicemanagement) {
-        return next(new ErrorHandler("BiometricDeviceManagement Name not found!", 404));
-    }
-    return res.status(200).json({ message: "Updated successfully" });
+// exports.updateBiometricDeviceManagement = catchAsyncErrors(async (req, res, next) => {
+//     const id = req.params.id;
+//     let ubiometricdevicemanagement = await BiometricDeviceManagement.findByIdAndUpdate(id, req.body);
+//     if (!ubiometricdevicemanagement) {
+//         return next(new ErrorHandler("BiometricDeviceManagement Name not found!", 404));
+//     }
+//     return res.status(200).json({ message: "Updated successfully" });
+// });
+
+
+exports.updateBiometricDeviceManagement = catchAsyncErrors(
+  async (req, res, next) => {
+    try {
+    //   console.log("BODY:", req.body);
+    //   console.log("FILES:", req.files);
+
+      const id = req.params.id;
+
+      let payload = {};
+      if (req.body.data) {
+        payload = JSON.parse(req.body.data);
+      }
+
+      const groupedFiles = req.groupedFiles || {};
+      // ----------------------
+// REBUILD RFID ARRAY
+// ----------------------
+const finalRFIDArray = [];
+
+const rfidArray = Array.isArray(req.body.rfidnumber)
+  ? req.body.rfidnumber
+  : [req.body.rfidnumber];
+
+// ----------------------
+// CREATE EMPTY BASE STRUCTURE
+// ----------------------
+rfidArray.forEach((value) => {
+  finalRFIDArray.push({
+    rfidnumber: value,
+    files: []
+  });
 });
+
+// ----------------------
+// 1️⃣ ADD MULTER NEW FILES
+// Multer gives fieldname like: files[2]
+// So extract index directly
+// ----------------------
+if (req.files && Array.isArray(req.files)) {
+  req.files.forEach((file) => {
+    const match = file.fieldname.match(/files\[(\d+)\]/);
+    if (match) {
+      const index = parseInt(match[1]);
+
+      finalRFIDArray[index].files.push({
+        // file: {
+          filename: file.filename,
+          path: file.path,
+          mimetype: file.mimetype
+        // }
+      });
+    }
+  });
+}
+
+// ----------------------
+// 2️⃣ ADD EXISTING FILES
+// existingFiles[index] is JSON string or array of strings
+// ----------------------
+if (req.body.existingFiles) {
+  Object.keys(req.body.existingFiles).forEach((key) => {
+    const index = parseInt(key);
+    const data = req.body.existingFiles[key];
+
+    const arr = Array.isArray(data) ? data : [data];
+
+    arr.forEach((item) => {
+      try {
+        finalRFIDArray[index].files.push(JSON.parse(item));
+      } catch (e) {
+        console.log("Invalid existing file JSON:", item);
+      }
+    });
+  });
+}
+
+req.finalRFIDArray = finalRFIDArray;
+
+
+      payload.rfidData = payload?.rfidDevice ? finalRFIDArray:[];
+// console.log(req.body, payload?.rfidData[2], "payload")
+
+let ubiometricdevicemanagement = await BiometricDeviceManagement.findByIdAndUpdate(id, payload,{new:true});
+      return res.status(200).json({
+        message: "Updated successfully",
+        ubiometricdevicemanagement,
+      });
+
+    } catch (err) {
+      console.error("Update error:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+
+
+
 
 // delete BiometricDeviceManagement by id => /api/operatingsystem/:id
-exports.deleteBiometricDeviceManagement = catchAsyncErrors(async (req, res, next) => {
+exports.deleteBiometricDeviceManagement = catchAsyncErrors(
+  async (req, res, next) => {
     const id = req.params.id;
 
-    let dbiometricdevicemanagement = await BiometricDeviceManagement.findByIdAndRemove(id);
+    let dbiometricdevicemanagement =
+      await BiometricDeviceManagement.findByIdAndRemove(id);
 
     if (!dbiometricdevicemanagement) {
-        return next(new ErrorHandler("BiometricDeviceManagement Name not found!", 404));
+      return next(
+        new ErrorHandler("BiometricDeviceManagement Name not found!", 404)
+      );
     }
     return res.status(200).json({ message: "Deleted successfully" });
-});
-
+  }
+);
 
 function getStatus(lastOnlineTimeC, newDate) {
-    const lastOnlineDate = lastOnlineTimeC;
-    const newDateObj = newDate;
+  const lastOnlineDate = lastOnlineTimeC;
+  const newDateObj = newDate;
 
-    // Calculate the difference in milliseconds
-    const timeDifference = newDateObj - lastOnlineDate;
+  // Calculate the difference in milliseconds
+  const timeDifference = newDateObj - lastOnlineDate;
 
-    // Convert the time difference to minutes
-    const timeDifferenceInMinutes = timeDifference / (1000 * 60);
-    // Check if the difference is less than or equal to 1 minute
-    return timeDifferenceInMinutes <= 1 ? "active" : "inactive";
+  // Convert the time difference to minutes
+  const timeDifferenceInMinutes = timeDifference / (1000 * 60);
+  // Check if the difference is less than or equal to 1 minute
+  return timeDifferenceInMinutes <= 1 ? "active" : "inactive";
 }
 
 function parseDate(dateStr) {
-    // Split date part and time part
-    const [datePart, timePart] = dateStr.split(' ');
+  // Split date part and time part
+  const [datePart, timePart] = dateStr.split(" ");
 
-    // Split the date part and reverse to get "yyyy-MM-dd"
-    const [day, month, year] = datePart.split('-');
-    const formattedDate = `${year}-${month}-${day}T${timePart}`;
+  // Split the date part and reverse to get "yyyy-MM-dd"
+  const [day, month, year] = datePart.split("-");
+  const formattedDate = `${year}-${month}-${day}T${timePart}`;
 
-    // Create a Date object from the formatted string
-    const dateObj = new Date(formattedDate);
+  // Create a Date object from the formatted string
+  const dateObj = new Date(formattedDate);
 
-    // Check if the date is valid
-    if (isNaN(dateObj.getTime())) {
-        throw new Error(`Invalid date: ${dateStr}`);
-    }
+  // Check if the date is valid
+  if (isNaN(dateObj.getTime())) {
+    throw new Error(`Invalid date: ${dateStr}`);
+  }
 
-    return dateObj;
+  return dateObj;
 }
 
 exports.biometricDeviceManagement = catchAsyncErrors(async (req, res, next) => {
-    let totalProjects, result, totalProjectsAllData;
+  let totalProjects, result, totalProjectsAllData;
 
-    const { page, pageSize, assignbranch, allFilters, logicOperator, searchQuery, } = req.body;
+  const {
+    page,
+    pageSize,
+    assignbranch,
+    allFilters,
+    logicOperator,
+    searchQuery,
+  } = req.body;
 
-    // const query = {
-    //     $or: assignbranch.map(item => ({
-    //         company: item.company,
-    //         branch: item.branch,
-    //     }))
-    // };
-    try {
+  // const query = {
+  //     $or: assignbranch.map(item => ({
+  //         company: item.company,
+  //         branch: item.branch,
+  //     }))
+  // };
+  try {
+    let query = {};
 
-        let query = {};
+    const conditions = [];
 
-        const conditions = [];
-
-        // Advanced search filter
-        if (allFilters && allFilters.length > 0) {
-            allFilters.forEach(filter => {
-                if (filter.column && filter.condition && (filter.value || ["Blank", "Not Blank"].includes(filter.condition))) {
-                    conditions.push(createFilterCondition(filter.column, filter.condition, filter.value));
-                }
-            });
+    // Advanced search filter
+    if (allFilters && allFilters.length > 0) {
+      allFilters.forEach((filter) => {
+        if (
+          filter.column &&
+          filter.condition &&
+          (filter.value || ["Blank", "Not Blank"].includes(filter.condition))
+        ) {
+          conditions.push(
+            createFilterCondition(filter.column, filter.condition, filter.value)
+          );
         }
-
-        if (searchQuery && searchQuery !== undefined) {
-            const searchTermsArray = searchQuery.split(" ");
-            const regexTerms = searchTermsArray.map((term) => new RegExp(term, "i"));
-
-            const orConditions = regexTerms.map((regex) => ({
-                $or: [
-                    { company: regex },
-                    { branch: regex },
-                    { unit: regex },
-                    { floor: regex },
-                    { area: regex },
-                    { biometricdeviceid: regex },
-                    { biometricserialno: regex },
-                    { biometricassignedip: regex },
-                ],
-            }));
-
-            query = {
-                $and: [
-                    query,
-                    // {
-                    //     $or: assignbranch.map(item => ({
-                    //         company: item.company,
-                    //         branch: item.branch,
-                    //     }))
-                    // },
-                    ...orConditions,
-                ],
-            };
-        }
-
-        // Apply logicOperator to combine conditions
-        if (conditions.length > 0) {
-            if (logicOperator === "AND") {
-                query.$and = conditions;
-            } else if (logicOperator === "OR") {
-                query.$or = conditions;
-            }
-        }
-
-        const branchFilters = assignbranch?.map(branchObj => ({
-            company: branchObj.company,
-            branch: branchObj.branch,
-            unit: branchObj.unit,
-        }));
-
-        const combinedFilter = {
-            $and: [
-                query,
-                { $or: branchFilters },
-            ],
-        };
-
-        totalProjects = await BiometricDeviceManagement.countDocuments(combinedFilter);
-        totalProjectsAllData = await BiometricDeviceManagement.find(combinedFilter);
-
-        result = await BiometricDeviceManagement.find(combinedFilter)
-            .skip((page - 1) * pageSize)
-            .limit(parseInt(pageSize));
-
-    } catch (err) {
-        return next(new ErrorHandler("Records not found!", 404));
+      });
     }
 
-    return res.status(200).json({
-        totalProjects,
-        result,
-        totalProjectsAllData,
-        currentPage: page,
-        totalPages: Math.ceil(totalProjects / pageSize),
-    });
+    if (searchQuery && searchQuery !== undefined) {
+      const searchTermsArray = searchQuery.split(" ");
+      const regexTerms = searchTermsArray.map((term) => new RegExp(term, "i"));
+
+      const orConditions = regexTerms.map((regex) => ({
+        $or: [
+          { company: regex },
+          { branch: regex },
+          { unit: regex },
+          { floor: regex },
+          { area: regex },
+          { biometricdeviceid: regex },
+          { biometricserialno: regex },
+          { biometricassignedip: regex },
+        ],
+      }));
+
+      query = {
+        $and: [
+          query,
+          // {
+          //     $or: assignbranch.map(item => ({
+          //         company: item.company,
+          //         branch: item.branch,
+          //     }))
+          // },
+          ...orConditions,
+        ],
+      };
+    }
+
+    // Apply logicOperator to combine conditions
+    if (conditions.length > 0) {
+      if (logicOperator === "AND") {
+        query.$and = conditions;
+      } else if (logicOperator === "OR") {
+        query.$or = conditions;
+      }
+    }
+
+    const branchFilters = assignbranch?.map((branchObj) => ({
+      company: branchObj.company,
+      branch: branchObj.branch,
+      unit: branchObj.unit,
+    }));
+
+    const combinedFilter = {
+      $and: [query, { $or: branchFilters }],
+    };
+
+    totalProjects = await BiometricDeviceManagement.countDocuments(
+      combinedFilter
+    );
+    totalProjectsAllData = await BiometricDeviceManagement.find(combinedFilter);
+
+    result = await BiometricDeviceManagement.find(combinedFilter)
+      .skip((page - 1) * pageSize)
+      .limit(parseInt(pageSize));
+  } catch (err) {
+    return next(new ErrorHandler("Records not found!", 404));
+  }
+
+  return res.status(200).json({
+    totalProjects,
+    result,
+    totalProjectsAllData,
+    currentPage: page,
+    totalPages: Math.ceil(totalProjects / pageSize),
+  });
 });
 
-
-exports.biometricDeviceManagementSort = catchAsyncErrors(async (req, res, next) => {
+exports.biometricDeviceManagementSort = catchAsyncErrors(
+  async (req, res, next) => {
     let deviceonlinestatus;
     try {
+      const presentDate = new Date();
+      const result = await BiometricDeviceManagement.aggregate([
+        {
+          $lookup: {
+            from: "biometriconlinestatuses",
+            localField: "biometricserialno",
+            foreignField: "cloudIDC",
+            as: "deviceData",
+          },
+        },
+        {
+          $unwind: {
+            path: "$deviceData",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $project: {
+            cloudIDC: 1,
+            biometricserialno: 1,
+            deviceData: "$deviceData", // Ensure it is referenced correctly
+          },
+        },
+      ]);
 
-        const presentDate = new Date();
-        const result = await BiometricDeviceManagement.aggregate([
-            {
-                $lookup: {
-                    from: "biometriconlinestatuses",
-                    localField: "biometricserialno",
-                    foreignField: "cloudIDC",
-                    as: "deviceData",
-                },
-            },
-            {
-                $unwind: {
-                    path: "$deviceData",
-                    preserveNullAndEmptyArrays: true,
-                },
-            },
-            {
-                $project: {
-                    cloudIDC: 1,
-                    biometricserialno: 1,
-                    "deviceData": "$deviceData", // Ensure it is referenced correctly
-                }
-
-            },
-        ]);
-
-        const updatedDeviceInfo = result?.length > 0 ? result?.map(device => {
-            if (device.lastOnlineTimeC) {
+      const updatedDeviceInfo =
+        result?.length > 0
+          ? result?.map((device) => {
+              if (device.lastOnlineTimeC) {
                 const lastOnline = parseDate(req?.body.lastOnlineTimeC);
                 const status = getStatus(lastOnline, presentDate);
                 return { ...device, status };
-            } else {
+              } else {
                 return { ...device, status: "inactive" };
-            }
-        }) : [];
-        return res.status(200).json({
-            deviceonlinestatus: updatedDeviceInfo
-        });
-
+              }
+            })
+          : [];
+      return res.status(200).json({
+        deviceonlinestatus: updatedDeviceInfo,
+      });
     } catch (err) {
-        console.log(err, 'err')
-        return next(new ErrorHandler("Records not found!", 500));
+      console.log(err, "err");
+      return next(new ErrorHandler("Records not found!", 500));
     }
-})
-
+  }
+);

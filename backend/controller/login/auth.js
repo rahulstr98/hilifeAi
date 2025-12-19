@@ -27411,6 +27411,27 @@ exports.getAllUsersCompanyname = catchAsyncErrors(async (req, res, next) => {
     return res.status(200).json({ users });
 });
 
+// reportingto functionality
+exports.getReportingtoemployeechangeuser = catchAsyncErrors(async (req, res, next) => {
+  const { user, oldname } = req.body;
+
+  try {
+    const result = await User.updateMany(
+      { reportingto: oldname }, // Condition
+      // { $set: { reportingto: user } }  // Update value
+      { $set: { reportingto: user ? user : '' } }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: 'Reporting To updated successfully',
+      modifiedCount: result.modifiedCount,
+    });
+  } catch (err) {
+    return next(new ErrorHandler('Records not found!', 404));
+  }
+});
+
 exports.getIndividualUserLoginStatus = catchAsyncErrors(async (req, res, next) => {
     let users;
     try {

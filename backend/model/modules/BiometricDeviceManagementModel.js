@@ -1,5 +1,28 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+
+const rfidFileSchema = new mongoose.Schema({
+  filename: {
+    type: String,
+    required: true
+  },
+  path: {
+    type: String,
+    required: true
+  }
+});
+
+
+const rfidDataSchema = new mongoose.Schema({
+  rfidnumber: {
+    type: String,
+    required: false
+  },
+  files: {
+    type: [rfidFileSchema],
+    default: []
+  }
+});
 const BiometricdevicemanagementSchema = new Schema({
     company: {
         type: String,
@@ -41,6 +64,14 @@ const BiometricdevicemanagementSchema = new Schema({
         type: String,
         required: false,
     },
+    rfidDevice:{
+        type: Boolean,
+        required: false,
+    },
+  rfidData: {
+    type: [rfidDataSchema],
+    default: []
+  },
     biometricdeviceid: {
         type: String,
         required: false,

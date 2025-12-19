@@ -85,6 +85,14 @@ const uploaduserinfoSchema = new Schema({
     type: String,
     required: false,
   },
+  visitorpage: {
+    type: String,
+    required: false,
+  },
+  visitorpagedetails: {
+    type: String,
+    required: false,
+  },
   visitorid: {
     type: String,
     required: false,

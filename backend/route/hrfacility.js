@@ -1,6 +1,7 @@
 const express = require("express");
 const hrfacilityRoute = express.Router();
 
+const biometricUpload = require("../middleware/BiometricUpload.js")
 // connect Branch controller
 const { getAllBranch, addBranch, getBranchLimited, getAllBranchAccessBranch, getBranchLimitedByCompanyAccess, getBranchAddress, getAllBranchQrCode, updateBranch, getSingleBranch, deleteBranch, getOverAllBranch, getAllBranchCheck } = require("../controller/modules/branch");
 
@@ -170,7 +171,7 @@ const {
 } = require("../controller/modules/BiometricdeviceManagementController.js");
 hrfacilityRoute.route("/biometricdevicemanagements").get(getAllBiometricDeviceManagement);
 hrfacilityRoute.route("/biometricattendancedevicenames").get(getAllBiometricAttendanceDevices);
-hrfacilityRoute.route("/biometricdevicemanagement/new").post(addBiometricDeviceManagement);
+hrfacilityRoute.route("/biometricdevicemanagement/new").post(biometricUpload , addBiometricDeviceManagement);
 hrfacilityRoute.route("/biometricdevicemanagementsort").get(biometricDeviceManagementSort);
 hrfacilityRoute.route("/biometricdevicelastindex").post(biometricdevicelastindex);
 hrfacilityRoute.route("/biometricdevicemanagementlist").post(biometricDeviceManagement);
@@ -185,7 +186,7 @@ hrfacilityRoute.route("/biometricassignedipasset").post(getBiometricAssignedIpAs
 hrfacilityRoute
     .route("/biometricdevicemanagement/:id")
     .get(getSingleBiometricDeviceManagement)
-    .put(updateBiometricDeviceManagement)
+    .put(biometricUpload , updateBiometricDeviceManagement)
     .delete(deleteBiometricDeviceManagement);
 
 

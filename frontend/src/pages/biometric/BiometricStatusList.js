@@ -1129,7 +1129,7 @@ function BiometricstatusList() {
                 setIsPdfFilterOpen={setIsPdfFilterOpen}
                 handleClosePdfFilterMod={handleClosePdfFilterMod}
                 filteredDataTwo={(filteredChanges !== null ? filteredRowData : rowDataTable) ?? []}
-                itemsTwo={acpointCalculationArrayForExport ?? []}
+                itemsTwo={items ?? []}
                 filename={"Biometric Status List"}
                 exportColumnNames={exportColumnNames}
                 exportRowValues={exportRowValues}

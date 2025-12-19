@@ -1,105 +1,70 @@
-import ArrowDropDownOutlinedIcon from "@mui/icons-material/ArrowDropDownOutlined";
-import ArrowDropUpOutlinedIcon from "@mui/icons-material/ArrowDropUpOutlined";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CloseIcon from "@mui/icons-material/Close";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ImageIcon from "@mui/icons-material/Image";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import {
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  FormControl,
-  Grid,
-  IconButton,
-  InputLabel,
-  List,
-  ListItem,
-  ListItemText,
-  MenuItem,
-  OutlinedInput,
-  Paper,
-  Select,
-  Table,
-  TableBody,
-  TableContainer,
-  TableHead,
-  TextareaAutosize,
-  TextField,
-  Typography,
-  Chip,
-} from "@mui/material";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import MuiInput from "@mui/material/Input";
-import Popover from "@mui/material/Popover";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import Stack from "@mui/material/Stack";
-import TableCell from "@mui/material/TableCell";
-import TableRow from "@mui/material/TableRow";
-import { styled } from "@mui/system";
-import axios from "../../../../axiosInstance";
-import ExcelJS from "exceljs";
-import * as FileSaver from "file-saver";
-import { saveAs } from "file-saver";
-import jsPDF from "jspdf";
-import "jspdf-autotable";
-import moment from "moment-timezone";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { FaFileCsv, FaFileExcel, FaFilePdf, FaPrint } from "react-icons/fa";
-import { ThreeDots } from "react-loader-spinner";
-import Selects from "react-select";
-import { useReactToPrint } from "react-to-print";
-import { handleApiError } from "../../../../components/Errorhandling";
-import Headtitle from "../../../../components/Headtitle";
-import { StyledTableCell, StyledTableRow } from "../../../../components/Table";
-import {
-  AuthContext,
-  UserRoleAccessContext,
-} from "../../../../context/Appcontext";
-import { colourStyles, userStyle } from "../../../../pageStyle";
-import { SERVICE } from "../../../../services/Baseservice";
-import Webcamimage from "../Webcamprofile";
+import ArrowDropDownOutlinedIcon from '@mui/icons-material/ArrowDropDownOutlined';
+import ArrowDropUpOutlinedIcon from '@mui/icons-material/ArrowDropUpOutlined';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ImageIcon from '@mui/icons-material/Image';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, FormControl, Grid, IconButton, InputLabel, List, ListItem, ListItemText, MenuItem, OutlinedInput, Paper, Select, Table, TableBody, TableContainer, TableHead, TextareaAutosize, TextField, Typography, Chip } from '@mui/material';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import MuiInput from '@mui/material/Input';
+import Popover from '@mui/material/Popover';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Stack from '@mui/material/Stack';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import { styled } from '@mui/system';
+import axios from '../../../../axiosInstance';
+import ExcelJS from 'exceljs';
+import * as FileSaver from 'file-saver';
+import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import moment from 'moment-timezone';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { FaFileCsv, FaFileExcel, FaFilePdf, FaPrint } from 'react-icons/fa';
+import { ThreeDots } from 'react-loader-spinner';
+import Selects from 'react-select';
+import { useReactToPrint } from 'react-to-print';
+import { handleApiError } from '../../../../components/Errorhandling';
+import Headtitle from '../../../../components/Headtitle';
+import { StyledTableCell, StyledTableRow } from '../../../../components/Table';
+import { AuthContext, UserRoleAccessContext } from '../../../../context/Appcontext';
+import { colourStyles, userStyle } from '../../../../pageStyle';
+import { SERVICE } from '../../../../services/Baseservice';
+import Webcamimage from '../Webcamprofile';
 
-import { CopyToClipboard } from "react-copy-to-clipboard";
-import {
-  NotificationContainer,
-  NotificationManager,
-} from "react-notifications";
-import "react-notifications/lib/notifications.css";
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { NotificationContainer, NotificationManager } from 'react-notifications';
+import 'react-notifications/lib/notifications.css';
 
-import { LoadingButton } from "@mui/lab";
-import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
-import Tooltip from "@mui/material/Tooltip";
-import AlertDialog from "../../../../components/Alert";
-import { DeleteConfirmation } from "../../../../components/DeleteConfirmation.js";
+import { LoadingButton } from '@mui/lab';
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import Tooltip from '@mui/material/Tooltip';
+import AlertDialog from '../../../../components/Alert';
+import { DeleteConfirmation } from '../../../../components/DeleteConfirmation.js';
 
-import Switch from "@mui/material/Switch";
+import Switch from '@mui/material/Switch';
 
-import ButtonGroup from "@mui/material/ButtonGroup";
-import domtoimage from "dom-to-image";
-import { MultiSelect } from "react-multi-select-component";
-import AggregatedSearchBar from "../../../../components/AggregatedSearchBar";
-import AggridTable from "../../../../components/AggridTable";
-import MessageAlert from "../../../../components/MessageAlert";
-import PageHeading from "../../../../components/PageHeading";
-import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import ButtonGroup from '@mui/material/ButtonGroup';
+import domtoimage from 'dom-to-image';
+import { MultiSelect } from 'react-multi-select-component';
+import AggregatedSearchBar from '../../../../components/AggregatedSearchBar';
+import AggridTable from '../../../../components/AggridTable';
+import MessageAlert from '../../../../components/MessageAlert';
+import PageHeading from '../../../../components/PageHeading';
+import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
 
 const Loader = ({ loading, message }) => {
   return (
-    <Backdrop
-      sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 999 }}
-      open={loading}
-    >
-      <div style={{ textAlign: "center" }}>
-        <CircularProgress sx={{ color: "#edf1f7" }} />
-        <Typography variant="h6" sx={{ mt: 2, color: "#edf1f7" }}>
+    <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 999 }} open={loading}>
+      <div style={{ textAlign: 'center' }}>
+        <CircularProgress sx={{ color: '#edf1f7' }} />
+        <Typography variant="h6" sx={{ mt: 2, color: '#edf1f7' }}>
           {message}
         </Typography>
       </div>
@@ -108,11 +73,11 @@ const Loader = ({ loading, message }) => {
 };
 
 const Input = styled(MuiInput)(({ theme }) => ({
-  "& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button": {
-    display: "none !important",
+  '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+    display: 'none !important',
   },
-  "& input[type=number]": {
-    MozAppearance: "textfield",
+  '& input[type=number]': {
+    MozAppearance: 'textfield',
   },
 }));
 
@@ -126,13 +91,13 @@ function Noticeperiodactionemployeelist() {
 
   const [overallItems, setOverallItems] = useState([]);
 
-  const [hierarchyConditions, setHierarchyConditions] = useState([]);
+  // const [hierarchyConditions, setHierarchyConditions] = useState([]);
   const [isHandleChange, setIsHandleChange] = useState(false);
-  const [searchedString, setSearchedString] = useState("");
+  const [searchedString, setSearchedString] = useState('');
 
   const [openPopupMalert, setOpenPopupMalert] = useState(false);
-  const [popupContentMalert, setPopupContentMalert] = useState("");
-  const [popupSeverityMalert, setPopupSeverityMalert] = useState("");
+  const [popupContentMalert, setPopupContentMalert] = useState('');
+  const [popupSeverityMalert, setPopupSeverityMalert] = useState('');
   const handleClickOpenPopupMalert = () => {
     setOpenPopupMalert(true);
     setIsBoarding(true);
@@ -144,8 +109,8 @@ function Noticeperiodactionemployeelist() {
   const [deletebtn, setDeleteBtn] = useState(false);
   const [deletebtnDisable, setDeleteBtnDisable] = useState(true);
   const [openPopup, setOpenPopup] = useState(false);
-  const [popupContent, setPopupContent] = useState("");
-  const [popupSeverity, setPopupSeverity] = useState("");
+  const [popupContent, setPopupContent] = useState('');
+  const [popupSeverity, setPopupSeverity] = useState('');
   const handleClickOpenPopup = () => {
     setOpenPopup(true);
   };
@@ -163,10 +128,10 @@ function Noticeperiodactionemployeelist() {
   };
 
   const [loading, setLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState("Please Wait...!");
+  const [loadingMessage, setLoadingMessage] = useState('Please Wait...!');
 
   const handleCopy = (message) => {
-    NotificationManager.success(`${message} 👍`, "", 2000);
+    NotificationManager.success(`${message} 👍`, '', 2000);
   };
 
   const [isAssigned, setIsAssigned] = useState(false);
@@ -179,48 +144,30 @@ function Noticeperiodactionemployeelist() {
         },
       });
       // Check if the response contains the required data
-      const isAvailable = res?.data?.checklistverificationmasters?.some(
-        (item) => item.subsubpage === "Action Employee List"
-      );
+      const isAvailable = res?.data?.checklistverificationmasters?.some((item) => item.subsubpage === 'Action Employee List');
       if (isAvailable) {
         setIsAssigned(true);
       } else {
         setIsAssigned(false);
       }
     } catch (err) {
-      console.error("API Error:", err); // For easier debugging
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      console.error('API Error:', err); // For easier debugging
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
   const [employees, setEmployees] = useState([]);
   const [clientId, setClientId] = useState([]);
   const [employeesList, setEmployeesList] = useState([]);
-  const [replaceName, setReplaceName] = useState("Please Select Replace name");
+  const [replaceName, setReplaceName] = useState('Please Select Replace name');
   const [sameDesignation, setSameDesignation] = useState(false);
   const [higherDesignation, setHigherDesignation] = useState(false);
   const [AllBranch, setAllBranch] = useState(false);
   const [sameDesigDropdowns, setSameDesigDropdowns] = useState([]);
   const [higherDesigDropdowns, setHigherDesigDropdowns] = useState([]);
+  const { isUserRoleAccess, isUserRoleCompare, alldesignation, allUsersData, pageName, setPageName, allTeam, buttonStyles, isAssignBranch } = useContext(UserRoleAccessContext);
 
-  const {
-    isUserRoleAccess,
-    isUserRoleCompare,
-    alldesignation,
-    allUsersData,
-    pageName,
-    setPageName,
-    allTeam,
-    buttonStyles,
-    isAssignBranch,
-  } = useContext(UserRoleAccessContext);
-
-  const accessbranch = isUserRoleAccess?.role?.includes("Manager")
+  const accessbranch = isUserRoleAccess?.role?.includes('Manager')
     ? isAssignBranch?.map((data) => ({
         branch: data.branch,
         company: data.company,
@@ -230,35 +177,13 @@ function Noticeperiodactionemployeelist() {
         ?.filter((data) => {
           let fetfinalurl = [];
 
-          if (
-            data?.modulenameurl?.length !== 0 &&
-            data?.submodulenameurl?.length !== 0 &&
-            data?.mainpagenameurl?.length !== 0 &&
-            data?.subpagenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.includes(window.location.pathname)
-          ) {
+          if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
             fetfinalurl = data.subsubpagenameurl;
-          } else if (
-            data?.modulenameurl?.length !== 0 &&
-            data?.submodulenameurl?.length !== 0 &&
-            data?.mainpagenameurl?.length !== 0 &&
-            data?.subpagenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.includes(window.location.pathname)
-          ) {
+          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
             fetfinalurl = data.subpagenameurl;
-          } else if (
-            data?.modulenameurl?.length !== 0 &&
-            data?.submodulenameurl?.length !== 0 &&
-            data?.mainpagenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.includes(window.location.pathname)
-          ) {
+          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
             fetfinalurl = data.mainpagenameurl;
-          } else if (
-            data?.modulenameurl?.length !== 0 &&
-            data?.submodulenameurl?.length !== 0 &&
-            data?.subsubpagenameurl?.includes(window.location.pathname)
-          ) {
+          } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
             fetfinalurl = data.submodulenameurl;
           } else if (data?.modulenameurl?.length !== 0) {
             fetfinalurl = data.modulenameurl;
@@ -266,10 +191,7 @@ function Noticeperiodactionemployeelist() {
             fetfinalurl = [];
           }
 
-          const remove = [
-            window.location.pathname?.substring(1),
-            window.location.pathname,
-          ];
+          const remove = [window.location.pathname?.substring(1), window.location.pathname];
           return fetfinalurl?.some((item) => remove?.includes(item));
         })
         ?.map((data) => ({
@@ -290,7 +212,7 @@ function Noticeperiodactionemployeelist() {
       },
       empcode: String(isUserRoleAccess?.empcode),
       companyname: String(isUserRoleAccess?.companyname),
-      pagename: String("Action Employee List"),
+      pagename: String('Action Employee List'),
       commonid: String(isUserRoleAccess?._id),
       date: String(new Date()),
 
@@ -305,32 +227,32 @@ function Noticeperiodactionemployeelist() {
   // page refersh reload code
   const handleBeforeUnload = (event) => {
     event.preventDefault();
-    event.returnValue = ""; // This is required for Chrome support
+    event.returnValue = ''; // This is required for Chrome support
   };
 
   useEffect(() => {
     const beforeUnloadHandler = (event) => handleBeforeUnload(event);
-    window.addEventListener("beforeunload", beforeUnloadHandler);
+    window.addEventListener('beforeunload', beforeUnloadHandler);
     return () => {
-      window.removeEventListener("beforeunload", beforeUnloadHandler);
+      window.removeEventListener('beforeunload', beforeUnloadHandler);
     };
   }, []);
 
   const [filterState, setFilterState] = useState({
-    type: "Individual",
-    employeestatus: "Please Select Employee Status",
-    employee: "Please Select Employee",
-    branch: "",
-    unit: "",
-    team: "",
+    type: 'Individual',
+    employeestatus: 'Please Select Employee Status',
+    employee: 'Please Select Employee',
+    branch: '',
+    unit: '',
+    team: '',
   });
   const TypeOptions = [
-    { label: "Individual", value: "Individual" },
-    { label: "Department", value: "Department" },
-    { label: "Company", value: "Company" },
-    { label: "Branch", value: "Branch" },
-    { label: "Unit", value: "Unit" },
-    { label: "Team", value: "Team" },
+    { label: 'Individual', value: 'Individual' },
+    { label: 'Department', value: 'Department' },
+    { label: 'Company', value: 'Company' },
+    { label: 'Branch', value: 'Branch' },
+    { label: 'Unit', value: 'Unit' },
+    { label: 'Team', value: 'Team' },
   ];
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const fetchDepartments = async () => {
@@ -347,12 +269,7 @@ function Noticeperiodactionemployeelist() {
         }))
       );
     } catch (err) {
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
   useEffect(() => {
@@ -360,9 +277,7 @@ function Noticeperiodactionemployeelist() {
   }, []);
 
   //department multiselect
-  const [selectedOptionsDepartment, setSelectedOptionsDepartment] = useState(
-    []
-  );
+  const [selectedOptionsDepartment, setSelectedOptionsDepartment] = useState([]);
   let [valueDepartmentCat, setValueDepartmentCat] = useState([]);
   const [valueEmp, setValueEmp] = React.useState([]); // State for employees
   const [isBoxFocused, setIsBoxFocused] = React.useState(false); // Track focus state
@@ -380,9 +295,7 @@ function Noticeperiodactionemployeelist() {
   };
 
   const customValueRendererDepartment = (valueDepartmentCat, _categoryname) => {
-    return valueDepartmentCat?.length
-      ? valueDepartmentCat.map(({ label }) => label)?.join(", ")
-      : "Please Select Department";
+    return valueDepartmentCat?.length ? valueDepartmentCat.map(({ label }) => label)?.join(', ') : 'Please Select Department';
   };
   //employee multiselect
   const [selectedOptionsEmployee, setSelectedOptionsEmployee] = useState([]);
@@ -409,9 +322,7 @@ function Noticeperiodactionemployeelist() {
   };
 
   const customValueRendererEmployee = (valueEmployeeCat, _categoryname) => {
-    return valueEmployeeCat?.length
-      ? valueEmployeeCat.map(({ label }) => label)?.join(", ")
-      : "Please Select Employee";
+    return valueEmployeeCat?.length ? valueEmployeeCat.map(({ label }) => label)?.join(', ') : 'Please Select Employee';
   };
 
   //company multiselect
@@ -438,17 +349,15 @@ function Noticeperiodactionemployeelist() {
     setValueEmp([]);
     setFilterState((prev) => ({
       ...prev,
-      employee: "Please Select Employee",
-      branch: "",
-      unit: "",
-      team: "",
+      employee: 'Please Select Employee',
+      branch: '',
+      unit: '',
+      team: '',
     }));
   };
 
   const customValueRendererCompany = (valueCompanyCat, _categoryname) => {
-    return valueCompanyCat?.length
-      ? valueCompanyCat.map(({ label }) => label)?.join(", ")
-      : "Please Select Company";
+    return valueCompanyCat?.length ? valueCompanyCat.map(({ label }) => label)?.join(', ') : 'Please Select Company';
   };
 
   //branch multiselect
@@ -468,17 +377,15 @@ function Noticeperiodactionemployeelist() {
     setSelectedOptionsTeam([]);
     setFilterState((prev) => ({
       ...prev,
-      employee: "Please Select Employee",
-      branch: "",
-      unit: "",
-      team: "",
+      employee: 'Please Select Employee',
+      branch: '',
+      unit: '',
+      team: '',
     }));
   };
 
   const customValueRendererBranch = (valueBranchCat, _categoryname) => {
-    return valueBranchCat?.length
-      ? valueBranchCat.map(({ label }) => label)?.join(", ")
-      : "Please Select Branch";
+    return valueBranchCat?.length ? valueBranchCat.map(({ label }) => label)?.join(', ') : 'Please Select Branch';
   };
 
   //unit multiselect
@@ -496,17 +403,15 @@ function Noticeperiodactionemployeelist() {
     setSelectedOptionsTeam([]);
     setFilterState((prev) => ({
       ...prev,
-      employee: "Please Select Employee",
-      branch: "",
-      unit: "",
-      team: "",
+      employee: 'Please Select Employee',
+      branch: '',
+      unit: '',
+      team: '',
     }));
   };
 
   const customValueRendererUnit = (valueUnitCat, _categoryname) => {
-    return valueUnitCat?.length
-      ? valueUnitCat.map(({ label }) => label)?.join(", ")
-      : "Please Select Unit";
+    return valueUnitCat?.length ? valueUnitCat.map(({ label }) => label)?.join(', ') : 'Please Select Unit';
   };
 
   //team multiselect
@@ -522,23 +427,19 @@ function Noticeperiodactionemployeelist() {
     setSelectedOptionsTeam(options);
     setFilterState((prev) => ({
       ...prev,
-      employee: "Please Select Employee",
-      branch: "",
-      unit: "",
-      team: "",
+      employee: 'Please Select Employee',
+      branch: '',
+      unit: '',
+      team: '',
     }));
   };
 
   const customValueRendererTeam = (valueTeamCat, _categoryname) => {
-    return valueTeamCat?.length
-      ? valueTeamCat.map(({ label }) => label)?.join(", ")
-      : "Please Select Team";
+    return valueTeamCat?.length ? valueTeamCat.map(({ label }) => label)?.join(', ') : 'Please Select Team';
   };
 
   //------------------------------------------------------------------------------------------
-  const [selectedOptionsCompanyNew, setSelectedOptionsCompanyNew] = useState(
-    []
-  );
+  const [selectedOptionsCompanyNew, setSelectedOptionsCompanyNew] = useState([]);
   let [valueCompanyCatNew, setValueCompanyCatNew] = useState([]);
 
   const handleCompanyChangeNew = (options) => {
@@ -557,9 +458,7 @@ function Noticeperiodactionemployeelist() {
   };
 
   const customValueRendererCompanyNew = (valueCompanyCatNew, _categoryname) => {
-    return valueCompanyCatNew?.length
-      ? valueCompanyCatNew.map(({ label }) => label)?.join(", ")
-      : "Please Select Company";
+    return valueCompanyCatNew?.length ? valueCompanyCatNew.map(({ label }) => label)?.join(', ') : 'Please Select Company';
   };
 
   //branch multiselect
@@ -580,9 +479,7 @@ function Noticeperiodactionemployeelist() {
   };
 
   const customValueRendererBranchNew = (valueBranchCatNew, _categoryname) => {
-    return valueBranchCatNew?.length
-      ? valueBranchCatNew.map(({ label }) => label)?.join(", ")
-      : "Please Select Branch";
+    return valueBranchCatNew?.length ? valueBranchCatNew.map(({ label }) => label)?.join(', ') : 'Please Select Branch';
   };
 
   //unit multiselect
@@ -601,9 +498,7 @@ function Noticeperiodactionemployeelist() {
   };
 
   const customValueRendererUnitNew = (valueUnitCatNew, _categoryname) => {
-    return valueUnitCatNew?.length
-      ? valueUnitCatNew.map(({ label }) => label)?.join(", ")
-      : "Please Select Unit";
+    return valueUnitCatNew?.length ? valueUnitCatNew.map(({ label }) => label)?.join(', ') : 'Please Select Unit';
   };
 
   //team multiselect
@@ -620,9 +515,7 @@ function Noticeperiodactionemployeelist() {
   };
 
   const customValueRendererTeamNew = (valueTeamCatNew, _categoryname) => {
-    return valueTeamCatNew?.length
-      ? valueTeamCatNew.map(({ label }) => label)?.join(", ")
-      : "Please Select Team";
+    return valueTeamCatNew?.length ? valueTeamCatNew.map(({ label }) => label)?.join(', ') : 'Please Select Team';
   };
 
   const [allAssignCompany, setAllAssignCompany] = useState([]);
@@ -631,54 +524,36 @@ function Noticeperiodactionemployeelist() {
 
   const handleFilter = () => {
     setIsBoarding(false);
-    if (
-      filterState?.type === "Please Select Type" ||
-      filterState?.type === ""
-    ) {
-      setPopupContentMalert("Please Select Type!");
-      setPopupSeverityMalert("info");
+    if (filterState?.type === 'Please Select Type' || filterState?.type === '') {
+      setPopupContentMalert('Please Select Type!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     } else if (selectedOptionsCompany?.length === 0) {
-      setPopupContentMalert("Please Select Company!");
-      setPopupSeverityMalert("info");
+      setPopupContentMalert('Please Select Company!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (
-      ["Individual", "Branch", "Unit", "Team"]?.includes(filterState?.type) &&
-      selectedOptionsBranch?.length === 0
-    ) {
-      setPopupContentMalert("Please Select Branch!");
-      setPopupSeverityMalert("info");
+    } else if (['Individual', 'Branch', 'Unit', 'Team']?.includes(filterState?.type) && selectedOptionsBranch?.length === 0) {
+      setPopupContentMalert('Please Select Branch!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (
-      ["Individual", "Unit", "Team"]?.includes(filterState?.type) &&
-      selectedOptionsUnit?.length === 0
-    ) {
-      setPopupContentMalert("Please Select Unit!");
-      setPopupSeverityMalert("info");
+    } else if (['Individual', 'Unit', 'Team']?.includes(filterState?.type) && selectedOptionsUnit?.length === 0) {
+      setPopupContentMalert('Please Select Unit!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (
-      ["Individual", "Team"]?.includes(filterState?.type) &&
-      selectedOptionsTeam?.length === 0
-    ) {
-      setPopupContentMalert("Please Select Team!");
-      setPopupSeverityMalert("info");
+    } else if (['Individual', 'Team']?.includes(filterState?.type) && selectedOptionsTeam?.length === 0) {
+      setPopupContentMalert('Please Select Team!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (
-      filterState?.type === "Individual" &&
-      selectedOptionsEmployee?.length === 0
-    ) {
-      setPopupContentMalert("Please Select Employee!");
-      setPopupSeverityMalert("info");
+    } else if (filterState?.type === 'Individual' && selectedOptionsEmployee?.length === 0) {
+      setPopupContentMalert('Please Select Employee!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (
-      filterState?.type === "Department" &&
-      selectedOptionsDepartment?.length === 0
-    ) {
-      setPopupContentMalert("Please Select Department!");
-      setPopupSeverityMalert("info");
+    } else if (filterState?.type === 'Department' && selectedOptionsDepartment?.length === 0) {
+      setPopupContentMalert('Please Select Department!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     } else {
-      setSearchQuery("");
+      setSearchQuery('');
       fetchHandler();
     }
   };
@@ -687,9 +562,7 @@ function Noticeperiodactionemployeelist() {
   const handleAutoSelect = async () => {
     setPageName(!pageName);
     try {
-      let filteredDatas = allUsersData?.filter(
-        (item) => item?.workmode !== "Internship"
-      );
+      let filteredDatas = allUsersData?.filter((item) => item?.workmode !== 'Internship');
       setNotEmployees(filteredDatas);
       let selectedValues = accessbranch
         ?.map((data) => ({
@@ -697,30 +570,15 @@ function Noticeperiodactionemployeelist() {
           branch: data.branch,
           unit: data.unit,
         }))
-        .filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex(
-              (t) =>
-                t.company === value.company &&
-                t.branch === value.branch &&
-                t.unit === value.unit
-            )
-        );
+        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch && t.unit === value.unit));
       let selectedCompany = selectedValues
-        ?.filter(
-          (value, index, self) =>
-            index === self.findIndex((t) => t.company === value.company)
-        )
+        ?.filter((value, index, self) => index === self.findIndex((t) => t.company === value.company))
         .map((a, index) => {
           return a.company;
         });
 
       let mappedCompany = selectedValues
-        ?.filter(
-          (value, index, self) =>
-            index === self.findIndex((t) => t.company === value.company)
-        )
+        ?.filter((value, index, self) => index === self.findIndex((t) => t.company === value.company))
         ?.map((data) => ({
           label: data?.company,
           value: data?.company,
@@ -730,25 +588,13 @@ function Noticeperiodactionemployeelist() {
       setSelectedOptionsCompany(mappedCompany);
 
       let selectedBranch = selectedValues
-        .filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex(
-              (t) => t.company === value.company && t.branch === value.branch
-            )
-        )
+        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch))
         .map((a, index) => {
           return a.branch;
         });
 
       let mappedBranch = selectedValues
-        .filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex(
-              (t) => t.company === value.company && t.branch === value.branch
-            )
-        )
+        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch))
         ?.map((data) => ({
           label: data?.branch,
           value: data?.branch,
@@ -758,31 +604,13 @@ function Noticeperiodactionemployeelist() {
       setSelectedOptionsBranch(mappedBranch);
 
       let selectedUnit = selectedValues
-        .filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex(
-              (t) =>
-                t.company === value.company &&
-                t.branch === value.branch &&
-                t.unit === value.unit
-            )
-        )
+        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch && t.unit === value.unit))
         .map((a, index) => {
           return a.unit;
         });
 
       let mappedUnit = selectedValues
-        .filter(
-          (value, index, self) =>
-            index ===
-            self.findIndex(
-              (t) =>
-                t.company === value.company &&
-                t.branch === value.branch &&
-                t.unit === value.unit
-            )
-        )
+        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch && t.unit === value.unit))
         ?.map((data) => ({
           label: data?.unit,
           value: data?.unit,
@@ -792,49 +620,22 @@ function Noticeperiodactionemployeelist() {
       setSelectedOptionsUnit(mappedUnit);
 
       let mappedTeam = allTeam
-        ?.filter(
-          (u) =>
-            selectedCompany?.includes(u.company) &&
-            selectedBranch?.includes(u.branch) &&
-            selectedUnit?.includes(u.unit)
-        )
+        ?.filter((u) => selectedCompany?.includes(u.company) && selectedBranch?.includes(u.branch) && selectedUnit?.includes(u.unit))
         .map((u) => ({
           label: u.teamname,
           value: u.teamname,
         }));
 
-      let selectedTeam = allTeam
-        ?.filter(
-          (u) =>
-            selectedCompany?.includes(u.company) &&
-            selectedBranch?.includes(u.branch) &&
-            selectedUnit?.includes(u.unit)
-        )
-        .map((u) => u.teamname);
+      let selectedTeam = allTeam?.filter((u) => selectedCompany?.includes(u.company) && selectedBranch?.includes(u.branch) && selectedUnit?.includes(u.unit)).map((u) => u.teamname);
       //----------------------------
       let mappedemployees = filteredDatas
-        ?.filter(
-          (u) =>
-            selectedCompany?.includes(u.company) &&
-            selectedBranch?.includes(u.branch) &&
-            selectedUnit?.includes(u.unit) &&
-            selectedTeam?.includes(u.team) &&
-            u.workmode !== "Internship"
-        )
+        ?.filter((u) => selectedCompany?.includes(u.company) && selectedBranch?.includes(u.branch) && selectedUnit?.includes(u.unit) && selectedTeam?.includes(u.team) && u.workmode !== 'Internship')
         .map((u) => ({
           label: u.companyname,
           value: u.companyname,
         }));
 
-      let employees = filteredDatas
-        ?.filter(
-          (u) =>
-            selectedCompany?.includes(u.company) &&
-            selectedBranch?.includes(u.branch) &&
-            selectedUnit?.includes(u.unit) &&
-            selectedTeam?.includes(u.team)
-        )
-        .map((u) => u.companyname);
+      let employees = filteredDatas?.filter((u) => selectedCompany?.includes(u.company) && selectedBranch?.includes(u.branch) && selectedUnit?.includes(u.unit) && selectedTeam?.includes(u.team)).map((u) => u.companyname);
       setValueEmployeeCat(employees);
       setSelectedOptionsEmployee(mappedemployees);
       setValueEmp(mappedemployees?.map((item) => item?.value));
@@ -848,12 +649,7 @@ function Noticeperiodactionemployeelist() {
 
       setAllAssignUnit(selectedUnit);
     } catch (err) {
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -861,23 +657,23 @@ function Noticeperiodactionemployeelist() {
     handleAutoSelect();
   }, [isAssignBranch]);
 
-  const [searchInputValue, setSearchInputValue] = useState("");
+  const [searchInputValue, setSearchInputValue] = useState('');
 
   const handlePasteForEmp = (e) => {
     e.preventDefault();
-    const pastedText = e.clipboardData.getData("text");
+    const pastedText = e.clipboardData.getData('text');
 
     // Process the pasted text
     const pastedNames = pastedText
       .split(/[\n,]+/)
       .map((name) => name.trim())
-      .filter((name) => name !== "");
+      .filter((name) => name !== '');
 
     // Update the state
     updateEmployees(pastedNames);
 
     // Clear the search input after paste
-    setSearchInputValue("");
+    setSearchInputValue('');
 
     // Refocus the element
     e.target.focus();
@@ -885,13 +681,7 @@ function Noticeperiodactionemployeelist() {
 
   useEffect(() => {
     updateEmployees([]); // Pass an empty array instead of an empty string
-  }, [
-    allUsersData,
-    valueCompanyCat,
-    valueBranchCat,
-    valueUnitCat,
-    valueTeamCat,
-  ]);
+  }, [allUsersData, valueCompanyCat, valueBranchCat, valueUnitCat, valueTeamCat]);
 
   const [allPastename, setallPasteNames] = useState([]);
 
@@ -902,19 +692,10 @@ function Noticeperiodactionemployeelist() {
     setallPasteNames(namesArray);
 
     const availableOptions = allUsersData
-      ?.filter(
-        (comp) =>
-          valueCompanyCat?.includes(comp.company) &&
-          valueBranchCat?.includes(comp.branch) &&
-          valueUnitCat?.includes(comp.unit) &&
-          valueTeamCat?.includes(comp.team) &&
-          comp?.workmode !== "Internship"
-      )
-      ?.map((data) => data.companyname.replace(/\s*\.\s*/g, ".").trim());
+      ?.filter((comp) => valueCompanyCat?.includes(comp.company) && valueBranchCat?.includes(comp.branch) && valueUnitCat?.includes(comp.unit) && valueTeamCat?.includes(comp.team) && comp?.workmode !== 'Internship')
+      ?.map((data) => data.companyname.replace(/\s*\.\s*/g, '.').trim());
 
-    const matchedValues = namesArray.filter((name) =>
-      availableOptions.includes(name.replace(/\s*\.\s*/g, ".").trim())
-    );
+    const matchedValues = namesArray.filter((name) => availableOptions.includes(name.replace(/\s*\.\s*/g, '.').trim()));
 
     // Update selected options
     const newOptions = matchedValues.map((value) => ({
@@ -923,9 +704,7 @@ function Noticeperiodactionemployeelist() {
     }));
 
     setSelectedOptionsEmployee((prev) => {
-      const newValues = newOptions.filter(
-        (newOpt) => !prev.some((prevOpt) => prevOpt.value === newOpt.value)
-      );
+      const newValues = newOptions.filter((newOpt) => !prev.some((prevOpt) => prevOpt.value === newOpt.value));
       return [...prev, ...newValues];
     });
 
@@ -936,32 +715,24 @@ function Noticeperiodactionemployeelist() {
   // Handle clicks outside the Box
   useEffect(() => {
     const handleClickOutside = (e) => {
-      const boxElement = document.getElementById("paste-box"); // Add an ID to the Box
+      const boxElement = document.getElementById('paste-box'); // Add an ID to the Box
       if (boxElement && !boxElement.contains(e.target)) {
         setIsBoxFocused(false); // Reset focus state if clicking outside the Box
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
   const handleDelete = (e, value) => {
     e.preventDefault();
-    setSelectedOptionsEmployee((current) =>
-      current.filter((emp) => emp.value !== value)
-    );
+    setSelectedOptionsEmployee((current) => current.filter((emp) => emp.value !== value));
     setValueEmp((current) => current.filter((empValue) => empValue !== value));
-    setValueEmployeeCat((current) =>
-      current.filter((empValue) => empValue !== value)
-    );
-    setallPasteNames(
-      selectedOptionsEmployee
-        .filter((emp) => emp.value !== value)
-        .map((item) => item.value)
-    );
+    setValueEmployeeCat((current) => current.filter((empValue) => empValue !== value));
+    setallPasteNames(selectedOptionsEmployee.filter((emp) => emp.value !== value).map((item) => item.value));
   };
 
   const handleClearFilter = () => {
@@ -980,17 +751,17 @@ function Noticeperiodactionemployeelist() {
     setValueEmp([]);
     setEmployees([]);
     setFilterState({
-      type: "Individual",
-      employeestatus: "Please Select Employee Status",
-      employee: "Please Select Employee",
-      branch: "",
-      unit: "",
-      team: "",
+      type: 'Individual',
+      employeestatus: 'Please Select Employee Status',
+      employee: 'Please Select Employee',
+      branch: '',
+      unit: '',
+      team: '',
     });
-    setPopupContent("Cleared Successfully");
-    setPopupSeverity("success");
+    setPopupContent('Cleared Successfully');
+    setPopupSeverity('success');
     handleClickOpenPopup();
-    setSearchQuery("");
+    setSearchQuery('');
   };
 
   const handleClear = () => {
@@ -1004,15 +775,15 @@ function Noticeperiodactionemployeelist() {
     setSelectedOptionsTeamNew([]);
     setFilterState((prev) => ({
       ...prev,
-      employee: "Please Select Employee",
-      branch: "",
-      unit: "",
-      team: "",
+      employee: 'Please Select Employee',
+      branch: '',
+      unit: '',
+      team: '',
     }));
-    setPopupContent("Cleared Successfully");
-    setPopupSeverity("success");
+    setPopupContent('Cleared Successfully');
+    setPopupSeverity('success');
     handleClickOpenPopup();
-    setSearchQuery("");
+    setSearchQuery('');
   };
 
   const handleClearNew = () => {
@@ -1026,39 +797,36 @@ function Noticeperiodactionemployeelist() {
     setSelectedOptionsTeam([]);
     setFilterState((prev) => ({
       ...prev,
-      employee: "Please Select Employee",
-      branch: "",
-      unit: "",
-      team: "",
+      employee: 'Please Select Employee',
+      branch: '',
+      unit: '',
+      team: '',
     }));
 
-    setSearchQuery("");
+    setSearchQuery('');
     handleClose();
   };
 
   const handleReplaceUser = async () => {
     if (!valueCompanyCatNew || valueCompanyCatNew.length === 0) {
-      setPopupContentMalert("Please Select Company!");
-      setPopupSeverityMalert("info");
+      setPopupContentMalert('Please Select Company!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     } else if (!valueBranchCatNew || valueBranchCatNew.length === 0) {
-      setPopupContentMalert("Please Select Branch!");
-      setPopupSeverityMalert("info");
+      setPopupContentMalert('Please Select Branch!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     } else if (!valueUnitCatNew || valueUnitCatNew.length === 0) {
-      setPopupContentMalert("Please Select Unit!");
-      setPopupSeverityMalert("info");
+      setPopupContentMalert('Please Select Unit!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     } else if (!valueTeamCatNew || valueTeamCatNew.length === 0) {
-      setPopupContentMalert("Please Select Team!");
-      setPopupSeverityMalert("info");
+      setPopupContentMalert('Please Select Team!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (
-      !filterState.employee ||
-      filterState.employee === "Please Select Employee"
-    ) {
-      setPopupContentMalert("Please Select Employee!");
-      setPopupSeverityMalert("info");
+    } else if (!filterState.employee || filterState.employee === 'Please Select Employee') {
+      setPopupContentMalert('Please Select Employee!');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     } else {
       // console.log(filterState);
@@ -1093,12 +861,7 @@ function Noticeperiodactionemployeelist() {
       sendRequestReason();
     } catch (err) {
       setLoading(false);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -1112,40 +875,30 @@ function Noticeperiodactionemployeelist() {
           // Enquiry status filter
           {
             resonablestatus: {
-              $nin: ["Releave Employee", "Absconded", "Hold", "Terminate"],
+              $nin: ['Releave Employee', 'Absconded', 'Hold', 'Terminate', 'Not Joined'],
             },
           },
           {
-            workmode: { $ne: "Internship" },
+            workmode: { $ne: 'Internship' },
           },
 
           // Conditional company filter
-          ...(valueCompanyCat.length > 0
-            ? [{ company: { $in: valueCompanyCat } }]
-            : [{ company: { $in: allAssignCompany } }]),
+          ...(valueCompanyCat.length > 0 ? [{ company: { $in: valueCompanyCat } }] : [{ company: { $in: allAssignCompany } }]),
 
           // Conditional branch filter
-          ...(valueBranchCat.length > 0
-            ? [{ branch: { $in: valueBranchCat } }]
-            : [{ branch: { $in: allAssignBranch } }]),
+          ...(valueBranchCat.length > 0 ? [{ branch: { $in: valueBranchCat } }] : [{ branch: { $in: allAssignBranch } }]),
 
           // Conditional unit filter
-          ...(valueUnitCat.length > 0
-            ? [{ unit: { $in: valueUnitCat } }]
-            : [{ unit: { $in: allAssignUnit } }]),
+          ...(valueUnitCat.length > 0 ? [{ unit: { $in: valueUnitCat } }] : [{ unit: { $in: allAssignUnit } }]),
 
           // Conditional team filter
           ...(valueTeamCat.length > 0 ? [{ team: { $in: valueTeamCat } }] : []),
 
           // Conditional department filter
-          ...(valueDepartmentCat.length > 0
-            ? [{ department: { $in: valueDepartmentCat } }]
-            : []),
+          ...(valueDepartmentCat.length > 0 ? [{ department: { $in: valueDepartmentCat } }] : []),
 
           // Conditional Employee filter
-          ...(valueEmployeeCat.length > 0
-            ? [{ companyname: { $in: valueEmployeeCat } }]
-            : []),
+          ...(valueEmployeeCat.length > 0 ? [{ companyname: { $in: valueEmployeeCat } }] : []),
         ],
       };
 
@@ -1154,11 +907,11 @@ function Noticeperiodactionemployeelist() {
         {
           companyname: isUserRoleAccess?.companyname,
           role: isUserRoleAccess?.role,
-          modulename: "Human Resources",
-          submodule: "HR",
-          mainpage: "Employee",
-          subpage: "Employee Action Details",
-          subsubpage: "Action Employee List",
+          modulename: 'Human Resources',
+          submodule: 'HR',
+          mainpage: 'Employee',
+          subpage: 'Employee Action Details',
+          subsubpage: 'Action Employee List',
           aggregationPipeline: matchCriteria,
         },
         {
@@ -1175,12 +928,7 @@ function Noticeperiodactionemployeelist() {
       setIsBoarding(true);
     } catch (err) {
       setIsBoarding(true);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -1192,10 +940,10 @@ function Noticeperiodactionemployeelist() {
 
   let today = new Date();
 
-  var dd = String(today.getDate()).padStart(2, "0");
-  var mm = String(today.getMonth() + 1).padStart(2, "0");
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0');
   var yyyy = today.getFullYear();
-  let formattedDate = yyyy + "-" + mm + "-" + dd;
+  let formattedDate = yyyy + '-' + mm + '-' + dd;
 
   const [isBoarding, setIsBoarding] = useState(true);
 
@@ -1217,17 +965,17 @@ function Noticeperiodactionemployeelist() {
   };
 
   const handleCloseviewReleave = () => {
-    setReplaceName("Please Select Replace name");
+    setReplaceName('Please Select Replace name');
     setOpenviewReleave(false);
     setIsCheckedListOverall(false);
-    setHigherDesigDropdowns([])
-    setSameDesigDropdowns([])
-    setSameDesignation(false)
-    setHigherDesignation(false)
-    setAllBranch(false)
+    setHigherDesigDropdowns([]);
+    setSameDesigDropdowns([]);
+    setSameDesignation(false);
+    setHigherDesignation(false);
+    setAllBranch(false);
   };
 
-  const [getId, setGetId] = useState("");
+  const [getId, setGetId] = useState('');
 
   // popover content
   const [isManageColumnsOpen, setManageColumnsOpen] = useState(false);
@@ -1241,61 +989,40 @@ function Noticeperiodactionemployeelist() {
     setManageColumnsOpen(false);
   };
   const open = Boolean(anchorEl);
-  const id = open ? "simple-popover" : undefined;
+  const id = open ? 'simple-popover' : undefined;
   const [isCheckedList, setIsCheckedList] = useState([]);
   const [isCheckedListOverall, setIsCheckedListOverall] = useState(false);
   const overallCheckListChange = () => {
-    let newArrayChecked = isCheckedList.map(
-      (item) => (item = !isCheckedListOverall)
-    );
+    let newArrayChecked = isCheckedList.map((item) => (item = !isCheckedListOverall));
 
     if (groupDetails) {
       let returnOverall = groupDetails?.map((row) => {
         {
-          if (row.checklist === "DateTime") {
-            if (
-              ((row.data !== undefined && row.data !== "") ||
-                row.files !== undefined) &&
-              row.data.length === 16
-            ) {
+          if (row.checklist === 'DateTime') {
+            if (((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 16) {
               return true;
             } else {
               return false;
             }
-          } else if (row.checklist === "Date Multi Span") {
-            if (
-              ((row.data !== undefined && row.data !== "") ||
-                row.files !== undefined) &&
-              row.data.length === 21
-            ) {
+          } else if (row.checklist === 'Date Multi Span') {
+            if (((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 21) {
               return true;
             } else {
               return false;
             }
-          } else if (row.checklist === "Date Multi Span Time") {
-            if (
-              ((row.data !== undefined && row.data !== "") ||
-                row.files !== undefined) &&
-              row.data.length === 33
-            ) {
+          } else if (row.checklist === 'Date Multi Span Time') {
+            if (((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 33) {
               return true;
             } else {
               return false;
             }
-          } else if (row.checklist === "Date Multi Random Time") {
-            if (
-              ((row.data !== undefined && row.data !== "") ||
-                row.files !== undefined) &&
-              row.data.length === 16
-            ) {
+          } else if (row.checklist === 'Date Multi Random Time') {
+            if (((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 16) {
               return true;
             } else {
               return false;
             }
-          } else if (
-            (row.data !== undefined && row.data !== "") ||
-            row.files !== undefined
-          ) {
+          } else if ((row.data !== undefined && row.data !== '') || row.files !== undefined) {
             return true;
           } else {
             return false;
@@ -1309,63 +1036,44 @@ function Noticeperiodactionemployeelist() {
         setIsCheckedList(newArrayChecked);
         setIsCheckedListOverall(!isCheckedListOverall);
       } else {
-        setPopupContentMalert("Please Fill all the Fields");
-        setPopupSeverityMalert("info");
+        setPopupContentMalert('Please Fill all the Fields');
+        setPopupSeverityMalert('info');
         handleClickOpenPopupMalert();
       }
     } else {
-      setPopupContentMalert("Please Add Check List");
-      setPopupSeverityMalert("info");
+      setPopupContentMalert('Please Add Check List');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     }
   };
   const handleCheckboxChange = (index) => {
     let currentItem = groupDetails[index];
     let data = () => {
-      if (currentItem.checklist === "DateTime") {
-        if (
-          ((currentItem.data !== undefined && currentItem.data !== "") ||
-            currentItem.files !== undefined) &&
-          currentItem.data.length === 16
-        ) {
+      if (currentItem.checklist === 'DateTime') {
+        if (((currentItem.data !== undefined && currentItem.data !== '') || currentItem.files !== undefined) && currentItem.data.length === 16) {
           return true;
         } else {
           return false;
         }
-      } else if (currentItem.checklist === "Date Multi Span") {
-        if (
-          ((currentItem.data !== undefined && currentItem.data !== "") ||
-            currentItem.files !== undefined) &&
-          currentItem.data.length === 21
-        ) {
+      } else if (currentItem.checklist === 'Date Multi Span') {
+        if (((currentItem.data !== undefined && currentItem.data !== '') || currentItem.files !== undefined) && currentItem.data.length === 21) {
           return true;
         } else {
           return false;
         }
-      } else if (currentItem.checklist === "Date Multi Span Time") {
-        if (
-          ((currentItem.data !== undefined && currentItem.data !== "") ||
-            currentItem.files !== undefined) &&
-          currentItem.data.length === 33
-        ) {
+      } else if (currentItem.checklist === 'Date Multi Span Time') {
+        if (((currentItem.data !== undefined && currentItem.data !== '') || currentItem.files !== undefined) && currentItem.data.length === 33) {
           return true;
         } else {
           return false;
         }
-      } else if (currentItem.checklist === "Date Multi Random Time") {
-        if (
-          ((currentItem.data !== undefined && currentItem.data !== "") ||
-            currentItem.files !== undefined) &&
-          currentItem.data.length === 16
-        ) {
+      } else if (currentItem.checklist === 'Date Multi Random Time') {
+        if (((currentItem.data !== undefined && currentItem.data !== '') || currentItem.files !== undefined) && currentItem.data.length === 16) {
           return true;
         } else {
           return false;
         }
-      } else if (
-        (currentItem.data !== undefined && currentItem.data !== "") ||
-        currentItem.files !== undefined
-      ) {
+      } else if ((currentItem.data !== undefined && currentItem.data !== '') || currentItem.files !== undefined) {
         return true;
       } else {
         return false;
@@ -1377,7 +1085,7 @@ function Noticeperiodactionemployeelist() {
       const newCheckedState = [...isCheckedList];
       newCheckedState[index] = !newCheckedState[index];
       setIsCheckedList(newCheckedState);
-      handleDataChange(newCheckedState[index], index, "Check Box");
+      handleDataChange(newCheckedState[index], index, 'Check Box');
       let overallChecked = newCheckedState.every((item) => item === true);
 
       if (overallChecked) {
@@ -1386,13 +1094,13 @@ function Noticeperiodactionemployeelist() {
         setIsCheckedListOverall(false);
       }
     } else {
-      setPopupContentMalert("Please Fill the Field");
-      setPopupSeverityMalert("info");
+      setPopupContentMalert('Please Fill the Field');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     }
   };
 
-  let name = "create";
+  let name = 'create';
 
   //webcam
   const [isWebcamOpen, setIsWebcamOpen] = useState(false);
@@ -1420,15 +1128,7 @@ function Noticeperiodactionemployeelist() {
 
   const deleteChecklist = async () => {
     setDeleteBtn(true);
-    const searchItem = datasAvailedDB.find(
-      (item) =>
-        item.commonid === postID &&
-        item.module === "Human Resources" &&
-        item.submodule === "HR" &&
-        item.mainpage === "Employee" &&
-        item.subpage === "Employee Action Details" &&
-        item.subsubpage === "Action Employee List"
-    );
+    const searchItem = datasAvailedDB.find((item) => item.commonid === postID && item.module === 'Human Resources' && item.submodule === 'HR' && item.mainpage === 'Employee' && item.subpage === 'Employee Action Details' && item.subsubpage === 'Action Employee List');
     setPageName(!pageName);
     try {
       await axios.delete(`${SERVICE.MYCHECKLIST_SINGLE}/${searchItem?._id}`, {
@@ -1437,8 +1137,8 @@ function Noticeperiodactionemployeelist() {
         },
       });
       handleCloseMod();
-      setPopupContent("Deleted Successfully");
-      setPopupSeverity("success");
+      setPopupContent('Deleted Successfully');
+      setPopupSeverity('success');
       handleClickOpenPopup();
       handleCloseviewReleave();
       setDeleteBtn(false);
@@ -1446,12 +1146,7 @@ function Noticeperiodactionemployeelist() {
       setIsCheckedListOverall(false);
     } catch (err) {
       setDeleteBtn(false);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -1459,9 +1154,9 @@ function Noticeperiodactionemployeelist() {
     const response = await fetch(file.preview);
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    window.open(link, "_blank");
+    window.open(link, '_blank');
   };
   const handleFileDeleteEdit = (index) => {
     let getData = groupDetails[index];
@@ -1495,20 +1190,10 @@ function Noticeperiodactionemployeelist() {
 
   const updateIndividualData = async (index) => {
     setDeleteBtnDisable(false);
-    let searchItem = datasAvailedDB.find(
-      (item) =>
-        item.commonid == postID &&
-        item.module == "Human Resources" &&
-        item.submodule == "HR" &&
-        item.mainpage == "Employee" &&
-        item.subpage == "Employee Action Details" &&
-        item.subsubpage == "Action Employee List"
-    );
+    let searchItem = datasAvailedDB.find((item) => item.commonid == postID && item.module == 'Human Resources' && item.submodule == 'HR' && item.mainpage == 'Employee' && item.subpage == 'Employee Action Details' && item.subsubpage == 'Action Employee List');
 
     let combinedGroups = groupDetails?.map((data) => {
-      let check =
-        (data.data !== undefined && data.data !== "") ||
-        data.files !== undefined;
+      let check = (data.data !== undefined && data.data !== '') || data.files !== undefined;
 
       if (check) {
         return {
@@ -1519,8 +1204,8 @@ function Noticeperiodactionemployeelist() {
       } else {
         return {
           ...data,
-          completedby: "",
-          completedat: "",
+          completedby: '',
+          completedat: '',
         };
       }
     });
@@ -1529,19 +1214,16 @@ function Noticeperiodactionemployeelist() {
       let objectID = combinedGroups[index]?._id;
       let objectData = combinedGroups[index];
       if (searchItem) {
-        let assignbranches = await axios.put(
-          `${SERVICE.MYCHECKLIST_SINGLEBYOBJECTID}/${objectID}`,
-          {
-            headers: {
-              Authorization: `Bearer ${auth.APIToken}`,
-            },
-            data: String(objectData?.data),
-            lastcheck: objectData?.lastcheck,
-            newFiles: objectData?.files !== undefined ? objectData?.files : "",
-            completedby: objectData?.completedby,
-            completedat: objectData?.completedat,
-          }
-        );
+        let assignbranches = await axios.put(`${SERVICE.MYCHECKLIST_SINGLEBYOBJECTID}/${objectID}`, {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          data: String(objectData?.data),
+          lastcheck: objectData?.lastcheck,
+          newFiles: objectData?.files !== undefined ? objectData?.files : '',
+          completedby: objectData?.completedby,
+          completedat: objectData?.completedat,
+        });
         await fecthDBDatas();
       } else {
         let assignbranches = await axios.post(`${SERVICE.MYCHECKLIST_CREATE}`, {
@@ -1557,7 +1239,7 @@ function Noticeperiodactionemployeelist() {
           category: thisPageDatas[0]?.category,
           subcategory: thisPageDatas[0]?.subcategory,
           candidatename: assignDetails?.companyname,
-          status: "progress",
+          status: 'progress',
           groups: Array.isArray(combinedGroups) ? [...combinedGroups] : [],
           addedby: [
             {
@@ -1568,17 +1250,12 @@ function Noticeperiodactionemployeelist() {
         });
         await fecthDBDatas();
       }
-      setPopupContent("Updated Successfully");
-      setPopupSeverity("success");
+      setPopupContent('Updated Successfully');
+      setPopupSeverity('success');
       handleClickOpenPopup();
     } catch (err) {
       setDeleteBtnDisable(true);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -1590,26 +1267,18 @@ function Noticeperiodactionemployeelist() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
         commonid: postID,
-        module: "Human Resources",
-        submodule: "HR",
-        mainpage: ["Employee"],
-        subpage: "Employee Action Details",
-        subsubpage: "Action Employee List",
+        module: 'Human Resources',
+        submodule: 'HR',
+        mainpage: ['Employee'],
+        subpage: 'Employee Action Details',
+        subsubpage: 'Action Employee List',
       });
       setDatasAvailedDB(res?.data?.mychecklist);
 
-      let foundData = res?.data?.mychecklist.find(
-        (item) =>
-          item.commonid == postID && item.subsubpage == "Action Employee List"
-      );
+      let foundData = res?.data?.mychecklist.find((item) => item.commonid == postID && item.subsubpage == 'Action Employee List');
       setGroupDetails(foundData?.groups);
     } catch (err) {
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   }
 
@@ -1619,7 +1288,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "DateTime", "date");
+    handleDataChange(value, index, 'DateTime', 'date');
   };
 
   const updateTimeValuesAtIndex = (value, index) => {
@@ -1628,7 +1297,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "DateTime", "time");
+    handleDataChange(value, index, 'DateTime', 'time');
   };
   //---------------------------------------------------------------------------------------------------------------
 
@@ -1638,7 +1307,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "Date Multi Span", "fromdate");
+    handleDataChange(value, index, 'Date Multi Span', 'fromdate');
   };
 
   const updateToDateValueAtIndex = (value, index) => {
@@ -1647,7 +1316,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "Date Multi Span", "todate");
+    handleDataChange(value, index, 'Date Multi Span', 'todate');
   };
   //---------------------------------------------------------------------------------------------------------------------------------
   const updateDateValueAtIndex = (value, index) => {
@@ -1656,7 +1325,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "Date Multi Random Time", "date");
+    handleDataChange(value, index, 'Date Multi Random Time', 'date');
   };
 
   const updateTimeValueAtIndex = (value, index) => {
@@ -1665,7 +1334,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "Date Multi Random Time", "time");
+    handleDataChange(value, index, 'Date Multi Random Time', 'time');
   };
   //---------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1675,7 +1344,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "Date Multi Span Time", "fromdate");
+    handleDataChange(value, index, 'Date Multi Span Time', 'fromdate');
   };
 
   const updateFirstTimeValuesAtIndex = (value, index) => {
@@ -1684,7 +1353,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "Date Multi Span Time", "fromtime");
+    handleDataChange(value, index, 'Date Multi Span Time', 'fromtime');
   };
 
   const updateSecondDateValuesAtIndex = (value, index) => {
@@ -1693,7 +1362,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "Date Multi Span Time", "todate");
+    handleDataChange(value, index, 'Date Multi Span Time', 'todate');
   };
 
   const updateSecondTimeValuesAtIndex = (value, index) => {
@@ -1702,7 +1371,7 @@ function Noticeperiodactionemployeelist() {
       newArray[index] = value; // Update value at the specified index
       return newArray; // Return the updated array
     });
-    handleDataChange(value, index, "Date Multi Span Time", "totime");
+    handleDataChange(value, index, 'Date Multi Span Time', 'totime');
   };
 
   //------------------------------------------------------------------------------------------------------------
@@ -1712,7 +1381,7 @@ function Noticeperiodactionemployeelist() {
     let finalData;
     let updatedTodos;
     switch (from) {
-      case "Check Box":
+      case 'Check Box':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1723,7 +1392,7 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "Text Box":
+      case 'Text Box':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1734,7 +1403,7 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "Text Box-number":
+      case 'Text Box-number':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1745,7 +1414,7 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "Text Box-alpha":
+      case 'Text Box-alpha':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1756,7 +1425,7 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "Text Box-alphanumeric":
+      case 'Text Box-alphanumeric':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1767,7 +1436,7 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "Attachments":
+      case 'Attachments':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1778,9 +1447,9 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "Pre-Value":
+      case 'Pre-Value':
         break;
-      case "Date":
+      case 'Date':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1791,7 +1460,7 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "Time":
+      case 'Time':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1802,8 +1471,8 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "DateTime":
-        if (sub == "date") {
+      case 'DateTime':
+        if (sub == 'date') {
           getData = groupDetails[index];
           finalData = {
             ...getData,
@@ -1826,8 +1495,8 @@ function Noticeperiodactionemployeelist() {
         }
 
         break;
-      case "Date Multi Span":
-        if (sub == "fromdate") {
+      case 'Date Multi Span':
+        if (sub == 'fromdate') {
           getData = groupDetails[index];
           finalData = {
             ...getData,
@@ -1849,8 +1518,8 @@ function Noticeperiodactionemployeelist() {
           setGroupDetails(updatedTodos);
         }
         break;
-      case "Date Multi Span Time":
-        if (sub == "fromdate") {
+      case 'Date Multi Span Time':
+        if (sub == 'fromdate') {
           getData = groupDetails[index];
           finalData = {
             ...getData,
@@ -1860,7 +1529,7 @@ function Noticeperiodactionemployeelist() {
           updatedTodos = [...groupDetails];
           updatedTodos[index] = finalData;
           setGroupDetails(updatedTodos);
-        } else if (sub == "fromtime") {
+        } else if (sub == 'fromtime') {
           getData = groupDetails[index];
           finalData = {
             ...getData,
@@ -1870,7 +1539,7 @@ function Noticeperiodactionemployeelist() {
           updatedTodos = [...groupDetails];
           updatedTodos[index] = finalData;
           setGroupDetails(updatedTodos);
-        } else if (sub == "todate") {
+        } else if (sub == 'todate') {
           getData = groupDetails[index];
           finalData = {
             ...getData,
@@ -1892,7 +1561,7 @@ function Noticeperiodactionemployeelist() {
           setGroupDetails(updatedTodos);
         }
         break;
-      case "Date Multi Random":
+      case 'Date Multi Random':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1903,8 +1572,8 @@ function Noticeperiodactionemployeelist() {
         updatedTodos[index] = finalData;
         setGroupDetails(updatedTodos);
         break;
-      case "Date Multi Random Time":
-        if (sub == "date") {
+      case 'Date Multi Random Time':
+        if (sub == 'date') {
           getData = groupDetails[index];
           finalData = {
             ...getData,
@@ -1926,7 +1595,7 @@ function Noticeperiodactionemployeelist() {
           setGroupDetails(updatedTodos);
         }
         break;
-      case "Radio":
+      case 'Radio':
         getData = groupDetails[index];
         finalData = {
           ...getData,
@@ -1953,18 +1622,16 @@ function Noticeperiodactionemployeelist() {
           {
             name: file.name,
             preview: reader.result,
-            data: reader.result.split(",")[1],
-            remark: "resume file",
+            data: reader.result.split(',')[1],
+            remark: 'resume file',
           },
           index,
-          "Attachments"
+          'Attachments'
         );
       };
     } else {
-      setPopupContentMalert(
-        "File size is greater than 1MB, please upload a file below 1MB."
-      );
-      setPopupSeverityMalert("info");
+      setPopupContentMalert('File size is greater than 1MB, please upload a file below 1MB.');
+      setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     }
   };
@@ -1975,56 +1642,47 @@ function Noticeperiodactionemployeelist() {
       if (groupDetails) {
         let nextStep = isCheckedList.every((item) => item == true);
 
-        if (
-          hierarchyDeleteData.length > 0 &&
-          replaceName === "Please Select Replace name"
-        ) {
+        if (hierarchyDeleteData.length > 0 && replaceName === 'Please Select Replace name') {
           setLoading(false);
-          setPopupContentMalert("Please Select Replace Name");
-          setPopupSeverityMalert("info");
+          setPopupContentMalert('Please Select Replace Name');
+          setPopupSeverityMalert('info');
           handleClickOpenPopupMalert();
-        } else if (!reason.date || reason.date === "") {
+        } else if (!reason.date || reason.date === '') {
           setLoading(false);
-          setPopupContentMalert("Please Select Date");
-          setPopupSeverityMalert("info");
+          setPopupContentMalert('Please Select Date');
+          setPopupSeverityMalert('info');
           handleClickOpenPopupMalert();
-        } else if (hierarchyConditions?.hierarchySupempSame?.length > 0) {
+        }
+        //  else if (hierarchyConditions?.hierarchySupempSame?.length > 0) {
+        //   setLoading(false);
+        //   setPopupContentMalert(`The EmployeeName in the hierarchy data is the same as the ReplaceName.`);
+        //   setPopupSeverityMalert('info');
+        //   handleClickOpenPopupMalert();
+        // } else if (hierarchyConditions?.hierarchyEmpSupSame?.length > 0) {
+        //   setLoading(false);
+        //   setPopupContentMalert(`The Supervisor in the hierarchy data is the same as the ReplaceName.`);
+        //   setPopupSeverityMalert('info');
+        //   handleClickOpenPopupMalert();
+        // } else if (hierarchyConditions?.hierarchyemp) {
+        //   setLoading(false);
+        //   setPopupContentMalert(`The employee name can't be replaced, as it already matches the data in the hierarchy.`);
+        //   setPopupSeverityMalert('info');
+        //   handleClickOpenPopupMalert();
+        // } else if (hierarchyConditions?.hierarchysup) {
+        //   setLoading(false);
+        //   setPopupContentMalert(`The supervisor name can't be replaced, as it already matches the data in the hierarchy.`);
+        //   setPopupSeverityMalert('info');
+        //   handleClickOpenPopupMalert();
+        // }
+        else if (!reason?.date) {
           setLoading(false);
-          setPopupContentMalert(
-            `The EmployeeName in the hierarchy data is the same as the ReplaceName.`
-          );
-          setPopupSeverityMalert("info");
-          handleClickOpenPopupMalert();
-        } else if (hierarchyConditions?.hierarchyEmpSupSame?.length > 0) {
-          setLoading(false);
-          setPopupContentMalert(
-            `The Supervisor in the hierarchy data is the same as the ReplaceName.`
-          );
-          setPopupSeverityMalert("info");
-          handleClickOpenPopupMalert();
-        } else if (hierarchyConditions?.hierarchyemp) {
-          setLoading(false);
-          setPopupContentMalert(
-            `The employee name can't be replaced, as it already matches the data in the hierarchy.`
-          );
-          setPopupSeverityMalert("info");
-          handleClickOpenPopupMalert();
-        } else if (hierarchyConditions?.hierarchysup) {
-          setLoading(false);
-          setPopupContentMalert(
-            `The supervisor name can't be replaced, as it already matches the data in the hierarchy.`
-          );
-          setPopupSeverityMalert("info");
-          handleClickOpenPopupMalert();
-        } else if (!reason?.date) {
-          setLoading(false);
-          setPopupContentMalert("Please Select Date!");
-          setPopupSeverityMalert("info");
+          setPopupContentMalert('Please Select Date!');
+          setPopupSeverityMalert('info');
           handleClickOpenPopupMalert();
         } else if (!nextStep) {
           setLoading(false);
-          setPopupContentMalert("Please Check All the Fields!");
-          setPopupSeverityMalert("info");
+          setPopupContentMalert('Please Check All the Fields!');
+          setPopupSeverityMalert('info');
           handleClickOpenPopupMalert();
         } else {
           if (vpnUser?.length > 0) {
@@ -2033,77 +1691,61 @@ function Noticeperiodactionemployeelist() {
 
           checkQueuePriorityUsersList();
         }
-      } else if (
-        hierarchyDeleteData.length > 0 &&
-        replaceName === "Please Select Replace name"
-      ) {
+      } else if (hierarchyDeleteData.length > 0 && replaceName === 'Please Select Replace name') {
         setLoading(false);
-        setPopupContentMalert("Please Select Replace Name");
-        setPopupSeverityMalert("info");
+        setPopupContentMalert('Please Select Replace Name');
+        setPopupSeverityMalert('info');
         handleClickOpenPopupMalert();
       } else {
         setLoading(false);
-        setPopupContentMalert("Please Add Check List");
-        setPopupSeverityMalert("info");
+        setPopupContentMalert('Please Add Check List');
+        setPopupSeverityMalert('info');
         handleClickOpenPopupMalert();
       }
     } else {
-      if (
-        hierarchyDeleteData.length > 0 &&
-        replaceName === "Please Select Replace name"
-      ) {
+      if (hierarchyDeleteData.length > 0 && replaceName === 'Please Select Replace name') {
         setLoading(false);
-        setPopupContentMalert("Please Select Replace Name");
-        setPopupSeverityMalert("info");
+        setPopupContentMalert('Please Select Replace Name');
+        setPopupSeverityMalert('info');
         handleClickOpenPopupMalert();
-      } else if (!reason.date || reason.date === "") {
+      } else if (!reason.date || reason.date === '') {
         setLoading(false);
-        setPopupContentMalert("Please Select Date");
-        setPopupSeverityMalert("info");
+        setPopupContentMalert('Please Select Date');
+        setPopupSeverityMalert('info');
         handleClickOpenPopupMalert();
-      } else if (hierarchyConditions?.hierarchySupempSame?.length > 0) {
+      }
+      // else if (hierarchyConditions?.hierarchySupempSame?.length > 0) {
+      //   setLoading(false);
+      //   setPopupContentMalert(`The EmployeeName in the hierarchy data is the same as the ReplaceName.`);
+      //   setPopupSeverityMalert('info');
+      //   handleClickOpenPopupMalert();
+      // } else if (hierarchyConditions?.hierarchyEmpSupSame?.length > 0) {
+      //   setLoading(false);
+      //   setPopupContentMalert(`The Supervisor in the hierarchy data is the same as the ReplaceName.`);
+      //   setPopupSeverityMalert('info');
+      //   handleClickOpenPopupMalert();
+      // } else if (hierarchyConditions?.hierarchyemp) {
+      //   setLoading(false);
+      //   setPopupContentMalert(`The employee name can't be replaced, as it already matches the data in the hierarchy.`);
+      //   setPopupSeverityMalert('info');
+      //   handleClickOpenPopupMalert();
+      // } else if (hierarchyConditions?.hierarchysup) {
+      //   setLoading(false);
+      //   setPopupContentMalert(`The supervisor name can't be replaced, as it already matches the data in the hierarchy.`);
+      //   setPopupSeverityMalert('info');
+      //   handleClickOpenPopupMalert();
+      // }
+      else if (!reason?.date) {
         setLoading(false);
-        setPopupContentMalert(
-          `The EmployeeName in the hierarchy data is the same as the ReplaceName.`
-        );
-        setPopupSeverityMalert("info");
-        handleClickOpenPopupMalert();
-      } else if (hierarchyConditions?.hierarchyEmpSupSame?.length > 0) {
-        setLoading(false);
-        setPopupContentMalert(
-          `The Supervisor in the hierarchy data is the same as the ReplaceName.`
-        );
-        setPopupSeverityMalert("info");
-        handleClickOpenPopupMalert();
-      } else if (hierarchyConditions?.hierarchyemp) {
-        setLoading(false);
-        setPopupContentMalert(
-          `The employee name can't be replaced, as it already matches the data in the hierarchy.`
-        );
-        setPopupSeverityMalert("info");
-        handleClickOpenPopupMalert();
-      } else if (hierarchyConditions?.hierarchysup) {
-        setLoading(false);
-        setPopupContentMalert(
-          `The supervisor name can't be replaced, as it already matches the data in the hierarchy.`
-        );
-        setPopupSeverityMalert("info");
-        handleClickOpenPopupMalert();
-      } else if (!reason?.date) {
-        setLoading(false);
-        setPopupContentMalert("Please Select Date!");
-        setPopupSeverityMalert("info");
+        setPopupContentMalert('Please Select Date!');
+        setPopupSeverityMalert('info');
         handleClickOpenPopupMalert();
       } else {
         setLoading(false);
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon
-              sx={{ fontSize: "100px", color: "orange" }}
-            />
-            <p style={{ fontSize: "20px", fontWeight: 900 }}>
-              {"Checklist is Not Assigned for this Page. Wish to continue?"}
-            </p>
+            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
+            <p style={{ fontSize: '20px', fontWeight: 900 }}>{'Checklist is Not Assigned for this Page. Wish to continue?'}</p>
           </>
         );
         handleClickOpenerr();
@@ -2157,16 +1799,11 @@ function Noticeperiodactionemployeelist() {
         sendRequestReason();
       }
     } catch (err) {
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
-  const [searchQueryManage, setSearchQueryManage] = useState("");
+  const [searchQueryManage, setSearchQueryManage] = useState('');
 
   const [selectedRows, setSelectedRows] = useState([]);
   // for new table
@@ -2189,17 +1826,15 @@ function Noticeperiodactionemployeelist() {
     mode: true,
   };
 
-  const [columnVisibility, setColumnVisibility] = useState(
-    initialColumnVisibility
-  );
+  const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
 
-  const [reason, setReason] = useState({ date: "", reasonname: "" });
+  const [reason, setReason] = useState({ date: '', reasonname: '' });
   const [lastWorkday, setLastworkday] = useState({});
 
   let bor = empaddform._id;
   let companyname = empaddform.companyname;
 
-  const [statusemployee, setstatusemployee] = useState("");
+  const [statusemployee, setstatusemployee] = useState('');
   //add function
   // const sendDeleteVpnRequest = async () => {
   //   try {
@@ -2259,10 +1894,10 @@ function Noticeperiodactionemployeelist() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      console.log(response.data, "rockectchatlive");
+      console.log(response.data, 'rockectchatlive');
       return response?.data?.rockectchatlive;
     } catch (error) {
-      console.log(error, "error");
+      console.log(error, 'error');
       return false;
     }
   };
@@ -2280,9 +1915,7 @@ function Noticeperiodactionemployeelist() {
   };
   const sendRequestReason = async () => {
     let combinedGroups = groupDetails?.map((data) => {
-      let check =
-        (data.data !== undefined && data.data !== "") ||
-        data.files !== undefined;
+      let check = (data.data !== undefined && data.data !== '') || data.files !== undefined;
 
       if (check) {
         return {
@@ -2293,35 +1926,23 @@ function Noticeperiodactionemployeelist() {
       } else {
         return {
           ...data,
-          completedby: "",
-          completedat: "",
+          completedby: '',
+          completedat: '',
         };
       }
     });
 
-    let previousRelievedDetails = getDetails.relieveddetails
-      ? getDetails.relieveddetails
-      : [];
+    let previousRelievedDetails = getDetails.relieveddetails ? getDetails.relieveddetails : [];
 
-    const searchItem = datasAvailedDB.find(
-      (item) =>
-        item.commonid === postID &&
-        item.module === "Human Resources" &&
-        item.submodule === "HR" &&
-        item.mainpage === "Employee" &&
-        item.subpage === "Employee Action Details" &&
-        item.subsubpage === "Action Employee List"
-    );
+    const searchItem = datasAvailedDB.find((item) => item.commonid === postID && item.module === 'Human Resources' && item.submodule === 'HR' && item.mainpage === 'Employee' && item.subpage === 'Employee Action Details' && item.subsubpage === 'Action Employee List');
 
     const headers = {
       Authorization: `Bearer ${auth.APIToken}`,
     };
 
     const createOrUpdateChecklist = async () => {
-      const url = searchItem
-        ? `${SERVICE.MYCHECKLIST_SINGLE}/${searchItem._id}`
-        : SERVICE.MYCHECKLIST_CREATE;
-      const method = searchItem ? "put" : "post";
+      const url = searchItem ? `${SERVICE.MYCHECKLIST_SINGLE}/${searchItem._id}` : SERVICE.MYCHECKLIST_CREATE;
+      const method = searchItem ? 'put' : 'post';
 
       const data = searchItem
         ? {
@@ -2334,7 +1955,7 @@ function Noticeperiodactionemployeelist() {
             category: assignDetails?.category,
             subcategory: assignDetails?.subcategory,
             candidatename: assignDetails?.fullname,
-            status: "completed",
+            status: 'completed',
             groups: Array.isArray(combinedGroups) ? [...combinedGroups] : [],
             updatedby: [
               ...searchItem?.updatedby,
@@ -2354,7 +1975,7 @@ function Noticeperiodactionemployeelist() {
             category: thisPageDatas[0]?.category,
             subcategory: thisPageDatas[0]?.subcategory,
             candidatename: assignDetails?.companyname,
-            status: "completed",
+            status: 'completed',
             groups: Array.isArray(combinedGroups) ? [...combinedGroups] : [],
             addedby: [
               {
@@ -2372,13 +1993,13 @@ function Noticeperiodactionemployeelist() {
         `${SERVICE.USER_SINGLE_PWD}/${bor}`,
         {
           resonablestatus: statusemployee,
-          reasondate: moment(reason?.date || "").format("YYYY-MM-DD"),
+          reasondate: moment(reason?.date || '').format('YYYY-MM-DD'),
           reasonname: reason.reasonname,
-          lastworkday: moment(lastWorkday).format("YYYY-MM-DD"),
+          lastworkday: moment(lastWorkday).format('YYYY-MM-DD'),
           relieveddetails: [
             ...previousRelievedDetails,
             {
-              dateofrelieving: moment(reason?.date || "").format("YYYY-MM-DD"),
+              dateofrelieving: moment(reason?.date || '').format('YYYY-MM-DD'),
               reasonforrelieving: reason.reasonname,
               dateofjoining: getDetails?.doj,
             },
@@ -2424,15 +2045,15 @@ function Noticeperiodactionemployeelist() {
             axios.put(
               `${SERVICE.SINGLE_CLIENTUSERID}/${data?._id}`,
               {
-                allotted: "unallotted",
-                empname: "",
-                empcode: "",
-                company: "",
-                branch: "",
-                unit: "",
-                team: "",
-                time: "",
-                date: "",
+                allotted: 'unallotted',
+                empname: '',
+                empcode: '',
+                company: '',
+                branch: '',
+                unit: '',
+                team: '',
+                time: '',
+                date: '',
                 updatelastlog: true,
               },
               { headers }
@@ -2471,19 +2092,14 @@ function Noticeperiodactionemployeelist() {
 
       setReason(projectscreate?.data);
       setLastworkday(projectscreate?.data);
-      setReason({ date: "", reasonname: "" });
+      setReason({ date: '', reasonname: '' });
       setLastworkday({});
       handleCloseviewReleave();
       // await hierarchyCheckDelete(empaddform.companyname, statusemployee);
-      await handleCheckInHierarchy(
-        replaceName,
-        empaddform.companyname,
-        statusemployee
-      );
+      await handleCheckInHierarchy(replaceName, empaddform.companyname, statusemployee);
       await handleActionSubmit();
       setIsCheckedListOverall(false);
       setLoading(false);
-
       await fetchHandler();
       setValueCompanyCatNew([]);
       setSelectedOptionsCompanyNew([]);
@@ -2495,29 +2111,21 @@ function Noticeperiodactionemployeelist() {
       setSelectedOptionsTeamNew([]);
       setFilterState((prev) => ({
         ...prev,
-        employee: "Please Select Employee",
-        branch: "",
-        unit: "",
-        team: "",
+        employee: 'Please Select Employee',
+        branch: '',
+        unit: '',
+        team: '',
       }));
-      setReplaceName("Please Choose Replace Name");
     } catch (err) {
       console.log(err);
       setLoading(false);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
   const sendBulkUpdateRequest = async () => {
     let combinedGroups = groupDetails?.map((data) => {
-      let check =
-        (data.data !== undefined && data.data !== "") ||
-        data.files !== undefined;
+      let check = (data.data !== undefined && data.data !== '') || data.files !== undefined;
 
       if (check) {
         return {
@@ -2528,31 +2136,21 @@ function Noticeperiodactionemployeelist() {
       } else {
         return {
           ...data,
-          completedby: "",
-          completedat: "",
+          completedby: '',
+          completedat: '',
         };
       }
     });
 
-    const searchItem = datasAvailedDB.find(
-      (item) =>
-        item.commonid === postID &&
-        item.module === "Human Resources" &&
-        item.submodule === "HR" &&
-        item.mainpage === "Employee" &&
-        item.subpage === "Employee Action Details" &&
-        item.subsubpage === "Action Employee List"
-    );
+    const searchItem = datasAvailedDB.find((item) => item.commonid === postID && item.module === 'Human Resources' && item.submodule === 'HR' && item.mainpage === 'Employee' && item.subpage === 'Employee Action Details' && item.subsubpage === 'Action Employee List');
 
     const headers = {
       Authorization: `Bearer ${auth.APIToken}`,
     };
 
     const createOrUpdateChecklist = async () => {
-      const url = searchItem
-        ? `${SERVICE.MYCHECKLIST_SINGLE}/${searchItem._id}`
-        : SERVICE.MYCHECKLIST_CREATE;
-      const method = searchItem ? "put" : "post";
+      const url = searchItem ? `${SERVICE.MYCHECKLIST_SINGLE}/${searchItem._id}` : SERVICE.MYCHECKLIST_CREATE;
+      const method = searchItem ? 'put' : 'post';
 
       const data = searchItem
         ? {
@@ -2565,7 +2163,7 @@ function Noticeperiodactionemployeelist() {
             category: assignDetails?.category,
             subcategory: assignDetails?.subcategory,
             candidatename: assignDetails?.fullname,
-            status: "Progress",
+            status: 'Progress',
             groups: Array.isArray(combinedGroups) ? [...combinedGroups] : [],
             updatedby: [
               ...searchItem?.updatedby,
@@ -2585,7 +2183,7 @@ function Noticeperiodactionemployeelist() {
             category: thisPageDatas[0]?.category,
             subcategory: thisPageDatas[0]?.subcategory,
             candidatename: assignDetails?.companyname,
-            status: "Progress",
+            status: 'Progress',
             groups: Array.isArray(combinedGroups) ? [...combinedGroups] : [],
             addedby: [
               {
@@ -2602,32 +2200,27 @@ function Noticeperiodactionemployeelist() {
     try {
       await createOrUpdateChecklist();
       await fecthDBDatas();
-      setPopupContent("Updated Successfully");
-      setPopupSeverity("success");
+      setPopupContent('Updated Successfully');
+      setPopupSeverity('success');
       handleClickOpenPopup();
 
       setLoading(false);
     } catch (err) {
       setLoading(false);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
   //cancel for reason section
   const handleClearreason = () => {
-    setReplaceName("Please Select Replace name");
-    setReason({ date: "", reasonname: "" });
+    setReplaceName('Please Select Replace name');
+    setReason({ date: '', reasonname: '' });
     setLastworkday({});
   };
 
   const [userDetails, setUserDetails] = useState({});
-  const [isDgroup, setisDgroup] = useState("");
-  const [profileSrc, setProfileSrc] = useState("");
+  const [isDgroup, setisDgroup] = useState('');
+  const [profileSrc, setProfileSrc] = useState('');
   const fetchProfileImage = async (empid) => {
     try {
       let resNew = await axios.post(`${SERVICE.GETDOCUMENTS}`, {
@@ -2639,10 +2232,10 @@ function Noticeperiodactionemployeelist() {
         let profile = resNew?.data?.semployeedocument?.profileimage;
         setProfileSrc(profile);
       } else {
-        setProfileSrc("");
+        setProfileSrc('');
       }
     } catch (err) {
-      console.log(err, "2222");
+      console.log(err, '2222');
     }
   };
   const [userPresentInLDAP, setUserPresentInLDAP] = useState(false);
@@ -2675,268 +2268,266 @@ function Noticeperiodactionemployeelist() {
         //   username: details?.username,
         // }),
       ]);
-      // setUserPresentInLDAP(resNew?.data?.status);
-      // setDatasAvailedDB(res1?.data?.mychecklist);
-      await checkVpnUserDetails(res?.data?.suser?.companyname);
-      await checkUserBiometricAvailability(res?.data?.suser);
+      const checkListDatas = res1?.data?.mychecklist ? res1?.data?.mychecklist : []
+      setUserPresentInLDAP(resNew?.data?.status ?? false);
+      setDatasAvailedDB(checkListDatas);
+      //await checkVpnUserDetails(res?.data?.suser?.companyname);
       await fetchProfileImage(details?.id);
-      // let searchItem = res1?.data?.mychecklist.find((item) => item.commonid == details?.id && item.module == 'Human Resources' && item.submodule == 'HR' && item.mainpage == 'Employee' && item.subpage == 'Employee Action Details' && item.subsubpage == 'Action Employee List');
+      let searchItem = checkListDatas.find((item) => item.commonid == details?.id && item.module == 'Human Resources' && item.submodule == 'HR' && item.mainpage == 'Employee' && item.subpage == 'Employee Action Details' && item.subsubpage == 'Action Employee List');
 
-      // if (searchItem) {
-      //   setDeleteBtnDisable(false);
-      //   setAssignDetails(searchItem);
+      if (searchItem) {
+        setDeleteBtnDisable(false);
+        setAssignDetails(searchItem);
 
-      //   setPostID(searchItem?.commonid);
-      //   let datasNew = searchItem.groups.map((item) => {
-      //     switch (item.details) {
-      //       case 'LEGALNAME':
-      //         return {
-      //           ...item,
-      //           data: details.companyname,
-      //         };
-      //         break;
-      //       case 'USERNAME':
-      //         return {
-      //           ...item,
-      //           data: details.username,
-      //         };
-      //         break;
-      //       case 'PASSWORD':
-      //         return {
-      //           ...item,
-      //           data: details.originalpassword,
-      //         };
-      //         break;
-      //       case 'DATE OF BIRTH':
-      //         return {
-      //           ...item,
-      //           data: details.dob,
-      //         };
-      //         break;
-      //       case 'EMAIL':
-      //         return {
-      //           ...item,
-      //           data: details.email,
-      //         };
-      //         break;
-      //       case 'PHONE NUMBER':
-      //         return {
-      //           ...item,
-      //           data: details.contactpersonal,
-      //         };
-      //         break;
-      //       case 'FIRST NAME':
-      //         return {
-      //           ...item,
-      //           data: details.firstname,
-      //         };
-      //         break;
-      //       case 'LAST NAME':
-      //         return {
-      //           ...item,
-      //           data: details.lastname,
-      //         };
-      //         break;
-      //       case 'AADHAAR NUMBER':
-      //         return {
-      //           ...item,
-      //           data: details.aadhar,
-      //         };
-      //         break;
-      //       case 'PAN NUMBER':
-      //         return {
-      //           ...item,
-      //           data: details.panno,
-      //         };
-      //         break;
-      //       case 'CURRENT ADDRESS':
-      //         return {
-      //           ...item,
-      //           data: details.currentaddress,
-      //         };
-      //         break;
-      //       default:
-      //         return {
-      //           ...item,
-      //         };
-      //     }
-      //   });
-      //   setGroupDetails(
-      //     datasNew?.map((data) => ({
-      //       ...data,
-      //       lastcheck: false,
-      //     }))
-      //   );
+        setPostID(searchItem?.commonid);
+        let datasNew = searchItem.groups.map((item) => {
+          switch (item.details) {
+            case 'LEGALNAME':
+              return {
+                ...item,
+                data: details.companyname,
+              };
+              break;
+            case 'USERNAME':
+              return {
+                ...item,
+                data: details.username,
+              };
+              break;
+            case 'PASSWORD':
+              return {
+                ...item,
+                data: details.originalpassword,
+              };
+              break;
+            case 'DATE OF BIRTH':
+              return {
+                ...item,
+                data: details.dob,
+              };
+              break;
+            case 'EMAIL':
+              return {
+                ...item,
+                data: details.email,
+              };
+              break;
+            case 'PHONE NUMBER':
+              return {
+                ...item,
+                data: details.contactpersonal,
+              };
+              break;
+            case 'FIRST NAME':
+              return {
+                ...item,
+                data: details.firstname,
+              };
+              break;
+            case 'LAST NAME':
+              return {
+                ...item,
+                data: details.lastname,
+              };
+              break;
+            case 'AADHAAR NUMBER':
+              return {
+                ...item,
+                data: details.aadhar,
+              };
+              break;
+            case 'PAN NUMBER':
+              return {
+                ...item,
+                data: details.panno,
+              };
+              break;
+            case 'CURRENT ADDRESS':
+              return {
+                ...item,
+                data: details.currentaddress,
+              };
+              break;
+            default:
+              return {
+                ...item,
+              };
+          }
+        });
+        setGroupDetails(
+          datasNew?.map((data) => ({
+            ...data,
+            lastcheck: false,
+          }))
+        );
 
-      //   setIsCheckedList(searchItem?.groups?.map((data) => data.lastcheck));
+        setIsCheckedList(searchItem?.groups?.map((data) => data.lastcheck));
 
-      //   let forFillDetails = datasNew?.map((data) => {
-      //     if (data.checklist === 'Date Multi Random Time') {
-      //       if (data?.data && data?.data !== '') {
-      //         const [date, time] = data?.data?.split(' ');
-      //         return { date, time };
-      //       }
-      //     } else {
-      //       return { date: '0', time: '0' };
-      //     }
-      //   });
+        let forFillDetails = datasNew?.map((data) => {
+          if (data.checklist === 'Date Multi Random Time') {
+            if (data?.data && data?.data !== '') {
+              const [date, time] = data?.data?.split(' ');
+              return { date, time };
+            }
+          } else {
+            return { date: '0', time: '0' };
+          }
+        });
 
-      //   let forDateSpan = datasNew?.map((data) => {
-      //     if (data.checklist === 'Date Multi Span') {
-      //       if (data?.data && data?.data !== '') {
-      //         const [fromdate, todate] = data?.data?.split(' ');
-      //         return { fromdate, todate };
-      //       }
-      //     } else {
-      //       return { fromdate: '0', todate: '0' };
-      //     }
-      //   });
+        let forDateSpan = datasNew?.map((data) => {
+          if (data.checklist === 'Date Multi Span') {
+            if (data?.data && data?.data !== '') {
+              const [fromdate, todate] = data?.data?.split(' ');
+              return { fromdate, todate };
+            }
+          } else {
+            return { fromdate: '0', todate: '0' };
+          }
+        });
 
-      //   let forDateTime = datasNew?.map((data) => {
-      //     if (data.checklist === 'DateTime') {
-      //       if (data?.data && data?.data !== '') {
-      //         const [date, time] = data?.data?.split(' ');
-      //         return { date, time };
-      //       }
-      //     } else {
-      //       return { date: '0', time: '0' };
-      //     }
-      //   });
+        let forDateTime = datasNew?.map((data) => {
+          if (data.checklist === 'DateTime') {
+            if (data?.data && data?.data !== '') {
+              const [date, time] = data?.data?.split(' ');
+              return { date, time };
+            }
+          } else {
+            return { date: '0', time: '0' };
+          }
+        });
 
-      //   let forDateMultiSpanTime = datasNew?.map((data) => {
-      //     if (data.checklist === 'Date Multi Span Time') {
-      //       if (data?.data && data?.data !== '') {
-      //         const [from, to] = data?.data?.split('/');
-      //         const [fromdate, fromtime] = from?.split(' ');
-      //         const [todate, totime] = to?.split(' ');
-      //         return { fromdate, fromtime, todate, totime };
-      //       }
-      //     } else {
-      //       return { fromdate: '0', fromtime: '0', todate: '0', totime: '0' };
-      //     }
-      //   });
+        let forDateMultiSpanTime = datasNew?.map((data) => {
+          if (data.checklist === 'Date Multi Span Time') {
+            if (data?.data && data?.data !== '') {
+              const [from, to] = data?.data?.split('/');
+              const [fromdate, fromtime] = from?.split(' ');
+              const [todate, totime] = to?.split(' ');
+              return { fromdate, fromtime, todate, totime };
+            }
+          } else {
+            return { fromdate: '0', fromtime: '0', todate: '0', totime: '0' };
+          }
+        });
 
-      //   setDateValueMultiFrom(forDateSpan.map((item) => item?.fromdate));
-      //   setDateValueMultiTo(forDateSpan.map((item) => item?.todate));
+        setDateValueMultiFrom(forDateSpan.map((item) => item?.fromdate));
+        setDateValueMultiTo(forDateSpan.map((item) => item?.todate));
 
-      //   setDateValueRandom(forFillDetails.map((item) => item?.date));
-      //   setTimeValueRandom(forFillDetails.map((item) => item?.time));
+        setDateValueRandom(forFillDetails.map((item) => item?.date));
+        setTimeValueRandom(forFillDetails.map((item) => item?.time));
 
-      //   setDateValue(forDateTime.map((item) => item?.date));
-      //   setTimeValue(forDateTime.map((item) => item?.time));
+        setDateValue(forDateTime.map((item) => item?.date));
+        setTimeValue(forDateTime.map((item) => item?.time));
 
-      //   setFirstDateValue(forDateMultiSpanTime.map((item) => item?.fromdate));
-      //   setFirstTimeValue(forDateMultiSpanTime.map((item) => item?.fromtime));
-      //   setSecondDateValue(forDateMultiSpanTime.map((item) => item?.todate));
-      //   setSecondTimeValue(forDateMultiSpanTime.map((item) => item?.totime));
-      // } else {
-      //   setDeleteBtnDisable(true);
-      //   setAssignDetails(details);
-      //   setPostID(details?.id);
-      //   let datasNew = details?.groups?.map((item) => {
-      //     switch (item.details) {
-      //       case 'LEGALNAME':
-      //         return {
-      //           ...item,
-      //           data: details.companyname,
-      //         };
-      //         break;
-      //       case 'USERNAME':
-      //         return {
-      //           ...item,
-      //           data: details.username,
-      //         };
-      //         break;
-      //       case 'PASSWORD':
-      //         return {
-      //           ...item,
-      //           data: details.originalpassword,
-      //         };
-      //         break;
-      //       case 'DATE OF BIRTH':
-      //         return {
-      //           ...item,
-      //           data: details.dob,
-      //         };
-      //         break;
-      //       case 'EMAIL':
-      //         return {
-      //           ...item,
-      //           data: details.email,
-      //         };
-      //         break;
-      //       case 'PHONE NUMBER':
-      //         return {
-      //           ...item,
-      //           data: details.contactpersonal,
-      //         };
-      //         break;
-      //       case 'FIRST NAME':
-      //         return {
-      //           ...item,
-      //           data: details.firstname,
-      //         };
-      //         break;
-      //       case 'LAST NAME':
-      //         return {
-      //           ...item,
-      //           data: details.lastname,
-      //         };
-      //         break;
-      //       case 'AADHAAR NUMBER':
-      //         return {
-      //           ...item,
-      //           data: details.aadhar,
-      //         };
-      //         break;
-      //       case 'PAN NUMBER':
-      //         return {
-      //           ...item,
-      //           data: details.panno,
-      //         };
-      //         break;
-      //       case 'CURRENT ADDRESS':
-      //         return {
-      //           ...item,
-      //           data: details.currentaddress,
-      //         };
-      //         break;
-      //       default:
-      //         return {
-      //           ...item,
-      //         };
-      //     }
-      //   });
+        setFirstDateValue(forDateMultiSpanTime.map((item) => item?.fromdate));
+        setFirstTimeValue(forDateMultiSpanTime.map((item) => item?.fromtime));
+        setSecondDateValue(forDateMultiSpanTime.map((item) => item?.todate));
+        setSecondTimeValue(forDateMultiSpanTime.map((item) => item?.totime));
+      } else {
+        setDeleteBtnDisable(true);
+        setAssignDetails(details);
+        setPostID(details?.id);
+        let datasNew = details?.groups?.map((item) => {
+          switch (item.details) {
+            case 'LEGALNAME':
+              return {
+                ...item,
+                data: details.companyname,
+              };
+              break;
+            case 'USERNAME':
+              return {
+                ...item,
+                data: details.username,
+              };
+              break;
+            case 'PASSWORD':
+              return {
+                ...item,
+                data: details.originalpassword,
+              };
+              break;
+            case 'DATE OF BIRTH':
+              return {
+                ...item,
+                data: details.dob,
+              };
+              break;
+            case 'EMAIL':
+              return {
+                ...item,
+                data: details.email,
+              };
+              break;
+            case 'PHONE NUMBER':
+              return {
+                ...item,
+                data: details.contactpersonal,
+              };
+              break;
+            case 'FIRST NAME':
+              return {
+                ...item,
+                data: details.firstname,
+              };
+              break;
+            case 'LAST NAME':
+              return {
+                ...item,
+                data: details.lastname,
+              };
+              break;
+            case 'AADHAAR NUMBER':
+              return {
+                ...item,
+                data: details.aadhar,
+              };
+              break;
+            case 'PAN NUMBER':
+              return {
+                ...item,
+                data: details.panno,
+              };
+              break;
+            case 'CURRENT ADDRESS':
+              return {
+                ...item,
+                data: details.currentaddress,
+              };
+              break;
+            default:
+              return {
+                ...item,
+              };
+          }
+        });
 
-      //   setGroupDetails(
-      //     datasNew?.map((data) => ({
-      //       ...data,
-      //       lastcheck: false,
-      //     }))
-      //   );
+        setGroupDetails(
+          datasNew?.map((data) => ({
+            ...data,
+            lastcheck: false,
+          }))
+        );
 
-      //   setIsCheckedList(new Array(datasNew?.length).fill(false));
+        setIsCheckedList(new Array(datasNew?.length).fill(false));
 
-      //   setDateValueRandom(new Array(details?.groups?.length).fill(0));
-      //   setTimeValueRandom(new Array(details?.groups?.length).fill(0));
+        setDateValueRandom(new Array(details?.groups?.length).fill(0));
+        setTimeValueRandom(new Array(details?.groups?.length).fill(0));
 
-      //   setDateValueMultiFrom(new Array(details?.groups?.length).fill(0));
-      //   setDateValueMultiTo(new Array(details?.groups?.length).fill(0));
+        setDateValueMultiFrom(new Array(details?.groups?.length).fill(0));
+        setDateValueMultiTo(new Array(details?.groups?.length).fill(0));
 
-      //   setDateValue(new Array(details?.groups?.length).fill(0));
-      //   setTimeValue(new Array(details?.groups?.length).fill(0));
+        setDateValue(new Array(details?.groups?.length).fill(0));
+        setTimeValue(new Array(details?.groups?.length).fill(0));
 
-      //   setFirstDateValue(new Array(details?.groups?.length).fill(0));
-      //   setFirstTimeValue(new Array(details?.groups?.length).fill(0));
-      //   setSecondDateValue(new Array(details?.groups?.length).fill(0));
-      //   setSecondTimeValue(new Array(details?.groups?.length).fill(0));
+        setFirstDateValue(new Array(details?.groups?.length).fill(0));
+        setFirstTimeValue(new Array(details?.groups?.length).fill(0));
+        setSecondDateValue(new Array(details?.groups?.length).fill(0));
+        setSecondTimeValue(new Array(details?.groups?.length).fill(0));
 
-      //   setDisableInput(new Array(details?.groups?.length).fill(true));
-      // }
+        setDisableInput(new Array(details?.groups?.length).fill(true));
+      }
 
-      let designationGrpName = alldesignation?.find(
-        (data) => res?.data?.suser?.designation === data?.name
-      )?.group;
+      let designationGrpName = alldesignation?.find((data) => res?.data?.suser?.designation === data?.name)?.group;
       setisDgroup(designationGrpName);
       setEmpaddform(res?.data?.suser);
       // setReplaceName(res?.data?.suser?.companyname);
@@ -2946,15 +2537,11 @@ function Noticeperiodactionemployeelist() {
       await hierarchyCheck(res?.data?.suser?.companyname);
       fetchEmployeeList(res?.data?.suser?.companyname);
       UserCheckClientId(res?.data?.suser);
+      await checkUserBiometricAvailability(res?.data?.suser);
     } catch (err) {
-      console.log(err, "error");
+      console.log(err, 'error');
       setLoading(false);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -2985,7 +2572,7 @@ function Noticeperiodactionemployeelist() {
         }
       );
 
-      console.log(response.data.users, "mikrotik details");
+      console.log(response.data.users, 'mikrotik details');
       setVpnUser(
         response.data.users?.length > 0
           ? response.data.users?.map((data) => ({
@@ -2995,13 +2582,8 @@ function Noticeperiodactionemployeelist() {
           : []
       );
     } catch (err) {
-      console.log(err, "errorr1");
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      console.log(err, 'errorr1');
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
   const [UnmatchedUserData, setUnmatchedUserData] = useState({});
@@ -3025,13 +2607,8 @@ function Noticeperiodactionemployeelist() {
       );
       setUnmatchedUserData(response?.data?.biometricData);
     } catch (err) {
-      console.log(err, "errorr1");
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      console.log(err, 'errorr1');
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
   const handleActionSubmit = async () => {
@@ -3045,7 +2622,7 @@ function Noticeperiodactionemployeelist() {
               {
                 cloudIDC: data?.CloudIDC,
                 biometricUserIDC: data?.biometricUserIDC,
-                isEnabledC: "No",
+                isEnabledC: 'No',
                 updatedby: [
                   ...data?.updatedby,
                   {
@@ -3065,7 +2642,7 @@ function Noticeperiodactionemployeelist() {
                 {
                   CloudIDC: data?.cloudIDC,
                   biometricUserIDC: data?.biometricUserIDC,
-                  deviceCommandN: "7",
+                  deviceCommandN: '7',
                 },
                 {
                   headers: { Authorization: `Bearer ${auth.APIToken}` },
@@ -3073,7 +2650,7 @@ function Noticeperiodactionemployeelist() {
               );
             }
           } catch (error) {
-            console.error("Error updating unmatched user:", error);
+            console.error('Error updating unmatched user:', error);
           }
         }
       }
@@ -3086,12 +2663,7 @@ function Noticeperiodactionemployeelist() {
       // handleCloseModAction();
       // sendRequest();
     } catch (err) {
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -3107,25 +2679,17 @@ function Noticeperiodactionemployeelist() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      let answer = res?.data?.hirerarchi.filter((data) =>
-        data.supervisorchoose.includes(e)
-      );
-      let answerEmployeename = res?.data?.hirerarchi.filter((data) =>
-        data.employeename.includes(e)
-      );
+      let answer = res?.data?.hirerarchi.filter((data) => data.supervisorchoose.includes(e));
+      let answerEmployeename = res?.data?.hirerarchi.filter((data) => data.employeename.includes(e));
       setHierarchyDeleteData(answer);
       setHierarchyDeleteEmployee(answerEmployeename);
     } catch (err) {
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      console.log(err, 'err');
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
-  //while clicking save it happens
+  // //while clicking save it happens
   // const hierarchyCheckDelete = async (e, status) => {
   //   setPageName(!pageName);
   //   try {
@@ -3239,21 +2803,15 @@ function Noticeperiodactionemployeelist() {
         return e === item?.companyname;
       });
 
-      const higher = await axios.post(
-        `${SERVICE.HIGHER_DESIGNATION_COMPANYNAMES}`,
-        {
-          headers: {
-            Authorization: `Bearer ${auth.APIToken}`,
-          },
-          replacename: e,
-          designation: Designation?.designation,
-        }
-      );
-      console.log(higher, "higher");
-      const answerDesig =
-        higher?.data?.hierarchydata?.length > 0
-          ? higher?.data?.hierarchydata
-          : [];
+      const higher = await axios.post(`${SERVICE.HIGHER_DESIGNATION_COMPANYNAMES}`, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        replacename: e,
+        designation: Designation?.designation,
+      });
+      console.log(higher, 'higher');
+      const answerDesig = higher?.data?.hierarchydata?.length > 0 ? higher?.data?.hierarchydata : [];
       setHigherDesigDropdowns(
         answerDesig?.map((data) => ({
           ...data,
@@ -3261,12 +2819,7 @@ function Noticeperiodactionemployeelist() {
           value: data.companyname,
         }))
       );
-      let answer = allUsersData.filter(
-        (data) =>
-          data.companyname !== e &&
-          Designation?.designation === data?.designation &&
-          (data?.resonablestatus === "" || data?.resonablestatus === undefined)
-      );
+      let answer = allUsersData.filter((data) => data.companyname !== e && Designation?.designation === data?.designation && (data?.resonablestatus === '' || data?.resonablestatus === undefined));
       setSameDesigDropdowns(
         answer?.length === 0
           ? []
@@ -3278,42 +2831,34 @@ function Noticeperiodactionemployeelist() {
       );
     } catch (err) {
       setIsBoarding(true);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
   const handleCheckInHierarchy = async (replaceName, oldname, status) => {
     setPageName(!pageName);
     try {
-      if (status !== "Hold") {
-        let res = await axios.post(
-          `${SERVICE.HIRERARCHI_ACTION_EMPLOYEELIST}`,
-          {
-            headers: {
-              Authorization: `Bearer ${auth.APIToken}`,
-            },
-            user: replaceName,
-            oldname: oldname,
-          }
-        );
-        
-
+      if (status !== 'Hold') {
+        let res = await axios.post(`${SERVICE.HIRERARCHI_ACTION_EMPLOYEELIST}`, {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          user: replaceName,
+          oldname: oldname,
+        });
+        let res_user = await axios.post(`${SERVICE.REPORTINGTOEMPLOYEECHANGE_USER}`, {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          user: replaceName,
+          oldname: oldname,
+        });
       }
-
+      setReplaceName('Please Choose Replace Name');
       // console.log(res?.data, 'res_action');
     } catch (err) {
       setIsBoarding(true);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -3342,10 +2887,10 @@ function Noticeperiodactionemployeelist() {
       domtoimage
         .toBlob(gridRefTableImg.current)
         .then((blob) => {
-          saveAs(blob, "Action Employee List.png");
+          saveAs(blob, 'Action Employee List.png');
         })
         .catch((error) => {
-          console.error("dom-to-image error: ", error);
+          console.error('dom-to-image error: ', error);
         });
     }
   };
@@ -3373,10 +2918,9 @@ function Noticeperiodactionemployeelist() {
     return Math.max(0, months);
   };
 
-  const [fileFormat, setFormat] = useState("xl");
-  const fileType =
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
-  const fileExtension = fileFormat === "xl" ? ".xlsx" : ".csv";
+  const [fileFormat, setFormat] = useState('xl');
+  const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  const fileExtension = fileFormat === 'xl' ? '.xlsx' : '.csv';
 
   const exportToExcel = async (csvData, fileName) => {
     if (!csvData || !csvData.length) {
@@ -3390,43 +2934,43 @@ function Noticeperiodactionemployeelist() {
     setPageName(!pageName);
     try {
       const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet("Data");
+      const worksheet = workbook.addWorksheet('Data');
 
       // Define columns
       worksheet.columns = [
-        { header: "S.No", key: "serial", width: 10 },
+        { header: 'S.No', key: 'serial', width: 10 },
 
-        { header: "Empcode", key: "empcode", width: 15 },
-        { header: "Name", key: "companyname", width: 30 },
-        { header: "Department", key: "department", width: 30 },
-        { header: "Work Mode", key: "workmode", width: 30 },
-        { header: "DOB", key: "dob", width: 20 },
-        { header: "Personal Number", key: "contactpersonal", width: 20 },
+        { header: 'Empcode', key: 'empcode', width: 15 },
+        { header: 'Name', key: 'companyname', width: 30 },
+        { header: 'Department', key: 'department', width: 30 },
+        { header: 'Work Mode', key: 'workmode', width: 30 },
+        { header: 'DOB', key: 'dob', width: 20 },
+        { header: 'Personal Number', key: 'contactpersonal', width: 20 },
 
-        { header: "Doj", key: "doj", width: 20 },
-        { header: "Last Working Day", key: "lastworkingdate", width: 20 },
-        { header: "Experience", key: "experience", width: 20 },
-        { header: "Reportint To", key: "reportingto", width: 20 },
+        { header: 'Doj', key: 'doj', width: 20 },
+        { header: 'Last Working Day', key: 'lastworkingdate', width: 20 },
+        { header: 'Experience', key: 'experience', width: 20 },
+        { header: 'Reportint To', key: 'reportingto', width: 20 },
 
         // { header: 'Image', key: 'image', width: 20 }
       ];
 
       worksheet.getRow(1).eachCell((cell) => {
         cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "FFFF00" }, // Yellow background
+          type: 'pattern',
+          pattern: 'solid',
+          fgColor: { argb: 'FFFF00' }, // Yellow background
         };
         cell.font = {
           bold: true,
-          color: { argb: "000" }, // Red text color
+          color: { argb: '000' }, // Red text color
         };
-        cell.alignment = { vertical: "middle", horizontal: "center" };
+        cell.alignment = { vertical: 'middle', horizontal: 'center' };
         cell.border = {
-          top: { style: "thin" },
-          left: { style: "thin" },
-          bottom: { style: "thin" },
-          right: { style: "thin" },
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' },
         };
       });
 
@@ -3435,17 +2979,17 @@ function Noticeperiodactionemployeelist() {
         const item = csvData[i];
         const row = worksheet.addRow({
           serial: i + 1,
-          empcode: item.empcode || "",
-          companyname: item.companyname || "",
-          department: item.department || "",
-          workmode: item.workmode || "",
-          dob: item.dob || "",
-          contactpersonal: item.contactpersonal || "",
+          empcode: item.empcode || '',
+          companyname: item.companyname || '',
+          department: item.department || '',
+          workmode: item.workmode || '',
+          dob: item.dob || '',
+          contactpersonal: item.contactpersonal || '',
 
-          doj: item.doj || "",
-          lastworkingdate: item.lastworkingdate || "",
-          experience: item.experience || "",
-          reportingto: item.reportingto || "",
+          doj: item.doj || '',
+          lastworkingdate: item.lastworkingdate || '',
+          experience: item.experience || '',
+          reportingto: item.reportingto || '',
         });
 
         // Center align the text in each cell of the row
@@ -3462,10 +3006,10 @@ function Noticeperiodactionemployeelist() {
         // });
 
         if (item.profileimage) {
-          const base64Image = item.profileimage.split(",")[1];
+          const base64Image = item.profileimage.split(',')[1];
           const imageId = workbook.addImage({
             base64: base64Image,
-            extension: "png",
+            extension: 'png',
           });
 
           const rowIndex = row.number;
@@ -3481,8 +3025,8 @@ function Noticeperiodactionemployeelist() {
 
           // Center align the image cell
           worksheet.getCell(`H${rowIndex}`).alignment = {
-            vertical: "middle",
-            horizontal: "center",
+            vertical: 'middle',
+            horizontal: 'center',
           };
         }
       }
@@ -3490,42 +3034,37 @@ function Noticeperiodactionemployeelist() {
       // Generate Excel file
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
       FileSaver.saveAs(blob, `${fileName}${fileExtension}`);
     } catch (error) {}
   };
 
   const handleExportXL = (isfilter) => {
-    const dataToExport =
-      isfilter === "filtered"
-        ? filteredChanges !== null
-          ? filteredRowData
-          : filteredData
-        : items;
+    const dataToExport = isfilter === 'filtered' ? (filteredChanges !== null ? filteredRowData : filteredData) : items;
 
     if (!dataToExport || dataToExport.length === 0) {
       return;
     }
 
-    exportToExcel(dataToExport, "Action Employee List");
+    exportToExcel(dataToExport, 'Action Employee List');
     setIsFilterOpen(false);
   };
 
   //  PDF
   // pdf.....
   const columns = [
-    { title: "S.No", field: "serialNumber" },
-    { title: "Empcode", field: "empcode" },
-    { title: "Name", field: "companyname" },
-    { title: "Department", field: "department" },
-    { title: "Work Mode", field: "workmode" },
-    { title: "Dob", field: "dob" },
-    { title: "PersonalNo", field: "contactpersonal" },
-    { title: "DOJ", field: "doj" },
-    { title: "Last Working Day", field: "lastworkingdate" },
-    { title: "Experience", field: "experience" },
-    { title: "Reportingto", field: "reportingto" },
+    { title: 'S.No', field: 'serialNumber' },
+    { title: 'Empcode', field: 'empcode' },
+    { title: 'Name', field: 'companyname' },
+    { title: 'Department', field: 'department' },
+    { title: 'Work Mode', field: 'workmode' },
+    { title: 'Dob', field: 'dob' },
+    { title: 'PersonalNo', field: 'contactpersonal' },
+    { title: 'DOJ', field: 'doj' },
+    { title: 'Last Working Day', field: 'lastworkingdate' },
+    { title: 'Experience', field: 'experience' },
+    { title: 'Reportingto', field: 'reportingto' },
     // { title: "Image", field: "imageBase64" }
   ];
 
@@ -3535,22 +3074,10 @@ function Noticeperiodactionemployeelist() {
     const tableRows = [];
     const imagesToLoad = [];
     let newOne = filteredChanges !== null ? filteredRowData : filteredData;
-    let datatoPdf = isfilter === "filtered" ? newOne : items;
+    let datatoPdf = isfilter === 'filtered' ? newOne : items;
 
     datatoPdf.forEach((item, index) => {
-      const rowData = [
-        index + 1,
-        item.empcode || "",
-        item.companyname || "",
-        item.department || "",
-        item.workmode || "",
-        item.dob || "",
-        item.contactpersonal || "",
-        item.doj || "",
-        item.lastworkingdate || "",
-        item.experience || "",
-        item.reportingto || "",
-      ];
+      const rowData = [index + 1, item.empcode || '', item.companyname || '', item.department || '', item.workmode || '', item.dob || '', item.contactpersonal || '', item.doj || '', item.lastworkingdate || '', item.experience || '', item.reportingto || ''];
 
       tableRows.push(rowData);
 
@@ -3568,11 +3095,7 @@ function Noticeperiodactionemployeelist() {
       });
     };
 
-    const loadedImages = await Promise.all(
-      imagesToLoad.map((item) =>
-        loadImage(item.imageBase64).then((img) => ({ ...item, img }))
-      )
-    );
+    const loadedImages = await Promise.all(imagesToLoad.map((item) => loadImage(item.imageBase64).then((img) => ({ ...item, img }))));
 
     // Calculate the required row height based on image height
     const rowHeight = 10; // Set desired row height
@@ -3583,27 +3106,15 @@ function Noticeperiodactionemployeelist() {
       startY: 20,
       didDrawCell: (data) => {
         // Ensure that the cell belongs to the body section and it's the image column
-        if (
-          data.section === "body" &&
-          data.column.index === columns.length - 1
-        ) {
-          const imageInfo = loadedImages.find(
-            (image) => image.index === data.row.index
-          );
+        if (data.section === 'body' && data.column.index === columns.length - 1) {
+          const imageInfo = loadedImages.find((image) => image.index === data.row.index);
           if (imageInfo) {
             const imageHeight = 10; // Desired image height
             const imageWidth = 10; // Desired image width
             const xOffset = (data.cell.width - imageWidth) / 2; // Center the image horizontally
             const yOffset = (rowHeight - imageHeight) / 2; // Center the image vertically
 
-            doc.addImage(
-              imageInfo.img,
-              "PNG",
-              data.cell.x + xOffset,
-              data.cell.y + yOffset,
-              imageWidth,
-              imageHeight
-            );
+            doc.addImage(imageInfo.img, 'PNG', data.cell.x + xOffset, data.cell.y + yOffset, imageWidth, imageHeight);
 
             // Adjust cell styles to increase height
             data.cell.height = rowHeight; // Set custom height
@@ -3625,15 +3136,15 @@ function Noticeperiodactionemployeelist() {
       // },
     });
 
-    doc.save("Action Employee List.pdf");
+    doc.save('Action Employee List.pdf');
   };
 
   //print...
   const componentRef = useRef();
   const handleprint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: "Action Employee List",
-    pageStyle: "print",
+    documentTitle: 'Action Employee List',
+    pageStyle: 'print',
   });
   //table entries ..,.
   const [items, setItems] = useState([]);
@@ -3645,12 +3156,12 @@ function Noticeperiodactionemployeelist() {
       //   : "";
 
       function getTimeDifference(clockIn, clockOut) {
-        const inTime = moment(`2000-01-01 ${clockIn}`, "YYYY-MM-DD hh:mm:ss A");
-        let outTime = moment(`2000-01-01 ${clockOut}`, "YYYY-MM-DD hh:mm:ss A");
+        const inTime = moment(`2000-01-01 ${clockIn}`, 'YYYY-MM-DD hh:mm:ss A');
+        let outTime = moment(`2000-01-01 ${clockOut}`, 'YYYY-MM-DD hh:mm:ss A');
 
         // If clockOut is before clockIn (i.e., it's next day)
         if (outTime.isBefore(inTime)) {
-          outTime.add(1, "day");
+          outTime.add(1, 'day');
         }
 
         const duration = moment.duration(outTime.diff(inTime));
@@ -3660,7 +3171,7 @@ function Noticeperiodactionemployeelist() {
       let ansNew;
       let count = item?.attandances?.length - 1;
 
-      console.log(count, "count");
+      console.log(count, 'count');
       for (let i = count; i >= 0; i--) {
         let currentItem = item?.attandances[i];
         let clockIN = currentItem?.clockintime;
@@ -3671,7 +3182,7 @@ function Noticeperiodactionemployeelist() {
           console.log(`Date: ${currentItem.date}, TimeDiff: ${timeDiff}`);
 
           if (timeDiff >= 5) {
-            ansNew = currentItem?.date?.split("-");
+            ansNew = currentItem?.date?.split('-');
             break;
           }
         }
@@ -3680,21 +3191,26 @@ function Noticeperiodactionemployeelist() {
       let day = ansNew && ansNew[0];
       let month = ansNew && ansNew[1];
       let year = ansNew && ansNew[2];
-      let finaldate =
-        day && month && year ? `${year}-${month}-${day}` : item?.doj;
+      let finaldate = day && month && year ? `${year}-${month}-${day}` : item?.doj;
+      const doj = moment(item?.doj, 'YYYY-MM-DD');
+      const lw = moment(finaldate, 'YYYY-MM-DD'); // your existing lastWorkday variable
+
+      const lastworkingdate = doj.isAfter(lw)
+        ? doj.format('DD-MM-YYYY') // if DOJ > LastWorkday
+        : lw.format('DD-MM-YYYY'); // else LastWorkday
+      // console.log(lastworkingdate, 'lastworkingdate');
+      // console.log(item?.doj, 'item?.doj');
+      // console.log(finaldate, 'finaldate');
       return {
         ...item,
         serialNumber: index + 1,
         id: item._id,
         _id: item._id,
-        dob: item?.dob
-          ? moment(item.dob, "YYYY-MM-DD").format("DD-MM-YYYY")
-          : "",
-        doj: item?.doj
-          ? moment(item.doj, "YYYY-MM-DD").format("DD-MM-YYYY")
-          : "",
+        dob: item?.dob ? moment(item.dob, 'YYYY-MM-DD').format('DD-MM-YYYY') : '',
+        doj: item?.doj ? moment(item.doj, 'YYYY-MM-DD').format('DD-MM-YYYY') : '',
         experience: calculateExperience(item.doj),
-        lastworkingdate: moment(finaldate).format("DD-MM-YYYY"),
+        // lastworkingdate: moment(finaldate).format('DD-MM-YYYY'),
+        lastworkingdate: lastworkingdate,
       };
     });
     setItems(itemsWithSerialNumber);
@@ -3706,18 +3222,17 @@ function Noticeperiodactionemployeelist() {
   }, [employees]);
 
   //table sorting
-  const [sorting, setSorting] = useState({ column: "", direction: "" });
+  const [sorting, setSorting] = useState({ column: '', direction: '' });
 
   const handleSorting = (column) => {
-    const direction =
-      sorting.column === column && sorting.direction === "asc" ? "desc" : "asc";
+    const direction = sorting.column === column && sorting.direction === 'asc' ? 'desc' : 'asc';
     setSorting({ column, direction });
   };
 
   items.sort((a, b) => {
-    if (sorting.direction === "asc") {
+    if (sorting.direction === 'asc') {
       return a[sorting.column] > b[sorting.column] ? 1 : -1;
-    } else if (sorting.direction === "desc") {
+    } else if (sorting.direction === 'desc') {
       return a[sorting.column] < b[sorting.column] ? 1 : -1;
     }
     return 0;
@@ -3727,29 +3242,25 @@ function Noticeperiodactionemployeelist() {
     if (sorting.column !== column) {
       return (
         <>
-          <Box sx={{ color: "#bbb6b6" }}>
-            <Grid sx={{ height: "6px", fontSize: "1.6rem" }}>
+          <Box sx={{ color: '#bbb6b6' }}>
+            <Grid sx={{ height: '6px', fontSize: '1.6rem' }}>
               <ArrowDropUpOutlinedIcon />
             </Grid>
-            <Grid sx={{ height: "6px", fontSize: "1.6rem" }}>
+            <Grid sx={{ height: '6px', fontSize: '1.6rem' }}>
               <ArrowDropDownOutlinedIcon />
             </Grid>
           </Box>
         </>
       );
-    } else if (sorting.direction === "asc") {
+    } else if (sorting.direction === 'asc') {
       return (
         <>
           <Box>
-            <Grid sx={{ height: "6px" }}>
-              <ArrowDropUpOutlinedIcon
-                style={{ color: "black", fontSize: "1.6rem" }}
-              />
+            <Grid sx={{ height: '6px' }}>
+              <ArrowDropUpOutlinedIcon style={{ color: 'black', fontSize: '1.6rem' }} />
             </Grid>
-            <Grid sx={{ height: "6px" }}>
-              <ArrowDropDownOutlinedIcon
-                style={{ color: "#bbb6b6", fontSize: "1.6rem" }}
-              />
+            <Grid sx={{ height: '6px' }}>
+              <ArrowDropDownOutlinedIcon style={{ color: '#bbb6b6', fontSize: '1.6rem' }} />
             </Grid>
           </Box>
         </>
@@ -3758,15 +3269,11 @@ function Noticeperiodactionemployeelist() {
       return (
         <>
           <Box>
-            <Grid sx={{ height: "6px" }}>
-              <ArrowDropUpOutlinedIcon
-                style={{ color: "#bbb6b6", fontSize: "1.6rem" }}
-              />
+            <Grid sx={{ height: '6px' }}>
+              <ArrowDropUpOutlinedIcon style={{ color: '#bbb6b6', fontSize: '1.6rem' }} />
             </Grid>
-            <Grid sx={{ height: "6px" }}>
-              <ArrowDropDownOutlinedIcon
-                style={{ color: "black", fontSize: "1.6rem" }}
-              />
+            <Grid sx={{ height: '6px' }}>
+              <ArrowDropDownOutlinedIcon style={{ color: 'black', fontSize: '1.6rem' }} />
             </Grid>
           </Box>
         </>
@@ -3785,36 +3292,28 @@ function Noticeperiodactionemployeelist() {
   };
 
   //datatable....
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value);
     setPage(1);
   };
 
   // Split the search query into individual terms
-  const searchTerms = searchQuery.toLowerCase().split(" ");
+  const searchTerms = searchQuery.toLowerCase().split(' ');
 
   // Modify the filtering logic to check each term
   const filteredDatas = items?.filter((item) => {
-    return searchTerms.every((term) =>
-      Object.values(item).join(" ").toLowerCase().includes(term)
-    );
+    return searchTerms.every((term) => Object.values(item).join(' ').toLowerCase().includes(term));
   });
 
-  const filteredData = filteredDatas.slice(
-    (page - 1) * pageSize,
-    page * pageSize
-  );
+  const filteredData = filteredDatas.slice((page - 1) * pageSize, page * pageSize);
 
   const totalPages = Math.ceil(employees.length / pageSize);
 
   const visiblePages = Math.min(totalPages, 3);
 
   const firstVisiblePage = Math.max(1, page - 1);
-  const lastVisiblePage = Math.min(
-    firstVisiblePage + visiblePages - 1,
-    totalPages
-  );
+  const lastVisiblePage = Math.min(firstVisiblePage + visiblePages - 1, totalPages);
 
   const pageNumbers = [];
 
@@ -3855,38 +3354,38 @@ function Noticeperiodactionemployeelist() {
 
   const columnDataTable = [
     {
-      field: "serialNumber",
-      headerName: "SNo",
+      field: 'serialNumber',
+      headerName: 'SNo',
       flex: 0,
       width: 90,
       hide: !columnVisibility.serialNumber,
-      headerClassName: "bold-header",
-      pinned: "left",
+      headerClassName: 'bold-header',
+      pinned: 'left',
     },
     {
-      field: "empcode",
-      headerName: "Emp Code",
+      field: 'empcode',
+      headerName: 'Emp Code',
       flex: 0,
       width: 180,
       hide: !columnVisibility.empcode,
-      headerClassName: "bold-header",
-      pinned: "left",
+      headerClassName: 'bold-header',
+      pinned: 'left',
       cellRenderer: (params) => (
-        <Grid sx={{ display: "flex" }}>
+        <Grid sx={{ display: 'flex' }}>
           <ListItem
             sx={{
-              "&:hover": {
-                cursor: "pointer",
-                color: "blue",
-                textDecoration: "underline",
+              '&:hover': {
+                cursor: 'pointer',
+                color: 'blue',
+                textDecoration: 'underline',
               },
             }}
           >
             <CopyToClipboard
               onCopy={() => {
-                handleCopy("Copied Emp Code!");
+                handleCopy('Copied Emp Code!');
               }}
-              options={{ message: "Copied Emp Code!" }}
+              options={{ message: 'Copied Emp Code!' }}
               text={params?.data?.empcode}
             >
               <ListItemText primary={params?.data?.empcode} />
@@ -3896,28 +3395,28 @@ function Noticeperiodactionemployeelist() {
       ),
     },
     {
-      field: "companyname",
-      headerName: "Company Name",
+      field: 'companyname',
+      headerName: 'Company Name',
       flex: 0,
       width: 200,
       hide: !columnVisibility.companyname,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
       cellRenderer: (params) => (
-        <Grid sx={{ display: "flex" }}>
+        <Grid sx={{ display: 'flex' }}>
           <ListItem
             sx={{
-              "&:hover": {
-                cursor: "pointer",
-                color: "blue",
-                textDecoration: "underline",
+              '&:hover': {
+                cursor: 'pointer',
+                color: 'blue',
+                textDecoration: 'underline',
               },
             }}
           >
             <CopyToClipboard
               onCopy={() => {
-                handleCopy("Copied Company Name!");
+                handleCopy('Copied Company Name!');
               }}
-              options={{ message: "Copied Company Name!" }}
+              options={{ message: 'Copied Company Name!' }}
               text={params?.data?.companyname}
             >
               <ListItemText primary={params?.data?.companyname} />
@@ -3927,68 +3426,68 @@ function Noticeperiodactionemployeelist() {
       ),
     },
     {
-      field: "department",
-      headerName: "Department",
+      field: 'department',
+      headerName: 'Department',
       flex: 0,
       width: 200,
       hide: !columnVisibility.department,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
     },
     {
-      field: "workmode",
-      headerName: "Work Mode",
+      field: 'workmode',
+      headerName: 'Work Mode',
       flex: 0,
       width: 200,
       hide: !columnVisibility.workmode,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
     },
     {
-      field: "dob",
-      headerName: "DOB",
+      field: 'dob',
+      headerName: 'DOB',
       flex: 0,
       width: 150,
       hide: !columnVisibility.dob,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
     },
     {
-      field: "contactpersonal",
-      headerName: "Contact Personal",
+      field: 'contactpersonal',
+      headerName: 'Contact Personal',
       flex: 0,
       width: 200,
       hide: !columnVisibility.contactpersonal,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
     },
     {
-      field: "doj",
-      headerName: "DOJ",
+      field: 'doj',
+      headerName: 'DOJ',
       flex: 0,
       width: 150,
       hide: !columnVisibility.doj,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
     },
     {
-      field: "lastworkingdate",
-      headerName: "Last Working Date",
+      field: 'lastworkingdate',
+      headerName: 'Last Working Date',
       flex: 0,
       width: 150,
       hide: !columnVisibility.lastworkingdate,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
     },
     {
-      field: "experience",
-      headerName: "Experience",
+      field: 'experience',
+      headerName: 'Experience',
       flex: 0,
       width: 100,
       hide: !columnVisibility.experience,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
     },
     {
-      field: "reportingto",
-      headerName: "Reporting To",
+      field: 'reportingto',
+      headerName: 'Reporting To',
       flex: 0,
       width: 200,
       hide: !columnVisibility.reportingto,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
     },
     // {
     //   field: "profileimage",
@@ -4011,61 +3510,70 @@ function Noticeperiodactionemployeelist() {
     //   },
     // },
     {
-      field: "actions",
-      headerName: "Action",
+      field: 'actions',
+      headerName: 'Action',
       flex: 0,
-      width: 400,
-      minHeight: "40px !important",
+      width: 450,
+      minHeight: '40px !important',
       sortable: false,
       hide: !columnVisibility.actions,
-      headerClassName: "bold-header",
+      headerClassName: 'bold-header',
       cellRenderer: (params) => (
         <>
-          <Grid sx={{ display: "flex" }}>
-            <ButtonGroup
-              size="small"
-              variant="contained"
-              aria-label="Small button group"
-            >
+          <Grid sx={{ display: 'flex' }}>
+            <ButtonGroup size="small" variant="contained" aria-label="Small button group">
               <Button
-                sx={{ fontSize: "0.6rem", backgroundColor: "#0fa1ff" }}
+                sx={{ fontSize: '0.6rem', backgroundColor: '#0fa1ff' }}
                 onClick={(e) => {
-                  getCode(getId, "Releave Employee", params?.data);
+                  getCode(getId, 'Releave Employee', params?.data);
                 }}
               >
                 Releave Employee
               </Button>
               <Button
-                sx={{ fontSize: "0.6rem", backgroundColor: "#ff0f20" }}
+                sx={{ fontSize: '0.6rem', backgroundColor: '#ff0f20' }}
                 onClick={(e) => {
-                  getCode(getId, "Absconded", params?.data);
+                  getCode(getId, 'Absconded', params?.data);
                 }}
               >
                 Absconded
               </Button>
+
               <Button
                 sx={{
-                  fontSize: "0.6rem",
-                  backgroundColor: "#ffe40f",
-                  color: "black",
+                  fontSize: '0.6rem',
+                  backgroundColor: '#ffe40f',
+                  color: 'black',
                 }}
                 onClick={(e) => {
-                  getCode(getId, "Hold", params?.data);
+                  getCode(getId, 'Hold', params?.data);
                 }}
               >
                 Hold
               </Button>
               <Button
                 sx={{
-                  fontSize: "0.6rem",
-                  backgroundColor: "#ff3a0f",
-                  color: "white",
+                  fontSize: '0.6rem',
+                  backgroundColor: '#ff3a0f',
+                  color: 'white',
                 }}
                 onClick={() => {
-                  getCode(getId, "Terminate", params?.data);
+                  getCode(getId, 'Terminate', params?.data);
                 }}
               >
                 Terminate
+              </Button>
+              <Button
+                sx={{
+                  fontSize: '0.6rem',
+                  backgroundColor: '#ffce00',
+                  color: 'black',
+                }}
+                onClick={() => {
+                  getCode(getId, 'Not Joined', params?.data);
+                }}
+              >
+                Not Joined
               </Button>
             </ButtonGroup>
           </Grid>
@@ -4080,18 +3588,16 @@ function Noticeperiodactionemployeelist() {
   };
 
   useEffect(() => {
-    const savedVisibility = localStorage.getItem("columnVisibility");
+    const savedVisibility = localStorage.getItem('columnVisibility');
     if (savedVisibility) {
       setColumnVisibility(JSON.parse(savedVisibility));
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("columnVisibility", JSON.stringify(columnVisibility));
+    localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
   }, [columnVisibility]);
-  const filteredColumns = columnDataTable.filter((column) =>
-    column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase())
-  );
+  const filteredColumns = columnDataTable.filter((column) => column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase()));
 
   // Manage Columns functionality
   const toggleColumnVisibility = (field) => {
@@ -4111,19 +3617,19 @@ function Noticeperiodactionemployeelist() {
   };
   const handleCloseManageColumnsNew = () => {
     setManageColumnsOpenNew(false);
-    setSearchQueryManage("");
+    setSearchQueryManage('');
   };
 
   const openNew = Boolean(anchorElNew);
-  const idNew = openNew ? "simple-popover" : undefined;
+  const idNew = openNew ? 'simple-popover' : undefined;
 
   // JSX for the "Manage Columns" popover content
   const manageColumnsContent = (
     <Box
       style={{
-        padding: "10px",
-        minWidth: "325px",
-        "& .MuiDialogContent-root": { padding: "10px 0" },
+        padding: '10px',
+        minWidth: '325px',
+        '& .MuiDialogContent-root': { padding: '10px 0' },
       }}
     >
       <Typography variant="h6">Manage Columns</Typography>
@@ -4131,7 +3637,7 @@ function Noticeperiodactionemployeelist() {
         aria-label="close"
         onClick={handleCloseManageColumnsNew}
         sx={{
-          position: "absolute",
+          position: 'absolute',
           right: 8,
           top: 8,
           color: (theme) => theme.palette.grey[500],
@@ -4139,38 +3645,16 @@ function Noticeperiodactionemployeelist() {
       >
         <CloseIcon />
       </IconButton>
-      <Box sx={{ position: "relative", margin: "10px" }}>
-        <TextField
-          label="Find column"
-          variant="standard"
-          fullWidth
-          value={searchQueryManage}
-          onChange={(e) => setSearchQueryManage(e.target.value)}
-          sx={{ marginBottom: 5, position: "absolute" }}
-        />
+      <Box sx={{ position: 'relative', margin: '10px' }}>
+        <TextField label="Find column" variant="standard" fullWidth value={searchQueryManage} onChange={(e) => setSearchQueryManage(e.target.value)} sx={{ marginBottom: 5, position: 'absolute' }} />
       </Box>
       <br />
       <br />
-      <DialogContent
-        sx={{ minWidth: "auto", height: "200px", position: "relative" }}
-      >
-        <List sx={{ overflow: "auto", height: "100%" }}>
+      <DialogContent sx={{ minWidth: 'auto', height: '200px', position: 'relative' }}>
+        <List sx={{ overflow: 'auto', height: '100%' }}>
           {filteredColumns.map((column) => (
             <ListItem key={column.field}>
-              <ListItemText
-                sx={{ display: "flex" }}
-                primary={
-                  <Switch
-                    sx={{ marginTop: "-5px" }}
-                    size="small"
-                    checked={columnVisibility[column.field]}
-                    onChange={() => toggleColumnVisibility(column.field)}
-                  />
-                }
-                secondary={
-                  column.field === "checkbox" ? "Checkbox" : column.headerName
-                }
-              />
+              <ListItemText sx={{ display: 'flex' }} primary={<Switch sx={{ marginTop: '-5px' }} size="small" checked={columnVisibility[column.field]} onChange={() => toggleColumnVisibility(column.field)} />} secondary={column.field === 'checkbox' ? 'Checkbox' : column.headerName} />
             </ListItem>
           ))}
         </List>
@@ -4178,11 +3662,7 @@ function Noticeperiodactionemployeelist() {
       <DialogActions>
         <Grid container>
           <Grid item md={4}>
-            <Button
-              variant="text"
-              sx={{ textTransform: "none" }}
-              onClick={() => setColumnVisibility(initialColumnVisibility)}
-            >
+            <Button variant="text" sx={{ textTransform: 'none' }} onClick={() => setColumnVisibility(initialColumnVisibility)}>
               Show All
             </Button>
           </Grid>
@@ -4190,7 +3670,7 @@ function Noticeperiodactionemployeelist() {
           <Grid item md={4}>
             <Button
               variant="text"
-              sx={{ textTransform: "none" }}
+              sx={{ textTransform: 'none' }}
               onClick={() => {
                 const newColumnVisibility = {};
                 columnDataTable.forEach((column) => {
@@ -4211,20 +3691,13 @@ function Noticeperiodactionemployeelist() {
   //get single row to edit....
   const getCodeselectemp = (e, name) => {
     try {
-      const data = allPastename.filter(
-        (d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, ".").trim())
-      );
-      console.log(data, allPastename, valueEmployeeCat, "data");
+      const data = allPastename.filter((d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, '.').trim()));
+      console.log(data, allPastename, valueEmployeeCat, 'data');
 
       setMismatchusers([...new Set(data)]);
       handleClickOpenview();
     } catch (err) {
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
 
@@ -4232,17 +3705,10 @@ function Noticeperiodactionemployeelist() {
     <Box>
       <NotificationContainer />
       {/* ****** Header Content ****** */}
-      <Headtitle title={"ACTION EMPLOYEE LIST"} />
-      <PageHeading
-        title="Action Employee List"
-        modulename="Human Resources"
-        submodulename="HR"
-        mainpagename="Employee"
-        subpagename="Employee Action Details"
-        subsubpagename="Action Employee List"
-      />
+      <Headtitle title={'ACTION EMPLOYEE LIST'} />
+      <PageHeading title="Action Employee List" modulename="Human Resources" submodulename="HR" mainpagename="Employee" subpagename="Employee Action Details" subsubpagename="Action Employee List" />
       <br />
-      {isUserRoleCompare?.includes("lactionemployeelist") && (
+      {isUserRoleCompare?.includes('lactionemployeelist') && (
         <>
           <Box sx={userStyle.selectcontainer}>
             <Grid container spacing={2}>
@@ -4254,14 +3720,14 @@ function Noticeperiodactionemployeelist() {
                 <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
-                      Type<b style={{ color: "red" }}>*</b>
+                      Type<b style={{ color: 'red' }}>*</b>
                     </Typography>
                     <Selects
                       options={TypeOptions}
                       styles={colourStyles}
                       value={{
-                        label: filterState.type ?? "Please Select Type",
-                        value: filterState.type ?? "Please Select Type",
+                        label: filterState.type ?? 'Please Select Type',
+                        value: filterState.type ?? 'Please Select Type',
                       }}
                       onChange={(e) => {
                         setFilterState((prev) => ({
@@ -4287,7 +3753,7 @@ function Noticeperiodactionemployeelist() {
                 </Grid>
                 <Grid item md={3} xs={12} sm={12}>
                   <Typography>
-                    Company<b style={{ color: "red" }}>*</b>
+                    Company<b style={{ color: 'red' }}>*</b>
                   </Typography>
                   <FormControl size="small" fullWidth>
                     <MultiSelect
@@ -4297,12 +3763,7 @@ function Noticeperiodactionemployeelist() {
                           value: data.company,
                         }))
                         .filter((item, index, self) => {
-                          return (
-                            self.findIndex(
-                              (i) =>
-                                i.label === item.label && i.value === item.value
-                            ) === index
-                          );
+                          return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                         })}
                       value={selectedOptionsCompany}
                       onChange={(e) => {
@@ -4313,32 +3774,24 @@ function Noticeperiodactionemployeelist() {
                     />
                   </FormControl>
                 </Grid>
-                {["Individual", "Team"]?.includes(filterState.type) ? (
+                {['Individual', 'Team']?.includes(filterState.type) ? (
                   <>
                     {/* Branch Unit Team */}
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {" "}
-                          Branch <b style={{ color: "red" }}>*</b>
+                          {' '}
+                          Branch <b style={{ color: 'red' }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter((comp) =>
-                              valueCompanyCat?.includes(comp.company)
-                            )
+                            ?.filter((comp) => valueCompanyCat?.includes(comp.company))
                             ?.map((data) => ({
                               label: data.branch,
                               value: data.branch,
                             }))
                             .filter((item, index, self) => {
-                              return (
-                                self.findIndex(
-                                  (i) =>
-                                    i.label === item.label &&
-                                    i.value === item.value
-                                ) === index
-                              );
+                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                             })}
                           value={selectedOptionsBranch}
                           onChange={(e) => {
@@ -4352,28 +3805,18 @@ function Noticeperiodactionemployeelist() {
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {" "}
-                          Unit<b style={{ color: "red" }}>*</b>
+                          {' '}
+                          Unit<b style={{ color: 'red' }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter(
-                              (comp) =>
-                                valueCompanyCat?.includes(comp.company) &&
-                                valueBranchCat?.includes(comp.branch)
-                            )
+                            ?.filter((comp) => valueCompanyCat?.includes(comp.company) && valueBranchCat?.includes(comp.branch))
                             ?.map((data) => ({
                               label: data.unit,
                               value: data.unit,
                             }))
                             .filter((item, index, self) => {
-                              return (
-                                self.findIndex(
-                                  (i) =>
-                                    i.label === item.label &&
-                                    i.value === item.value
-                                ) === index
-                              );
+                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                             })}
                           value={selectedOptionsUnit}
                           onChange={(e) => {
@@ -4387,16 +3830,11 @@ function Noticeperiodactionemployeelist() {
                     <Grid item md={3} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Team<b style={{ color: "red" }}>*</b>
+                          Team<b style={{ color: 'red' }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={allTeam
-                            ?.filter(
-                              (u) =>
-                                valueCompanyCat?.includes(u.company) &&
-                                valueBranchCat?.includes(u.branch) &&
-                                valueUnitCat?.includes(u.unit)
-                            )
+                            ?.filter((u) => valueCompanyCat?.includes(u.company) && valueBranchCat?.includes(u.branch) && valueUnitCat?.includes(u.unit))
                             .map((u) => ({
                               ...u,
                               label: u.teamname,
@@ -4412,13 +3850,13 @@ function Noticeperiodactionemployeelist() {
                       </FormControl>
                     </Grid>
                   </>
-                ) : ["Department"]?.includes(filterState.type) ? (
+                ) : ['Department']?.includes(filterState.type) ? (
                   <>
                     {/* Department */}
                     <Grid item md={3} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Department<b style={{ color: "red" }}>*</b>
+                          Department<b style={{ color: 'red' }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={departmentOptions}
@@ -4432,31 +3870,23 @@ function Noticeperiodactionemployeelist() {
                       </FormControl>
                     </Grid>
                   </>
-                ) : ["Branch"]?.includes(filterState.type) ? (
+                ) : ['Branch']?.includes(filterState.type) ? (
                   <>
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {" "}
-                          Branch <b style={{ color: "red" }}>*</b>
+                          {' '}
+                          Branch <b style={{ color: 'red' }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter((comp) =>
-                              valueCompanyCat?.includes(comp.company)
-                            )
+                            ?.filter((comp) => valueCompanyCat?.includes(comp.company))
                             ?.map((data) => ({
                               label: data.branch,
                               value: data.branch,
                             }))
                             .filter((item, index, self) => {
-                              return (
-                                self.findIndex(
-                                  (i) =>
-                                    i.label === item.label &&
-                                    i.value === item.value
-                                ) === index
-                              );
+                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                             })}
                           value={selectedOptionsBranch}
                           onChange={(e) => {
@@ -4468,31 +3898,23 @@ function Noticeperiodactionemployeelist() {
                       </FormControl>
                     </Grid>
                   </>
-                ) : ["Unit"]?.includes(filterState.type) ? (
+                ) : ['Unit']?.includes(filterState.type) ? (
                   <>
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {" "}
-                          Branch<b style={{ color: "red" }}>*</b>
+                          {' '}
+                          Branch<b style={{ color: 'red' }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter((comp) =>
-                              valueCompanyCat?.includes(comp.company)
-                            )
+                            ?.filter((comp) => valueCompanyCat?.includes(comp.company))
                             ?.map((data) => ({
                               label: data.branch,
                               value: data.branch,
                             }))
                             .filter((item, index, self) => {
-                              return (
-                                self.findIndex(
-                                  (i) =>
-                                    i.label === item.label &&
-                                    i.value === item.value
-                                ) === index
-                              );
+                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                             })}
                           value={selectedOptionsBranch}
                           onChange={(e) => {
@@ -4506,28 +3928,18 @@ function Noticeperiodactionemployeelist() {
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {" "}
-                          Unit <b style={{ color: "red" }}>*</b>
+                          {' '}
+                          Unit <b style={{ color: 'red' }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter(
-                              (comp) =>
-                                valueCompanyCat?.includes(comp.company) &&
-                                valueBranchCat?.includes(comp.branch)
-                            )
+                            ?.filter((comp) => valueCompanyCat?.includes(comp.company) && valueBranchCat?.includes(comp.branch))
                             ?.map((data) => ({
                               label: data.unit,
                               value: data.unit,
                             }))
                             .filter((item, index, self) => {
-                              return (
-                                self.findIndex(
-                                  (i) =>
-                                    i.label === item.label &&
-                                    i.value === item.value
-                                ) === index
-                              );
+                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                             })}
                           value={selectedOptionsUnit}
                           onChange={(e) => {
@@ -4540,29 +3952,19 @@ function Noticeperiodactionemployeelist() {
                     </Grid>
                   </>
                 ) : (
-                  ""
+                  ''
                 )}
 
-                {["Individual"]?.includes(filterState.type) && (
+                {['Individual']?.includes(filterState.type) && (
                   <Grid item md={3} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Employee<b style={{ color: "red" }}>*</b>
+                        Employee<b style={{ color: 'red' }}>*</b>
                       </Typography>
-                      <div
-                        onPaste={handlePasteForEmp}
-                        style={{ position: "relative" }}
-                      >
+                      <div onPaste={handlePasteForEmp} style={{ position: 'relative' }}>
                         <MultiSelect
                           options={allUsersData
-                            ?.filter(
-                              (u) =>
-                                valueCompanyCat?.includes(u.company) &&
-                                valueBranchCat?.includes(u.branch) &&
-                                valueUnitCat?.includes(u.unit) &&
-                                valueTeamCat?.includes(u.team) &&
-                                u?.workmode !== "Internship"
-                            )
+                            ?.filter((u) => valueCompanyCat?.includes(u.company) && valueBranchCat?.includes(u.branch) && valueUnitCat?.includes(u.unit) && valueTeamCat?.includes(u.team) && u?.workmode !== 'Internship')
                             .map((u) => ({
                               label: u.companyname,
                               value: u.companyname,
@@ -4575,47 +3977,30 @@ function Noticeperiodactionemployeelist() {
                           labelledBy="Please Select Employee"
                           // Add these props if your MultiSelect supports them
                           inputValue={searchInputValue} // Add this state if needed
-                          onInputChange={(newValue) =>
-                            setSearchInputValue(newValue)
-                          }
+                          onInputChange={(newValue) => setSearchInputValue(newValue)}
                         />
                       </div>
                     </FormControl>
                   </Grid>
                 )}
-                {["Individual"]?.includes(filterState.type) && (
+                {['Individual']?.includes(filterState.type) && (
                   <>
-                    <Grid
-                      item
-                      md={6}
-                      sm={12}
-                      xs={12}
-                      sx={{ display: "flex", flexDirection: "row" }}
-                    >
+                    <Grid item md={6} sm={12} xs={12} sx={{ display: 'flex', flexDirection: 'row' }}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Selected Employees
-                          &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Employees
-                          Count:{" "}
-                          <Typography
-                            component="span"
-                            fontWeight="bold"
-                            color="primary"
-                            sx={{ fontSize: "1.1rem" }}
-                          >
-                            {valueEmployeeCat.length
-                              ? valueEmployeeCat.length
-                              : 0}
+                          Selected Employees &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&ensp; Employees Count:{' '}
+                          <Typography component="span" fontWeight="bold" color="primary" sx={{ fontSize: '1.1rem' }}>
+                            {valueEmployeeCat.length ? valueEmployeeCat.length : 0}
                           </Typography>
                         </Typography>
                         <div
                           id="paste-box" // Add an ID to the Box
                           tabIndex={0} // Make the div focusable
                           style={{
-                            border: "1px solid #ccc",
-                            borderRadius: "3.75px",
-                            height: "110px",
-                            overflow: "auto",
+                            border: '1px solid #ccc',
+                            borderRadius: '3.75px',
+                            height: '110px',
+                            overflow: 'auto',
                           }}
                           onPaste={handlePasteForEmp}
                           onFocus={() => setIsBoxFocused(true)} // Set focus state to true
@@ -4626,14 +4011,7 @@ function Noticeperiodactionemployeelist() {
                           }}
                         >
                           {valueEmp.map((value) => (
-                            <Chip
-                              key={value}
-                              label={value}
-                              clickable
-                              sx={{ margin: 0.2, backgroundColor: "#FFF" }}
-                              onDelete={(e) => handleDelete(e, value)}
-                              onClick={() => console.log("clicked chip")}
-                            />
+                            <Chip key={value} label={value} clickable sx={{ margin: 0.2, backgroundColor: '#FFF' }} onDelete={(e) => handleDelete(e, value)} onClick={() => console.log('clicked chip')} />
                           ))}
                         </div>
                       </FormControl>
@@ -4641,35 +4019,20 @@ function Noticeperiodactionemployeelist() {
                     <Grid item md={3} xs={12} sm={6}>
                       <Typography>Mismatch Employee</Typography>
 
-                      {allPastename.filter(
-                        (d) =>
-                          !valueEmployeeCat.includes(
-                            d.replace(/\s*\.\s*/g, ".").trim()
-                          )
-                      ).length > 2 ? (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          size="small"
-                          onClick={getCodeselectemp}
-                        >
+                      {allPastename.filter((d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, '.').trim())).length > 2 ? (
+                        <Button variant="contained" color="primary" size="small" onClick={getCodeselectemp}>
                           VIEW
                         </Button>
                       ) : (
                         <TextareaAutosize
                           aria-label="maximum height"
                           minRows={5}
-                          style={{ width: "100%" }}
+                          style={{ width: '100%' }}
                           // value={mismatchUsers.map((item, index) => `${index + 1}) ${item}`).join('\n')} />
                           value={allPastename
-                            .filter(
-                              (d) =>
-                                !valueEmployeeCat.includes(
-                                  d.replace(/\s*\.\s*/g, ".").trim()
-                                )
-                            )
+                            .filter((d) => !valueEmployeeCat.includes(d.replace(/\s*\.\s*/g, '.').trim()))
                             .slice(0, 2)
-                            .join(", ")}
+                            .join(', ')}
                         />
                       )}
                     </Grid>
@@ -4680,25 +4043,17 @@ function Noticeperiodactionemployeelist() {
             <br />
             <br />
             <br />
-            <Grid
-              container
-              spacing={2}
-              sx={{ display: "flex", justifyContent: "center" }}
-            >
+            <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
               <Grid item lg={1} md={2} sm={2} xs={12}>
-                <Button
-                  sx={buttonStyles.buttonsubmit}
-                  variant="contained"
-                  onClick={handleFilter}
-                >
-                  {" "}
-                  Filter{" "}
+                <Button sx={buttonStyles.buttonsubmit} variant="contained" onClick={handleFilter}>
+                  {' '}
+                  Filter{' '}
                 </Button>
               </Grid>
               <Grid item lg={1} md={2} sm={2} xs={12}>
                 <Button sx={buttonStyles.btncancel} onClick={handleClearFilter}>
-                  {" "}
-                  Clear{" "}
+                  {' '}
+                  Clear{' '}
                 </Button>
               </Grid>
             </Grid>
@@ -4707,41 +4062,30 @@ function Noticeperiodactionemployeelist() {
       )}
       <br />
       <br />
-      {isUserRoleCompare?.includes("lactionemployeelist") && (
+      {isUserRoleCompare?.includes('lactionemployeelist') && (
         <>
           <Box sx={userStyle.container}>
             <Grid container spacing={2}>
               <Grid item xs={8}>
-                <Typography sx={userStyle.SubHeaderText}>
-                  Quick Action Employeelist
-                </Typography>
+                <Typography sx={userStyle.SubHeaderText}>Quick Action Employeelist</Typography>
               </Grid>
             </Grid>
             {!isBoarding ? (
               <>
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
-                  <ThreeDots
-                    height="80"
-                    width="80"
-                    radius="9"
-                    color="#1976d2"
-                    ariaLabel="three-dots-loading"
-                    wrapperStyle={{}}
-                    wrapperClassName=""
-                    visible={true}
-                  />
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <ThreeDots height="80" width="80" radius="9" color="#1976d2" ariaLabel="three-dots-loading" wrapperStyle={{}} wrapperClassName="" visible={true} />
                 </Box>
               </>
             ) : (
               <>
-                <Grid container sx={{ justifyContent: "center" }}>
+                <Grid container sx={{ justifyContent: 'center' }}>
                   <Grid>
-                    {isUserRoleCompare?.includes("csvactionemployeelist") && (
+                    {isUserRoleCompare?.includes('csvactionemployeelist') && (
                       <>
                         <Button
                           onClick={(e) => {
                             setIsFilterOpen(true);
-                            setFormat("xl");
+                            setFormat('xl');
                           }}
                           sx={userStyle.buttongrp}
                         >
@@ -4750,12 +4094,12 @@ function Noticeperiodactionemployeelist() {
                         </Button>
                       </>
                     )}
-                    {isUserRoleCompare?.includes("excelactionemployeelist") && (
+                    {isUserRoleCompare?.includes('excelactionemployeelist') && (
                       <>
                         <Button
                           onClick={(e) => {
                             setIsFilterOpen(true);
-                            setFormat("csv");
+                            setFormat('csv');
                           }}
                           sx={userStyle.buttongrp}
                         >
@@ -4764,7 +4108,7 @@ function Noticeperiodactionemployeelist() {
                         </Button>
                       </>
                     )}
-                    {isUserRoleCompare?.includes("printactionemployeelist") && (
+                    {isUserRoleCompare?.includes('printactionemployeelist') && (
                       <>
                         <Button sx={userStyle.buttongrp} onClick={handleprint}>
                           &ensp;
@@ -4773,7 +4117,7 @@ function Noticeperiodactionemployeelist() {
                         </Button>
                       </>
                     )}
-                    {isUserRoleCompare?.includes("pdfactionemployeelist") && (
+                    {isUserRoleCompare?.includes('pdfactionemployeelist') && (
                       <>
                         <Button
                           sx={userStyle.buttongrp}
@@ -4786,14 +4130,10 @@ function Noticeperiodactionemployeelist() {
                         </Button>
                       </>
                     )}
-                    {isUserRoleCompare?.includes("imageactionemployeelist") && (
-                      <Button
-                        sx={userStyle.buttongrp}
-                        onClick={handleCaptureImage}
-                      >
-                        {" "}
-                        <ImageIcon sx={{ fontSize: "15px" }} />{" "}
-                        &ensp;Image&ensp;{" "}
+                    {isUserRoleCompare?.includes('imageactionemployeelist') && (
+                      <Button sx={userStyle.buttongrp} onClick={handleCaptureImage}>
+                        {' '}
+                        <ImageIcon sx={{ fontSize: '15px' }} /> &ensp;Image&ensp;{' '}
                       </Button>
                     )}
                   </Grid>
@@ -4803,12 +4143,7 @@ function Noticeperiodactionemployeelist() {
                 <Grid style={userStyle.dataTablestyle}>
                   <Box>
                     <label htmlFor="pageSizeSelect">Show entries:</label>
-                    <Select
-                      id="pageSizeSelect"
-                      value={pageSize}
-                      onChange={handlePageSizeChange}
-                      sx={{ width: "77px" }}
-                    >
+                    <Select id="pageSizeSelect" value={pageSize} onChange={handlePageSizeChange} sx={{ width: '77px' }}>
                       <MenuItem value={1}>1</MenuItem>
                       <MenuItem value={5}>5</MenuItem>
                       <MenuItem value={10}>10</MenuItem>
@@ -4837,17 +4172,14 @@ function Noticeperiodactionemployeelist() {
                   Show All Columns
                 </Button>
                 &ensp;
-                <Button
-                  sx={userStyle.buttongrp}
-                  onClick={handleOpenManageColumnsNew}
-                >
+                <Button sx={userStyle.buttongrp} onClick={handleOpenManageColumnsNew}>
                   Manage Columns
                 </Button>
                 &ensp;
                 {/* ****** Table Grid Container ****** */}
                 <Grid container>
                   <Grid md={4} sm={2} xs={1}></Grid>
-                  <Grid md={8} sm={10} xs={10} sx={{ align: "center" }}></Grid>
+                  <Grid md={8} sm={10} xs={10} sx={{ align: 'center' }}></Grid>
                 </Grid>
                 <br />
                 <AggridTable
@@ -4881,8 +4213,8 @@ function Noticeperiodactionemployeelist() {
                   anchorEl={anchorElNew}
                   onClose={handleCloseManageColumnsNew}
                   anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left",
+                    vertical: 'bottom',
+                    horizontal: 'left',
                   }}
                 >
                   {manageColumnsContent}
@@ -4897,14 +4229,8 @@ function Noticeperiodactionemployeelist() {
 
       {/* this is info view details */}
 
-      <Dialog
-        open={openInfo}
-        onClose={handleCloseinfo}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        maxWidth="lg"
-      >
-        <Box sx={{ width: "550px", padding: "20px 50px" }}>
+      <Dialog open={openInfo} onClose={handleCloseinfo} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg">
+        <Box sx={{ width: '550px', padding: '20px 50px' }}>
           <>
             <Typography sx={userStyle.HeaderText}> Boarding Info</Typography>
             <br />
@@ -4916,38 +4242,16 @@ function Noticeperiodactionemployeelist() {
                   <br />
                   <Table>
                     <TableHead>
-                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
-                        {"SNO"}.
-                      </StyledTableCell>
-                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
-                        {" "}
-                        {"UserName"}
-                      </StyledTableCell>
-                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
-                        {" "}
-                        {"Date"}
-                      </StyledTableCell>
+                      <StyledTableCell sx={{ padding: '5px 10px !important' }}>{'SNO'}.</StyledTableCell>
+                      <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'UserName'}</StyledTableCell>
+                      <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'Date'}</StyledTableCell>
                     </TableHead>
                     <TableBody>
                       {addedby?.map((item, i) => (
                         <StyledTableRow>
-                          <StyledTableCell
-                            sx={{ padding: "5px 10px !important" }}
-                          >
-                            {i + 1}.
-                          </StyledTableCell>
-                          <StyledTableCell
-                            sx={{ padding: "5px 10px !important" }}
-                          >
-                            {" "}
-                            {item.name}
-                          </StyledTableCell>
-                          <StyledTableCell
-                            sx={{ padding: "5px 10px !important" }}
-                          >
-                            {" "}
-                            {moment(item.date).format("DD-MM-YYYY hh:mm:ss a")}
-                          </StyledTableCell>
+                          <StyledTableCell sx={{ padding: '5px 10px !important' }}>{i + 1}.</StyledTableCell>
+                          <StyledTableCell sx={{ padding: '5px 10px !important' }}> {item.name}</StyledTableCell>
+                          <StyledTableCell sx={{ padding: '5px 10px !important' }}> {moment(item.date).format('DD-MM-YYYY hh:mm:ss a')}</StyledTableCell>
                         </StyledTableRow>
                       ))}
                     </TableBody>
@@ -4961,38 +4265,16 @@ function Noticeperiodactionemployeelist() {
                   <br />
                   <Table>
                     <TableHead>
-                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
-                        {"SNO"}.
-                      </StyledTableCell>
-                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
-                        {" "}
-                        {"UserName"}
-                      </StyledTableCell>
-                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
-                        {" "}
-                        {"Date"}
-                      </StyledTableCell>
+                      <StyledTableCell sx={{ padding: '5px 10px !important' }}>{'SNO'}.</StyledTableCell>
+                      <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'UserName'}</StyledTableCell>
+                      <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'Date'}</StyledTableCell>
                     </TableHead>
                     <TableBody>
                       {updateby?.map((item, i) => (
                         <StyledTableRow>
-                          <StyledTableCell
-                            sx={{ padding: "5px 10px !important" }}
-                          >
-                            {i + 1}.
-                          </StyledTableCell>
-                          <StyledTableCell
-                            sx={{ padding: "5px 10px !important" }}
-                          >
-                            {" "}
-                            {item.name}
-                          </StyledTableCell>
-                          <StyledTableCell
-                            sx={{ padding: "5px 10px !important" }}
-                          >
-                            {" "}
-                            {moment(item.date).format("DD-MM-YYYY hh:mm:ss a")}
-                          </StyledTableCell>
+                          <StyledTableCell sx={{ padding: '5px 10px !important' }}>{i + 1}.</StyledTableCell>
+                          <StyledTableCell sx={{ padding: '5px 10px !important' }}> {item.name}</StyledTableCell>
+                          <StyledTableCell sx={{ padding: '5px 10px !important' }}> {moment(item.date).format('DD-MM-YYYY hh:mm:ss a')}</StyledTableCell>
                         </StyledTableRow>
                       ))}
                     </TableBody>
@@ -5004,8 +4286,8 @@ function Noticeperiodactionemployeelist() {
             <br />
             <Grid container spacing={2}>
               <Button variant="contained" onClick={handleCloseinfo}>
-                {" "}
-                Back{" "}
+                {' '}
+                Back{' '}
               </Button>
             </Grid>
           </>
@@ -5013,24 +4295,17 @@ function Noticeperiodactionemployeelist() {
       </Dialog>
 
       {/* this is the alert for the popover ation button in Reason Employee */}
-      <Dialog
-        open={openviewReleave}
-        onClose={handleClickOpenviewReleave}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        maxWidth="xl"
-        sx={{ marginTop: "100px" }}
-      >
-        <Box sx={{ padding: "20px 50px" }}>
+      <Dialog open={openviewReleave} onClose={handleClickOpenviewReleave} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="xl" sx={{ marginTop: '100px' }}>
+        <Box sx={{ padding: '20px 50px' }}>
           <>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Typography
                 sx={userStyle.HeaderText}
                 onClick={(e) => {
                   // checkQueuePriorityUsersList();
                 }}
               >
-                {" "}
+                {' '}
                 Action employee list
               </Typography>
               <Tooltip title="Delete Saved Check List For This Person">
@@ -5038,9 +4313,9 @@ function Noticeperiodactionemployeelist() {
                   variant="contained"
                   color="error"
                   sx={{
-                    paddingTop: "0 !important",
-                    paddingBottom: "0 !important",
-                    height: "30px",
+                    paddingTop: '0 !important',
+                    paddingBottom: '0 !important',
+                    height: '30px',
                   }}
                   startIcon={<DeleteIcon />}
                   onClick={() => {
@@ -5074,7 +4349,7 @@ function Noticeperiodactionemployeelist() {
                           control={
                             <Checkbox
                               sx={{
-                                "& .MuiSvgIcon-root": {
+                                '& .MuiSvgIcon-root': {
                                   fontSize: 40,
                                   marginTop: 1,
                                 },
@@ -5084,7 +4359,7 @@ function Noticeperiodactionemployeelist() {
                               onChange={() => {
                                 setSameDesignation((val) => !val);
                                 setHigherDesignation(false);
-                                setReplaceName("Please Select Replace name")
+                                setReplaceName('Please Select Replace name');
                               }}
                               color="primary"
                             />
@@ -5101,7 +4376,7 @@ function Noticeperiodactionemployeelist() {
                           control={
                             <Checkbox
                               sx={{
-                                "& .MuiSvgIcon-root": {
+                                '& .MuiSvgIcon-root': {
                                   fontSize: 40,
                                   marginTop: 1,
                                 },
@@ -5111,7 +4386,7 @@ function Noticeperiodactionemployeelist() {
                               onChange={() => {
                                 setHigherDesignation((val) => !val);
                                 setSameDesignation(false);
-                                 setReplaceName("Please Select Replace name")
+                                setReplaceName('Please Select Replace name');
                               }}
                               color="primary"
                             />
@@ -5128,7 +4403,7 @@ function Noticeperiodactionemployeelist() {
                           control={
                             <Checkbox
                               sx={{
-                                "& .MuiSvgIcon-root": {
+                                '& .MuiSvgIcon-root': {
                                   fontSize: 40,
                                   marginTop: 1,
                                 },
@@ -5136,7 +4411,7 @@ function Noticeperiodactionemployeelist() {
                               checked={AllBranch}
                               onChange={() => {
                                 setAllBranch((val) => !val);
-                                 setReplaceName("Please Select Replace name")
+                                setReplaceName('Please Select Replace name');
                               }}
                               color="primary"
                             />
@@ -5157,19 +4432,11 @@ function Noticeperiodactionemployeelist() {
                             sameDesignation
                               ? AllBranch
                                 ? sameDesigDropdowns
-                                : sameDesigDropdowns?.filter(
-                                    (d) =>
-                                      d?.company === empaddform?.company &&
-                                      d?.branch === empaddform?.branch
-                                  )
+                                : sameDesigDropdowns?.filter((d) => d?.company === empaddform?.company && d?.branch === empaddform?.branch)
                               : higherDesignation
                               ? AllBranch
                                 ? higherDesigDropdowns
-                                : higherDesigDropdowns?.filter(
-                                    (d) =>
-                                      d?.company === empaddform?.company &&
-                                      d?.branch === empaddform?.branch
-                                  )
+                                : higherDesigDropdowns?.filter((d) => d?.company === empaddform?.company && d?.branch === empaddform?.branch)
                               : []
                           }
                           styles={colourStyles}
@@ -5183,7 +4450,7 @@ function Noticeperiodactionemployeelist() {
                   </Grid>
                 </>
               ) : (
-                ""
+                ''
               )}
             </Grid>
             <br />
@@ -5234,7 +4501,7 @@ function Noticeperiodactionemployeelist() {
               <Grid item md={1} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography variant="h6">
-                    <b>Date</b> <b style={{ color: "red" }}>*</b>
+                    <b>Date</b> <b style={{ color: 'red' }}>*</b>
                   </Typography>
                 </FormControl>
               </Grid>
@@ -5244,33 +4511,41 @@ function Noticeperiodactionemployeelist() {
                     id="component-outlined"
                     type="date"
                     value={reason.date}
-                    // value={lastWorkday}
                     onChange={(e) => {
                       const inputDate = e.target.value;
-                      const minDate =
-                        moment(empaddform?.doj)?.format("YYYY-MM-DD") ||
-                        "1970-01-01";
-                      const maxDate =
-                        moment(lastWorkday, "DD-MM-YYYY")?.format(
-                          "YYYY-MM-DD"
-                        ) || "1970-01-01";
+
+                      // Convert dates correctly
+                      const doj = moment(empaddform?.doj, 'YYYY-MM-DD'); // or actual format
+                      const lw = moment(lastWorkday, 'DD-MM-YYYY'); // convert lastWorkday to moment
+
+                      // Determine min and max based on which is greater
+                      let minDate, maxDate;
+                      if (doj.isAfter(lw)) {
+                        minDate = lw.format('YYYY-MM-DD');
+                        maxDate = doj.format('YYYY-MM-DD');
+                      } else {
+                        minDate = doj.format('YYYY-MM-DD');
+                        maxDate = lw.format('YYYY-MM-DD');
+                      }
 
                       // Validate before updating state
                       if (inputDate >= minDate && inputDate <= maxDate) {
                         setReason({ ...reason, date: inputDate });
                       } else {
-                        // Optional: Show error or reset date
                         alert(`Date must be between ${minDate} and ${maxDate}`);
                       }
                     }}
                     inputProps={{
-                      min:
-                        moment(empaddform?.doj)?.format("YYYY-MM-DD") ||
-                        "1970-01-01",
-                      max:
-                        moment(lastWorkday, "DD-MM-YYYY")?.format(
-                          "YYYY-MM-DD"
-                        ) || "1970-01-01",
+                      min: (() => {
+                        const doj = moment(empaddform?.doj, 'YYYY-MM-DD');
+                        const lw = moment(lastWorkday, 'DD-MM-YYYY');
+                        return doj.isAfter(lw) ? lw.format('YYYY-MM-DD') : doj.format('YYYY-MM-DD');
+                      })(),
+                      max: (() => {
+                        const doj = moment(empaddform?.doj, 'YYYY-MM-DD');
+                        const lw = moment(lastWorkday, 'DD-MM-YYYY');
+                        return doj.isAfter(lw) ? doj.format('YYYY-MM-DD') : lw.format('YYYY-MM-DD');
+                      })(),
                     }}
                   />
                 </FormControl>
@@ -5279,7 +4554,7 @@ function Noticeperiodactionemployeelist() {
               <Grid item md={2} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography variant="h6">
-                    <b>Reason</b>{" "}
+                    <b>Reason</b>{' '}
                   </Typography>
                 </FormControl>
               </Grid>
@@ -5299,10 +4574,10 @@ function Noticeperiodactionemployeelist() {
               <Grid item md={3} xs={12} sm={12}>
                 <Box
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    textAlign: 'center',
                   }}
                 >
                   <Typography variant="h6">
@@ -5310,28 +4585,18 @@ function Noticeperiodactionemployeelist() {
                   </Typography>
                   <Box
                     sx={{
-                      border: "1px solid black",
-                      width: "153px",
-                      height: "153px",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      marginTop: "8px",
-                      overflow: "hidden",
-                      borderRadius: "8px",
+                      border: '1px solid black',
+                      width: '153px',
+                      height: '153px',
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: '8px',
+                      overflow: 'hidden',
+                      borderRadius: '8px',
                     }}
                   >
-                    <img
-                      src={
-                        profileSrc
-                          ? profileSrc
-                          : "https://t4.ftcdn.net/jpg/03/59/58/91/360_F_359589186_JDLl8dIWoBNf1iqEkHxhUeeOulx0wOC5.jpg"
-                      }
-                      alt="Profile"
-                      width="100%"
-                      height="100%"
-                      style={{ objectFit: "cover" }}
-                    />
+                    <img src={profileSrc ? profileSrc : 'https://t4.ftcdn.net/jpg/03/59/58/91/360_F_359589186_JDLl8dIWoBNf1iqEkHxhUeeOulx0wOC5.jpg'} alt="Profile" width="100%" height="100%" style={{ objectFit: 'cover' }} />
                   </Box>
                 </Box>
               </Grid>
@@ -5342,7 +4607,7 @@ function Noticeperiodactionemployeelist() {
               <Grid item md={3} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography variant="h6">
-                    <b>Last Working Day</b>{" "}
+                    <b>Last Working Day</b>{' '}
                   </Typography>
                 </FormControl>
               </Grid>
@@ -5352,8 +4617,14 @@ function Noticeperiodactionemployeelist() {
                     id="component-outlined"
                     type="text"
                     // value={formattedDate}
-                    // value={lastWorkday}
                     value={lastWorkday}
+                    //                value={
+                    //   moment(empaddform?.doj, 'YYYY-MM-DD').isAfter(
+                    //     moment(lastWorkday, 'DD-MM-YYYY')
+                    //   )
+                    //     ? moment(empaddform?.doj, 'YYYY-MM-DD').format('DD-MM-YYYY')
+                    //     : moment(lastWorkday, 'DD-MM-YYYY').format('DD-MM-YYYY')
+                    // }
                     readOnly
                     // onChange={(e) => {
                     //   setLastworkday(e.target.value);
@@ -5363,16 +4634,10 @@ function Noticeperiodactionemployeelist() {
               </Grid>
             </Grid>
             <br />
-            <Box sx={{ padding: "20px 10px", width: "100%" }}>
+            <Box sx={{ padding: '20px 10px', width: '100%' }}>
               <>
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <Typography
-                    sx={{ ...userStyle.SubHeaderText, fontWeight: "600" }}
-                  >
-                    My Check List
-                  </Typography>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography sx={{ ...userStyle.SubHeaderText, fontWeight: '600' }}>My Check List</Typography>
                   <div>
                     <Tooltip title="Update All the Values simultaneously">
                       <Button
@@ -5392,7 +4657,7 @@ function Noticeperiodactionemployeelist() {
                   <Table>
                     <TableHead>
                       <TableRow>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
+                        <TableCell style={{ fontSize: '1.2rem' }}>
                           <Checkbox
                             onChange={() => {
                               overallCheckListChange();
@@ -5400,33 +4665,15 @@ function Noticeperiodactionemployeelist() {
                             checked={isCheckedListOverall}
                           />
                         </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Details
-                        </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Field
-                        </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Allotted To
-                        </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Completed BY
-                        </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Completed At
-                        </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Status
-                        </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Action
-                        </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Category
-                        </TableCell>
-                        <TableCell style={{ fontSize: "1.2rem" }}>
-                          Sub Category
-                        </TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Details</TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Field</TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Allotted To</TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Completed BY</TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Completed At</TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Status</TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Action</TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Category</TableCell>
+                        <TableCell style={{ fontSize: '1.2rem' }}>Sub Category</TableCell>
 
                         {/* Add more table headers as needed */}
                       </TableRow>
@@ -5434,7 +4681,7 @@ function Noticeperiodactionemployeelist() {
                     <TableBody>
                       {groupDetails?.map((row, index) => (
                         <TableRow key={index}>
-                          <TableCell style={{ fontSize: "1.2rem" }}>
+                          <TableCell style={{ fontSize: '1.2rem' }}>
                             <Checkbox
                               onChange={() => {
                                 handleCheckboxChange(index);
@@ -5446,95 +4693,78 @@ function Noticeperiodactionemployeelist() {
                           <TableCell>{row.details}</TableCell>
                           {(() => {
                             switch (row.checklist) {
-                              case "Text Box":
+                              case 'Text Box':
                                 return (
                                   <TableCell>
                                     <OutlinedInput
-                                      style={{ height: "32px" }}
+                                      style={{ height: '32px' }}
                                       value={row.data}
                                       // disabled={disableInput[index]}
                                       onChange={(e) => {
-                                        handleDataChange(e, index, "Text Box");
+                                        handleDataChange(e, index, 'Text Box');
                                       }}
                                     />
                                   </TableCell>
                                 );
-                              case "Text Box-number":
+                              case 'Text Box-number':
                                 return (
                                   <TableCell>
                                     <Input
                                       value={row.data}
-                                      style={{ height: "32px" }}
+                                      style={{ height: '32px' }}
                                       type="number"
                                       onChange={(e) => {
                                         const value = e.target.value;
-                                        if (
-                                          value === "" ||
-                                          /^\d*$/.test(value)
-                                        ) {
-                                          handleDataChange(
-                                            e,
-                                            index,
-                                            "Text Box-number"
-                                          );
+                                        if (value === '' || /^\d*$/.test(value)) {
+                                          handleDataChange(e, index, 'Text Box-number');
                                         }
                                       }}
                                     />
                                   </TableCell>
                                 );
-                              case "Text Box-alpha":
+                              case 'Text Box-alpha':
                                 return (
                                   <TableCell>
                                     <OutlinedInput
-                                      style={{ height: "32px" }}
+                                      style={{ height: '32px' }}
                                       value={row.data}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
                                         if (/^[a-zA-Z]*$/.test(inputValue)) {
-                                          handleDataChange(
-                                            e,
-                                            index,
-                                            "Text Box-alpha"
-                                          );
+                                          handleDataChange(e, index, 'Text Box-alpha');
                                         }
                                       }}
                                     />
                                   </TableCell>
                                 );
-                              case "Text Box-alphanumeric":
+                              case 'Text Box-alphanumeric':
                                 return (
                                   <TableCell>
                                     <OutlinedInput
-                                      style={{ height: "32px" }}
+                                      style={{ height: '32px' }}
                                       value={row.data}
                                       onChange={(e) => {
                                         const inputValue = e.target.value;
                                         if (/^[a-zA-Z0-9]*$/.test(inputValue)) {
-                                          handleDataChange(
-                                            e,
-                                            index,
-                                            "Text Box-alphanumeric"
-                                          );
+                                          handleDataChange(e, index, 'Text Box-alphanumeric');
                                         }
                                       }}
-                                      inputProps={{ pattern: "[A-Za-z0-9]*" }}
+                                      inputProps={{ pattern: '[A-Za-z0-9]*' }}
                                     />
                                   </TableCell>
                                 );
-                              case "Attachments":
+                              case 'Attachments':
                                 return (
                                   <TableCell>
                                     <div>
-                                      <InputLabel sx={{ m: 1 }}>
-                                        File
-                                      </InputLabel>
+                                      <InputLabel sx={{ m: 1 }}>File</InputLabel>
 
                                       <div>
                                         <Box
                                           sx={{
-                                            display: "flex",
-                                            marginTop: "10px",
-                                            gap: "10px",
+                                            display: 'flex',
+                                            marginTop: '10px',
+                                            gap: '10px',
                                           }}
                                         >
                                           <Box item md={4} sm={4}>
@@ -5546,79 +4776,45 @@ function Noticeperiodactionemployeelist() {
                                                 onChange={(e) => {
                                                   handleChangeImage(e, index);
                                                 }}
-                                                style={{ display: "none" }}
+                                                style={{ display: 'none' }}
                                               />
                                               <label htmlFor={index}>
-                                                <Typography
-                                                  sx={userStyle.uploadbtn}
-                                                >
-                                                  Upload
-                                                </Typography>
+                                                <Typography sx={userStyle.uploadbtn}>Upload</Typography>
                                               </label>
                                               <br />
                                             </section>
                                           </Box>
 
                                           <Box item md={4} sm={4}>
-                                            <Button
-                                              onClick={showWebcam}
-                                              variant="contained"
-                                              sx={userStyle.uploadbtn}
-                                            >
+                                            <Button onClick={showWebcam} variant="contained" sx={userStyle.uploadbtn}>
                                               <CameraAltIcon />
                                             </Button>
                                           </Box>
                                         </Box>
                                         {row.files && (
                                           <Grid container spacing={2}>
-                                            <Grid
-                                              item
-                                              lg={8}
-                                              md={8}
-                                              sm={8}
-                                              xs={8}
-                                            >
-                                              <Typography>
-                                                {row.files.name}
-                                              </Typography>
+                                            <Grid item lg={8} md={8} sm={8} xs={8}>
+                                              <Typography>{row.files.name}</Typography>
                                             </Grid>
-                                            <Grid
-                                              item
-                                              lg={2}
-                                              md={2}
-                                              sm={2}
-                                              xs={2}
-                                            >
+                                            <Grid item lg={2} md={2} sm={2} xs={2}>
                                               <VisibilityOutlinedIcon
                                                 style={{
-                                                  fontsize: "large",
-                                                  color: "#357AE8",
-                                                  cursor: "pointer",
+                                                  fontsize: 'large',
+                                                  color: '#357AE8',
+                                                  cursor: 'pointer',
                                                 }}
-                                                onClick={() =>
-                                                  renderFilePreviewEdit(
-                                                    row.files
-                                                  )
-                                                }
+                                                onClick={() => renderFilePreviewEdit(row.files)}
                                               />
                                             </Grid>
-                                            <Grid
-                                              item
-                                              lg={1}
-                                              md={1}
-                                              sm={1}
-                                              xs={1}
-                                            >
+                                            <Grid item lg={1} md={1} sm={1} xs={1}>
                                               <Button
                                                 style={{
-                                                  fontsize: "large",
-                                                  color: "#357AE8",
-                                                  cursor: "pointer",
-                                                  marginTop: "-5px",
+                                                  fontsize: 'large',
+                                                  color: '#357AE8',
+                                                  cursor: 'pointer',
+                                                  marginTop: '-5px',
                                                 }}
-                                                onClick={() =>
-                                                  handleFileDeleteEdit(index)
-                                                }
+                                                onClick={() => handleFileDeleteEdit(index)}
                                               >
                                                 <DeleteIcon />
                                               </Button>
@@ -5626,40 +4822,20 @@ function Noticeperiodactionemployeelist() {
                                           </Grid>
                                         )}
                                       </div>
-                                      <Dialog
-                                        open={isWebcamOpen}
-                                        onClose={webcamClose}
-                                        aria-labelledby="alert-dialog-title"
-                                        aria-describedby="alert-dialog-description"
-                                      >
+                                      <Dialog open={isWebcamOpen} onClose={webcamClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
                                         <DialogContent
                                           sx={{
-                                            textAlign: "center",
-                                            alignItems: "center",
+                                            textAlign: 'center',
+                                            alignItems: 'center',
                                           }}
                                         >
-                                          <Webcamimage
-                                            getImg={getImg}
-                                            setGetImg={setGetImg}
-                                            capturedImages={capturedImages}
-                                            valNum={valNum}
-                                            setValNum={setValNum}
-                                            name={name}
-                                          />
+                                          <Webcamimage getImg={getImg} setGetImg={setGetImg} capturedImages={capturedImages} valNum={valNum} setValNum={setValNum} name={name} />
                                         </DialogContent>
                                         <DialogActions>
-                                          <Button
-                                            variant="contained"
-                                            color="success"
-                                            onClick={webcamDataStore}
-                                          >
+                                          <Button variant="contained" color="success" onClick={webcamDataStore}>
                                             OK
                                           </Button>
-                                          <Button
-                                            variant="contained"
-                                            color="error"
-                                            onClick={webcamClose}
-                                          >
+                                          <Button variant="contained" color="error" onClick={webcamClose}>
                                             CANCEL
                                           </Button>
                                         </DialogActions>
@@ -5667,227 +4843,185 @@ function Noticeperiodactionemployeelist() {
                                     </div>
                                   </TableCell>
                                 );
-                              case "Pre-Value":
+                              case 'Pre-Value':
                                 return (
                                   <TableCell>
                                     <Typography>{row?.data}</Typography>
                                   </TableCell>
                                 );
-                              case "Date":
+                              case 'Date':
                                 return (
                                   <TableCell>
                                     <OutlinedInput
-                                      style={{ height: "32px" }}
+                                      style={{ height: '32px' }}
                                       type="date"
                                       value={row.data}
                                       onChange={(e) => {
-                                        handleDataChange(e, index, "Date");
+                                        handleDataChange(e, index, 'Date');
                                       }}
                                     />
                                   </TableCell>
                                 );
-                              case "Time":
+                              case 'Time':
                                 return (
                                   <TableCell>
                                     <OutlinedInput
-                                      style={{ height: "32px" }}
+                                      style={{ height: '32px' }}
                                       type="time"
                                       value={row.data}
                                       onChange={(e) => {
-                                        handleDataChange(e, index, "Time");
+                                        handleDataChange(e, index, 'Time');
                                       }}
                                     />
                                   </TableCell>
                                 );
-                              case "DateTime":
+                              case 'DateTime':
                                 return (
                                   <TableCell>
                                     <Stack direction="row" spacing={2}>
                                       <OutlinedInput
-                                        style={{ height: "32px" }}
+                                        style={{ height: '32px' }}
                                         type="date"
                                         value={dateValue[index]}
                                         onChange={(e) => {
-                                          updateDateValuesAtIndex(
-                                            e.target.value,
-                                            index
-                                          );
+                                          updateDateValuesAtIndex(e.target.value, index);
                                         }}
                                       />
                                       <OutlinedInput
                                         type="time"
-                                        style={{ height: "32px" }}
+                                        style={{ height: '32px' }}
                                         value={timeValue[index]}
                                         onChange={(e) => {
-                                          updateTimeValuesAtIndex(
-                                            e.target.value,
-                                            index
-                                          );
+                                          updateTimeValuesAtIndex(e.target.value, index);
                                         }}
                                       />
                                     </Stack>
                                   </TableCell>
                                 );
-                              case "Date Multi Span":
+                              case 'Date Multi Span':
                                 return (
                                   <TableCell>
                                     <Stack direction="row" spacing={2}>
                                       <OutlinedInput
-                                        style={{ height: "32px" }}
+                                        style={{ height: '32px' }}
                                         type="date"
                                         value={dateValueMultiFrom[index]}
                                         onChange={(e) => {
-                                          updateFromDateValueAtIndex(
-                                            e.target.value,
-                                            index
-                                          );
+                                          updateFromDateValueAtIndex(e.target.value, index);
                                         }}
                                       />
                                       <OutlinedInput
                                         type="date"
-                                        style={{ height: "32px" }}
+                                        style={{ height: '32px' }}
                                         value={dateValueMultiTo[index]}
                                         onChange={(e) => {
-                                          updateToDateValueAtIndex(
-                                            e.target.value,
-                                            index
-                                          );
+                                          updateToDateValueAtIndex(e.target.value, index);
                                         }}
                                       />
                                     </Stack>
                                   </TableCell>
                                 );
-                              case "Date Multi Span Time":
+                              case 'Date Multi Span Time':
                                 return (
                                   <TableCell>
                                     <div
                                       style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        gap: "10px",
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: '10px',
                                       }}
                                     >
                                       <Stack direction="row" spacing={2}>
                                         <OutlinedInput
-                                          style={{ height: "32px" }}
+                                          style={{ height: '32px' }}
                                           type="date"
                                           value={firstDateValue[index]}
                                           onChange={(e) => {
-                                            updateFirstDateValuesAtIndex(
-                                              e.target.value,
-                                              index
-                                            );
+                                            updateFirstDateValuesAtIndex(e.target.value, index);
                                           }}
                                         />
                                         <OutlinedInput
                                           type="time"
-                                          style={{ height: "32px" }}
+                                          style={{ height: '32px' }}
                                           value={firstTimeValue[index]}
                                           onChange={(e) => {
-                                            updateFirstTimeValuesAtIndex(
-                                              e.target.value,
-                                              index
-                                            );
+                                            updateFirstTimeValuesAtIndex(e.target.value, index);
                                           }}
                                         />
                                       </Stack>
                                       <Stack direction="row" spacing={2}>
                                         <OutlinedInput
                                           type="date"
-                                          style={{ height: "32px" }}
+                                          style={{ height: '32px' }}
                                           value={secondDateValue[index]}
                                           onChange={(e) => {
-                                            updateSecondDateValuesAtIndex(
-                                              e.target.value,
-                                              index
-                                            );
+                                            updateSecondDateValuesAtIndex(e.target.value, index);
                                           }}
                                         />
                                         <OutlinedInput
-                                          style={{ height: "32px" }}
+                                          style={{ height: '32px' }}
                                           type="time"
                                           value={secondTimeValue[index]}
                                           onChange={(e) => {
-                                            updateSecondTimeValuesAtIndex(
-                                              e.target.value,
-                                              index
-                                            );
+                                            updateSecondTimeValuesAtIndex(e.target.value, index);
                                           }}
                                         />
                                       </Stack>
                                     </div>
                                   </TableCell>
                                 );
-                              case "Date Multi Random":
+                              case 'Date Multi Random':
                                 return (
                                   <TableCell>
                                     <OutlinedInput
-                                      style={{ height: "32px" }}
+                                      style={{ height: '32px' }}
                                       type="date"
                                       value={row.data}
                                       onChange={(e) => {
-                                        handleDataChange(
-                                          e,
-                                          index,
-                                          "Date Multi Random"
-                                        );
+                                        handleDataChange(e, index, 'Date Multi Random');
                                       }}
                                     />
                                   </TableCell>
                                 );
-                              case "Date Multi Random Time":
+                              case 'Date Multi Random Time':
                                 return (
                                   <TableCell>
                                     <Stack direction="row" spacing={2}>
                                       <OutlinedInput
-                                        style={{ height: "32px" }}
+                                        style={{ height: '32px' }}
                                         type="date"
                                         value={dateValueRandom[index]}
                                         onChange={(e) => {
-                                          updateDateValueAtIndex(
-                                            e.target.value,
-                                            index
-                                          );
+                                          updateDateValueAtIndex(e.target.value, index);
                                         }}
                                       />
                                       <OutlinedInput
                                         type="time"
-                                        style={{ height: "32px" }}
+                                        style={{ height: '32px' }}
                                         value={timeValueRandom[index]}
                                         onChange={(e) => {
-                                          updateTimeValueAtIndex(
-                                            e.target.value,
-                                            index
-                                          );
+                                          updateTimeValueAtIndex(e.target.value, index);
                                         }}
                                       />
                                     </Stack>
                                   </TableCell>
                                 );
-                              case "Radio":
+                              case 'Radio':
                                 return (
                                   <TableCell>
                                     <FormControl component="fieldset">
                                       <RadioGroup
                                         value={row.data}
                                         sx={{
-                                          display: "flex",
-                                          flexDirection: "row !important",
+                                          display: 'flex',
+                                          flexDirection: 'row !important',
                                         }}
                                         onChange={(e) => {
-                                          handleDataChange(e, index, "Radio");
+                                          handleDataChange(e, index, 'Radio');
                                         }}
                                       >
-                                        <FormControlLabel
-                                          value="No"
-                                          control={<Radio />}
-                                          label="No"
-                                        />
-                                        <FormControlLabel
-                                          value="Yes"
-                                          control={<Radio />}
-                                          label="Yes"
-                                        />
+                                        <FormControlLabel value="No" control={<Radio />} label="No" />
+                                        <FormControlLabel value="Yes" control={<Radio />} label="Yes" />
                                       </RadioGroup>
                                     </FormControl>
                                   </TableCell>
@@ -5897,57 +5031,36 @@ function Noticeperiodactionemployeelist() {
                                 return <TableCell></TableCell>; // Default case
                             }
                           })()}
-                          <TableCell>
-                            {row?.employee &&
-                              row?.employee?.map((data, index) => (
-                                <Typography key={index} variant="body1">{`${
-                                  index + 1
-                                }.${data}, `}</Typography>
-                              ))}
-                          </TableCell>
+                          <TableCell>{row?.employee && row?.employee?.map((data, index) => <Typography key={index} variant="body1">{`${index + 1}.${data}, `}</Typography>)}</TableCell>
                           <TableCell>{row.completedby}</TableCell>
-                          <TableCell>
-                            {row.completedat &&
-                              moment(row.completedat).format(
-                                "DD-MM-YYYY hh:mm:ss A"
-                              )}
-                          </TableCell>
+                          <TableCell>{row.completedat && moment(row.completedat).format('DD-MM-YYYY hh:mm:ss A')}</TableCell>
 
                           <TableCell>
-                            {row.checklist === "DateTime" ? (
-                              ((row.data !== undefined && row.data !== "") ||
-                                row.files !== undefined) &&
-                              row.data.length === 16 ? (
+                            {row.checklist === 'DateTime' ? (
+                              ((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 16 ? (
                                 <Typography>Completed</Typography>
                               ) : (
                                 <Typography>Pending</Typography>
                               )
-                            ) : row.checklist === "Date Multi Span" ? (
-                              ((row.data !== undefined && row.data !== "") ||
-                                row.files !== undefined) &&
-                              row.data.length === 21 ? (
+                            ) : row.checklist === 'Date Multi Span' ? (
+                              ((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 21 ? (
                                 <Typography>Completed</Typography>
                               ) : (
                                 <Typography>Pending</Typography>
                               )
-                            ) : row.checklist === "Date Multi Span Time" ? (
-                              ((row.data !== undefined && row.data !== "") ||
-                                row.files !== undefined) &&
-                              row.data.length === 33 ? (
+                            ) : row.checklist === 'Date Multi Span Time' ? (
+                              ((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 33 ? (
                                 <Typography>Completed</Typography>
                               ) : (
                                 <Typography>Pending</Typography>
                               )
-                            ) : row.checklist === "Date Multi Random Time" ? (
-                              ((row.data !== undefined && row.data !== "") ||
-                                row.files !== undefined) &&
-                              row.data.length === 16 ? (
+                            ) : row.checklist === 'Date Multi Random Time' ? (
+                              ((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 16 ? (
                                 <Typography>Completed</Typography>
                               ) : (
                                 <Typography>Pending</Typography>
                               )
-                            ) : (row.data !== undefined && row.data !== "") ||
-                              row.files !== undefined ? (
+                            ) : (row.data !== undefined && row.data !== '') || row.files !== undefined ? (
                               <Typography>Completed</Typography>
                             ) : (
                               <Typography>Pending</Typography>
@@ -5955,13 +5068,11 @@ function Noticeperiodactionemployeelist() {
                           </TableCell>
 
                           <TableCell>
-                            {row.checklist === "DateTime" ? (
-                              ((row.data !== undefined && row.data !== "") ||
-                                row.files !== undefined) &&
-                              row.data.length === 16 ? (
+                            {row.checklist === 'DateTime' ? (
+                              ((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 16 ? (
                                 <>
                                   <IconButton
-                                    sx={{ color: "green", cursor: "pointer" }}
+                                    sx={{ color: 'green', cursor: 'pointer' }}
                                     onClick={() => {
                                       updateIndividualData(index);
                                     }}
@@ -5971,7 +5082,7 @@ function Noticeperiodactionemployeelist() {
                                 </>
                               ) : (
                                 <IconButton
-                                  sx={{ color: "#1565c0", cursor: "pointer" }}
+                                  sx={{ color: '#1565c0', cursor: 'pointer' }}
                                   onClick={() => {
                                     let itemValue = disableInput[index];
                                     itemValue = false;
@@ -5983,13 +5094,11 @@ function Noticeperiodactionemployeelist() {
                                   <CheckCircleIcon />
                                 </IconButton>
                               )
-                            ) : row.checklist === "Date Multi Span" ? (
-                              ((row.data !== undefined && row.data !== "") ||
-                                row.files !== undefined) &&
-                              row.data.length === 21 ? (
+                            ) : row.checklist === 'Date Multi Span' ? (
+                              ((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 21 ? (
                                 <>
                                   <IconButton
-                                    sx={{ color: "green", cursor: "pointer" }}
+                                    sx={{ color: 'green', cursor: 'pointer' }}
                                     onClick={() => {
                                       updateIndividualData(index);
                                     }}
@@ -5999,7 +5108,7 @@ function Noticeperiodactionemployeelist() {
                                 </>
                               ) : (
                                 <IconButton
-                                  sx={{ color: "#1565c0", cursor: "pointer" }}
+                                  sx={{ color: '#1565c0', cursor: 'pointer' }}
                                   onClick={() => {
                                     let itemValue = disableInput[index];
                                     itemValue = false;
@@ -6011,13 +5120,11 @@ function Noticeperiodactionemployeelist() {
                                   <CheckCircleIcon />
                                 </IconButton>
                               )
-                            ) : row.checklist === "Date Multi Span Time" ? (
-                              ((row.data !== undefined && row.data !== "") ||
-                                row.files !== undefined) &&
-                              row.data.length === 33 ? (
+                            ) : row.checklist === 'Date Multi Span Time' ? (
+                              ((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 33 ? (
                                 <>
                                   <IconButton
-                                    sx={{ color: "green", cursor: "pointer" }}
+                                    sx={{ color: 'green', cursor: 'pointer' }}
                                     onClick={() => {
                                       updateIndividualData(index);
                                     }}
@@ -6027,7 +5134,7 @@ function Noticeperiodactionemployeelist() {
                                 </>
                               ) : (
                                 <IconButton
-                                  sx={{ color: "#1565c0", cursor: "pointer" }}
+                                  sx={{ color: '#1565c0', cursor: 'pointer' }}
                                   onClick={() => {
                                     let itemValue = disableInput[index];
                                     itemValue = false;
@@ -6039,13 +5146,11 @@ function Noticeperiodactionemployeelist() {
                                   <CheckCircleIcon />
                                 </IconButton>
                               )
-                            ) : row.checklist === "Date Multi Random Time" ? (
-                              ((row.data !== undefined && row.data !== "") ||
-                                row.files !== undefined) &&
-                              row.data.length === 16 ? (
+                            ) : row.checklist === 'Date Multi Random Time' ? (
+                              ((row.data !== undefined && row.data !== '') || row.files !== undefined) && row.data.length === 16 ? (
                                 <>
                                   <IconButton
-                                    sx={{ color: "green", cursor: "pointer" }}
+                                    sx={{ color: 'green', cursor: 'pointer' }}
                                     onClick={() => {
                                       updateIndividualData(index);
                                     }}
@@ -6055,7 +5160,7 @@ function Noticeperiodactionemployeelist() {
                                 </>
                               ) : (
                                 <IconButton
-                                  sx={{ color: "#1565c0", cursor: "pointer" }}
+                                  sx={{ color: '#1565c0', cursor: 'pointer' }}
                                   onClick={() => {
                                     let itemValue = disableInput[index];
                                     itemValue = false;
@@ -6067,11 +5172,10 @@ function Noticeperiodactionemployeelist() {
                                   <CheckCircleIcon />
                                 </IconButton>
                               )
-                            ) : (row.data !== undefined && row.data !== "") ||
-                              row.files !== undefined ? (
+                            ) : (row.data !== undefined && row.data !== '') || row.files !== undefined ? (
                               <>
                                 <IconButton
-                                  sx={{ color: "green", cursor: "pointer" }}
+                                  sx={{ color: 'green', cursor: 'pointer' }}
                                   onClick={() => {
                                     updateIndividualData(index);
                                   }}
@@ -6081,7 +5185,7 @@ function Noticeperiodactionemployeelist() {
                               </>
                             ) : (
                               <IconButton
-                                sx={{ color: "#1565c0", cursor: "pointer" }}
+                                sx={{ color: '#1565c0', cursor: 'pointer' }}
                                 onClick={() => {
                                   let itemValue = disableInput[index];
                                   itemValue = false;
@@ -6107,35 +5211,20 @@ function Noticeperiodactionemployeelist() {
             <br /> <br /> <br />
             <Grid container spacing={2}>
               <Grid item md={2} xs={12} sm={12}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleCheckListSubmit}
-                  sx={buttonStyles.buttonsubmit}
-                >
+                <Button variant="contained" color="primary" onClick={handleCheckListSubmit} sx={buttonStyles.buttonsubmit}>
                   Save
                 </Button>
               </Grid>
               <Grid item md={2} xs={12} sm={12}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleClearreason}
-                  sx={buttonStyles.btncancel}
-                >
-                  {" "}
+                <Button variant="contained" color="primary" onClick={handleClearreason} sx={buttonStyles.btncancel}>
+                  {' '}
                   Clear
                 </Button>
               </Grid>
               <Grid item md={0.2} xs={12} sm={12}></Grid>
               <Grid item md={2} xs={12} sm={12}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleCloseviewReleave}
-                  sx={buttonStyles.btncancel}
-                >
-                  {" "}
+                <Button variant="contained" color="primary" onClick={handleCloseviewReleave} sx={buttonStyles.btncancel}>
+                  {' '}
                   Close
                 </Button>
               </Grid>
@@ -6147,7 +5236,7 @@ function Noticeperiodactionemployeelist() {
       {/* print layout */}
       <TableContainer component={Paper} sx={userStyle.printcls}>
         <Table aria-label="simple table" id="branch" ref={componentRef}>
-          <TableHead sx={{ fontWeight: "600" }}>
+          <TableHead sx={{ fontWeight: '600' }}>
             <StyledTableRow>
               <StyledTableCell>SI.NO</StyledTableCell>
               <StyledTableCell>Empcode</StyledTableCell>
@@ -6171,17 +5260,9 @@ function Noticeperiodactionemployeelist() {
                   <StyledTableCell> {row.companyname}</StyledTableCell>
                   <StyledTableCell>{row.department}</StyledTableCell>
                   <StyledTableCell>{row.workmode}</StyledTableCell>
-                  <StyledTableCell>
-                    {row.dob
-                      ? moment(row.dob, "YYYY-MM-DD").format("DD-MM-YYYY")
-                      : ""}
-                  </StyledTableCell>
+                  <StyledTableCell>{row.dob ? moment(row.dob, 'YYYY-MM-DD').format('DD-MM-YYYY') : ''}</StyledTableCell>
                   <StyledTableCell>{row.contactpersonal}</StyledTableCell>
-                  <StyledTableCell>
-                    {row.doj
-                      ? moment(row.doj, "YYYY-MM-DD").format("DD-MM-YYYY")
-                      : ""}
-                  </StyledTableCell>
+                  <StyledTableCell>{row.doj ? moment(row.doj, 'YYYY-MM-DD').format('DD-MM-YYYY') : ''}</StyledTableCell>
                   <StyledTableCell>{row.experience}</StyledTableCell>
                   <StyledTableCell>{row.reportingto}</StyledTableCell>
                   {/* <StyledTableCell>{row?.profileimage ? <img src={row?.profileimage} alt="temp" style={{ height: "100px", width: "100px" }} /> : ""}</StyledTableCell> */}
@@ -6193,53 +5274,37 @@ function Noticeperiodactionemployeelist() {
 
       {/* ALERT DIALOG */}
       <Box>
-        <Dialog
-          open={isErrorOpen}
-          onClose={handleCloseerr}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogContent
-            sx={{ width: "450px", textAlign: "center", alignItems: "center" }}
-          >
+        <Dialog open={isErrorOpen} onClose={handleCloseerr} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+          <DialogContent sx={{ width: '450px', textAlign: 'center', alignItems: 'center' }}>
             <Typography variant="h6">{showAlert}</Typography>
           </DialogContent>
           <DialogActions>
             <Button variant="outlined" color="error" onClick={handleCloseerr}>
               Close
             </Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleWithoutChecklistAssign}
-            >
+            <Button variant="contained" color="error" onClick={handleWithoutChecklistAssign}>
               ok
             </Button>
           </DialogActions>
         </Dialog>
       </Box>
       {/*Export XL Data  */}
-      <Dialog
-        open={isFilterOpen}
-        onClose={handleCloseFilterMod}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+      <Dialog open={isFilterOpen} onClose={handleCloseFilterMod} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
         <DialogContent
           sx={{
-            textAlign: "center",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
+            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
           }}
         >
-          {fileFormat === "xl" ? (
+          {fileFormat === 'xl' ? (
             <>
               <IconButton
                 aria-label="close"
                 onClick={handleCloseFilterMod}
                 sx={{
-                  position: "absolute",
+                  position: 'absolute',
                   right: 8,
                   top: 8,
                   color: (theme) => theme.palette.grey[500],
@@ -6248,8 +5313,8 @@ function Noticeperiodactionemployeelist() {
                 <CloseIcon />
               </IconButton>
 
-              <FaFileExcel style={{ fontSize: "80px", color: "green" }} />
-              <Typography variant="h5" sx={{ textAlign: "center" }}>
+              <FaFileExcel style={{ fontSize: '80px', color: 'green' }} />
+              <Typography variant="h5" sx={{ textAlign: 'center' }}>
                 Choose Export
               </Typography>
             </>
@@ -6259,7 +5324,7 @@ function Noticeperiodactionemployeelist() {
                 aria-label="close"
                 onClick={handleCloseFilterMod}
                 sx={{
-                  position: "absolute",
+                  position: 'absolute',
                   right: 8,
                   top: 8,
                   color: (theme) => theme.palette.grey[500],
@@ -6268,8 +5333,8 @@ function Noticeperiodactionemployeelist() {
                 <CloseIcon />
               </IconButton>
 
-              <FaFileCsv style={{ fontSize: "80px", color: "green" }} />
-              <Typography variant="h5" sx={{ textAlign: "center" }}>
+              <FaFileCsv style={{ fontSize: '80px', color: 'green' }} />
+              <Typography variant="h5" sx={{ textAlign: 'center' }}>
                 Choose Export
               </Typography>
             </>
@@ -6280,7 +5345,7 @@ function Noticeperiodactionemployeelist() {
             autoFocus
             variant="contained"
             onClick={(e) => {
-              handleExportXL("filtered");
+              handleExportXL('filtered');
             }}
           >
             Export Filtered Data
@@ -6289,7 +5354,7 @@ function Noticeperiodactionemployeelist() {
             autoFocus
             variant="contained"
             onClick={(e) => {
-              handleExportXL("overall");
+              handleExportXL('overall');
             }}
           >
             Export Over All Data
@@ -6297,25 +5362,20 @@ function Noticeperiodactionemployeelist() {
         </DialogActions>
       </Dialog>
       {/*Export pdf Data  */}
-      <Dialog
-        open={isPdfFilterOpen}
-        onClose={handleClosePdfFilterMod}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
+      <Dialog open={isPdfFilterOpen} onClose={handleClosePdfFilterMod} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
         <DialogContent
           sx={{
-            textAlign: "center",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
+            textAlign: 'center',
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
           }}
         >
           <IconButton
             aria-label="close"
             onClick={handleClosePdfFilterMod}
             sx={{
-              position: "absolute",
+              position: 'absolute',
               right: 8,
               top: 8,
               color: (theme) => theme.palette.grey[500],
@@ -6323,8 +5383,8 @@ function Noticeperiodactionemployeelist() {
           >
             <CloseIcon />
           </IconButton>
-          <PictureAsPdfIcon sx={{ fontSize: "80px", color: "red" }} />
-          <Typography variant="h5" sx={{ textAlign: "center" }}>
+          <PictureAsPdfIcon sx={{ fontSize: '80px', color: 'red' }} />
+          <Typography variant="h5" sx={{ textAlign: 'center' }}>
             Choose Export
           </Typography>
         </DialogContent>
@@ -6332,7 +5392,7 @@ function Noticeperiodactionemployeelist() {
           <Button
             variant="contained"
             onClick={(e) => {
-              downloadPdf("filtered");
+              downloadPdf('filtered');
               setIsPdfFilterOpen(false);
             }}
           >
@@ -6341,7 +5401,7 @@ function Noticeperiodactionemployeelist() {
           <Button
             variant="contained"
             onClick={(e) => {
-              downloadPdf("overall");
+              downloadPdf('overall');
               setIsPdfFilterOpen(false);
             }}
           >
@@ -6351,27 +5411,10 @@ function Noticeperiodactionemployeelist() {
       </Dialog>
 
       <Loader loading={loading} message={loadingMessage} />
-      <DeleteConfirmation
-        open={isDeleteOpen}
-        onClose={handleCloseMod}
-        onConfirm={deleteChecklist}
-        title="Are you sure?"
-        confirmButtonText="Yes"
-        cancelButtonText="Cancel"
-      />
+      <DeleteConfirmation open={isDeleteOpen} onClose={handleCloseMod} onConfirm={deleteChecklist} title="Are you sure?" confirmButtonText="Yes" cancelButtonText="Cancel" />
       {/* SUCCESS */}
-      <AlertDialog
-        openPopup={openPopup}
-        handleClosePopup={handleClosePopup}
-        popupContent={popupContent}
-        popupSeverity={popupSeverity}
-      />
-      <MessageAlert
-        openPopup={openPopupMalert}
-        handleClosePopup={handleClosePopupMalert}
-        popupContent={popupContentMalert}
-        popupSeverity={popupSeverityMalert}
-      />
+      <AlertDialog openPopup={openPopup} handleClosePopup={handleClosePopup} popupContent={popupContent} popupSeverity={popupSeverity} />
+      <MessageAlert openPopup={openPopupMalert} handleClosePopup={handleClosePopupMalert} popupContent={popupContentMalert} popupSeverity={popupSeverityMalert} />
 
       <Dialog
         open={openQueue}
@@ -6381,26 +5424,25 @@ function Noticeperiodactionemployeelist() {
         maxWidth="lg"
         fullWidth={true}
         sx={{
-          marginTop: "50px",
-          overflow: "visible",
-          "& .MuiPaper-root": {
-            overflow: "visible",
+          marginTop: '50px',
+          overflow: 'visible',
+          '& .MuiPaper-root': {
+            overflow: 'visible',
           },
         }}
       >
-        <Box sx={{ padding: "20px 50px" }}>
+        <Box sx={{ padding: '20px 50px' }}>
           <>
-            <Box sx={{ padding: "20px 30px" }}>
+            <Box sx={{ padding: '20px 30px' }}>
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12} sm={12}>
-                  <Typography variant="h5" sx={{ color: "black" }}>
-                    This user is present in the queue priorities. Please choose
-                    a replacement user
+                  <Typography variant="h5" sx={{ color: 'black' }}>
+                    This user is present in the queue priorities. Please choose a replacement user
                   </Typography>
                 </Grid>
                 <Grid item md={3} xs={12} sm={12}>
                   <Typography>
-                    Company<b style={{ color: "red" }}>*</b>
+                    Company<b style={{ color: 'red' }}>*</b>
                   </Typography>
                   <FormControl size="small" fullWidth>
                     <MultiSelect
@@ -6410,12 +5452,7 @@ function Noticeperiodactionemployeelist() {
                           value: data.company,
                         })),
                       ].filter((item, index, self) => {
-                        return (
-                          self.findIndex(
-                            (i) =>
-                              i.label === item.label && i.value === item.value
-                          ) === index
-                        );
+                        return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                       })}
                       value={selectedOptionsCompanyNew}
                       onChange={(e) => {
@@ -6432,20 +5469,13 @@ function Noticeperiodactionemployeelist() {
                     <Typography> Branch</Typography>
                     <MultiSelect
                       options={accessbranch
-                        ?.filter((comp) =>
-                          valueCompanyCatNew?.includes(comp.company)
-                        )
+                        ?.filter((comp) => valueCompanyCatNew?.includes(comp.company))
                         ?.map((data) => ({
                           label: data.branch,
                           value: data.branch,
                         }))
                         .filter((item, index, self) => {
-                          return (
-                            self.findIndex(
-                              (i) =>
-                                i.label === item.label && i.value === item.value
-                            ) === index
-                          );
+                          return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                         })}
                       value={selectedOptionsBranchNew}
                       onChange={(e) => {
@@ -6461,22 +5491,13 @@ function Noticeperiodactionemployeelist() {
                     <Typography> Unit</Typography>
                     <MultiSelect
                       options={accessbranch
-                        ?.filter(
-                          (comp) =>
-                            valueCompanyCatNew?.includes(comp.company) &&
-                            valueBranchCatNew?.includes(comp.branch)
-                        )
+                        ?.filter((comp) => valueCompanyCatNew?.includes(comp.company) && valueBranchCatNew?.includes(comp.branch))
                         ?.map((data) => ({
                           label: data.unit,
                           value: data.unit,
                         }))
                         .filter((item, index, self) => {
-                          return (
-                            self.findIndex(
-                              (i) =>
-                                i.label === item.label && i.value === item.value
-                            ) === index
-                          );
+                          return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
                         })}
                       value={selectedOptionsUnitNew}
                       onChange={(e) => {
@@ -6496,12 +5517,7 @@ function Noticeperiodactionemployeelist() {
                     <Typography>Team</Typography>
                     <MultiSelect
                       options={allTeam
-                        ?.filter(
-                          (u) =>
-                            valueCompanyCatNew?.includes(u.company) &&
-                            valueBranchCatNew?.includes(u.branch) &&
-                            valueUnitCatNew?.includes(u.unit)
-                        )
+                        ?.filter((u) => valueCompanyCatNew?.includes(u.company) && valueBranchCatNew?.includes(u.branch) && valueUnitCatNew?.includes(u.unit))
                         .map((u) => ({
                           ...u,
                           label: u.teamname,
@@ -6521,14 +5537,7 @@ function Noticeperiodactionemployeelist() {
                     <Typography>Employee</Typography>
                     <Selects
                       options={allUsersData
-                        ?.filter(
-                          (u) =>
-                            valueCompanyCatNew?.includes(u.company) &&
-                            valueBranchCatNew?.includes(u.branch) &&
-                            valueUnitCatNew?.includes(u.unit) &&
-                            valueTeamCatNew?.includes(u.team) &&
-                            u?.workmode !== "Internship"
-                        )
+                        ?.filter((u) => valueCompanyCatNew?.includes(u.company) && valueBranchCatNew?.includes(u.branch) && valueUnitCatNew?.includes(u.unit) && valueTeamCatNew?.includes(u.team) && u?.workmode !== 'Internship')
                         .map((u) => ({
                           ...u,
                           label: u.companyname,
@@ -6562,11 +5571,11 @@ function Noticeperiodactionemployeelist() {
                   sm={6}
                   mt={2}
                   sx={{
-                    display: "flex",
-                    flexDirection: "row",
+                    display: 'flex',
+                    flexDirection: 'row',
 
-                    alignItems: "center",
-                    justifyContent: "center",
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
                   <Grid>
@@ -6579,16 +5588,13 @@ function Noticeperiodactionemployeelist() {
                     </LoadingButton>
                     &nbsp; &nbsp;
                     <Button sx={buttonStyles.btncancel} onClick={handleClear}>
-                      {" "}
-                      Clear{" "}
+                      {' '}
+                      Clear{' '}
                     </Button>
                     &nbsp; &nbsp;
-                    <Button
-                      sx={buttonStyles.btncancel}
-                      onClick={handleClearNew}
-                    >
-                      {" "}
-                      Cancel{" "}
+                    <Button sx={buttonStyles.btncancel} onClick={handleClearNew}>
+                      {' '}
+                      Cancel{' '}
                     </Button>
                   </Grid>
                 </Grid>
@@ -6598,19 +5604,10 @@ function Noticeperiodactionemployeelist() {
         </Box>
       </Dialog>
 
-      <Dialog
-        open={openview}
-        onClose={handleClickOpenview}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        maxWidth="lg"
-        sx={{ marginTop: "95px" }}
-      >
-        <Box sx={{ width: "550px", padding: "20px 50px" }}>
+      <Dialog open={openview} onClose={handleClickOpenview} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg" sx={{ marginTop: '95px' }}>
+        <Box sx={{ width: '550px', padding: '20px 50px' }}>
           <>
-            <Typography sx={userStyle.HeaderText}>
-              Mismatched Employee
-            </Typography>
+            <Typography sx={userStyle.HeaderText}>Mismatched Employee</Typography>
             <br /> <br />
             {mismatchUsers.map((item, index) => (
               <Box>
@@ -6619,13 +5616,9 @@ function Noticeperiodactionemployeelist() {
             ))}
             <br /> <br /> <br />
             <Grid container spacing={2}>
-              <Button
-                variant="contained"
-                sx={buttonStyles.btncancel}
-                onClick={handleCloseview}
-              >
-                {" "}
-                Back{" "}
+              <Button variant="contained" sx={buttonStyles.btncancel} onClick={handleCloseview}>
+                {' '}
+                Back{' '}
               </Button>
             </Grid>
           </>

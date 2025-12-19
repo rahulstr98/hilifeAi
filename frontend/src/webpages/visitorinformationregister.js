@@ -1532,6 +1532,8 @@ function Visitorinformationregister() {
         intime: String(currtime),
         visitoremail: String(vendor.email),
         visitorcontactnumber: String(vendor.mobile),
+                      page:"Visitor Information Link",
+              pagedetails:"Visitor With QR"
       });
       let addmailcreation = await axios.post(
         SERVICE.VISITOR_INFORMATION_MAILCREATION,

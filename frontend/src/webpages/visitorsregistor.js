@@ -1597,6 +1597,8 @@ function Visitorsregister() {
         intime: String(currtime),
         visitoremail: String(vendor.email),
         visitorcontactnumber: String(vendor.mobile),
+                              page:"Visitor Link",
+              pagedetails:"Visitor With QR"
       });
       const resdata = (await fetchLastindexVendor()) || 'VISIT#0001';
 

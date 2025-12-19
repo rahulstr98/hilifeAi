@@ -32,9 +32,10 @@ biometricRoute.route("/biometricusersgrouping/:id").delete(deleteUserGrouping).g
 
 
 // connect remainder category form controller
-const { getAllBiometricDevicesPairing, getAllBiometricDevicesAreaBased, getSingleBulkBiometricPairingDelete, getOverallBulkBiometricPairingDeviceDelete, getAllBiometricPairedDevicesAreaBased, getSingleBiometricDevicesPairing, addBiometricDevicesPairing, updateBiometricDevicesPairing, deleteBiometricDevicesPairing } = require('../controller/modules/biometric/BiometricDevicesPairingController.js');
+const { getAllBiometricDevicesPairing, getAllBiometricDevicesAreaBased,getAllBiometricDevicesAreaRfidBased, getSingleBulkBiometricPairingDelete, getOverallBulkBiometricPairingDeviceDelete, getAllBiometricPairedDevicesAreaBased, getSingleBiometricDevicesPairing, addBiometricDevicesPairing, updateBiometricDevicesPairing, deleteBiometricDevicesPairing } = require('../controller/modules/biometric/BiometricDevicesPairingController.js');
 biometricRoute.route('/biometricdevicespairing').get(getAllBiometricDevicesPairing);
 biometricRoute.route('/biometricdevicesbasedonarea').post(getAllBiometricDevicesAreaBased);
+biometricRoute.route('/biometricdevicesbasedonarearfiddetails').post(getAllBiometricDevicesAreaRfidBased);
 biometricRoute.route('/biometricpaireddevicesbasedonarea').post(getAllBiometricPairedDevicesAreaBased);
 biometricRoute.route('/overallbulkbiometricdevicepairingdelete').post(getOverallBulkBiometricPairingDeviceDelete);
 biometricRoute.route('/singlebiometricpairingdelete').post(getSingleBulkBiometricPairingDelete);

@@ -92,14 +92,14 @@ exports.addNewUserBiometricBrand = catchAsyncErrors(async (req, res, next) => {
   const { command, brand, brand1 } = req?.body;
   let alldeviceinfo = [];
   let alldeviceProfileRole = [];
-  if (brand === "Brand1") {
+  if (brand === "Bio-Socket") {
     alldeviceinfo = await getCommandForDeviceAIIdAddUser(command, brand);
     alldeviceProfileRole = await getCommandForDeviceAIIdAddUser(brand1, brand);
   }
-  else if (brand === "Brand2") {
+  else if (brand === "Bowee-Witzee") {
     let finalCommand = { ...command, pass: PASSWORD }
     alldeviceinfo = await fetchRemoteControl(finalCommand, "setUserPower");
-  } else if (brand === "Brand3") {
+  } else if (brand === "Bowee-Chandichan") {
     alldeviceinfo = await sendToDeviceGatewayAddUser(command);
   }
 
@@ -113,7 +113,7 @@ exports.addNewUserBiometricBrand = catchAsyncErrors(async (req, res, next) => {
 
 const getCommandForDeviceAIIdAddUser = async (command, brand) => {
   let commandSend = {};
-  if (brand === "Brand1") {
+  if (brand === "Bio-Socket") {
     commandSend = command;
   }
   const result = await sendCommandToDeviceAttendance(commandSend);
@@ -128,11 +128,11 @@ exports.getBiometricAvailableUserId = catchAsyncErrors(async (req, res, next) =>
   const { device } = req?.body;
   let alldeviceinfo = [];
 
-  if (device?.brand === "Brand1") {
+  if (device?.brand === "Bio-Socket") {
     alldeviceinfo = await getCommandForDeviceAIIdCheck("ID Check");
-  } else if (device?.brand === "Brand2") {
+  } else if (device?.brand === "Bowee-Witzee") {
     alldeviceinfo = await getCommandBiometricF51ACheck("ID Check");
-  } else if (device?.brand === "Brand3") {
+  } else if (device?.brand === "Bowee-Chandichan") {
     alldeviceinfo = 1
     // await getCommandBiometricLinkIdCheck("ID Check");
   }
@@ -210,11 +210,11 @@ const deviceIpAddress = await BiometricDeviceManagement.findOne({biometricserial
   // console.log(deviceURL, "deviceURL")
 
   let isSuccess = false;
-  if (biometricDeviceManagement?.brandname === "Brand1") {
+  if (biometricDeviceManagement?.brandname === "Bio-Socket") {
     isSuccess = await getCommandForDeviceAI(command, biometricDeviceManagement?.command);
-  } else if (biometricDeviceManagement?.brandname === "Brand2") {
+  } else if (biometricDeviceManagement?.brandname === "Bowee-Witzee") {
     isSuccess = await getCommandBiometricF51A(command);
-  } else if (biometricDeviceManagement?.brandname === "Brand3") {
+  } else if (biometricDeviceManagement?.brandname === "Bowee-Chandichan") {
     isSuccess = await getCommandBiometricLink(command);
   }
   else if (biometricDeviceManagement?.brandname === "Bowee") {
@@ -231,6 +231,7 @@ const deviceIpAddress = await BiometricDeviceManagement.findOne({biometricserial
   if (isSuccess) {
     return res.status(200).json({ message: "Command executed successfully" });
   } else {
+    console.log(isSuccess , "isSuccess")
     return res.status(500).json({ message: "Failed to send command to device" });
   }
 });
@@ -327,10 +328,10 @@ const getCommandForDeviceAI = async (command, exeCommand) => {
     commandSend = { cmd: "reboot" };
   } else if (command === "Device Reset") {
     commandSend = { cmd: "initsys" };
-    await deleteManyBioMetricBrands("Brand1")
+    await deleteManyBioMetricBrands("Bio-Socket")
   } else if (command === "Delete User Records") {
     commandSend = { cmd: "cleanuser" };
-    await deleteManyBioMetricBrands("Brand1")
+    await deleteManyBioMetricBrands("Bio-Socket")
   } else if (command === "Delete All Logs") {
     commandSend = { cmd: "cleanlog" };
   }
@@ -366,14 +367,14 @@ const getCommandBiometricF51A = async (command) => {
       pass: PASSWORD,
     };
     commandName = "resetDevice"
-    await deleteManyBioMetricBrands("Brand2")
+    await deleteManyBioMetricBrands("Bowee-Witzee")
   }
   if (command === "Delete User Records") {
     commandSend = {
       pass: PASSWORD,
     };
     commandName = "deleteAllUserPower"
-    await deleteManyBioMetricBrands("Brand2")
+    await deleteManyBioMetricBrands("Bowee-Witzee")
   }
   if (command === "Delete All Logs") {
     commandSend = {
@@ -397,14 +398,14 @@ const getCommandBiometricLink = async (command) => {
   }
   if (command === "Device Reset") {
     interType = "31004";
-    await deleteManyBioMetricBrands("Brand3")
+    await deleteManyBioMetricBrands("Bowee-Chandichan")
   }
   if (command === "Shutdown") {
     interType = "31003";
   }
   if (command === "Delete User Records") {
     interType = "31005";
-    await deleteManyBioMetricBrands("Brand3")
+    await deleteManyBioMetricBrands("Bowee-Chandichan")
   }
   const result = await sendToDeviceGateway(interType);
   return result;

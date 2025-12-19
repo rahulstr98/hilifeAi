@@ -109,6 +109,108 @@ const { fetchDeviceRecords ,sendToDeviceGatewayStatus} = require('./controller/m
 // });
 
 
+// cron.schedule("* * * * *", async () => {
+//   console.log("Cron Running:", new Date().toLocaleString());
+
+//   try {
+//     const devices = await Biometriconlinestatus.find({});
+//     if (!devices.length) {
+//       console.log("No devices found");
+//       return;
+//     }
+
+//     // console.log(devices[0], "first device");
+
+//     for (const dev of devices) {
+//       try {
+//         console.log("Processing device:", dev.cloudIDC);
+
+//         // 1️⃣ Skip if no last online time
+//         if (!dev.lastOnlineTimeC) continue;
+
+//         // 2️⃣ Validate moment date
+//         const lastOnline = moment(dev.lastOnlineTimeC, "DD-MM-YYYY HH:mm:ss", true);
+//         if (!lastOnline.isValid()) {
+//           console.log("Invalid date format:", dev.lastOnlineTimeC);
+//           continue;
+//         }
+
+//         // 3️⃣ Get device ID (safe)
+//         const deviceNameID = await BiometricDeviceManagement
+//           .findOne({ biometricserialno: dev.cloudIDC })
+//           .select("_id")
+//           .lean();
+
+//           if(!deviceNameID){
+//             continue;
+//           }
+//         const diffMinutes = moment().diff(lastOnline, "minutes");
+//         console.log("Offline minutes:", diffMinutes);
+
+//         // 4️⃣ If offline ≥ 10 minutes
+//         if (diffMinutes >= 10) {
+//           const today = moment().format("YYYY-MM-DD");
+//           const offlineTimeNow = moment().format("DD-MM-YYYY HH:mm:ss");
+
+//           let existingDay = await BiometricOfflineHistory.findOne({
+//             cloudIDC: dev.cloudIDC,
+//             date: today
+//           });
+
+//           // 5️⃣ Create new daily record
+//           if (!existingDay) {
+//             await BiometricOfflineHistory.create({
+//               cloudIDC: dev.cloudIDC,
+//               deviceNameID: deviceNameID?._id || null,
+//               date: today,
+//               offlineHistory: [{
+//                 lastOnline: dev.lastOnlineTimeC,
+//                 offlineTime: offlineTimeNow
+//               }]
+//             });
+
+//             console.log(`📌 New history created for ${dev.cloudIDC}`);
+//             continue;
+//           }
+
+//           // 6️⃣ Ensure offlineHistory array exists
+//           if (!Array.isArray(existingDay.offlineHistory)) {
+//             existingDay.offlineHistory = [];
+//           }
+
+//           const lastRecord =
+//             existingDay.offlineHistory[existingDay.offlineHistory.length - 1];
+
+//           if (lastRecord && lastRecord.lastOnline === dev.lastOnlineTimeC) {
+//             // Update same slot
+//             lastRecord.offlineTime = offlineTimeNow;
+//           } else {
+//             // Push new slot
+//             existingDay.offlineHistory.push({
+//               lastOnline: dev.lastOnlineTimeC,
+//               offlineTime: offlineTimeNow
+//             });
+//           }
+
+//           await existingDay.save();
+//           console.log(`📌 Updated history for ${dev.cloudIDC}`);
+//         }
+
+//       } catch (err) {
+//         console.error(
+//           `❌ Error processing device ${dev.cloudIDC}:`,
+//           err.message
+//         );
+//         continue; // continue next device
+//       }
+//     }
+
+//     console.log("⏳ Cron Completed");
+
+//   } catch (err) {
+//     console.error("❌ Cron failed:", err.message);
+//   }
+// });
 
 
 
@@ -552,7 +654,7 @@ const docs = await EmployeeDocuments.find({
 // migrateEmployeeDocumentsBase64();
 
 // initWebSocket();
-const INTERVAL_MS = 8000; // every 10 seconds
+const INTERVAL_MS = 10000; // every 20 minutes
 function formatToDDMMYYYYWithTime(datetimeStr) {
     const date = new Date(datetimeStr);
     const day = String(date.getDate()).padStart(2, '0');
@@ -572,7 +674,7 @@ const crypto = require('crypto');
 
 // setInterval(async () => {
 //   try {
-//     //const logs = await fetchDeviceLogs();
+//     const logs = await fetchDeviceLogs();
 //     // const logsCommand = await sendCommandToDeviceAttendance({ cmd: "getnewlog", stn: true });
 // //  console.log(logsCommand , "logsCommand")
 //     let combinedResult = [];
@@ -589,18 +691,18 @@ const crypto = require('crypto');
 //     //   combinedResult.push(...resultCommand);
 //     // }
 
-//     // if (logs?.length > 0) {
-//     //   const result = logs.map(item => ({
-//     //     biometricUserIDC: item?.accNo,
-//     //     clockDateTimeD: formatToDDMMYYYYWithTime(item?.passTime),
-//     //     cloudIDC: item?.deviceKey,
-//     //     verifyC: item?.mode === 2 ? "Pass" : "",
-//     //     staffNameC: item?.username
-//     //   }));
-//     //   combinedResult.push(...result);
-//     // }
+//     if (logs?.length > 0) {
+//       const result = logs.map(item => ({
+//         biometricUserIDC: item?.accNo,
+//         clockDateTimeD: formatToDDMMYYYYWithTime(item?.passTime),
+//         cloudIDC: item?.deviceKey,
+//         verifyC: item?.mode === 2 ? "Pass" : "",
+//         staffNameC: item?.username
+//       }));
+//       combinedResult.push(...result);
+//     }
 
-//     // console.log(combinedResult , "combinedResult")
+//     console.log(combinedResult , "combinedResult")
 //     // // ✅ Deduplicate combined logs
 //     // if (combinedResult.length > 0) {
 //     //   removeDuplicateLogs(combinedResult);
@@ -1423,6 +1525,7 @@ app.use('/taskUserPanel', express.static(path.join(__dirname, 'taskUserPanel')))
 app.use('/raiseTicketMaster', express.static(path.join(__dirname, 'raiseTicketMaster')));
 app.use('/uploadsDocuments', express.static(path.join(__dirname, 'uploadsDocuments')));
 app.use('/candidateDocuments', express.static(path.join(__dirname, 'candidateDocuments')));
+app.use('/uploads/biometric', express.static(path.join(__dirname, 'uploads/biometric')));
 app.use(
   "/templatecontrolpanel",
   express.static(path.join(__dirname, "templatecontrolpanel"))
@@ -1452,27 +1555,96 @@ app.use(bodyParser.json());
 // Simulated pending actions per device SN (for demo)
 
 
-app.post('/Device/Keepalive', async (req, res) => {
-  console.log('Keepalive hit:', req.body);
-try {
-  const allusers = await axios.post(`http://192.168.8.14:7000/api/bioonlinestatus/new`, {
-    cloudIDC: req.body?.SN,
-    lastOnlineTimeC : formatToDDMMYYYYWithTime(new Date())
-  });
-} catch (error) {
-  console.error("Error posting to bioonlinestatus/new:", error?.response?.data || error.message);
-}
+// app.post('/Device/Keepalive', async (req, res) => {
+//   console.log('Keepalive hit:', req.body);
+// try {
+//   const allusers = await axios.post(`http://192.168.8.14:7000/api/bioonlinestatus/new`, {
+//     cloudIDC: req.body?.SN,
+//     lastOnlineTimeC : formatToDDMMYYYYWithTime(new Date())
+//   });
+// } catch (error) {
+//   console.error("Error posting to bioonlinestatus/new:", error?.response?.data || error.message);
+// }
 
-  // Respond immediately
-  res.json({
-"Success":1,
-"AddPeople":0,
-"DeletePeople":0,
-"SyncParameter":0,
-"Remote":0,
-"UploadWorkParameter": 0
-});
-});
+//   // Respond immediately
+//   res.json({
+// "Success":1,
+// "AddPeople":0,
+// "DeletePeople":0,
+// "SyncParameter":0,
+// "Remote":0,
+// "UploadWorkParameter": 0
+// });
+// });
+
+
+
+// cron.schedule("*/2 * * * *", async () => {
+//   try {
+//     console.log("Running bio online status cron...");
+
+//     // 1️⃣ Get all devices
+//     const biometricdevicemanagement = await BiometricDeviceManagement.find(
+//       { brand: "Bowee-Witzee" },
+//       { biometricassignedip: 1 }
+//     );
+
+//     if (!biometricdevicemanagement.length) {
+//       console.log("No biometric devices found");
+//       return;
+//     }
+
+//     // 2️⃣ Loop through each device IP
+//     for (const device of biometricdevicemanagement) {
+//       const deviceIP = device.biometricassignedip;
+
+//       if (!deviceIP) continue;
+// console.log(deviceIP , "deviceIP")
+//       try {
+//         // 3️⃣ Call device API
+//         const deviceStatusCheck = await axios.post(
+//           `http://${deviceIP}:14460/getDeviceInfo`,
+//           { pass: "123456" },
+//         );
+
+//         const responseData = deviceStatusCheck.data;
+//         console.log(responseData, "responseData", deviceIP);
+
+//         // 4️⃣ Validate response
+//         if (responseData?.result === true) {
+//         const deviceSN = JSON.parse(responseData?.data);
+
+//           if (!deviceSN) {
+//             console.log(`Device SN missing for IP ${deviceIP}`);
+//             continue;
+//           }
+
+//           // 5️⃣ Update online status
+//           await axios.post(
+//             "http://192.168.1.2:7001/api/bioonlinestatus/new",
+//             {
+//               cloudIDC: deviceSN?.devSN,
+//               lastOnlineTimeC: formatToDDMMYYYYWithTime(new Date())
+//             }
+//           );
+
+//           console.log(`Online status updated for ${deviceIP}`);
+//         } else {
+//           console.log(`Device offline / invalid response: ${deviceIP}`);
+//         }
+//       } catch (deviceErr) {
+//         console.error(`Device error (${deviceIP}):`, deviceErr.message);
+//       }
+//     }
+
+//   } catch (error) {
+//     console.error("Cron error:", error.message);
+//   }
+// });
+
+
+
+
 
 app.post('/Device/RemoteCommand', async (req, res) => {
  console.log('RemoteCommand hit:', req.body);

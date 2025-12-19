@@ -1,57 +1,117 @@
-import CloseIcon from '@mui/icons-material/Close';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
-import EditIcon from '@mui/icons-material/Edit';
-import ImageIcon from '@mui/icons-material/Image';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, FormControl, Grid, IconButton, FormControlLabel, List, ListItem, ListItemText, MenuItem, OutlinedInput, Paper, Popover, Select, Table, TableBody, TableContainer, TableHead, TextField, Typography, Chip } from '@mui/material';
-import Switch from '@mui/material/Switch';
-import axios from '../../../../axiosInstance';
-import * as FileSaver from 'file-saver';
-import { saveAs } from 'file-saver';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import moment from 'moment-timezone';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { FaFileCsv, FaFileExcel, FaFilePdf, FaPlus, FaPrint } from 'react-icons/fa';
-import { ThreeDots } from 'react-loader-spinner';
-import { MultiSelect } from 'react-multi-select-component';
-import { NotificationContainer, NotificationManager } from 'react-notifications';
-import 'react-notifications/lib/notifications.css';
-import Selects from 'react-select';
-import { useReactToPrint } from 'react-to-print';
-import * as XLSX from 'xlsx';
-import { handleApiError } from '../../../../components/Errorhandling';
-import Headtitle from '../../../../components/Headtitle';
-import { menuItems } from '../../../../components/menuItemsList';
-import PageHeading from '../../../../components/PageHeading';
-import { StyledTableCell, StyledTableRow } from '../../../../components/Table';
-import { AuthContext, UserRoleAccessContext } from '../../../../context/Appcontext';
-import { colourStyles, userStyle } from '../../../../pageStyle';
-import { SERVICE } from '../../../../services/Baseservice';
+import CloseIcon from "@mui/icons-material/Close";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import EditIcon from "@mui/icons-material/Edit";
+import ImageIcon from "@mui/icons-material/Image";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import {
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  Grid,
+  IconButton,
+  FormControlLabel,
+  List,
+  ListItem,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Paper,
+  Popover,
+  Select,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TextField,
+  Typography,
+  Chip,
+} from "@mui/material";
+import Switch from "@mui/material/Switch";
+import axios from "../../../../axiosInstance";
+import * as FileSaver from "file-saver";
+import { saveAs } from "file-saver";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
+import moment from "moment-timezone";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
+import {
+  FaFileCsv,
+  FaFileExcel,
+  FaFilePdf,
+  FaPlus,
+  FaPrint,
+} from "react-icons/fa";
+import { ThreeDots } from "react-loader-spinner";
+import { MultiSelect } from "react-multi-select-component";
+import {
+  NotificationContainer,
+  NotificationManager,
+} from "react-notifications";
+import "react-notifications/lib/notifications.css";
+import Selects from "react-select";
+import { useReactToPrint } from "react-to-print";
+import * as XLSX from "xlsx";
+import { handleApiError } from "../../../../components/Errorhandling";
+import Headtitle from "../../../../components/Headtitle";
+import { menuItems } from "../../../../components/menuItemsList";
+import PageHeading from "../../../../components/PageHeading";
+import { StyledTableCell, StyledTableRow } from "../../../../components/Table";
+import {
+  AuthContext,
+  UserRoleAccessContext,
+} from "../../../../context/Appcontext";
+import { colourStyles, userStyle } from "../../../../pageStyle";
+import { SERVICE } from "../../../../services/Baseservice";
 
-import AggregatedSearchBar from '../../../../components/AggregatedSearchBar';
-import AggridTable from '../../../../components/AggridTable';
-import AlertDialog from '../../../../components/Alert';
-import ExportData from '../../../../components/ExportData';
-import MessageAlert from '../../../../components/MessageAlert';
-import domtoimage from 'dom-to-image';
+import AggregatedSearchBar from "../../../../components/AggregatedSearchBar";
+import AggridTable from "../../../../components/AggridTable";
+import AlertDialog from "../../../../components/Alert";
+import ExportData from "../../../../components/ExportData";
+import MessageAlert from "../../../../components/MessageAlert";
+import domtoimage from "dom-to-image";
 function Assignedrole() {
   const [filteredRowData, setFilteredRowData] = useState([]);
   const [filteredChanges, setFilteredChanges] = useState(null);
 
   const [overallItems, setOverallItems] = useState([]);
 
-  let exportColumnNames = ['Emp Code', 'Employee Name', 'Branch', 'Unit', 'Floor', 'Department', 'Team', 'Work Mode', 'Designation', 'Role'];
-  let exportRowValues = ['empcode', 'companyname', 'branch', 'unit', 'floor', 'department', 'team', 'workmode', 'designation', 'roles'];
+  let exportColumnNames = [
+    "Emp Code",
+    "Employee Name",
+    "Branch",
+    "Unit",
+    "Floor",
+    "Department",
+    "Team",
+    "Work Mode",
+    "Designation",
+    "Role",
+  ];
+  let exportRowValues = [
+    "empcode",
+    "companyname",
+    "branch",
+    "unit",
+    "floor",
+    "department",
+    "team",
+    "workmode",
+    "designation",
+    "roles",
+  ];
 
   const [isHandleChange, setIsHandleChange] = useState(false);
-  const [searchedString, setSearchedString] = useState('');
+  const [searchedString, setSearchedString] = useState("");
 
   const [openPopupMalert, setOpenPopupMalert] = useState(false);
-  const [popupContentMalert, setPopupContentMalert] = useState('');
-  const [popupSeverityMalert, setPopupSeverityMalert] = useState('');
+  const [popupContentMalert, setPopupContentMalert] = useState("");
+  const [popupSeverityMalert, setPopupSeverityMalert] = useState("");
   const handleClickOpenPopupMalert = () => {
     setOpenPopupMalert(true);
   };
@@ -59,8 +119,8 @@ function Assignedrole() {
     setOpenPopupMalert(false);
   };
   const [openPopup, setOpenPopup] = useState(false);
-  const [popupContent, setPopupContent] = useState('');
-  const [popupSeverity, setPopupSeverity] = useState('');
+  const [popupContent, setPopupContent] = useState("");
+  const [popupSeverity, setPopupSeverity] = useState("");
   const handleClickOpenPopup = () => {
     setOpenPopup(true);
   };
@@ -69,7 +129,17 @@ function Assignedrole() {
   };
 
   const [employees, setEmployees] = useState([]);
-  const { isUserRoleAccess, isUserRoleCompare, isAssignBranch, pageName, setPageName, allTeam, allUsersData, buttonStyles, allUsersLimit } = useContext(UserRoleAccessContext);
+  const {
+    isUserRoleAccess,
+    isUserRoleCompare,
+    isAssignBranch,
+    pageName,
+    setPageName,
+    allTeam,
+    allUsersData,
+    buttonStyles,
+    allUsersLimit,
+  } = useContext(UserRoleAccessContext);
 
   useEffect(() => {
     getapi();
@@ -82,7 +152,7 @@ function Assignedrole() {
       },
       empcode: String(isUserRoleAccess?.empcode),
       companyname: String(isUserRoleAccess?.companyname),
-      pagename: String('Assigned Role Update'),
+      pagename: String("Assigned Role Update"),
       commonid: String(isUserRoleAccess?._id),
       date: String(new Date()),
 
@@ -98,49 +168,74 @@ function Assignedrole() {
   // page refersh reload code
   const handleBeforeUnload = (event) => {
     event.preventDefault();
-    event.returnValue = ''; // This is required for Chrome support
+    event.returnValue = ""; // This is required for Chrome support
   };
 
   useEffect(() => {
     const beforeUnloadHandler = (event) => handleBeforeUnload(event);
-    window.addEventListener('beforeunload', beforeUnloadHandler);
+    window.addEventListener("beforeunload", beforeUnloadHandler);
     return () => {
-      window.removeEventListener('beforeunload', beforeUnloadHandler);
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
     };
   }, []);
 
-  const accessbranch = isUserRoleAccess?.role?.includes('Manager')
+  const accessbranch = isUserRoleAccess?.role?.includes("Manager")
     ? isAssignBranch?.map((data) => ({
-      branch: data.branch,
-      company: data.company,
-      unit: data.unit,
-    }))
-    : isAssignBranch
-      ?.filter((data) => {
-        let fetfinalurl = [];
-
-        if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.subsubpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.subpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.mainpagenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.mainpagenameurl;
-        } else if (data?.modulenameurl?.length !== 0 && data?.submodulenameurl?.length !== 0 && data?.subsubpagenameurl?.includes(window.location.pathname)) {
-          fetfinalurl = data.submodulenameurl;
-        } else if (data?.modulenameurl?.length !== 0) {
-          fetfinalurl = data.modulenameurl;
-        } else {
-          fetfinalurl = [];
-        }
-
-        const remove = [window.location.pathname?.substring(1), window.location.pathname];
-        return fetfinalurl?.some((item) => remove?.includes(item));
-      })
-      ?.map((data) => ({
         branch: data.branch,
         company: data.company,
         unit: data.unit,
-      }));
+      }))
+    : isAssignBranch
+        ?.filter((data) => {
+          let fetfinalurl = [];
+
+          if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.subsubpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.subpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.mainpagenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.mainpagenameurl;
+          } else if (
+            data?.modulenameurl?.length !== 0 &&
+            data?.submodulenameurl?.length !== 0 &&
+            data?.subsubpagenameurl?.includes(window.location.pathname)
+          ) {
+            fetfinalurl = data.submodulenameurl;
+          } else if (data?.modulenameurl?.length !== 0) {
+            fetfinalurl = data.modulenameurl;
+          } else {
+            fetfinalurl = [];
+          }
+
+          const remove = [
+            window.location.pathname?.substring(1),
+            window.location.pathname,
+          ];
+          return fetfinalurl?.some((item) => remove?.includes(item));
+        })
+        ?.map((data) => ({
+          branch: data.branch,
+          company: data.company,
+          unit: data.unit,
+        }));
 
   //Datatable
   const [page, setPage] = useState(1);
@@ -148,17 +243,19 @@ function Assignedrole() {
 
   const { auth } = useContext(AuthContext);
   const [empaddform, setEmpaddform] = useState({
-    rolename: 'Please Select RoleName',
+    rolename: "Please Select RoleName",
   });
   const [empupdateform, setEmpupdateform] = useState({});
   const [allRoles, setAllRoles] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedRoles, setSelectedRoles] = useState([]);
+  const [selectedNewRoles, setSelectedNewRoles] = useState([]);
+  const [selectedOldRoles, setSelectedOldRoles] = useState([]);
   const gridRef = useRef(null);
   const [selectedRows, setSelectedRows] = useState([]);
-  const [searchQueryManage, setSearchQueryManage] = useState('');
+  const [searchQueryManage, setSearchQueryManage] = useState("");
 
-  const [roleName, setRoleName] = useState('');
+  const [roleName, setRoleName] = useState("");
   const [selectedModuleName, setSelectedModuleName] = useState([]);
   const [subModuleOptions, setSubModuleOptions] = useState([]);
   const [selectedSubModuleName, setSelectedSubModuleName] = useState([]);
@@ -171,7 +268,9 @@ function Assignedrole() {
   const [selectedControlGrouping, setSelectedControlGrouping] = useState([]);
   const [controls, setControls] = useState([]);
   const [controlGroupingValues, setControlGroupingValues] = useState([]);
-  const [controlTitleGroupingValues, setControlTitleGroupingValues] = useState([]);
+  const [controlTitleGroupingValues, setControlTitleGroupingValues] = useState(
+    []
+  );
   const [selectedControls, setSelectedControls] = useState([]);
   const [moduleTitleNames, setModuleTitleNames] = useState([]);
   const [subModuleTitleNames, setSubModuleTitleNames] = useState([]);
@@ -189,7 +288,7 @@ function Assignedrole() {
 
   // Copied fields Name
   const handleCopy = (message) => {
-    NotificationManager.success(`${message} 👍`, '', 2000);
+    NotificationManager.success(`${message} 👍`, "", 2000);
   };
 
   const module =
@@ -220,23 +319,25 @@ function Assignedrole() {
     let filteredArray =
       singleArray.length > 0 &&
       singleArray.filter((innerArray) => {
-        return !innerArray.title.startsWith('123 ');
+        return !innerArray.title.startsWith("123 ");
       });
 
     setSubModuleOptions(
       filteredArray.length > 0 &&
-      filteredArray?.map((data) => ({
-        ...data,
-        label: data.title,
-        value: data.title,
-      }))
+        filteredArray?.map((data) => ({
+          ...data,
+          label: data.title,
+          value: data.title,
+        }))
     );
 
     setSelectedModuleName(options);
   };
   //rendering function for options(value field with comma)
   const customValueRendererModule = (valueCate, _categories) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please select Module';
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please select Module";
   };
 
   //setting an Sub module names into array
@@ -251,7 +352,9 @@ function Assignedrole() {
         return a.dbname;
       });
     setSubModuleDbNames(dbNames);
-    let subModu = subModuleOptions.filter((data) => submodAns.includes(data.title));
+    let subModu = subModuleOptions.filter((data) =>
+      submodAns.includes(data.title)
+    );
     let mainPage =
       subModu.length > 0 &&
       subModu
@@ -261,22 +364,24 @@ function Assignedrole() {
     let filteredArray =
       mainPage.length > 0 &&
       mainPage.filter((innerArray) => {
-        return !innerArray.title.startsWith('123 ');
+        return !innerArray.title.startsWith("123 ");
       });
     let mainPageDropDown =
       filteredArray?.length > 0
         ? filteredArray?.map((data) => ({
-          ...data,
-          label: data.title,
-          value: data.title,
-        }))
+            ...data,
+            label: data.title,
+            value: data.title,
+          }))
         : [];
     setMainPageoptions(mainPageDropDown);
     setSelectedSubModuleName(options);
   };
   //rendering function for options(value field with comma)
   const customValueRendererSubModule = (valueCate, _categories) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please select Module';
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please select Module";
   };
 
   //setting an Main Page names into array
@@ -291,7 +396,9 @@ function Assignedrole() {
         return a.dbname;
       });
     setMainPageDbNames(dbNames);
-    let mainPageFilt = mainPageoptions.filter((data) => mainpageAns.includes(data.title));
+    let mainPageFilt = mainPageoptions.filter((data) =>
+      mainpageAns.includes(data.title)
+    );
 
     let mainPage =
       mainPageFilt.length > 0 &&
@@ -303,23 +410,25 @@ function Assignedrole() {
     let filteredArray =
       mainPage.length > 0 &&
       mainPage.filter((innerArray) => {
-        return !innerArray.title.startsWith('123 ');
+        return !innerArray.title.startsWith("123 ");
       });
     //options fetching
     let subPageDropDown =
       filteredArray?.length > 0
         ? filteredArray?.map((data) => ({
-          ...data,
-          label: data.title,
-          value: data.title,
-        }))
+            ...data,
+            label: data.title,
+            value: data.title,
+          }))
         : [];
     setSubPageoptions(subPageDropDown);
     setSelectedMainPageName(options);
   };
   //rendering function for options(value field with comma)
   const customValueRendererMainPage = (valueCate, _categories) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please select Main-Page';
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please select Main-Page";
   };
 
   //setting an Main Page names into array
@@ -335,7 +444,9 @@ function Assignedrole() {
       });
     setSubPageDbNames(dbNames);
 
-    let subPageFilt = subPageoptions.filter((data) => subPageAns.includes(data.title));
+    let subPageFilt = subPageoptions.filter((data) =>
+      subPageAns.includes(data.title)
+    );
     let controlDrop =
       subPageFilt.length > 0 &&
       subPageFilt
@@ -345,23 +456,25 @@ function Assignedrole() {
     let filteredArray =
       controlDrop.length > 0 &&
       controlDrop.filter((innerArray) => {
-        return !innerArray.title.startsWith('123 ');
+        return !innerArray.title.startsWith("123 ");
       });
     //options fetching
     let subPageDropDown =
       filteredArray?.length > 0
         ? filteredArray?.map((data) => ({
-          ...data,
-          label: data.title,
-          value: data.title,
-        }))
+            ...data,
+            label: data.title,
+            value: data.title,
+          }))
         : [];
     setsubSubPageoptions(subPageDropDown);
     setSelectedSubPageName(options);
   };
   //rendering function for options(value field with comma)
   const customValueRendererSubPage = (valueCate, _categories) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please select Sub-Page';
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please select Sub-Page";
   };
   //setting an Main Page names into array
   const handleSubSubPageChange = (options) => {
@@ -376,7 +489,9 @@ function Assignedrole() {
       });
     setSubSubPageDbNames(dbNames);
 
-    let subPageFilt = subPageoptions.filter((data) => subPageAns.includes(data.title));
+    let subPageFilt = subPageoptions.filter((data) =>
+      subPageAns.includes(data.title)
+    );
 
     let controlDrop =
       subPageFilt.length > 0 &&
@@ -387,14 +502,16 @@ function Assignedrole() {
     let filteredArray =
       controlDrop.length > 0 &&
       controlDrop.filter((innerArray) => {
-        return !innerArray.title.startsWith('123 ');
+        return !innerArray.title.startsWith("123 ");
       });
 
     setSelectedSubSubPageName(options);
   };
   //rendering function for options(value field with comma)
   const customValueRenderersubSubPage = (valueCate, _categories) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please select Sub-Page';
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please select Sub-Page";
   };
 
   const handleControlGroupingChange = (options) => {
@@ -416,7 +533,9 @@ function Assignedrole() {
     );
   };
   const customValueRendererControlGrouping = (valueCate, _employeename) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please select Control Grouping';
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please select Control Grouping";
   };
 
   //setting an Main Page names into array
@@ -428,59 +547,76 @@ function Assignedrole() {
     let controlsubModule = subModuleOptions
       ?.filter((data) => subModuleDbNames?.includes(data.dbname))
       .filter((data) => !data.submenu)
-      .map((data) => data.value.toLowerCase().replace(/\s+/g, ''));
+      .map((data) => data.value.toLowerCase().replace(/\s+/g, ""));
     let controlMainPage = mainPageoptions
       ?.filter((data) => mainPageDbNames?.includes(data.dbname))
       .filter((data) => !data.submenu)
-      .map((data) => data.value.toLowerCase().replace(/\s+/g, ''));
+      .map((data) => data.value.toLowerCase().replace(/\s+/g, ""));
     let controlSubPage = subPageoptions
       ?.filter((data) => subPageDbNames?.includes(data.dbname))
       .filter((data) => !data.submenu)
-      .map((data) => data.value.toLowerCase().replace(/\s+/g, ''));
+      .map((data) => data.value.toLowerCase().replace(/\s+/g, ""));
     let controlSubSubPage = subSubPageoptions
       ?.filter((data) => subSubPageDbNames?.includes(data.dbname))
       ?.filter((data) => !data.submenu)
-      ?.map((data) => data.value.toLowerCase().replace(/\s+/g, ''));
+      ?.map((data) => data.value.toLowerCase().replace(/\s+/g, ""));
 
-    let overallControlNames = [...controlsubModule, ...controlMainPage, ...controlSubPage, ...controlSubSubPage];
-    let overalTitleNames = [...moduleTitleNames, ...subModuleTitleNames, ...mainPageTitleNames, ...subPageTitleNames, ...subsubPageTitleNames];
+    let overallControlNames = [
+      ...controlsubModule,
+      ...controlMainPage,
+      ...controlSubPage,
+      ...controlSubSubPage,
+    ];
+    let overalTitleNames = [
+      ...moduleTitleNames,
+      ...subModuleTitleNames,
+      ...mainPageTitleNames,
+      ...subPageTitleNames,
+      ...subsubPageTitleNames,
+    ];
 
     const dotFormat = [];
     for (const wordA of overalTitleNames) {
       for (const wordB of subPageAns) {
-        const combinedWord = wordA + '.' + wordB;
+        const combinedWord = wordA + "." + wordB;
         dotFormat.push(combinedWord);
       }
     }
     const dotFormatControlGrouping = [];
     for (const wordA of overalTitleNames) {
       for (const wordB of controlGroupingValues) {
-        const combinedWord = wordA + '.' + wordB;
+        const combinedWord = wordA + "." + wordB;
         dotFormatControlGrouping.push(combinedWord);
       }
     }
     const result = [];
     for (const wordA of overallControlNames) {
       for (const wordB of subPageAns) {
-        if (wordB === 'PDF' || wordB === 'Excel' || wordB === 'Print' || wordB === 'CSV' || wordB === 'Image') {
+        if (
+          wordB === "PDF" ||
+          wordB === "Excel" ||
+          wordB === "Print" ||
+          wordB === "CSV" ||
+          wordB === "Image"
+        ) {
           const combinedWord = wordB.toLowerCase() + wordA;
-          const combinedWordMenu = 'menu' + wordA;
+          const combinedWordMenu = "menu" + wordA;
           result.push(combinedWordMenu);
           result.push(combinedWord);
-        } else if (wordB === 'BulkEdit') {
-          const combinedWord = 'be' + wordA;
-          const combinedWordMenu = 'menu' + wordA;
+        } else if (wordB === "BulkEdit") {
+          const combinedWord = "be" + wordA;
+          const combinedWordMenu = "menu" + wordA;
           result.push(combinedWordMenu);
           result.push(combinedWord);
-        } else if (wordB === 'BulkDelete') {
-          const combinedWord = 'bd' + wordA;
-          const combinedWordMenu = 'menu' + wordA;
+        } else if (wordB === "BulkDelete") {
+          const combinedWord = "bd" + wordA;
+          const combinedWordMenu = "menu" + wordA;
           result.push(combinedWordMenu);
           result.push(combinedWord);
         } else {
           const combinedWord = wordB[0].toLowerCase() + wordA;
           result.push(combinedWord);
-          const combinedWordMenu = 'menu' + wordA;
+          const combinedWordMenu = "menu" + wordA;
           result.push(combinedWordMenu);
         }
       }
@@ -492,29 +628,31 @@ function Assignedrole() {
   };
   //rendering function for options(value field with comma)
   const customValueRendererControls = (valueCate, _categories) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please select Controls';
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please select Controls";
   };
 
   const handleSubmit = () => {
-    if (roleName === '' || roleName === undefined) {
-      setPopupContentMalert('Please Enter Role Name');
-      setPopupSeverityMalert('info');
+    if (roleName === "" || roleName === undefined) {
+      setPopupContentMalert("Please Enter Role Name");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (moduleTitleNames.length == 0) {
-      setPopupContentMalert('Please Choose Module Name');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Choose Module Name");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (subModuleTitleNames.length < 1) {
-      setPopupContentMalert('Please Choose Sub-Module Name');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Choose Sub-Module Name");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (controlGroupingValues?.length < 1) {
-      setPopupContentMalert('Please Choose Controls Grouping');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Choose Controls Grouping");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (controlTitleNames.length < 1) {
-      setPopupContentMalert('Please Choose Controls');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Choose Controls");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
       fetchRole();
@@ -522,7 +660,7 @@ function Assignedrole() {
   };
 
   const handleClear = () => {
-    setRoleName('');
+    setRoleName("");
     setSelectedModuleName([]);
     setSelectedSubModuleName([]);
     setSelectedMainPageName([]);
@@ -556,7 +694,12 @@ function Assignedrole() {
         }))
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -581,7 +724,14 @@ function Assignedrole() {
         controlname: controlTitleNames,
         controlgrouping: controlGroupingValues,
         controlgroupingtitles: controlTitleGroupingValues,
-        rolenew: [...moduleDbNames, ...subModuleDbNames, ...mainPageDbNames, ...subPageDbNames, ...subSubPageDbNames, ...controlDbNames],
+        rolenew: [
+          ...moduleDbNames,
+          ...subModuleDbNames,
+          ...mainPageDbNames,
+          ...subPageDbNames,
+          ...subSubPageDbNames,
+          ...controlDbNames,
+        ],
         addedby: [
           {
             name: String(isUserRoleAccess.companyname),
@@ -591,11 +741,11 @@ function Assignedrole() {
       });
 
       await fetchAllRoles();
-      setPopupContent('Added Successfully');
-      setPopupSeverity('success');
+      setPopupContent("Added Successfully");
+      setPopupSeverity("success");
       handleClickOpenPopup();
       handleCloseRole();
-      setRoleName('');
+      setRoleName("");
       setSelectedModuleName([]);
       setModuleTitleNames([]);
       setSelectedSubModuleName([]);
@@ -609,9 +759,14 @@ function Assignedrole() {
       setControlGroupingValues([]);
       setSelectedControlGrouping([]);
       setControls([]);
-      setSearchQuery('');
+      setSearchQuery("");
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -622,10 +777,10 @@ function Assignedrole() {
       domtoimage
         .toBlob(gridRefTableImg.current)
         .then((blob) => {
-          saveAs(blob, 'Assigned Role Update.png');
+          saveAs(blob, "Assigned Role Update.png");
         })
         .catch((error) => {
-          console.error('dom-to-image error: ', error);
+          console.error("dom-to-image error: ", error);
         });
     }
   };
@@ -645,17 +800,17 @@ function Assignedrole() {
   };
   const handleCloseManageColumns = () => {
     setManageColumnsOpen(false);
-    setSearchQueryManage('');
+    setSearchQueryManage("");
   };
 
   const open = Boolean(anchorEl);
-  const id = open ? 'simple-popover' : undefined;
+  const id = open ? "simple-popover" : undefined;
 
   const getRowClassName = (params) => {
     if (selectedRows.includes(params.row.id)) {
-      return 'custom-id-row'; // This is the custom class for rows with item.tat === 'ago'
+      return "custom-id-row"; // This is the custom class for rows with item.tat === 'ago'
     }
-    return ''; // Return an empty string for other rows
+    return ""; // Return an empty string for other rows
   };
 
   // Show All Columns & Manage Columns
@@ -676,10 +831,12 @@ function Assignedrole() {
     roles: true,
   };
 
-  const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
+  const [columnVisibility, setColumnVisibility] = useState(
+    initialColumnVisibility
+  );
 
   const getCode = async (e) => {
-    setEmpaddform({ ...empaddform, rolename: 'Please Select RoleName' });
+    setEmpaddform({ ...empaddform, rolename: "Please Select RoleName" });
     setSelectedRoles([]);
     setPageName(!pageName);
 
@@ -693,9 +850,20 @@ function Assignedrole() {
       setEmpupdateform(res?.data?.suser);
       const finalrole = [...new Set(res?.data?.suser?.role)];
       setSelectedRoles(finalrole);
+      setSelectedOldRoles(finalrole);
+      setSelectedNewRoles(
+        finalrole?.map((data) => ({
+          role: data,
+        }))
+      );
       handleClickOpenEdit();
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -713,7 +881,7 @@ function Assignedrole() {
 
   const handleCloseRole = () => {
     setOpenAddRole(false);
-    setRoleName('');
+    setRoleName("");
   };
 
   const handleClickOpenAddRole = () => {
@@ -731,7 +899,12 @@ function Assignedrole() {
       });
       setEmpupdateform(res?.data?.suser);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -741,9 +914,9 @@ function Assignedrole() {
     setIsEditOpen(true);
   };
   const handleCloseModEdit = (e, reason) => {
-    if (reason && reason === 'backdropClick') return;
+    if (reason && reason === "backdropClick") return;
     setIsEditOpen(false);
-    setRoleName('');
+    setRoleName("");
   };
 
   useEffect(() => {
@@ -769,7 +942,12 @@ function Assignedrole() {
 
       setAllRoles(allrolelist);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -790,28 +968,42 @@ function Assignedrole() {
   const sendRequestt = async () => {
     setPageName(!pageName);
     try {
-      let res = await axios.put(`${SERVICE.USER_SINGLE_PWD}/${empupdateform?._id}`, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-        role: [...selectedRoles],
-        updatedby: [
-          // ...updateby,
-          {
-            name: String(isUserRoleAccess.companyname),
-            date: String(new Date()),
+      let res = await axios.put(
+        `${SERVICE.USER_SINGLE_PWD}/${empupdateform?._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
           },
-        ],
-      });
+          role: [...selectedRoles],
+          updatedby: [
+            // ...updateby,
+            {
+              name: String(isUserRoleAccess.companyname),
+              date: String(new Date()),
+            },
+          ],
+        }
+      );
 
       handleCloseModEdit();
       await fetchEmployee();
-      await checkUserRoleInAccessibleBranch(selectedRoles)
-      setPopupContent('Updated Successfully');
-      setPopupSeverity('success');
+      await checkUserRoleInAccessibleBranch(selectedRoles);
+      let newRoles = selectedNewRoles?.filter(
+        (data) => !selectedOldRoles?.includes(data?.role)
+      );
+      if (newRoles?.length > 0) {
+        await createAccessibleBranch(newRoles);
+      }
+      setPopupContent("Updated Successfully");
+      setPopupSeverity("success");
       handleClickOpenPopup();
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -819,11 +1011,10 @@ function Assignedrole() {
     e.preventDefault();
 
     if (selectedRoles.length == 0) {
-      setPopupContentMalert('Please Select Any One Of Role!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Select Any One Of Role!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
-
       sendRequestt();
     }
   };
@@ -842,20 +1033,21 @@ function Assignedrole() {
     setIsPdfFilterOpen(false);
   };
 
-  const [fileFormat, setFormat] = useState('xl');
-  const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
-  const fileExtension = fileFormat === 'xl' ? '.xlsx' : '.csv';
+  const [fileFormat, setFormat] = useState("xl");
+  const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+  const fileExtension = fileFormat === "xl" ? ".xlsx" : ".csv";
 
   const exportToExcel = (excelData, fileName) => {
     setPageName(!pageName);
     try {
       const ws = XLSX.utils.json_to_sheet(excelData);
-      const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
-      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
+      const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
 
       // Check if the browser supports Blob and FileSaver
       if (!Blob || !FileSaver) {
-        console.error('Blob or FileSaver not supported');
+        console.error("Blob or FileSaver not supported");
         return;
       }
 
@@ -863,13 +1055,13 @@ function Assignedrole() {
 
       // Check if FileSaver.saveAs is available
       if (!FileSaver.saveAs) {
-        console.error('FileSaver.saveAs is not available');
+        console.error("FileSaver.saveAs is not available");
         return;
       }
 
       FileSaver.saveAs(data, fileName + fileExtension);
     } catch (error) {
-      console.error('Error exporting to Excel', error);
+      console.error("Error exporting to Excel", error);
     }
   };
 
@@ -877,41 +1069,41 @@ function Assignedrole() {
     return data.map((item, index) => {
       return {
         Sno: index + 1,
-        Empcode: item.empcode || '',
-        'Employee Name': item.companyname || '',
-        Branch: item.branch || '',
-        Unit: item.unit || '',
-        Floor: item.floor || '',
-        Department: item.department || '',
-        Team: item.team || '',
-        Designation: item.designation || '',
-        Role: checkUpdaterole(item.role) || '',
+        Empcode: item.empcode || "",
+        "Employee Name": item.companyname || "",
+        Branch: item.branch || "",
+        Unit: item.unit || "",
+        Floor: item.floor || "",
+        Department: item.department || "",
+        Team: item.team || "",
+        Designation: item.designation || "",
+        Role: checkUpdaterole(item.role) || "",
       };
     });
   };
 
   const handleExportXL = (isfilter) => {
-    const dataToExport = isfilter === 'filtered' ? filteredData : employees;
+    const dataToExport = isfilter === "filtered" ? filteredData : employees;
 
     if (!dataToExport || dataToExport.length === 0) {
-      console.error('No data available to export');
+      console.error("No data available to export");
       return;
     }
 
-    exportToExcel(formatData(dataToExport), 'AssignedRoleList');
+    exportToExcel(formatData(dataToExport), "AssignedRoleList");
     setIsFilterOpen(false);
   };
   //  PDF
   const columns = [
-    { title: 'Emp Code', field: 'empcode' },
-    { title: 'Employee Name', field: 'companyname' },
-    { title: 'Branch', field: 'branch' },
-    { title: 'Unit', field: 'unit' },
-    { title: 'Floor', field: 'floor' },
-    { title: 'Department', field: 'department' },
-    { title: 'Team', field: 'team' },
-    { title: 'Designation', field: 'designation' },
-    { title: 'Role', field: 'roles' },
+    { title: "Emp Code", field: "empcode" },
+    { title: "Employee Name", field: "companyname" },
+    { title: "Branch", field: "branch" },
+    { title: "Unit", field: "unit" },
+    { title: "Floor", field: "floor" },
+    { title: "Department", field: "department" },
+    { title: "Team", field: "team" },
+    { title: "Designation", field: "designation" },
+    { title: "Role", field: "roles" },
   ];
 
   const downloadPdf = (isfilter) => {
@@ -920,91 +1112,234 @@ function Assignedrole() {
     // Initialize serial number counter
     // Modify columns to include serial number column
     const columnsWithSerial = [
-      { title: 'S.No', dataKey: 'serialNumber' }, // Serial number column
+      { title: "S.No", dataKey: "serialNumber" }, // Serial number column
       ...columns.map((col) => ({ title: col.title, dataKey: col.field })),
     ];
 
     // Modify row data to include serial number
     const dataWithSerial =
-      isfilter === 'filtered'
+      isfilter === "filtered"
         ? filteredData.map((t, index) => ({
-          ...t,
-          serialNumber: index + 1,
-          roles: checkUpdaterole(t.role),
-        }))
+            ...t,
+            serialNumber: index + 1,
+            roles: checkUpdaterole(t.role),
+          }))
         : employees?.map((item, index) => ({
-          ...item,
-          serialNumber: index + 1,
-          roles: checkUpdaterole(item.role),
-        }));
+            ...item,
+            serialNumber: index + 1,
+            roles: checkUpdaterole(item.role),
+          }));
 
     // Generate PDF
     doc.autoTable({
-      theme: 'grid',
+      theme: "grid",
       columns: columnsWithSerial,
       body: dataWithSerial,
       styles: { fontSize: 5 },
     });
 
-    doc.save('AssignedRoleList.pdf');
+    doc.save("AssignedRoleList.pdf");
   };
 
   const checkUpdaterole = (roles) => {
     const finalrole = [...new Set(roles)];
-    const result = finalrole.map((role, i) => `${i + 1}. ${role}`).join(', ');
+    const result = finalrole.map((role, i) => `${i + 1}. ${role}`).join(", ");
     return result;
   };
 
-  const handleChangeValue = (value) => {
-    if (value == '' || value == undefined) {
-      setPopupContentMalert('Please Select Any One Of Role!');
-      setPopupSeverityMalert('info');
+  const handleChangeValue = async (value) => {
+    if (value == "" || value == undefined) {
+      setPopupContentMalert("Please Select Any One Of Role!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (empaddform.rolename == 'Please Select RoleName') {
-      setPopupContentMalert('Please Select Any One Of Role!');
-      setPopupSeverityMalert('info');
+    } else if (empaddform.rolename == "Please Select RoleName") {
+      setPopupContentMalert("Please Select Any One Of Role!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
       if (selectedRoles.includes(value)) {
-        setPopupContentMalert('Role Already Exists!');
-        setPopupSeverityMalert('info');
+        setPopupContentMalert("Role Already Exists!");
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
       } else {
         let result = [];
         result.push(value);
         setSelectedRoles([...selectedRoles, ...result]);
-        setEmpaddform({ ...empaddform, rolename: 'Please Select RoleName' });
+        setEmpaddform({ ...empaddform, rolename: "Please Select RoleName" });
+        await fetchRoleNamesAndUrl("Role Based", value);
       }
     }
   };
+  const fetchRoleNamesAndUrl = async (modulename, rolename) => {
+    setPageName(!pageName);
+    try {
+      let res = await axios.post(
+        SERVICE.ROLE_BASED_AUTOFETCH_DATA_URLS,
+        { rolename: rolename, menuitems: menuItems, modulename: modulename },
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
+      const matchedDatas = res?.data?.matchedModules;
+      if (matchedDatas) {
+        let allurls = [
+          ...matchedDatas?.modulenamesurl,
+          ...matchedDatas?.submodulenamesurl,
+          ...matchedDatas?.mainpagenamesurl,
+          ...matchedDatas?.subpagenamesurl,
+          ...matchedDatas?.subsubpagenamesurl,
+        ];
+        let newObj = {
+          role: rolename,
+          modulename: [...new Set(matchedDatas?.modulenames)],
+          submodulename: [...new Set(matchedDatas?.submodulenames)],
+          mainpagename: [...new Set(matchedDatas?.mainpagenames)],
+          subpagename: [...new Set(matchedDatas?.subpagenames)],
+          subsubpagename: [...new Set(matchedDatas?.subsubpagenames)],
 
+          modulenameurl: allurls,
+          submodulenameurl: allurls,
+          mainpagenameurl: allurls,
+          subpagenameurl: allurls,
+          subsubpagenameurl: allurls,
+          modulenameurlforedit: matchedDatas?.modulenamesurl,
+          submodulenameurlforedit: matchedDatas?.submodulenamesurl,
+          mainpagenameurlforedit: matchedDatas?.mainpagenamesurl,
+          subpagenameurlforedit: matchedDatas?.subpagenamesurl,
+          subsubpagenameurlforedit: matchedDatas?.subsubpagenamesurl,
+        };
+        setSelectedNewRoles([...selectedNewRoles, newObj]);
+      }
+      console.log(res?.data, matchedDatas ? true : false, "RoleNames");
+    } catch (err) {
+      console.log(err, "err");
+
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
+  };
   const rowDataRemove = (i, rolename) => {
-    console.log("Hitted", i, rolename, selectedRoles)
+    console.log("Hitted", i, rolename, selectedRoles);
     setSelectedRoles(selectedRoles.filter((value, item) => item !== i));
+    setSelectedNewRoles(
+      selectedNewRoles.filter(
+        (value, index) =>
+          value?.role?.trim()?.toLowerCase() !== rolename?.trim()?.toLowerCase()
+      )
+    );
+  };
+
+  const createAccessibleBranch = async (newroles) => {
+    console.log(newroles, "newroles");
+    console.log(empupdateform, "empupdateform");
+    try {
+      await Promise.all(
+        newroles?.map(async (data) => {
+          await axios.post(SERVICE.ASSIGNBRANCH_CREATE, {
+            headers: {
+              Authorization: `Bearer ${auth.APIToken}`,
+            },
+
+            accesspage: "assignbranch",
+            fromcompany: empupdateform.company,
+            frombranch: empupdateform.branch,
+            fromunit: empupdateform.unit,
+
+            moduleselection: "Role Based",
+            modulevalue: data?.role,
+            isupdated: Boolean(true),
+
+            modulename: data?.modulename || [],
+            submodulename: data?.submodulename || [],
+            mainpagename: data?.mainpagename || [],
+            subpagename: data?.subpagename || [],
+            subsubpagename: data?.subsubpagename || [],
+            modulenameurl: data?.modulenameurl || [],
+            submodulenameurl: data?.submodulenameurl || [],
+            mainpagenameurl: data?.mainpagenameurl || [],
+            subpagenameurl: data?.subpagenameurl || [],
+            subsubpagenameurl: data?.subsubpagenameurl || [],
+            modulenameurlforedit: data?.modulenameurlforedit || [],
+            submodulenameurlforedit: data?.submodulenameurlforedit || [],
+            mainpagenameurlforedit: data?.mainpagenameurlforedit || [],
+            subpagenameurlforedit: data?.subpagenameurlforedit || [],
+            subsubpagenameurlforedit: data?.subsubpagenameurlforedit || [],
+
+            company: empupdateform?.company || "",
+            branch: empupdateform?.branch || "",
+            unit: empupdateform?.unit || "",
+            companycode: empupdateform?.companycode || "",
+            branchcode: empupdateform?.branchcode || "",
+            branchemail: empupdateform?.branchemail || "",
+            branchaddress: empupdateform?.branchaddress || "",
+            branchstate: empupdateform?.branchstate || "",
+            branchcity: empupdateform?.branchcity || "",
+            branchcountry: empupdateform?.branchcountry || "",
+            branchpincode: empupdateform?.branchpincode || "",
+            unitcode: empupdateform?.unitcode || "",
+
+            employee: empupdateform?.companyname,
+            employeecode: empupdateform?.empcode,
+
+            addedby: [
+              {
+                name: String(isUserRoleAccess.companyname),
+                date: String(new Date()),
+              },
+            ],
+          });
+        })
+      );
+      // setSelectedOptionsEmployeeAdd([]);
+      // setValueEmployeeAdd([]);
+      // setPopupContent('Added Successfully');
+      // setPopupSeverity('success');
+      // handleClickOpenPopup();
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
   };
   const checkUserRoleInAccessibleBranch = async (rolenames) => {
     try {
-      const response = await axios.post(SERVICE.GETUSER_ACCESSIBLEBRANCH_MATCHES_ROLE, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-        rolenames: rolenames,
-        menuitems: menuItems,
-        companyname: empupdateform?.companyname,
-        empcode: empupdateform?.empcode,
-      },)
-      console.log(response?.data, 'Roles')
+      const response = await axios.post(
+        SERVICE.GETUSER_ACCESSIBLEBRANCH_MATCHES_ROLE,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          rolenames: rolenames,
+          menuitems: menuItems,
+          companyname: empupdateform?.companyname,
+          empcode: empupdateform?.empcode,
+        }
+      );
+      console.log(response?.data, "Roles");
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
-    catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
-    }
-  }
+  };
   //print...
   const componentRef = useRef();
   const handleprint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: 'Assign Role Update',
-    pageStyle: 'print',
+    documentTitle: "Assign Role Update",
+    pageStyle: "print",
   });
 
   //table entries ..,.
@@ -1043,20 +1378,28 @@ function Assignedrole() {
     setSearchQuery(event.target.value);
   };
   // Split the search query into individual terms
-  const searchTerms = searchQuery.toLowerCase().split(' ');
+  const searchTerms = searchQuery.toLowerCase().split(" ");
   // Modify the filtering logic to check each term
   const filteredDatas = items?.filter((item) => {
-    return searchTerms.every((term) => Object.values(item).join(' ').toLowerCase().includes(term));
+    return searchTerms.every((term) =>
+      Object.values(item).join(" ").toLowerCase().includes(term)
+    );
   });
 
-  const filteredData = filteredDatas.slice((page - 1) * pageSize, page * pageSize);
+  const filteredData = filteredDatas.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
 
   const totalPages = Math.ceil(employees.length / pageSize);
 
   const visiblePages = Math.min(totalPages, 3);
 
   const firstVisiblePage = Math.max(1, page - 1);
-  const lastVisiblePage = Math.min(firstVisiblePage + visiblePages - 1, totalPages);
+  const lastVisiblePage = Math.min(
+    firstVisiblePage + visiblePages - 1,
+    totalPages
+  );
 
   const pageNumbers = [];
 
@@ -1074,38 +1417,38 @@ function Assignedrole() {
 
   const columnDataTable = [
     {
-      field: 'serialNumber',
-      headerName: 'SNo',
+      field: "serialNumber",
+      headerName: "SNo",
       flex: 0,
       width: 90,
       hide: !columnVisibility.serialNumber,
-      headerClassName: 'bold-header',
-      pinned: 'left',
+      headerClassName: "bold-header",
+      pinned: "left",
     },
     {
-      field: 'empcode',
-      headerName: 'Emp Code',
+      field: "empcode",
+      headerName: "Emp Code",
       flex: 0,
       width: 100,
       hide: !columnVisibility.empcode,
-      headerClassName: 'bold-header',
-      pinned: 'left',
+      headerClassName: "bold-header",
+      pinned: "left",
       cellRenderer: (params) => (
-        <Grid sx={{ display: 'flex' }}>
+        <Grid sx={{ display: "flex" }}>
           <ListItem
             sx={{
-              '&:hover': {
-                cursor: 'pointer',
-                color: 'blue',
-                textDecoration: 'underline',
+              "&:hover": {
+                cursor: "pointer",
+                color: "blue",
+                textDecoration: "underline",
               },
             }}
           >
             <CopyToClipboard
               onCopy={() => {
-                handleCopy('Copied Emp Code!');
+                handleCopy("Copied Emp Code!");
               }}
-              options={{ message: 'Copied Emp Code!' }}
+              options={{ message: "Copied Emp Code!" }}
               text={params?.data?.empcode}
             >
               <ListItemText primary={params?.data?.empcode} />
@@ -1115,28 +1458,28 @@ function Assignedrole() {
       ),
     },
     {
-      field: 'companyname',
-      headerName: 'Employee Name',
+      field: "companyname",
+      headerName: "Employee Name",
       flex: 0,
       width: 100,
       hide: !columnVisibility.companyname,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
       cellRenderer: (params) => (
-        <Grid sx={{ display: 'flex' }}>
+        <Grid sx={{ display: "flex" }}>
           <ListItem
             sx={{
-              '&:hover': {
-                cursor: 'pointer',
-                color: 'blue',
-                textDecoration: 'underline',
+              "&:hover": {
+                cursor: "pointer",
+                color: "blue",
+                textDecoration: "underline",
               },
             }}
           >
             <CopyToClipboard
               onCopy={() => {
-                handleCopy('Copied Employee Name!');
+                handleCopy("Copied Employee Name!");
               }}
-              options={{ message: 'Copied Employee Name!' }}
+              options={{ message: "Copied Employee Name!" }}
               text={params?.data?.companyname}
             >
               <ListItemText primary={params?.data?.companyname} />
@@ -1146,89 +1489,92 @@ function Assignedrole() {
       ),
     },
     {
-      field: 'branch',
-      headerName: 'Branch',
+      field: "branch",
+      headerName: "Branch",
       flex: 0,
       width: 100,
       hide: !columnVisibility.branch,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'unit',
-      headerName: 'Unit',
+      field: "unit",
+      headerName: "Unit",
       flex: 0,
       width: 100,
       hide: !columnVisibility.unit,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'floor',
-      headerName: 'Floor',
+      field: "floor",
+      headerName: "Floor",
       flex: 0,
       width: 100,
       hide: !columnVisibility.floor,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'department',
-      headerName: 'Department',
+      field: "department",
+      headerName: "Department",
       flex: 0,
       width: 100,
       hide: !columnVisibility.department,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'team',
-      headerName: 'Team',
+      field: "team",
+      headerName: "Team",
       flex: 0,
       width: 100,
       hide: !columnVisibility.team,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'workmode',
-      headerName: 'Work Mode',
+      field: "workmode",
+      headerName: "Work Mode",
       flex: 0,
       width: 100,
       hide: !columnVisibility.workmode,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'designation',
-      headerName: 'Designation',
+      field: "designation",
+      headerName: "Designation",
       flex: 0,
       width: 100,
       hide: !columnVisibility.designation,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'roles',
-      headerName: 'Role',
+      field: "roles",
+      headerName: "Role",
       flex: 0,
       width: 160,
       hide: !columnVisibility.role,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
 
     {
-      field: 'actions',
-      headerName: 'Action',
+      field: "actions",
+      headerName: "Action",
       flex: 0,
       width: 250,
-      minHeight: '40px !important',
+      minHeight: "40px !important",
       sortable: false,
       hide: !columnVisibility.actions,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
       cellRenderer: (params) => (
-        <Grid sx={{ display: 'flex' }}>
-          {isUserRoleCompare?.includes('eassignedroleupdate') && (
+        <Grid sx={{ display: "flex" }}>
+          {isUserRoleCompare?.includes("eassignedroleupdate") && (
             <Button
               sx={userStyle.buttonedit}
               onClick={() => {
                 getCode(params.data.id);
               }}
             >
-              <EditIcon style={{ fontsize: 'large' }} sx={buttonStyles.buttonedit} />
+              <EditIcon
+                style={{ fontsize: "large" }}
+                sx={buttonStyles.buttonedit}
+              />
             </Button>
           )}
           {/* {isUserRoleCompare?.includes("iassignedroleupdate") && (
@@ -1280,7 +1626,9 @@ function Assignedrole() {
   };
 
   // // Function to filter columns based on search query
-  const filteredColumns = columnDataTable.filter((column) => column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase()));
+  const filteredColumns = columnDataTable.filter((column) =>
+    column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase())
+  );
 
   // Manage Columns functionality
   const toggleColumnVisibility = (field) => {
@@ -1294,9 +1642,9 @@ function Assignedrole() {
   const manageColumnsContent = (
     <Box
       style={{
-        padding: '10px',
-        minWidth: '325px',
-        '& .MuiDialogContent-root': { padding: '10px 0' },
+        padding: "10px",
+        minWidth: "325px",
+        "& .MuiDialogContent-root": { padding: "10px 0" },
       }}
     >
       <Typography variant="h6">Manage Columns</Typography>
@@ -1304,7 +1652,7 @@ function Assignedrole() {
         aria-label="close"
         onClick={handleCloseManageColumns}
         sx={{
-          position: 'absolute',
+          position: "absolute",
           right: 8,
           top: 8,
           color: (theme) => theme.palette.grey[500],
@@ -1312,16 +1660,38 @@ function Assignedrole() {
       >
         <CloseIcon />
       </IconButton>
-      <Box sx={{ position: 'relative', margin: '10px' }}>
-        <TextField label="Find column" variant="standard" fullWidth value={searchQueryManage} onChange={(e) => setSearchQueryManage(e.target.value)} sx={{ marginBottom: 5, position: 'absolute' }} />
+      <Box sx={{ position: "relative", margin: "10px" }}>
+        <TextField
+          label="Find column"
+          variant="standard"
+          fullWidth
+          value={searchQueryManage}
+          onChange={(e) => setSearchQueryManage(e.target.value)}
+          sx={{ marginBottom: 5, position: "absolute" }}
+        />
       </Box>
       <br />
       <br />
-      <DialogContent sx={{ minWidth: 'auto', height: '200px', position: 'relative' }}>
-        <List sx={{ overflow: 'auto', height: '100%' }}>
+      <DialogContent
+        sx={{ minWidth: "auto", height: "200px", position: "relative" }}
+      >
+        <List sx={{ overflow: "auto", height: "100%" }}>
           {filteredColumns.map((column) => (
             <ListItem key={column.field}>
-              <ListItemText sx={{ display: 'flex' }} primary={<Switch sx={{ marginTop: '-5px' }} size="small" checked={columnVisibility[column.field]} onChange={() => toggleColumnVisibility(column.field)} />} secondary={column.field === 'checkbox' ? 'Checkbox' : column.headerName} />
+              <ListItemText
+                sx={{ display: "flex" }}
+                primary={
+                  <Switch
+                    sx={{ marginTop: "-5px" }}
+                    size="small"
+                    checked={columnVisibility[column.field]}
+                    onChange={() => toggleColumnVisibility(column.field)}
+                  />
+                }
+                secondary={
+                  column.field === "checkbox" ? "Checkbox" : column.headerName
+                }
+              />
             </ListItem>
           ))}
         </List>
@@ -1329,7 +1699,11 @@ function Assignedrole() {
       <DialogActions>
         <Grid container>
           <Grid item md={4}>
-            <Button variant="text" sx={{ textTransform: 'none' }} onClick={() => setColumnVisibility(initialColumnVisibility)}>
+            <Button
+              variant="text"
+              sx={{ textTransform: "none" }}
+              onClick={() => setColumnVisibility(initialColumnVisibility)}
+            >
               Show All
             </Button>
           </Grid>
@@ -1337,7 +1711,7 @@ function Assignedrole() {
           <Grid item md={4}>
             <Button
               variant="text"
-              sx={{ textTransform: 'none' }}
+              sx={{ textTransform: "none" }}
               onClick={() => {
                 const newColumnVisibility = {};
                 columnDataTable.forEach((column) => {
@@ -1370,13 +1744,13 @@ function Assignedrole() {
     setValueEmp([]);
     setEmployees([]);
     setFilterState({
-      type: 'Individual',
-      employeestatus: 'Please Select Employee Status',
+      type: "Individual",
+      employeestatus: "Please Select Employee Status",
     });
-    setPopupContent('Cleared Successfully');
-    setPopupSeverity('success');
+    setPopupContent("Cleared Successfully");
+    setPopupSeverity("success");
     handleClickOpenPopup();
-    setSearchQuery('');
+    setSearchQuery("");
   };
 
   //MULTISELECT ONCHANGE START
@@ -1406,7 +1780,9 @@ function Assignedrole() {
   };
 
   const customValueRendererCompany = (valueCompanyCat, _categoryname) => {
-    return valueCompanyCat?.length ? valueCompanyCat.map(({ label }) => label)?.join(', ') : 'Please Select Company';
+    return valueCompanyCat?.length
+      ? valueCompanyCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Company";
   };
 
   //branch multiselect
@@ -1432,7 +1808,9 @@ function Assignedrole() {
   };
 
   const customValueRendererBranch = (valueBranchCat, _categoryname) => {
-    return valueBranchCat?.length ? valueBranchCat.map(({ label }) => label)?.join(', ') : 'Please Select Branch';
+    return valueBranchCat?.length
+      ? valueBranchCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Branch";
   };
 
   //unit multiselect
@@ -1451,7 +1829,9 @@ function Assignedrole() {
   };
 
   const customValueRendererUnit = (valueUnitCat, _categoryname) => {
-    return valueUnitCat?.length ? valueUnitCat.map(({ label }) => label)?.join(', ') : 'Please Select Unit';
+    return valueUnitCat?.length
+      ? valueUnitCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Unit";
   };
 
   //team multiselect
@@ -1468,29 +1848,31 @@ function Assignedrole() {
   };
 
   const customValueRendererTeam = (valueTeamCat, _categoryname) => {
-    return valueTeamCat?.length ? valueTeamCat.map(({ label }) => label)?.join(', ') : 'Please Select Team';
+    return valueTeamCat?.length
+      ? valueTeamCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Team";
   };
 
   const [valueEmp, setValueEmp] = React.useState([]); // State for employees
   const [isBoxFocused, setIsBoxFocused] = React.useState(false); // Track focus state
 
-  const [searchInputValue, setSearchInputValue] = useState('');
+  const [searchInputValue, setSearchInputValue] = useState("");
 
   const handlePasteForEmp = (e) => {
     e.preventDefault();
-    const pastedText = e.clipboardData.getData('text');
+    const pastedText = e.clipboardData.getData("text");
 
     // Process the pasted text
     const pastedNames = pastedText
       .split(/[\n,]+/)
       .map((name) => name.trim())
-      .filter((name) => name !== '');
+      .filter((name) => name !== "");
 
     // Update the state
     updateEmployees(pastedNames);
 
     // Clear the search input after paste
-    setSearchInputValue('');
+    setSearchInputValue("");
 
     // Refocus the element
     e.target.focus();
@@ -1498,17 +1880,43 @@ function Assignedrole() {
 
   useEffect(() => {
     updateEmployees([]); // Pass an empty array instead of an empty string
-  }, [allUsersData, valueCompanyCat, valueBranchCat, valueUnitCat, valueTeamCat]);
+  }, [
+    allUsersData,
+    valueCompanyCat,
+    valueBranchCat,
+    valueUnitCat,
+    valueTeamCat,
+  ]);
 
   const updateEmployees = (pastedNames) => {
     // Your existing update logic...
     const namesArray = Array.isArray(pastedNames) ? pastedNames : [];
 
     const availableOptions = internChecked
-      ? allUsersData?.filter((u) => valueCompanyCat?.includes(u.company) && valueBranchCat?.includes(u.branch) && valueUnitCat?.includes(u.unit) && valueTeamCat?.includes(u.team) && u.workmode === 'Internship')?.map((data) => data.companyname.replace(/\s*\.\s*/g, '.').trim())
-      : allUsersData?.filter((u) => valueCompanyCat?.includes(u.company) && valueBranchCat?.includes(u.branch) && valueUnitCat?.includes(u.unit) && valueTeamCat?.includes(u.team) && u.workmode !== 'Internship')?.map((data) => data.companyname.replace(/\s*\.\s*/g, '.').trim());
+      ? allUsersData
+          ?.filter(
+            (u) =>
+              valueCompanyCat?.includes(u.company) &&
+              valueBranchCat?.includes(u.branch) &&
+              valueUnitCat?.includes(u.unit) &&
+              valueTeamCat?.includes(u.team) &&
+              u.workmode === "Internship"
+          )
+          ?.map((data) => data.companyname.replace(/\s*\.\s*/g, ".").trim())
+      : allUsersData
+          ?.filter(
+            (u) =>
+              valueCompanyCat?.includes(u.company) &&
+              valueBranchCat?.includes(u.branch) &&
+              valueUnitCat?.includes(u.unit) &&
+              valueTeamCat?.includes(u.team) &&
+              u.workmode !== "Internship"
+          )
+          ?.map((data) => data.companyname.replace(/\s*\.\s*/g, ".").trim());
 
-    const matchedValues = namesArray.filter((name) => availableOptions.includes(name.replace(/\s*\.\s*/g, '.').trim()));
+    const matchedValues = namesArray.filter((name) =>
+      availableOptions.includes(name.replace(/\s*\.\s*/g, ".").trim())
+    );
 
     // Update selected options
     const newOptions = matchedValues.map((value) => ({
@@ -1517,7 +1925,9 @@ function Assignedrole() {
     }));
 
     setSelectedOptionsEmployee((prev) => {
-      const newValues = newOptions.filter((newOpt) => !prev.some((prevOpt) => prevOpt.value === newOpt.value));
+      const newValues = newOptions.filter(
+        (newOpt) => !prev.some((prevOpt) => prevOpt.value === newOpt.value)
+      );
       return [...prev, ...newValues];
     });
 
@@ -1526,62 +1936,83 @@ function Assignedrole() {
     setValueEmployeeCat((prev) => [...new Set([...prev, ...matchedValues])]);
   };
 
-
   // Handle clicks outside the Box
   useEffect(() => {
     const handleClickOutside = (e) => {
-      const boxElement = document.getElementById('paste-box'); // Add an ID to the Box
+      const boxElement = document.getElementById("paste-box"); // Add an ID to the Box
       if (boxElement && !boxElement.contains(e.target)) {
         setIsBoxFocused(false); // Reset focus state if clicking outside the Box
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
   const handleDelete = (e, value) => {
     e.preventDefault();
-    setSelectedOptionsEmployee((current) => current.filter((emp) => emp.value !== value));
+    setSelectedOptionsEmployee((current) =>
+      current.filter((emp) => emp.value !== value)
+    );
     setValueEmp((current) => current.filter((empValue) => empValue !== value));
-    setValueEmployeeCat((current) => current.filter((empValue) => empValue !== value));
+    setValueEmployeeCat((current) =>
+      current.filter((empValue) => empValue !== value)
+    );
   };
 
   //MULTISELECT ONCHANGE END
 
   const handleFilter = () => {
-    if (filterState?.type === 'Please Select Type' || filterState?.type === '') {
-      setPopupContentMalert('Please Select Type!');
-      setPopupSeverityMalert('info');
+    if (
+      filterState?.type === "Please Select Type" ||
+      filterState?.type === ""
+    ) {
+      setPopupContentMalert("Please Select Type!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (selectedOptionsCompany?.length === 0) {
-      setPopupContentMalert('Please Select Company!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Select Company!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (['Individual', 'Branch', 'Unit', 'Team']?.includes(filterState?.type) && selectedOptionsBranch?.length === 0) {
-      setPopupContentMalert('Please Select Branch!');
-      setPopupSeverityMalert('info');
+    } else if (
+      ["Individual", "Branch", "Unit", "Team"]?.includes(filterState?.type) &&
+      selectedOptionsBranch?.length === 0
+    ) {
+      setPopupContentMalert("Please Select Branch!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (['Individual', 'Unit', 'Team']?.includes(filterState?.type) && selectedOptionsUnit?.length === 0) {
-      setPopupContentMalert('Please Select Unit!');
-      setPopupSeverityMalert('info');
+    } else if (
+      ["Individual", "Unit", "Team"]?.includes(filterState?.type) &&
+      selectedOptionsUnit?.length === 0
+    ) {
+      setPopupContentMalert("Please Select Unit!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (['Individual', 'Team']?.includes(filterState?.type) && selectedOptionsTeam?.length === 0) {
-      setPopupContentMalert('Please Select Team!');
-      setPopupSeverityMalert('info');
+    } else if (
+      ["Individual", "Team"]?.includes(filterState?.type) &&
+      selectedOptionsTeam?.length === 0
+    ) {
+      setPopupContentMalert("Please Select Team!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (filterState?.type === 'Individual' && selectedOptionsEmployee?.length === 0) {
-      setPopupContentMalert('Please Select Employee!');
-      setPopupSeverityMalert('info');
+    } else if (
+      filterState?.type === "Individual" &&
+      selectedOptionsEmployee?.length === 0
+    ) {
+      setPopupContentMalert("Please Select Employee!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (filterState?.type === 'Department' && selectedOptionsDepartment?.length === 0) {
-      setPopupContentMalert('Please Select Department!');
-      setPopupSeverityMalert('info');
+    } else if (
+      filterState?.type === "Department" &&
+      selectedOptionsDepartment?.length === 0
+    ) {
+      setPopupContentMalert("Please Select Department!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
-      setSearchQuery('');
+      setSearchQuery("");
       fetchEmployee();
     }
   };
@@ -1589,16 +2020,16 @@ function Assignedrole() {
   const [allAssignBranch, setAllAssignBranch] = useState([]);
   const [allAssignUnit, setAllAssignUnit] = useState([]);
   const [filterState, setFilterState] = useState({
-    type: 'Individual',
-    employeestatus: 'Please Select Employee Status',
+    type: "Individual",
+    employeestatus: "Please Select Employee Status",
   });
   const TypeOptions = [
-    { label: 'Individual', value: 'Individual' },
-    { label: 'Department', value: 'Department' },
-    { label: 'Company', value: 'Company' },
-    { label: 'Branch', value: 'Branch' },
-    { label: 'Unit', value: 'Unit' },
-    { label: 'Team', value: 'Team' },
+    { label: "Individual", value: "Individual" },
+    { label: "Department", value: "Department" },
+    { label: "Company", value: "Company" },
+    { label: "Branch", value: "Branch" },
+    { label: "Unit", value: "Unit" },
+    { label: "Team", value: "Team" },
   ];
   const [departmentOptions, setDepartmentOptions] = useState([]);
   const [internChecked, setInternChecked] = useState(false);
@@ -1616,7 +2047,12 @@ function Assignedrole() {
         }))
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   useEffect(() => {
@@ -1624,7 +2060,9 @@ function Assignedrole() {
   }, []);
 
   //department multiselect
-  const [selectedOptionsDepartment, setSelectedOptionsDepartment] = useState([]);
+  const [selectedOptionsDepartment, setSelectedOptionsDepartment] = useState(
+    []
+  );
   let [valueDepartmentCat, setValueDepartmentCat] = useState([]);
 
   const handleDepartmentChange = (options) => {
@@ -1640,7 +2078,9 @@ function Assignedrole() {
   };
 
   const customValueRendererDepartment = (valueDepartmentCat, _categoryname) => {
-    return valueDepartmentCat?.length ? valueDepartmentCat.map(({ label }) => label)?.join(', ') : 'Please Select Department';
+    return valueDepartmentCat?.length
+      ? valueDepartmentCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Department";
   };
   //employee multiselect
   const [selectedOptionsEmployee, setSelectedOptionsEmployee] = useState([]);
@@ -1661,7 +2101,9 @@ function Assignedrole() {
   };
 
   const customValueRendererEmployee = (valueEmployeeCat, _categoryname) => {
-    return valueEmployeeCat?.length ? valueEmployeeCat.map(({ label }) => label)?.join(', ') : 'Please Select Employee';
+    return valueEmployeeCat?.length
+      ? valueEmployeeCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Employee";
   };
 
   //get all employees list details
@@ -1675,82 +2117,91 @@ function Assignedrole() {
             // Enquiry status filter
             {
               enquirystatus: {
-                $nin: ['Enquiry Purpose'],
+                $nin: ["Enquiry Purpose"],
               },
             },
             // Reasonable status filter
             {
               resonablestatus: {
-                $nin: ['Not Joined', 'Postponed', 'Rejected', 'Closed', 'Releave Employee', 'Absconded', 'Hold', 'Terminate'],
+                $nin: [
+                  "Not Joined",
+                  "Postponed",
+                  "Rejected",
+                  "Closed",
+                  "Releave Employee",
+                  "Absconded",
+                  "Hold",
+                  "Terminate",
+                ],
               },
             },
             // Conditional company filter
             ...(valueCompanyCat.length > 0
               ? [
-                {
-                  company: { $in: valueCompanyCat },
-                },
-              ]
+                  {
+                    company: { $in: valueCompanyCat },
+                  },
+                ]
               : [
-                {
-                  company: { $in: allAssignCompany },
-                },
-              ]),
+                  {
+                    company: { $in: allAssignCompany },
+                  },
+                ]),
             // Conditional branch filter
             ...(valueBranchCat.length > 0
               ? [
-                {
-                  branch: { $in: valueBranchCat },
-                },
-              ]
+                  {
+                    branch: { $in: valueBranchCat },
+                  },
+                ]
               : [
-                {
-                  branch: { $in: allAssignBranch },
-                },
-              ]),
+                  {
+                    branch: { $in: allAssignBranch },
+                  },
+                ]),
             // Conditional unit filter
             ...(valueUnitCat.length > 0
               ? [
-                {
-                  unit: { $in: valueUnitCat },
-                },
-              ]
+                  {
+                    unit: { $in: valueUnitCat },
+                  },
+                ]
               : [
-                {
-                  unit: { $in: allAssignUnit },
-                },
-              ]),
+                  {
+                    unit: { $in: allAssignUnit },
+                  },
+                ]),
             // Conditional team filter
             ...(valueTeamCat.length > 0
               ? [
-                {
-                  team: { $in: valueTeamCat },
-                },
-              ]
+                  {
+                    team: { $in: valueTeamCat },
+                  },
+                ]
               : []),
             // Conditional department filter
             ...(valueTeamCat.length > 0
               ? [
-                {
-                  team: { $in: valueTeamCat },
-                },
-              ]
+                  {
+                    team: { $in: valueTeamCat },
+                  },
+                ]
               : []),
             // Conditional department filter
             ...(valueDepartmentCat.length > 0
               ? [
-                {
-                  department: { $in: valueDepartmentCat },
-                },
-              ]
+                  {
+                    department: { $in: valueDepartmentCat },
+                  },
+                ]
               : []),
             // Conditional Employee filter
             ...(valueEmployeeCat.length > 0
               ? [
-                {
-                  companyname: { $in: valueEmployeeCat },
-                },
-              ]
+                  {
+                    companyname: { $in: valueEmployeeCat },
+                  },
+                ]
               : []),
           ],
         },
@@ -1787,7 +2238,12 @@ function Assignedrole() {
       setIsBoarding(false);
     } catch (err) {
       setIsBoarding(false);
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
   //auto select all dropdowns
@@ -1800,15 +2256,30 @@ function Assignedrole() {
           branch: data.branch,
           unit: data.unit,
         }))
-        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch && t.unit === value.unit));
+        .filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === value.company &&
+                t.branch === value.branch &&
+                t.unit === value.unit
+            )
+        );
       let selectedCompany = selectedValues
-        ?.filter((value, index, self) => index === self.findIndex((t) => t.company === value.company))
+        ?.filter(
+          (value, index, self) =>
+            index === self.findIndex((t) => t.company === value.company)
+        )
         .map((a, index) => {
           return a.company;
         });
 
       let mappedCompany = selectedValues
-        ?.filter((value, index, self) => index === self.findIndex((t) => t.company === value.company))
+        ?.filter(
+          (value, index, self) =>
+            index === self.findIndex((t) => t.company === value.company)
+        )
         ?.map((data) => ({
           label: data?.company,
           value: data?.company,
@@ -1818,13 +2289,25 @@ function Assignedrole() {
       setSelectedOptionsCompany(mappedCompany);
 
       let selectedBranch = selectedValues
-        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch))
+        .filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex(
+              (t) => t.company === value.company && t.branch === value.branch
+            )
+        )
         .map((a, index) => {
           return a.branch;
         });
 
       let mappedBranch = selectedValues
-        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch))
+        .filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex(
+              (t) => t.company === value.company && t.branch === value.branch
+            )
+        )
         ?.map((data) => ({
           label: data?.branch,
           value: data?.branch,
@@ -1834,13 +2317,31 @@ function Assignedrole() {
       setSelectedOptionsBranch(mappedBranch);
 
       let selectedUnit = selectedValues
-        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch && t.unit === value.unit))
+        .filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === value.company &&
+                t.branch === value.branch &&
+                t.unit === value.unit
+            )
+        )
         .map((a, index) => {
           return a.unit;
         });
 
       let mappedUnit = selectedValues
-        .filter((value, index, self) => index === self.findIndex((t) => t.company === value.company && t.branch === value.branch && t.unit === value.unit))
+        .filter(
+          (value, index, self) =>
+            index ===
+            self.findIndex(
+              (t) =>
+                t.company === value.company &&
+                t.branch === value.branch &&
+                t.unit === value.unit
+            )
+        )
         ?.map((data) => ({
           label: data?.unit,
           value: data?.unit,
@@ -1850,22 +2351,50 @@ function Assignedrole() {
       setSelectedOptionsUnit(mappedUnit);
 
       let mappedTeam = allTeam
-        ?.filter((u) => selectedCompany?.includes(u.company) && selectedBranch?.includes(u.branch) && selectedUnit?.includes(u.unit))
+        ?.filter(
+          (u) =>
+            selectedCompany?.includes(u.company) &&
+            selectedBranch?.includes(u.branch) &&
+            selectedUnit?.includes(u.unit)
+        )
         .map((u) => ({
           label: u.teamname,
           value: u.teamname,
         }));
 
-      let selectedTeam = allTeam?.filter((u) => selectedCompany?.includes(u.company) && selectedBranch?.includes(u.branch) && selectedUnit?.includes(u.unit)).map((u) => u.teamname);
+      let selectedTeam = allTeam
+        ?.filter(
+          (u) =>
+            selectedCompany?.includes(u.company) &&
+            selectedBranch?.includes(u.branch) &&
+            selectedUnit?.includes(u.unit)
+        )
+        .map((u) => u.teamname);
 
       let mappedemployees = allUsersData
-        ?.filter((u) => selectedCompany?.includes(u.company) && selectedBranch?.includes(u.branch) && selectedUnit?.includes(u.unit) && selectedTeam?.includes(u.team) && u.workmode !== 'Internship')
+        ?.filter(
+          (u) =>
+            selectedCompany?.includes(u.company) &&
+            selectedBranch?.includes(u.branch) &&
+            selectedUnit?.includes(u.unit) &&
+            selectedTeam?.includes(u.team) &&
+            u.workmode !== "Internship"
+        )
         .map((u) => ({
           label: u.companyname,
           value: u.companyname,
         }));
 
-      let employees = allUsersData?.filter((u) => selectedCompany?.includes(u.company) && selectedBranch?.includes(u.branch) && selectedUnit?.includes(u.unit) && selectedTeam?.includes(u.team) && u.workmode !== 'Internship').map((u) => u.companyname);
+      let employees = allUsersData
+        ?.filter(
+          (u) =>
+            selectedCompany?.includes(u.company) &&
+            selectedBranch?.includes(u.branch) &&
+            selectedUnit?.includes(u.unit) &&
+            selectedTeam?.includes(u.team) &&
+            u.workmode !== "Internship"
+        )
+        .map((u) => u.companyname);
       setValueTeamCat(selectedTeam);
       setSelectedOptionsTeam(mappedTeam);
       setAllAssignCompany(selectedCompany);
@@ -1879,7 +2408,12 @@ function Assignedrole() {
 
       setValueEmp(mappedemployees?.map((item) => item?.value));
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
     }
   };
 
@@ -1891,10 +2425,17 @@ function Assignedrole() {
     <Box>
       <NotificationContainer />
       {/* ****** Header Content ****** */}
-      <Headtitle title={'ASSIGNED ROLE UPDATE'} />
-      <PageHeading title="Assigned Role" modulename="Human Resources" submodulename="HR" mainpagename="Employee" subpagename="Employee Update Details" subsubpagename="Assigned Role Update" />
+      <Headtitle title={"ASSIGNED ROLE UPDATE"} />
+      <PageHeading
+        title="Assigned Role"
+        modulename="Human Resources"
+        submodulename="HR"
+        mainpagename="Employee"
+        subpagename="Employee Update Details"
+        subsubpagename="Assigned Role Update"
+      />
       <br />
-      {isUserRoleCompare?.includes('lassignedroleupdate') && (
+      {isUserRoleCompare?.includes("lassignedroleupdate") && (
         <>
           <Box sx={userStyle.selectcontainer}>
             <Grid container spacing={2}>
@@ -1906,14 +2447,14 @@ function Assignedrole() {
                 <Grid item md={3} xs={12} sm={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
-                      Type<b style={{ color: 'red' }}>*</b>
+                      Type<b style={{ color: "red" }}>*</b>
                     </Typography>
                     <Selects
                       options={TypeOptions}
                       styles={colourStyles}
                       value={{
-                        label: filterState.type ?? 'Please Select Type',
-                        value: filterState.type ?? 'Please Select Type',
+                        label: filterState.type ?? "Please Select Type",
+                        value: filterState.type ?? "Please Select Type",
                       }}
                       onChange={(e) => {
                         setFilterState((prev) => ({
@@ -1939,7 +2480,7 @@ function Assignedrole() {
                 </Grid>
                 <Grid item md={3} xs={12} sm={12}>
                   <Typography>
-                    Company<b style={{ color: 'red' }}>*</b>
+                    Company<b style={{ color: "red" }}>*</b>
                   </Typography>
                   <FormControl size="small" fullWidth>
                     <MultiSelect
@@ -1949,7 +2490,12 @@ function Assignedrole() {
                           value: data.company,
                         }))
                         .filter((item, index, self) => {
-                          return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                          return (
+                            self.findIndex(
+                              (i) =>
+                                i.label === item.label && i.value === item.value
+                            ) === index
+                          );
                         })}
                       value={selectedOptionsCompany}
                       onChange={(e) => {
@@ -2046,24 +2592,32 @@ function Assignedrole() {
                   </FormControl>
                 </Grid> */}
 
-                {['Individual', 'Team']?.includes(filterState.type) ? (
+                {["Individual", "Team"]?.includes(filterState.type) ? (
                   <>
                     {/* Branch Unit Team */}
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {' '}
-                          Branch <b style={{ color: 'red' }}>*</b>
+                          {" "}
+                          Branch <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter((comp) => valueCompanyCat?.includes(comp.company))
+                            ?.filter((comp) =>
+                              valueCompanyCat?.includes(comp.company)
+                            )
                             ?.map((data) => ({
                               label: data.branch,
                               value: data.branch,
                             }))
                             .filter((item, index, self) => {
-                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                              return (
+                                self.findIndex(
+                                  (i) =>
+                                    i.label === item.label &&
+                                    i.value === item.value
+                                ) === index
+                              );
                             })}
                           value={selectedOptionsBranch}
                           onChange={(e) => {
@@ -2077,18 +2631,28 @@ function Assignedrole() {
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {' '}
-                          Unit<b style={{ color: 'red' }}>*</b>
+                          {" "}
+                          Unit<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter((comp) => valueCompanyCat?.includes(comp.company) && valueBranchCat?.includes(comp.branch))
+                            ?.filter(
+                              (comp) =>
+                                valueCompanyCat?.includes(comp.company) &&
+                                valueBranchCat?.includes(comp.branch)
+                            )
                             ?.map((data) => ({
                               label: data.unit,
                               value: data.unit,
                             }))
                             .filter((item, index, self) => {
-                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                              return (
+                                self.findIndex(
+                                  (i) =>
+                                    i.label === item.label &&
+                                    i.value === item.value
+                                ) === index
+                              );
                             })}
                           value={selectedOptionsUnit}
                           onChange={(e) => {
@@ -2102,11 +2666,16 @@ function Assignedrole() {
                     <Grid item md={3} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Team<b style={{ color: 'red' }}>*</b>
+                          Team<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={allTeam
-                            ?.filter((u) => valueCompanyCat?.includes(u.company) && valueBranchCat?.includes(u.branch) && valueUnitCat?.includes(u.unit))
+                            ?.filter(
+                              (u) =>
+                                valueCompanyCat?.includes(u.company) &&
+                                valueBranchCat?.includes(u.branch) &&
+                                valueUnitCat?.includes(u.unit)
+                            )
                             .map((u) => ({
                               ...u,
                               label: u.teamname,
@@ -2122,13 +2691,13 @@ function Assignedrole() {
                       </FormControl>
                     </Grid>
                   </>
-                ) : ['Department']?.includes(filterState.type) ? (
+                ) : ["Department"]?.includes(filterState.type) ? (
                   <>
                     {/* Department */}
                     <Grid item md={3} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Department<b style={{ color: 'red' }}>*</b>
+                          Department<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={departmentOptions}
@@ -2142,23 +2711,31 @@ function Assignedrole() {
                       </FormControl>
                     </Grid>
                   </>
-                ) : ['Branch']?.includes(filterState.type) ? (
+                ) : ["Branch"]?.includes(filterState.type) ? (
                   <>
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {' '}
-                          Branch <b style={{ color: 'red' }}>*</b>
+                          {" "}
+                          Branch <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter((comp) => valueCompanyCat?.includes(comp.company))
+                            ?.filter((comp) =>
+                              valueCompanyCat?.includes(comp.company)
+                            )
                             ?.map((data) => ({
                               label: data.branch,
                               value: data.branch,
                             }))
                             .filter((item, index, self) => {
-                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                              return (
+                                self.findIndex(
+                                  (i) =>
+                                    i.label === item.label &&
+                                    i.value === item.value
+                                ) === index
+                              );
                             })}
                           value={selectedOptionsBranch}
                           onChange={(e) => {
@@ -2170,23 +2747,31 @@ function Assignedrole() {
                       </FormControl>
                     </Grid>
                   </>
-                ) : ['Unit']?.includes(filterState.type) ? (
+                ) : ["Unit"]?.includes(filterState.type) ? (
                   <>
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {' '}
-                          Branch<b style={{ color: 'red' }}>*</b>
+                          {" "}
+                          Branch<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter((comp) => valueCompanyCat?.includes(comp.company))
+                            ?.filter((comp) =>
+                              valueCompanyCat?.includes(comp.company)
+                            )
                             ?.map((data) => ({
                               label: data.branch,
                               value: data.branch,
                             }))
                             .filter((item, index, self) => {
-                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                              return (
+                                self.findIndex(
+                                  (i) =>
+                                    i.label === item.label &&
+                                    i.value === item.value
+                                ) === index
+                              );
                             })}
                           value={selectedOptionsBranch}
                           onChange={(e) => {
@@ -2200,18 +2785,28 @@ function Assignedrole() {
                     <Grid item md={3} xs={12} sm={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          {' '}
-                          Unit <b style={{ color: 'red' }}>*</b>
+                          {" "}
+                          Unit <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           options={accessbranch
-                            ?.filter((comp) => valueCompanyCat?.includes(comp.company) && valueBranchCat?.includes(comp.branch))
+                            ?.filter(
+                              (comp) =>
+                                valueCompanyCat?.includes(comp.company) &&
+                                valueBranchCat?.includes(comp.branch)
+                            )
                             ?.map((data) => ({
                               label: data.unit,
                               value: data.unit,
                             }))
                             .filter((item, index, self) => {
-                              return self.findIndex((i) => i.label === item.label && i.value === item.value) === index;
+                              return (
+                                self.findIndex(
+                                  (i) =>
+                                    i.label === item.label &&
+                                    i.value === item.value
+                                ) === index
+                              );
                             })}
                           value={selectedOptionsUnit}
                           onChange={(e) => {
@@ -2224,30 +2819,47 @@ function Assignedrole() {
                     </Grid>
                   </>
                 ) : (
-                  ''
+                  ""
                 )}
-                {['Individual']?.includes(filterState.type) && (
+                {["Individual"]?.includes(filterState.type) && (
                   <Grid item md={3} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Employee<b style={{ color: 'red' }}>*</b>
+                        Employee<b style={{ color: "red" }}>*</b>
                       </Typography>
-                      <div onPaste={handlePasteForEmp} style={{ position: 'relative' }}>
+                      <div
+                        onPaste={handlePasteForEmp}
+                        style={{ position: "relative" }}
+                      >
                         <MultiSelect
                           options={
                             internChecked
                               ? allUsersData
-                                ?.filter((u) => valueCompanyCat?.includes(u.company) && valueBranchCat?.includes(u.branch) && valueUnitCat?.includes(u.unit) && valueTeamCat?.includes(u.team) && u.workmode === 'Internship')
-                                .map((u) => ({
-                                  label: u.companyname,
-                                  value: u.companyname,
-                                }))
+                                  ?.filter(
+                                    (u) =>
+                                      valueCompanyCat?.includes(u.company) &&
+                                      valueBranchCat?.includes(u.branch) &&
+                                      valueUnitCat?.includes(u.unit) &&
+                                      valueTeamCat?.includes(u.team) &&
+                                      u.workmode === "Internship"
+                                  )
+                                  .map((u) => ({
+                                    label: u.companyname,
+                                    value: u.companyname,
+                                  }))
                               : allUsersData
-                                ?.filter((u) => valueCompanyCat?.includes(u.company) && valueBranchCat?.includes(u.branch) && valueUnitCat?.includes(u.unit) && valueTeamCat?.includes(u.team) && u.workmode !== 'Internship')
-                                .map((u) => ({
-                                  label: u.companyname,
-                                  value: u.companyname,
-                                }))
+                                  ?.filter(
+                                    (u) =>
+                                      valueCompanyCat?.includes(u.company) &&
+                                      valueBranchCat?.includes(u.branch) &&
+                                      valueUnitCat?.includes(u.unit) &&
+                                      valueTeamCat?.includes(u.team) &&
+                                      u.workmode !== "Internship"
+                                  )
+                                  .map((u) => ({
+                                    label: u.companyname,
+                                    value: u.companyname,
+                                  }))
                           }
                           value={selectedOptionsEmployee}
                           onChange={(e) => {
@@ -2257,7 +2869,9 @@ function Assignedrole() {
                           labelledBy="Please Select Employee"
                           // Add these props if your MultiSelect supports them
                           inputValue={searchInputValue} // Add this state if needed
-                          onInputChange={(newValue) => setSearchInputValue(newValue)}
+                          onInputChange={(newValue) =>
+                            setSearchInputValue(newValue)
+                          }
                         />
                       </div>
                     </FormControl>
@@ -2277,18 +2891,24 @@ function Assignedrole() {
                     />
                   </Grid>
                 )}
-                {['Individual']?.includes(filterState.type) && (
-                  <Grid item md={6} sm={12} xs={12} sx={{ display: 'flex', flexDirection: 'row' }}>
+                {["Individual"]?.includes(filterState.type) && (
+                  <Grid
+                    item
+                    md={6}
+                    sm={12}
+                    xs={12}
+                    sx={{ display: "flex", flexDirection: "row" }}
+                  >
                     <FormControl fullWidth size="small">
                       <Typography>Selected Employees</Typography>
                       <div
                         id="paste-box" // Add an ID to the Box
                         tabIndex={0} // Make the div focusable
                         style={{
-                          border: '1px solid #ccc',
-                          borderRadius: '3.75px',
-                          height: '110px',
-                          overflow: 'auto',
+                          border: "1px solid #ccc",
+                          borderRadius: "3.75px",
+                          height: "110px",
+                          overflow: "auto",
                         }}
                         onPaste={handlePasteForEmp}
                         onFocus={() => setIsBoxFocused(true)} // Set focus state to true
@@ -2299,7 +2919,14 @@ function Assignedrole() {
                         }}
                       >
                         {valueEmp.map((value) => (
-                          <Chip key={value} label={value} clickable sx={{ margin: 0.2, backgroundColor: '#FFF' }} onDelete={(e) => handleDelete(e, value)} onClick={() => console.log('clicked chip')} />
+                          <Chip
+                            key={value}
+                            label={value}
+                            clickable
+                            sx={{ margin: 0.2, backgroundColor: "#FFF" }}
+                            onDelete={(e) => handleDelete(e, value)}
+                            onClick={() => console.log("clicked chip")}
+                          />
                         ))}
                       </div>
                     </FormControl>
@@ -2310,17 +2937,25 @@ function Assignedrole() {
             <br />
             <br />
             <br />
-            <Grid container spacing={2} sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Grid
+              container
+              spacing={2}
+              sx={{ display: "flex", justifyContent: "center" }}
+            >
               <Grid item lg={1} md={2} sm={2} xs={12}>
-                <Button variant="contained" onClick={handleFilter} sx={buttonStyles.buttonsubmit}>
-                  {' '}
-                  Filter{' '}
+                <Button
+                  variant="contained"
+                  onClick={handleFilter}
+                  sx={buttonStyles.buttonsubmit}
+                >
+                  {" "}
+                  Filter{" "}
                 </Button>
               </Grid>
               <Grid item lg={1} md={2} sm={2} xs={12}>
                 <Button onClick={handleClearFilter} sx={buttonStyles.btncancel}>
-                  {' '}
-                  Clear{' '}
+                  {" "}
+                  Clear{" "}
                 </Button>
               </Grid>
             </Grid>
@@ -2328,12 +2963,14 @@ function Assignedrole() {
         </>
       )}
       <br />
-      {isUserRoleCompare?.includes('lassignedroleupdate') && (
+      {isUserRoleCompare?.includes("lassignedroleupdate") && (
         <>
           <Box sx={userStyle.container}>
             {/* ******************************************************EXPORT Buttons****************************************************** */}
             <Grid item xs={8}>
-              <Typography sx={userStyle.importheadtext}>Assigned Role Details List</Typography>
+              <Typography sx={userStyle.importheadtext}>
+                Assigned Role Details List
+              </Typography>
             </Grid>
             <br />
             <Grid container spacing={2} style={userStyle.dataTablestyle}>
@@ -2352,7 +2989,7 @@ function Assignedrole() {
                       },
                     }}
                     onChange={handlePageSizeChange}
-                    sx={{ width: '77px' }}
+                    sx={{ width: "77px" }}
                   >
                     <MenuItem value={1}>1</MenuItem>
                     <MenuItem value={5}>5</MenuItem>
@@ -2370,18 +3007,18 @@ function Assignedrole() {
                 xs={12}
                 sm={12}
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <Box>
-                  {isUserRoleCompare?.includes('csvassignedroleupdate') && (
+                  {isUserRoleCompare?.includes("csvassignedroleupdate") && (
                     <>
                       <Button
                         onClick={(e) => {
                           setIsFilterOpen(true);
-                          setFormat('xl');
+                          setFormat("xl");
                         }}
                         sx={userStyle.buttongrp}
                       >
@@ -2390,12 +3027,12 @@ function Assignedrole() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes('excelassignedroleupdate') && (
+                  {isUserRoleCompare?.includes("excelassignedroleupdate") && (
                     <>
                       <Button
                         onClick={(e) => {
                           setIsFilterOpen(true);
-                          setFormat('csv');
+                          setFormat("csv");
                         }}
                         sx={userStyle.buttongrp}
                       >
@@ -2404,7 +3041,7 @@ function Assignedrole() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes('printassignedroleupdate') && (
+                  {isUserRoleCompare?.includes("printassignedroleupdate") && (
                     <>
                       <Button sx={userStyle.buttongrp} onClick={handleprint}>
                         &ensp;
@@ -2413,7 +3050,7 @@ function Assignedrole() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes('pdfassignedroleupdate') && (
+                  {isUserRoleCompare?.includes("pdfassignedroleupdate") && (
                     <>
                       <Button
                         sx={userStyle.buttongrp}
@@ -2426,10 +3063,15 @@ function Assignedrole() {
                       </Button>
                     </>
                   )}
-                  {isUserRoleCompare?.includes('imageassignedroleupdate') && (
-                    <Button sx={userStyle.buttongrp} onClick={handleCaptureImage}>
-                      {' '}
-                      <ImageIcon sx={{ fontSize: '15px' }} /> &ensp;Image&ensp;{' '}
+                  {isUserRoleCompare?.includes("imageassignedroleupdate") && (
+                    <Button
+                      sx={userStyle.buttongrp}
+                      onClick={handleCaptureImage}
+                    >
+                      {" "}
+                      <ImageIcon
+                        sx={{ fontSize: "15px" }}
+                      /> &ensp;Image&ensp;{" "}
                     </Button>
                   )}
                 </Box>
@@ -2461,8 +3103,17 @@ function Assignedrole() {
             <br />
             {isBoarding ? (
               <>
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <ThreeDots height="80" width="80" radius="9" color="#1976d2" ariaLabel="three-dots-loading" wrapperStyle={{}} wrapperClassName="" visible={true} />
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <ThreeDots
+                    height="80"
+                    width="80"
+                    radius="9"
+                    color="#1976d2"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClassName=""
+                    visible={true}
+                  />
                 </Box>
               </>
             ) : (
@@ -2503,8 +3154,8 @@ function Assignedrole() {
         anchorEl={anchorEl}
         onClose={handleCloseManageColumns}
         anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'left',
+          vertical: "bottom",
+          horizontal: "left",
         }}
       >
         {manageColumnsContent}
@@ -2514,11 +3165,20 @@ function Assignedrole() {
 
       <Box>
         {/* Edit DIALOG */}
-        <Dialog open={isEditOpen} onClose={handleCloseModEdit} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="md" sx={{ marginTop: '50px' }}>
+        <Dialog
+          open={isEditOpen}
+          onClose={handleCloseModEdit}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          maxWidth="md"
+          sx={{ marginTop: "50px" }}
+        >
           <Box sx={userStyle.dialogbox}>
-            <Box sx={{ width: '700px', heigth: '300px' }}>
+            <Box sx={{ width: "700px", heigth: "300px" }}>
               <>
-                <Typography sx={userStyle.SubHeaderText}>Edit Assigned Role Information</Typography>
+                <Typography sx={userStyle.SubHeaderText}>
+                  Edit Assigned Role Information
+                </Typography>
                 <br />
                 <br />
                 <Grid container spacing={2}>
@@ -2532,7 +3192,7 @@ function Assignedrole() {
                       Company Name : <b>{empupdateform.companyname}</b>
                     </Typography>
                   </Grid>
-                </Grid>{' '}
+                </Grid>{" "}
                 <br />
                 <br />
                 <Grid container spacing={2}>
@@ -2546,7 +3206,9 @@ function Assignedrole() {
                           label: empaddform.rolename,
                           value: empaddform.rolename,
                         }}
-                        onChange={(e) => setEmpaddform({ ...empaddform, rolename: e.value })}
+                        onChange={(e) =>
+                          setEmpaddform({ ...empaddform, rolename: e.value })
+                        }
                       />
                     </FormControl>
                   </Grid>
@@ -2554,12 +3216,12 @@ function Assignedrole() {
                     <Button
                       variant="contained"
                       style={{
-                        height: '30px',
-                        minWidth: '20px',
-                        padding: '19px 13px',
-                        color: 'white',
-                        marginTop: '22px',
-                        background: 'rgb(25, 118, 210)',
+                        height: "30px",
+                        minWidth: "20px",
+                        padding: "19px 13px",
+                        color: "white",
+                        marginTop: "22px",
+                        background: "rgb(25, 118, 210)",
                       }}
                       onClick={() => {
                         handleChangeValue(empaddform.rolename);
@@ -2571,19 +3233,19 @@ function Assignedrole() {
                   <Grid item md={0.5} sm={1} xs={1}>
                     <Button
                       style={{
-                        height: '30px',
-                        minWidth: '20px',
-                        padding: '19px 13px',
-                        color: 'white',
-                        marginTop: '22px',
-                        marginLeft: '35px',
-                        background: 'rgb(25, 118, 210)',
+                        height: "30px",
+                        minWidth: "20px",
+                        padding: "19px 13px",
+                        color: "white",
+                        marginTop: "22px",
+                        marginLeft: "35px",
+                        background: "rgb(25, 118, 210)",
                       }}
                       onClick={() => {
                         handleClickOpenAddRole();
                       }}
                     >
-                      <FaPlus style={{ fontSize: '15px' }} />
+                      <FaPlus style={{ fontSize: "15px" }} />
                     </Button>
                   </Grid>
 
@@ -2592,23 +3254,50 @@ function Assignedrole() {
                     <br />
                     <Table>
                       <TableHead>
-                        <StyledTableCell sx={{ padding: '5px 10px !important' }}>{'SNO'}.</StyledTableCell>
-                        <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'RoleName'}</StyledTableCell>
-                        <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'Action'}</StyledTableCell>
+                        <StyledTableCell
+                          sx={{ padding: "5px 10px !important" }}
+                        >
+                          {"SNO"}.
+                        </StyledTableCell>
+                        <StyledTableCell
+                          sx={{ padding: "5px 10px !important" }}
+                        >
+                          {" "}
+                          {"RoleName"}
+                        </StyledTableCell>
+                        <StyledTableCell
+                          sx={{ padding: "5px 10px !important" }}
+                        >
+                          {" "}
+                          {"Action"}
+                        </StyledTableCell>
                       </TableHead>
                       <TableBody>
                         {selectedRoles.map((item, i) => (
                           <StyledTableRow>
-                            <StyledTableCell sx={{ padding: '5px 10px !important' }}>{i + 1}.</StyledTableCell>
-                            <StyledTableCell sx={{ padding: '5px 10px !important' }}> {item}</StyledTableCell>
-                            <StyledTableCell sx={{ padding: '5px 10px !important' }}>
+                            <StyledTableCell
+                              sx={{ padding: "5px 10px !important" }}
+                            >
+                              {i + 1}.
+                            </StyledTableCell>
+                            <StyledTableCell
+                              sx={{ padding: "5px 10px !important" }}
+                            >
+                              {" "}
+                              {item}
+                            </StyledTableCell>
+                            <StyledTableCell
+                              sx={{ padding: "5px 10px !important" }}
+                            >
                               <Button
-                                sx={{ color: 'red', fontSize: '20px' }}
+                                sx={{ color: "red", fontSize: "20px" }}
                                 onClick={(e) => {
                                   rowDataRemove(i, item);
                                 }}
                               >
-                                <DeleteOutlineOutlinedIcon sx={{ fontSize: '20px' }} />
+                                <DeleteOutlineOutlinedIcon
+                                  sx={{ fontSize: "20px" }}
+                                />
                               </Button>
                             </StyledTableCell>
                           </StyledTableRow>
@@ -2616,18 +3305,25 @@ function Assignedrole() {
                       </TableBody>
                     </Table>
                   </Grid>
-                </Grid>{' '}
+                </Grid>{" "}
                 <br /> <br /> <br />
                 <br />
                 <br />
                 <br />
                 <Grid container>
                   <Grid item md={1}></Grid>
-                  <Button variant="contained" onClick={editSubmit} sx={buttonStyles.buttonsubmit}>
+                  <Button
+                    variant="contained"
+                    onClick={editSubmit}
+                    sx={buttonStyles.buttonsubmit}
+                  >
                     Update
                   </Button>
                   <Grid item md={1}></Grid>
-                  <Button onClick={handleCloseModEdit} sx={buttonStyles.btncancel}>
+                  <Button
+                    onClick={handleCloseModEdit}
+                    sx={buttonStyles.btncancel}
+                  >
                     Cancel
                   </Button>
                 </Grid>
@@ -2638,8 +3334,15 @@ function Assignedrole() {
       </Box>
 
       <Box>
-        <Dialog open={isErrorOpen} onClose={handleCloseerr} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
+        <Dialog
+          open={isErrorOpen}
+          onClose={handleCloseerr}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
             <Typography variant="h6">{showAlert}</Typography>
           </DialogContent>
           <DialogActions>
@@ -2652,8 +3355,14 @@ function Assignedrole() {
 
       {/* this is info view details */}
 
-      <Dialog open={openInfo} onClose={handleCloseinfo} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg">
-        <Box sx={{ width: '550px', padding: '20px 50px' }}>
+      <Dialog
+        open={openInfo}
+        onClose={handleCloseinfo}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="lg"
+      >
+        <Box sx={{ width: "550px", padding: "20px 50px" }}>
           <>
             <Typography sx={userStyle.HeaderText}> Assigned Role</Typography>
             <br />
@@ -2665,16 +3374,38 @@ function Assignedrole() {
                   <br />
                   <Table>
                     <TableHead>
-                      <StyledTableCell sx={{ padding: '5px 10px !important' }}>{'SNO'}.</StyledTableCell>
-                      <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'UserName'}</StyledTableCell>
-                      <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'Date'}</StyledTableCell>
+                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
+                        {"SNO"}.
+                      </StyledTableCell>
+                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
+                        {" "}
+                        {"UserName"}
+                      </StyledTableCell>
+                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
+                        {" "}
+                        {"Date"}
+                      </StyledTableCell>
                     </TableHead>
                     <TableBody>
                       {addedby?.map((item, i) => (
                         <StyledTableRow>
-                          <StyledTableCell sx={{ padding: '5px 10px !important' }}>{i + 1}.</StyledTableCell>
-                          <StyledTableCell sx={{ padding: '5px 10px !important' }}> {item.name}</StyledTableCell>
-                          <StyledTableCell sx={{ padding: '5px 10px !important' }}> {moment(item.date).format('DD-MM-YYYY hh:mm:ss a')}</StyledTableCell>
+                          <StyledTableCell
+                            sx={{ padding: "5px 10px !important" }}
+                          >
+                            {i + 1}.
+                          </StyledTableCell>
+                          <StyledTableCell
+                            sx={{ padding: "5px 10px !important" }}
+                          >
+                            {" "}
+                            {item.name}
+                          </StyledTableCell>
+                          <StyledTableCell
+                            sx={{ padding: "5px 10px !important" }}
+                          >
+                            {" "}
+                            {moment(item.date).format("DD-MM-YYYY hh:mm:ss a")}
+                          </StyledTableCell>
                         </StyledTableRow>
                       ))}
                     </TableBody>
@@ -2688,16 +3419,38 @@ function Assignedrole() {
                   <br />
                   <Table>
                     <TableHead>
-                      <StyledTableCell sx={{ padding: '5px 10px !important' }}>{'SNO'}.</StyledTableCell>
-                      <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'UserName'}</StyledTableCell>
-                      <StyledTableCell sx={{ padding: '5px 10px !important' }}> {'Date'}</StyledTableCell>
+                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
+                        {"SNO"}.
+                      </StyledTableCell>
+                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
+                        {" "}
+                        {"UserName"}
+                      </StyledTableCell>
+                      <StyledTableCell sx={{ padding: "5px 10px !important" }}>
+                        {" "}
+                        {"Date"}
+                      </StyledTableCell>
                     </TableHead>
                     <TableBody>
                       {updateby?.map((item, i) => (
                         <StyledTableRow>
-                          <StyledTableCell sx={{ padding: '5px 10px !important' }}>{i + 1}.</StyledTableCell>
-                          <StyledTableCell sx={{ padding: '5px 10px !important' }}> {item.name}</StyledTableCell>
-                          <StyledTableCell sx={{ padding: '5px 10px !important' }}> {moment(item.date).format('DD-MM-YYYY hh:mm:ss a')}</StyledTableCell>
+                          <StyledTableCell
+                            sx={{ padding: "5px 10px !important" }}
+                          >
+                            {i + 1}.
+                          </StyledTableCell>
+                          <StyledTableCell
+                            sx={{ padding: "5px 10px !important" }}
+                          >
+                            {" "}
+                            {item.name}
+                          </StyledTableCell>
+                          <StyledTableCell
+                            sx={{ padding: "5px 10px !important" }}
+                          >
+                            {" "}
+                            {moment(item.date).format("DD-MM-YYYY hh:mm:ss a")}
+                          </StyledTableCell>
                         </StyledTableRow>
                       ))}
                     </TableBody>
@@ -2708,9 +3461,13 @@ function Assignedrole() {
             <br /> <br />
             <br />
             <Grid container spacing={2}>
-              <Button variant="contained" onClick={handleCloseinfo} sx={buttonStyles.btncancel}>
-                {' '}
-                Back{' '}
+              <Button
+                variant="contained"
+                onClick={handleCloseinfo}
+                sx={buttonStyles.btncancel}
+              >
+                {" "}
+                Back{" "}
               </Button>
             </Grid>
           </>
@@ -2726,9 +3483,9 @@ function Assignedrole() {
         aria-describedby="alert-dialog-description"
         maxWidth="lg"
         sx={{
-          overflow: 'visible',
-          '& .MuiPaper-root': {
-            overflow: 'visible',
+          overflow: "visible",
+          "& .MuiPaper-root": {
+            overflow: "visible",
           },
         }}
       >
@@ -2738,13 +3495,17 @@ function Assignedrole() {
               <Grid container spacing={2}>
                 {/* <Words/> */}
                 <Grid item md={12} xs={12}>
-                  <Grid item md={12} xs={12} sx={{ display: 'flex' }}>
+                  <Grid item md={12} xs={12} sx={{ display: "flex" }}>
                     <Typography variant="h6">
-                      Role Name<b style={{ color: 'red' }}>*</b>:
+                      Role Name<b style={{ color: "red" }}>*</b>:
                     </Typography>
                     &emsp;
                     <FormControl>
-                      <OutlinedInput type="text" value={roleName} onChange={(e) => setRoleName(e.target.value)} />
+                      <OutlinedInput
+                        type="text"
+                        value={roleName}
+                        onChange={(e) => setRoleName(e.target.value)}
+                      />
                     </FormControl>
                   </Grid>
                 </Grid>
@@ -2753,12 +3514,14 @@ function Assignedrole() {
               <br />
               <Grid container spacing={2}>
                 <Grid item md={12} xs={12}>
-                  <Typography sx={userStyle.HeaderText}>Access Control</Typography>
+                  <Typography sx={userStyle.HeaderText}>
+                    Access Control
+                  </Typography>
                 </Grid>
                 <Grid item md={4} sm={12} xs={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
-                      Module Name <b style={{ color: 'red' }}>*</b>
+                      Module Name <b style={{ color: "red" }}>*</b>
                     </Typography>
                     <MultiSelect
                       options={module}
@@ -2778,7 +3541,7 @@ function Assignedrole() {
                 <Grid item md={4} sm={12} xs={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
-                      Sub Module Name<b style={{ color: 'red' }}>*</b>
+                      Sub Module Name<b style={{ color: "red" }}>*</b>
                     </Typography>
                     <MultiSelect
                       options={subModuleOptions}
@@ -2855,10 +3618,10 @@ function Assignedrole() {
                   </FormControl>
                 </Grid>
 
-                <Grid item md={4} sm={12} xs={12} sx={{ display: 'flex' }}>
+                <Grid item md={4} sm={12} xs={12} sx={{ display: "flex" }}>
                   <FormControl fullWidth size="small">
                     <Typography>
-                      Control <b style={{ color: 'red' }}>*</b>
+                      Control <b style={{ color: "red" }}>*</b>
                     </Typography>
                     {/* controls */}
                     <MultiSelect
@@ -2882,10 +3645,10 @@ function Assignedrole() {
                       onClick={handleSubmit}
                       sx={{
                         ...buttonStyles.buttonsubmit,
-                        minWidth: '40px',
-                        height: '37px',
-                        marginTop: '28px',
-                        padding: '6px 10px',
+                        minWidth: "40px",
+                        height: "37px",
+                        marginTop: "28px",
+                        padding: "6px 10px",
                       }}
                     >
                       SUBMIT
@@ -2896,10 +3659,10 @@ function Assignedrole() {
                       sx={[
                         userStyle.btncancel,
                         {
-                          minWidth: '40px',
-                          height: '37px',
-                          marginTop: '28px',
-                          padding: '6px 10px',
+                          minWidth: "40px",
+                          height: "37px",
+                          marginTop: "28px",
+                          padding: "6px 10px",
                         },
                       ]}
                       onClick={handleClear}
@@ -2912,10 +3675,10 @@ function Assignedrole() {
                       sx={[
                         buttonStyles.btncancel,
                         {
-                          minWidth: '40px',
-                          height: '37px',
-                          marginTop: '28px',
-                          padding: '6px 10px',
+                          minWidth: "40px",
+                          height: "37px",
+                          marginTop: "28px",
+                          padding: "6px 10px",
                         },
                       ]}
                       onClick={handleCloseRole}
@@ -2932,7 +3695,7 @@ function Assignedrole() {
       {/* print layout */}
       <TableContainer component={Paper} sx={userStyle.printcls}>
         <Table aria-label="simple table" id="branch" ref={componentRef}>
-          <TableHead sx={{ fontWeight: '600' }}>
+          <TableHead sx={{ fontWeight: "600" }}>
             <StyledTableRow>
               <StyledTableCell>SI.NO</StyledTableCell>
 
@@ -2974,17 +3737,29 @@ function Assignedrole() {
         isPdfFilterOpen={isPdfFilterOpen}
         setIsPdfFilterOpen={setIsPdfFilterOpen}
         handleClosePdfFilterMod={handleClosePdfFilterMod}
-        filteredDataTwo={(filteredChanges !== null ? filteredRowData : rowDataTable) ?? []}
+        filteredDataTwo={
+          (filteredChanges !== null ? filteredRowData : rowDataTable) ?? []
+        }
         itemsTwo={employees ?? []}
-        filename={'Assigned Role Update'}
+        filename={"Assigned Role Update"}
         exportColumnNames={exportColumnNames}
         exportRowValues={exportRowValues}
         componentRef={componentRef}
       />
 
-      <MessageAlert openPopup={openPopupMalert} handleClosePopup={handleClosePopupMalert} popupContent={popupContentMalert} popupSeverity={popupSeverityMalert} />
+      <MessageAlert
+        openPopup={openPopupMalert}
+        handleClosePopup={handleClosePopupMalert}
+        popupContent={popupContentMalert}
+        popupSeverity={popupSeverityMalert}
+      />
       {/* SUCCESS */}
-      <AlertDialog openPopup={openPopup} handleClosePopup={handleClosePopup} popupContent={popupContent} popupSeverity={popupSeverity} />
+      <AlertDialog
+        openPopup={openPopup}
+        handleClosePopup={handleClosePopup}
+        popupContent={popupContent}
+        popupSeverity={popupSeverity}
+      />
     </Box>
   );
 }

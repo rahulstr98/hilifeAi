@@ -87,6 +87,9 @@ exports.getFilteredBiometricVisitorDetails = catchAsyncErrors(
       staffNameC: 1,
       biometricUserIDC: 1,
       cloudIDC: 1,
+      visitorpage: 1,
+      visitorpagedetails: 1,
+      // cloudIDC: 1,
 
       // Pick required fields from device meta
       company: "$deviceInfo.company",

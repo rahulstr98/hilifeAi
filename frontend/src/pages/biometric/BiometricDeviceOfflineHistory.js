@@ -561,6 +561,7 @@ function BiometricDeviceOfflineHistory() {
             ? item?.deviceNameID?.biometriccommonname
             : "",
           serialNumber: index + 1,
+          id:item?._id
         }));
 
       console.log(itemsWithSerialNumber, "itemsWithSerialNumber");
@@ -582,8 +583,7 @@ function BiometricDeviceOfflineHistory() {
     setAcpointCalculationArrayForExport,
   ] = useState([]);
 
-  const [overallFilterdata, setOverallFilterdata] = useState([]);
-  const [overallFilterdataAllData, setOverallFilterdataAllData] = useState([]);
+ 
   const [totalProjects, setTotalProjects] = useState(0);
   const [anchorElSearch, setAnchorElSearch] = React.useState(null);
   const handleClickSearch = (event) => {
@@ -959,7 +959,7 @@ function BiometricDeviceOfflineHistory() {
 
   const rowDataTable = filteredData.map((item, index) => {
     return {
-      id: item._id,
+      id: item.id,
       serialNumber: item.serialNumber,
       company: item.company,
       branch: item.branch,
@@ -1530,12 +1530,12 @@ function BiometricDeviceOfflineHistory() {
                   setItems={setItems}
                   addSerialNumber={addSerialNumber}
                   setPage={setPage}
-                  maindatas={overallFilterdata}
+                  maindatas={biometricDevicesHistory}
                   setSearchedString={setSearchedString}
                   searchQuery={searchQuery}
                   setSearchQuery={setSearchQuery}
                   paginated={false}
-                  totalDatas={overallFilterdata}
+                  totalDatas={biometricDevicesHistory}
                 />
               </Grid>
             </Grid>
@@ -1591,7 +1591,7 @@ function BiometricDeviceOfflineHistory() {
                   setFilteredChanges={setFilteredChanges}
                   filteredChanges={filteredChanges}
                   gridRefTableImg={gridRefTableImg}
-                  itemsList={overallFilterdataAllData}
+                  itemsList={biometricDevicesHistory}
                 />
                 <Popover
                   id={idSearch}
@@ -1818,7 +1818,7 @@ function BiometricDeviceOfflineHistory() {
           <>
             <Typography sx={userStyle.HeaderText}>
               {" "}
-              View User Attendance History
+              View Biometric Device Offline History
             </Typography>
             <br /> <br />
             <Grid container spacing={2}>
@@ -2101,7 +2101,7 @@ function BiometricDeviceOfflineHistory() {
         filteredDataTwo={
           (filteredChanges !== null ? filteredRowData : rowDataTable) ?? []
         }
-        itemsTwo={acpointCalculationArrayForExport ?? []}
+        itemsTwo={items ?? []}
         filename={"Biometric Device Offline History"}
         exportColumnNames={exportColumnNames}
         exportRowValues={exportRowValues}

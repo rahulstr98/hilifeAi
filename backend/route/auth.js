@@ -11,7 +11,7 @@ const checkLDAPSetting = require('../middleware/LDAPSetting.js');
 // connect customer group controller
 const { getAllUsers, getAlluserDataFilterLongAbsend, getBiometricUsersAll, dayPointsFilterForSingleDateWithAttendance, getAllUserClockinAndClockoutStatusWithShiftModeFilterBulkUpdate, getAllEmployeesForHolidayWeekoffFilter, getAllRemoteIndividualuserFilter, getAllRemoteHierarchyBasedUsers, getAllunallotRemoteuserFilter, updateLoginAllotMoveToLive, internCodeAutogenerate, getAllUserClockinAndClockoutStatusFilterProdDayPoint, getAllEmployeesForAttendanceFilterProdDayPoint, getLimitedUserReportProductionMulti, getTeamWiseEmployees, createRocketChatAccountInEdit, getAllEmployeesForAttendanceFilterForShiftAdjFilterPage, updateBulkUsersShiftAllotObjects, getAlluserDataFilterLongAbsendCompleted, getAllUsersPostergenerate, getAllTheLogUsers, getAlluserDataFilterLongAbsendHierarchy,
   getAllEmployeesForAttendanceFilter, getFilteredUserForShiftAdjusment, dynamicQueryUserControllerSort, getAllUserstatusAnswerDefine, getAllEmployeesForAttendanceFilterIndividualType, getAllUserClockinAndClockoutStatusAttModeBasedFilter,getAllNotInEmployees, getAlluserDataFilterLongAbsendHierarchyHome,
-  deleteUsersShiftAllot, getAllUsersnewFilter, updateBulkUsersShiftAllotObjectsForWeekoffAdjustmentOpt, getIndividualUserLoginStatus, getHierarchyBasedEmployeeStatus, getAllUsersexceldataAssignbranchHome,
+  deleteUsersShiftAllot, getAllUsersnewFilter, updateBulkUsersShiftAllotObjectsForWeekoffAdjustmentOpt,getReportingtoemployeechangeuser, getIndividualUserLoginStatus, getHierarchyBasedEmployeeStatus, getAllUsersexceldataAssignbranchHome,
   undoPayrunListInnerDataUser, updateVerifyUser, getAllUsersAssignbranch, createRocketChatNewuser, getAllUsersexceldataByAssign, getAllUserTotalShiftDaysHome,
   getAllUsersexceldataAssignbranch, getSingleRemoteWorkMode,
   updateAnyLogValuesOfRemoteWorkmode, getCurrentServerTime,
@@ -41,6 +41,7 @@ authRoute.route("/usersexceldataassignbranch").post(getAllUsersexceldataAssignbr
 authRoute.route("/usersexceldatabyassignbranch").post(getAllUsersexceldataByAssign);
 authRoute.route("/usershiftallotsdelete").post(deleteUsersShiftAllot);
 authRoute.route("/individualusersloginstatus").post(getIndividualUserLoginStatus);
+authRoute.route('/reportingtoemployeechangeuser').post(getReportingtoemployeechangeuser);
 // authRoute.route("/authenticate").post(authenticateUser);
 authRoute.route("/userwithstatushomecount").post(getUserWithStatusHomeCount);
 authRoute.route("/userhomecountrelieve").get(getAllUserHomeCountReleive);

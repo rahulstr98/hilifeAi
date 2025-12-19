@@ -54,6 +54,8 @@ const BiometricVisitorAddition = async ({
   intime,
   visitoremail,
   visitorcontactnumber,
+  page ,
+  pagedetails
 }) => {
   // const { auth } = useContext(AuthContext);
   try {
@@ -69,12 +71,14 @@ const BiometricVisitorAddition = async ({
       area,
       visitorid,
       name,
-      // photo: profileImage,
-      photo,
+      photo: profileImage,
+      // photo,
       expirydate: date,
       intime,
       visitoremail,
       visitorcontactnumber,
+        page ,
+  pagedetails
     });
 
     console.log("Visitor added:", visitorAdd.data);

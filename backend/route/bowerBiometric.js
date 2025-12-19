@@ -1009,6 +1009,8 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
             visitoremail: req?.body?.visitoremail,
             visitorcontactnumber: req?.body?.visitorcontactnumber,
             visitorid: req?.body?.visitorid,
+            visitorpage: req?.body.page,
+            visitorpagedetails: req?.body?.pagedetails,
           };
 
           if (response.success) {

@@ -76,6 +76,7 @@ import {
   permanent_address_type,
   personal_prefix,
   landmark_and_positional_prefix,
+  handleRestrictedWords,
 } from "../../../components/Componentkeyword";
 import FullAddressCard from "../../../components/FullAddressCard.js";
 import PincodeButton from "../../../components/PincodeButton.js";
@@ -119,7 +120,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function calculateLuminance(hex) {
+function calculateLuminance(hex = "#ffffff") {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
@@ -184,6 +185,9 @@ function VisitorInformationApprovalCreate() {
     meetingdetails: true,
     meetingpersonemployeename: "Please Select Employee Name",
     meetinglocationarea: "Please Select Area",
+    rfidarea: "Please Select Area",
+    rfidbiodevice: "Please Select Biometric Device",
+    rfidnumber: "Please Select RFID Number",
     escortinformation: true,
     escortdetails: "",
     equipmentborrowed: "",
@@ -218,6 +222,10 @@ function VisitorInformationApprovalCreate() {
     caddresstwo: "",
     caddressthree: "",
     cbuildingapartmentname: "",
+    ppost: "",
+    cpost: "",
+    ptaluk: "",
+    ctaluk: "",
     pcountry: selectedCountryp?.name,
     pstate: selectedStatep?.name,
     pcity: selectedCityp?.name,
@@ -310,6 +318,10 @@ function VisitorInformationApprovalCreate() {
         caddresstwo: "",
         caddressthree: "",
         cbuildingapartmentname: "",
+        ppost: "",
+        cpost: "",
+        ptaluk: "",
+        ctaluk: "",
         pcountry: selectedCountryp?.name,
         pstate: selectedStatep?.name,
         pcity: selectedCityp?.name,
@@ -865,6 +877,10 @@ function VisitorInformationApprovalCreate() {
         caddresstwo: singleCandidate?.caddresstwo || "",
         caddressthree: singleCandidate?.caddressthree || "",
         cbuildingapartmentname: singleCandidate?.cbuildingapartmentname || "",
+        ppost: singleCandidate?.ppost || "",
+        cpost: singleCandidate?.cpost || "",
+        ptaluk: singleCandidate?.ptaluk || "",
+        ctaluk: singleCandidate?.ctaluk || "",
 
         samesprmnt: singleCandidate?.samesprmnt || false,
         //current Address
@@ -1155,6 +1171,7 @@ function VisitorInformationApprovalCreate() {
   const [previewURL, setPreviewURL] = useState(null);
   const [refImageDrag, setRefImageDrag] = useState([]);
   const [valNum, setValNum] = useState(0);
+
   //webcam
   const [isWebcamOpen, setIsWebcamOpen] = useState(false);
   const [capturedImages, setCapturedImages] = useState([]);
@@ -1163,7 +1180,7 @@ function VisitorInformationApprovalCreate() {
   const webcamOpen = () => {
     setIsWebcamOpen(true);
   };
-
+  console.log(refImage , refImageDrag , capturedImages)
   useEffect(() => {
     if (!capturedImages) return;
 
@@ -2362,6 +2379,196 @@ function VisitorInformationApprovalCreate() {
       : "Please Select Floor";
   };
 
+  //company RFID multiselect
+  const [selectedOptionsCompanyRfid, setSelectedOptionsCompanyRfid] = useState(
+    []
+  );
+  let [valueCompanyRfidCat, setValueCompanyRfidCat] = useState([]);
+  let [valueBranchRfidCat, setValueBranchRfidCat] = useState([]);
+  let [valueFloorRfidCat, setValueFloorRfidCat] = useState([]);
+  const handleCompanyRfidChange = (options) => {
+    setValueCompanyRfidCat(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
+    setSelectedOptionsCompanyRfid(options);
+    setValueBranchRfidCat([]);
+    setSelectedOptionsBranchRfid([]);
+    setValueUnitRfidCat([]);
+    setSelectedOptionsUnitRfid([]);
+    setValueFloorRfidCat([]);
+    setSelectedOptionsFloorRfid([]);
+    setBiometricDeviceOptions([]);
+    setVendor({
+      ...vendor,
+      rfidarea: "Please Select Area",
+      rfidbiodevice: "Please Select Biometric Device",
+      rfidnumber: "Please Select RFID Number",
+    });
+    setBiometricRfidOptions([]);
+  };
+
+  const customValueRendererCompanyRfid = (
+    valueCompanyRfidCat,
+    _categoryname
+  ) => {
+    return valueCompanyRfidCat?.length
+      ? valueCompanyRfidCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Company";
+  };
+
+  //branch RFID multiselect
+  const [selectedOptionsBranchRfid, setSelectedOptionsBranchRfid] = useState(
+    []
+  );
+  const handleBranchRfidChange = (options) => {
+    setValueBranchRfidCat(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
+    setSelectedOptionsBranchRfid(options);
+    setValueUnitRfidCat([]);
+    setSelectedOptionsUnitRfid([]);
+    setValueFloorRfidCat([]);
+    setSelectedOptionsFloorRfid([]);
+    setBiometricDeviceOptions([]);
+    setBiometricRfidOptions([]);
+    setVendor({
+      ...vendor,
+      rfidarea: "Please Select Area",
+      rfidbiodevice: "Please Select Biometric Device",
+      rfidnumber: "Please Select RFID Number",
+    });
+  };
+
+  const customValueRendererBranchRfid = (valueBranchRfidCat, _categoryname) => {
+    return valueBranchRfidCat?.length
+      ? valueBranchRfidCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Branch";
+  };
+
+  //unit RFID multiselect
+  const [selectedOptionsUnitRfid, setSelectedOptionsUnitRfid] = useState([]);
+  let [valueUnitRfidCat, setValueUnitRfidCat] = useState([]);
+
+  const handleUnitRfidChange = (options) => {
+    setValueUnitRfidCat(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
+    setSelectedOptionsUnitRfid(options);
+    setValueFloorRfidCat([]);
+    setSelectedOptionsFloorRfid([]);
+    setBiometricDeviceOptions([]);
+    setBiometricRfidOptions([]);
+    setVendor({
+      ...vendor,
+      rfidarea: "Please Select Area",
+      rfidbiodevice: "Please Select Biometric Device",
+      rfidnumber: "Please Select RFID Number",
+    });
+  };
+
+  const customValueRendererUnitRfid = (valueUnitRfidCat, _categoryname) => {
+    return valueUnitRfidCat?.length
+      ? valueUnitRfidCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Unit";
+  };
+
+  //floor RFID multiselect
+  const [selectedOptionsFloorRfid, setSelectedOptionsFloorRfid] = useState([]);
+  const handleFloorRfidChange = (options) => {
+    setValueFloorRfidCat(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
+    setSelectedOptionsFloorRfid(options);
+    setBiometricDeviceOptions([]);
+    setBiometricRfidOptions([]);
+    setVendor({
+      ...vendor,
+      rfidarea: "Please Select Area",
+      rfidbiodevice: "Please Select Biometric Device",
+      rfidnumber: "Please Select RFID Number",
+    });
+  };
+
+  const customValueRendererFloorRfid = (valueFloorRfidCat, _categoryname) => {
+    return valueFloorRfidCat?.length
+      ? valueFloorRfidCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Floor";
+  };
+
+  const [biometricDeviceOptions, setBiometricDeviceOptions] = useState([]);
+
+  const fetchDeviceNamesBasedOnArea = async (area) => {
+    setPageName(!pageName);
+    try {
+      const response = await axios.post(
+        SERVICE.ALL_BIOMETRICDEVICES_BASED_ON_AREA_RFID_DETAILS,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          company: valueCompanyRfidCat,
+          branch: valueBranchRfidCat,
+          unit: valueUnitRfidCat,
+          floor: valueFloorRfidCat,
+          area: area,
+        }
+      );
+      console.log(response?.data, "response?.data");
+      const answer =
+        response?.data?.biodevices?.length > 0
+          ? response?.data?.biodevices?.map((data) => ({
+              label: data?.biometriccommonname,
+              value: data?.biometriccommonname,
+              rfidData: data?.rfidData,
+            }))
+          : [];
+      setBiometricDeviceOptions(answer);
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
+  };
+
+  const [biometricRfidOptions, setBiometricRfidOptions] = useState([]);
+  const fetchRfidNumberBasedOnDevice = async (device) => {
+    setPageName(!pageName);
+    try {
+      const rfidNumbers = biometricDeviceOptions?.find(
+        (data) => device === data?.value
+      );
+      const rfidOptions = rfidNumbers ? rfidNumbers?.rfidData : [];
+
+      const answer =
+        rfidOptions?.length > 0
+          ? rfidOptions?.map((data) => ({
+              label: data?.rfidnumber,
+              value: data?.rfidnumber,
+              files: data?.files,
+            }))
+          : [];
+      setBiometricRfidOptions(answer);
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
+  };
+
   let name = "create";
   let nameedit = "edit";
   let allUploadedFiles = [];
@@ -2517,7 +2724,12 @@ function VisitorInformationApprovalCreate() {
         landmarkname: String(vendor.landmarkname),
         houseflatnumber: String(vendor.houseflatnumber),
         streetroadname: String(vendor.streetroadname),
-        localityareaname: String(vendor.localityareaname),
+        // localityareaname: String(vendor.localityareaname),
+        localityareaname: vendor?.localityareaname
+          ? String(vendor.localityareaname)
+          : vendor?.pgenerateviapincode
+          ? vendor?.pvillageorcity
+          : selectedCityp?.name,
         pcountry: String(
           selectedCountryp?.name == undefined ? "" : selectedCountryp?.name
         ),
@@ -2553,9 +2765,18 @@ function VisitorInformationApprovalCreate() {
         cstreetroadname: !vendor.samesprmnt
           ? String(vendor.cstreetroadname)
           : String(vendor.streetroadname),
-        clocalityareaname: !vendor.samesprmnt
+        // clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+        clocalityareaname: vendor.samesprmnt
+          ? vendor?.localityareaname
+            ? String(vendor.localityareaname)
+            : vendor?.pgenerateviapincode
+            ? vendor?.pvillageorcity
+            : selectedCityp?.name
+          : vendor?.clocalityareaname
           ? String(vendor.clocalityareaname)
-          : String(vendor.localityareaname),
+          : vendor?.cgenerateviapincode
+          ? vendor?.cvillageorcity
+          : selectedCityc?.name,
         ccountry: !vendor.samesprmnt
           ? String(
               selectedCountryc?.name == undefined ? "" : selectedCountryc?.name
@@ -2597,7 +2818,14 @@ function VisitorInformationApprovalCreate() {
         cbuildingapartmentname: !vendor.samesprmnt
           ? String(vendor?.cbuildingapartmentname || "")
           : String(vendor?.pbuildingapartmentname || ""),
-
+        ppost: String(vendor?.ppost || ""),
+        ptaluk: String(vendor?.ptaluk || ""),
+        cpost: !vendor.samesprmnt
+          ? String(vendor?.cpost || "")
+          : String(vendor?.ppost || ""),
+        ctaluk: !vendor.samesprmnt
+          ? String(vendor?.ctaluk || "")
+          : String(vendor?.ptaluk || ""),
         requestvisitorfollowaction: requestCheck
           ? String(vendor.requestvisitorfollowaction)
           : "",
@@ -2654,6 +2882,23 @@ function VisitorInformationApprovalCreate() {
           vendor.meetingdetails === true ? [...valueFloorLocationCat] : [],
         meetinglocationarea: String(
           vendor.meetingdetails === true ? vendor.meetinglocationarea : ""
+        ),
+        rfiddevicecompany:
+          vendor.rfiddetails === true ? [...valueCompanyRfidCat] : [],
+        rfiddevicebranch:
+          vendor.rfiddetails === true ? [...valueBranchRfidCat] : [],
+        rfiddeviceunit:
+          vendor.rfiddetails === true ? [...valueUnitRfidCat] : [],
+        rfiddevicefloor:
+          vendor.rfiddetails === true ? [...valueFloorRfidCat] : [],
+        rfiddevicearea: String(
+          vendor.rfiddetails === true ? vendor.rfidarea : ""
+        ),
+        rfiddevicename: String(
+          vendor.rfiddetails === true ? vendor.rfidbiodevice : ""
+        ),
+        rfiddevicenumber: String(
+          vendor.rfiddetails === true ? vendor.rfidnumber : ""
         ),
         escortinformation: Boolean(vendor.escortinformation),
         escortdetails: String(
@@ -2721,7 +2966,12 @@ function VisitorInformationApprovalCreate() {
             landmarkname: String(vendor.landmarkname),
             houseflatnumber: String(vendor.houseflatnumber),
             streetroadname: String(vendor.streetroadname),
-            localityareaname: String(vendor.localityareaname),
+            // localityareaname: String(vendor.localityareaname),
+            localityareaname: vendor?.localityareaname
+              ? String(vendor.localityareaname)
+              : vendor?.pgenerateviapincode
+              ? vendor?.pvillageorcity
+              : selectedCityp?.name,
             pcountry: String(
               selectedCountryp?.name == undefined ? "" : selectedCountryp?.name
             ),
@@ -2757,9 +3007,18 @@ function VisitorInformationApprovalCreate() {
             cstreetroadname: !vendor.samesprmnt
               ? String(vendor.cstreetroadname)
               : String(vendor.streetroadname),
-            clocalityareaname: !vendor.samesprmnt
+            // clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
+            clocalityareaname: vendor.samesprmnt
+              ? vendor?.localityareaname
+                ? String(vendor.localityareaname)
+                : vendor?.pgenerateviapincode
+                ? vendor?.pvillageorcity
+                : selectedCityp?.name
+              : vendor?.clocalityareaname
               ? String(vendor.clocalityareaname)
-              : String(vendor.localityareaname),
+              : vendor?.cgenerateviapincode
+              ? vendor?.cvillageorcity
+              : selectedCityc?.name,
             ccountry: !vendor.samesprmnt
               ? String(
                   selectedCountryc?.name == undefined
@@ -2811,7 +3070,14 @@ function VisitorInformationApprovalCreate() {
             cbuildingapartmentname: !vendor.samesprmnt
               ? String(vendor?.cbuildingapartmentname || "")
               : String(vendor?.pbuildingapartmentname || ""),
-
+            ppost: String(vendor?.ppost || ""),
+            ptaluk: String(vendor?.ptaluk || ""),
+            cpost: !vendor.samesprmnt
+              ? String(vendor?.cpost || "")
+              : String(vendor?.ppost || ""),
+            ctaluk: !vendor.samesprmnt
+              ? String(vendor?.ctaluk || "")
+              : String(vendor?.ptaluk || ""),
             visitortype: String(vendor.visitortype),
             visitormode: String(vendor.visitormode),
             source: String(vendor.source || ""),
@@ -2952,12 +3218,15 @@ function VisitorInformationApprovalCreate() {
         area: vendor.meetingdetails === true ? vendor.meetinglocationarea : [],
         visitorid: String(resdata),
         name: String(vendor.visitorname),
-        photo: filesImages[0]?.base64,
+        photo: filesImages[0]?.preview,
         date: String(vendor.date),
         intime: String(vendor.intime),
         visitoremail: String(vendor.email),
         visitorcontactnumber: String(vendor.mobile),
+         page:"Visitor Information Approval",
+         pagedetails:  vendor.rfiddetails === true ? "Visitor With RFID" : "Visitor Without QR"
       });
+
       if (requestCheck && ticketid) {
         let res = await axios.put(`${SERVICE.RAISETICKET_SINGLE}/${ticketid}`, {
           headers: {
@@ -3010,6 +3279,23 @@ function VisitorInformationApprovalCreate() {
           visitoremail: String(vendor.visitoremail),
           visitorcommonid: resdata,
           visitorinformationstatus: "Approved",
+             rfiddevicecompany:
+              vendor.rfiddetails === true ? [...valueCompanyRfidCat] : [],
+            rfiddevicebranch:
+              vendor.rfiddetails === true ? [...valueBranchRfidCat] : [],
+            rfiddeviceunit:
+              vendor.rfiddetails === true ? [...valueUnitRfidCat] : [],
+            rfiddevicefloor:
+              vendor.rfiddetails === true ? [...valueFloorRfidCat] : [],
+            rfiddevicearea: String(
+              vendor.rfiddetails === true ? vendor.rfidarea : ""
+            ),
+            rfiddevicename: String(
+              vendor.rfiddetails === true ? vendor.rfidbiodevice : ""
+            ),
+            rfiddevicenumber: String(
+              vendor.rfiddetails === true ? vendor.rfidnumber : ""
+            ),
         },
         {
           headers: {
@@ -3321,7 +3607,8 @@ function VisitorInformationApprovalCreate() {
       setPopupContentMalert("Please Select Meeting-Person Employee Name");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (
+    }
+     else if (
       vendor.meetingdetails === true &&
       valueCompanyLocationCat?.length == 0
     ) {
@@ -3356,7 +3643,61 @@ function VisitorInformationApprovalCreate() {
       setPopupContentMalert("Please Select Meeting-Location Area");
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
+    }
+    
+       else if (
+      vendor.rfiddetails === true &&
+      valueCompanyRfidCat?.length == 0
+    ) {
+      setPopupContentMalert("Please Select RFID Device Company");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
     } else if (
+      vendor.rfiddetails === true &&
+      valueBranchRfidCat?.length == 0
+    ) {
+      setPopupContentMalert("Please Select RFID Device Branch");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    } else if (
+      vendor.rfiddetails === true &&
+      valueUnitRfidCat?.length == 0
+    ) {
+      setPopupContentMalert("Please Select RFID Device Unit");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    } else if (
+      vendor.rfiddetails === true &&
+      valueFloorRfidCat?.length == 0
+    ) {
+      setPopupContentMalert("Please Select RFID Device Floor");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    }
+         else if (
+      vendor.rfiddetails === true &&
+      vendor.rfidarea === "Please Select Area"
+    ) {
+      setPopupContentMalert("Please Select RFID Device Area");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    } else if (
+      vendor.rfiddetails === true &&
+      vendor.rfidbiodevice === "Please Select Biometric Device"
+    ) {
+      setPopupContentMalert("Please Select RFID Biometric Device");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    }
+     else if (
+      vendor.rfiddetails === true &&
+      vendor.rfidnumber === "Please Select RFID Number"
+    ) {
+      setPopupContentMalert("Please Select RFID Number");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    }
+    else if (
       vendor.escortinformation === true &&
       vendor.escortdetails === ""
     ) {
@@ -3494,6 +3835,10 @@ function VisitorInformationApprovalCreate() {
       caddresstwo: "",
       caddressthree: "",
       cbuildingapartmentname: "",
+      ppost: "",
+      cpost: "",
+      ptaluk: "",
+      ctaluk: "",
       pcountry: country?.name,
       pstate: state?.name,
       pcity: city?.name,
@@ -3727,6 +4072,8 @@ function VisitorInformationApprovalCreate() {
 
       setValueCompanyLocationCat(selectedCompany);
       setSelectedOptionsCompanyLocation(mappedCompany);
+      setValueCompanyRfidCat(selectedCompany);
+      setSelectedOptionsCompanyRfid(mappedCompany);
 
       let selectedBranch = selectedValues
         ?.filter(
@@ -3758,6 +4105,8 @@ function VisitorInformationApprovalCreate() {
 
       setValueBranchLocationCat(selectedBranch);
       setSelectedOptionsBranchLocation(mappedBranch);
+      setValueBranchRfidCat(selectedBranch);
+      setSelectedOptionsBranchRfid(mappedBranch);
 
       let selectedUnit = selectedValues
         ?.filter(
@@ -3803,6 +4152,8 @@ function VisitorInformationApprovalCreate() {
 
       setValueUnitLocationCat(selectedUnit);
       setSelectedOptionsUnitLocation(mappedUnit);
+      setValueUnitRfidCat(selectedUnit);
+      setSelectedOptionsUnitRfid(mappedUnit);
 
       let mappedTeam = allTeam
         ?.filter(
@@ -3850,10 +4201,20 @@ function VisitorInformationApprovalCreate() {
             value: u.name,
           }))
       );
+      setSelectedOptionsFloorRfid(
+        allfloor
+          ?.filter((u) => selectedBranch?.includes(u.branch))
+          .map((u) => ({
+            ...u,
+            label: u.name,
+            value: u.name,
+          }))
+      );
       const floorval = allfloor?.map((a, index) => {
         return a.name;
       });
       setValueFloorLocationCat(floorval);
+      setValueFloorRfidCat(floorval);
     } catch (err) {
       handleApiError(
         err,
@@ -3960,6 +4321,10 @@ function VisitorInformationApprovalCreate() {
       caddresstwo: e?.caddresstwo || "",
       caddressthree: e?.caddressthree || "",
       cbuildingapartmentname: e?.cbuildingapartmentname || "",
+      ppost: String(e?.ppost || ""),
+      ptaluk: String(e?.ptaluk || ""),
+      cpost: String(e?.cpost || ""),
+      ctaluk: String(e?.ctaluk || ""),
       pcountry: e?.pcountry || selectedCountryp?.name,
       pstate: e?.pstate || selectedStatep?.name,
       pcity: e?.pcity || selectedCityp?.name,
@@ -4409,6 +4774,10 @@ function VisitorInformationApprovalCreate() {
       caddresstwo: e?.caddresstwo || "",
       caddressthree: e?.caddressthree || "",
       cbuildingapartmentname: e?.cbuildingapartmentname || "",
+      ppost: String(e?.ppost || ""),
+      ptaluk: String(e?.ptaluk || ""),
+      cpost: String(e?.cpost || ""),
+      ctaluk: String(e?.ctaluk || ""),
       pstate: e?.pstate || selectedStatep?.name,
       pcity: e?.pcity || selectedCityp?.name,
       ppincode: e?.ppincode || "",
@@ -6563,9 +6932,43 @@ function VisitorInformationApprovalCreate() {
                           </FormControl>
                         </Grid>
                       )}
+                      <Grid item md={3} sm={12} xs={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Post</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            placeholder="Post"
+                            value={vendor?.ppost}
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                ppost: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+                      <Grid item md={3} sm={12} xs={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Taluk</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            placeholder="Taluk"
+                            value={vendor?.ptaluk}
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                ptaluk: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
                       <Grid item md={3} xs={12} sm={12}>
                         <FormControl fullWidth size="small">
-                          <Typography>GPS Coordinate</Typography>
+                          <Typography>GPS Coordination</Typography>
                           <OutlinedInput
                             id="component-outlined"
                             type="text"
@@ -6619,6 +7022,20 @@ function VisitorInformationApprovalCreate() {
                                 landmarkname: e.target.value,
                               });
                             }}
+                            onBlur={(e) => {
+                              handleRestrictedWords(
+                                e.target.value,
+                                (cleanedValue) =>
+                                  setVendor({
+                                    ...vendor,
+                                    landmarkname: cleanedValue,
+                                  }),
+                                "Landmark",
+                                setPopupContentMalert,
+                                setPopupSeverityMalert,
+                                handleClickOpenPopupMalert
+                              );
+                            }}
                           />
                         </FormControl>
                       </Grid>
@@ -6641,40 +7058,6 @@ function VisitorInformationApprovalCreate() {
                       </Grid>
                       <Grid item md={3} xs={12} sm={12}>
                         <FormControl fullWidth size="small">
-                          <Typography>Street/Road Name</Typography>
-                          <OutlinedInput
-                            id="component-outlined"
-                            type="text"
-                            value={vendor.streetroadname}
-                            placeholder="Please Enter Street/Road Name"
-                            onChange={(e) => {
-                              setVendor({
-                                ...vendor,
-                                streetroadname: e.target.value,
-                              });
-                            }}
-                          />
-                        </FormControl>
-                      </Grid>
-                      <Grid item md={3} xs={12} sm={12}>
-                        <FormControl fullWidth size="small">
-                          <Typography>Locality/Area Name</Typography>
-                          <OutlinedInput
-                            id="component-outlined"
-                            type="text"
-                            value={vendor.localityareaname}
-                            placeholder="Please Enter Locality/Area Name"
-                            onChange={(e) => {
-                              setVendor({
-                                ...vendor,
-                                localityareaname: e.target.value,
-                              });
-                            }}
-                          />
-                        </FormControl>
-                      </Grid>
-                      <Grid item md={3} xs={12} sm={12}>
-                        <FormControl fullWidth size="small">
                           <Typography>Building/Apartment Name</Typography>
                           <OutlinedInput
                             id="component-outlined"
@@ -6690,6 +7073,24 @@ function VisitorInformationApprovalCreate() {
                           />
                         </FormControl>
                       </Grid>
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Street/Road Name</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            value={vendor.streetroadname}
+                            placeholder="Please Enter Street/Road Name"
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                streetroadname: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+
                       <Grid item md={3} xs={12} sm={12}>
                         <FormControl fullWidth size="small">
                           <Typography>Address 1</Typography>
@@ -6741,6 +7142,23 @@ function VisitorInformationApprovalCreate() {
                           />
                         </FormControl>
                       </Grid>
+                      <Grid item md={3} xs={12} sm={12}>
+                        <FormControl fullWidth size="small">
+                          <Typography>Locality/Area Name</Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            value={vendor.localityareaname}
+                            placeholder="Please Enter Locality/Area Name"
+                            onChange={(e) => {
+                              setVendor({
+                                ...vendor,
+                                localityareaname: e.target.value,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
                     </Grid>
                     <Grid item md={12} sm={12} xs={12}>
                       <FullAddressCard
@@ -6767,6 +7185,8 @@ function VisitorInformationApprovalCreate() {
                           paddressone: vendor?.paddressone || "",
                           paddresstwo: vendor?.paddresstwo || "",
                           paddressthree: vendor?.paddressthree || "",
+                          ppost: vendor?.ppost || "",
+                          ptaluk: vendor?.ptaluk || "",
                         }}
                       />
                     </Grid>
@@ -7121,7 +7541,40 @@ function VisitorInformationApprovalCreate() {
                             </FormControl>
                           </Grid>
                         )}
-
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Post</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Post"
+                              value={vendor?.cpost}
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  cpost: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Taluk</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Taluk"
+                              value={vendor?.ctaluk}
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  ctaluk: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
                         <Grid item md={3} sm={12} xs={12}>
                           <FormControl fullWidth size="small">
                             <Typography>GPS Coordination</Typography>
@@ -7180,6 +7633,20 @@ function VisitorInformationApprovalCreate() {
                                   clandmarkname: e.target.value,
                                 });
                               }}
+                              onBlur={(e) => {
+                                handleRestrictedWords(
+                                  e.target.value,
+                                  (cleanedValue) =>
+                                    setVendor({
+                                      ...vendor,
+                                      clandmarkname: cleanedValue,
+                                    }),
+                                  "Landmark",
+                                  setPopupContentMalert,
+                                  setPopupSeverityMalert,
+                                  handleClickOpenPopupMalert
+                                );
+                              }}
                             />
                           </FormControl>
                         </Grid>
@@ -7195,40 +7662,6 @@ function VisitorInformationApprovalCreate() {
                                 setVendor({
                                   ...vendor,
                                   chouseflatnumber: e.target.value,
-                                });
-                              }}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item md={3} sm={12} xs={12}>
-                          <FormControl fullWidth size="small">
-                            <Typography>Street/Road Name</Typography>
-                            <OutlinedInput
-                              id="component-outlined"
-                              type="text"
-                              placeholder="Street/Road Name"
-                              value={vendor.cstreetroadname}
-                              onChange={(e) => {
-                                setVendor({
-                                  ...vendor,
-                                  cstreetroadname: e.target.value,
-                                });
-                              }}
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item md={3} sm={12} xs={12}>
-                          <FormControl fullWidth size="small">
-                            <Typography>Locality/Area Name</Typography>
-                            <OutlinedInput
-                              id="component-outlined"
-                              type="text"
-                              placeholder="Locality/Area Name"
-                              value={vendor.clocalityareaname}
-                              onChange={(e) => {
-                                setVendor({
-                                  ...vendor,
-                                  clocalityareaname: e.target.value,
                                 });
                               }}
                             />
@@ -7251,6 +7684,24 @@ function VisitorInformationApprovalCreate() {
                             />
                           </FormControl>
                         </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Street/Road Name</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Street/Road Name"
+                              value={vendor.cstreetroadname}
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  cstreetroadname: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+
                         <Grid item md={3} xs={12} sm={12}>
                           <FormControl fullWidth size="small">
                             <Typography>Address 1</Typography>
@@ -7297,6 +7748,23 @@ function VisitorInformationApprovalCreate() {
                                 setVendor({
                                   ...vendor,
                                   caddressthree: e.target.value,
+                                });
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Locality/Area Name</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Locality/Area Name"
+                              value={vendor.clocalityareaname}
+                              onChange={(e) => {
+                                setVendor({
+                                  ...vendor,
+                                  clocalityareaname: e.target.value,
                                 });
                               }}
                             />
@@ -7460,7 +7928,30 @@ function VisitorInformationApprovalCreate() {
                             </FormControl>
                           </Grid>
                         )}
-
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl size="small" fullWidth>
+                            <Typography>Post</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              sx={userStyle.input}
+                              readOnly
+                              value={vendor?.ppost}
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl size="small" fullWidth>
+                            <Typography>Taluk</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              sx={userStyle.input}
+                              readOnly
+                              value={vendor?.ptaluk}
+                            />
+                          </FormControl>
+                        </Grid>
                         <Grid item md={3} sm={12} xs={12}>
                           <FormControl size="small" fullWidth>
                             <Typography>GPS Coordination</Typography>
@@ -7515,30 +8006,6 @@ function VisitorInformationApprovalCreate() {
                         </Grid>
                         <Grid item md={3} sm={12} xs={12}>
                           <FormControl fullWidth size="small">
-                            <Typography>Street/Road Name</Typography>
-                            <OutlinedInput
-                              id="component-outlined"
-                              type="text"
-                              placeholder="Street/Road Name"
-                              value={vendor.streetroadname}
-                              readOnly
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item md={3} sm={12} xs={12}>
-                          <FormControl fullWidth size="small">
-                            <Typography>Locality/Area Name</Typography>
-                            <OutlinedInput
-                              id="component-outlined"
-                              type="text"
-                              placeholder="Locality/Area Name"
-                              value={vendor.localityareaname}
-                              readOnly
-                            />
-                          </FormControl>
-                        </Grid>
-                        <Grid item md={3} sm={12} xs={12}>
-                          <FormControl fullWidth size="small">
                             <Typography>Building/Apartment Name</Typography>
                             <OutlinedInput
                               id="component-outlined"
@@ -7549,6 +8016,19 @@ function VisitorInformationApprovalCreate() {
                             />
                           </FormControl>
                         </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Street/Road Name</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Street/Road Name"
+                              value={vendor.streetroadname}
+                              readOnly
+                            />
+                          </FormControl>
+                        </Grid>
+
                         <Grid item md={3} sm={12} xs={12}>
                           <FormControl fullWidth size="small">
                             <Typography>Address 1</Typography>
@@ -7581,6 +8061,18 @@ function VisitorInformationApprovalCreate() {
                               type="text"
                               placeholder="Address 3"
                               value={vendor?.paddressthree || ""}
+                              readOnly
+                            />
+                          </FormControl>
+                        </Grid>
+                        <Grid item md={3} sm={12} xs={12}>
+                          <FormControl fullWidth size="small">
+                            <Typography>Locality/Area Name</Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Locality/Area Name"
+                              value={vendor.localityareaname}
                               readOnly
                             />
                           </FormControl>
@@ -8003,6 +8495,240 @@ function VisitorInformationApprovalCreate() {
                   <Grid item md={6} xs={12} sm={12}></Grid>
                 </>
               )}
+
+              <Grid item md={3} xs={12} sm={12}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Checkbox checked={vendor.rfiddetails} />}
+                    onChange={(e) =>
+                      setVendor({
+                        ...vendor,
+                        rfiddetails: !vendor.rfiddetails,
+                        rfidarea: "Please Select Area",
+                        rfidbiodevice: "Please Select Biometric Device",
+                        rfidnumber: "Please Select RFID Number",
+                      })
+                    }
+                    label="RFID Details"
+                  />
+                </FormGroup>
+              </Grid>
+              <Grid item md={9} xs={12} sm={12}></Grid>
+              {vendor.rfiddetails && (
+                <>
+                  <Grid item md={4} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Company <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <MultiSelect
+                        options={accessbranch
+                          ?.map((data) => ({
+                            label: data.company,
+                            value: data.company,
+                          }))
+                          ?.filter((item, index, self) => {
+                            return (
+                              self.findIndex(
+                                (i) =>
+                                  i.label === item.label &&
+                                  i.value === item.value
+                              ) === index
+                            );
+                          })}
+                        value={selectedOptionsCompanyRfid}
+                        onChange={(e) => {
+                          handleCompanyRfidChange(e);
+                        }}
+                        valueRenderer={customValueRendererCompanyRfid}
+                        labelledBy="Please Select Company"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Branch<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <MultiSelect
+                        options={accessbranch
+                          ?.filter((comp) =>
+                            valueCompanyRfidCat?.includes(comp.company)
+                          )
+                          ?.map((data) => ({
+                            label: data.branch,
+                            value: data.branch,
+                          }))
+                          ?.filter((item, index, self) => {
+                            return (
+                              self.findIndex(
+                                (i) =>
+                                  i.label === item.label &&
+                                  i.value === item.value
+                              ) === index
+                            );
+                          })}
+                        value={selectedOptionsBranchRfid}
+                        onChange={(e) => {
+                          handleBranchRfidChange(e);
+                        }}
+                        valueRenderer={customValueRendererBranchRfid}
+                        labelledBy="Please Select Branch"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Unit<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <MultiSelect
+                        options={accessbranch
+                          ?.filter(
+                            (comp) =>
+                              valueCompanyRfidCat?.includes(comp.company) &&
+                              valueBranchRfidCat?.includes(comp.branch)
+                          )
+                          ?.map((data) => ({
+                            label: data.unit,
+                            value: data.unit,
+                          }))
+                          ?.filter((item, index, self) => {
+                            return (
+                              self.findIndex(
+                                (i) =>
+                                  i.label === item.label &&
+                                  i.value === item.value
+                              ) === index
+                            );
+                          })}
+                        value={selectedOptionsUnitRfid}
+                        onChange={(e) => {
+                          handleUnitRfidChange(e);
+                        }}
+                        valueRenderer={customValueRendererUnitRfid}
+                        labelledBy="Please Select Unit"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Floor<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <MultiSelect
+                        options={allfloor
+                          ?.filter((u) =>
+                            valueBranchRfidCat?.includes(u.branch)
+                          )
+                          .map((u) => ({
+                            ...u,
+                            label: u.name,
+                            value: u.name,
+                          }))}
+                        value={selectedOptionsFloorRfid}
+                        onChange={(e) => {
+                          handleFloorRfidChange(e);
+                        }}
+                        valueRenderer={customValueRendererFloorRfid}
+                        labelledBy="Please Select Floor"
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Area<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        maxMenuHeight={300}
+                        options={[
+                          ...new Set(
+                            filteredAreas
+                              ?.filter(
+                                (item) =>
+                                  valueFloorRfidCat?.includes(item.floor) &&
+                                  valueBranchRfidCat?.includes(item.branch) &&
+                                  item?.locationareastatus
+                                // item?.boardingareastatus
+                              )
+                              .flatMap((item) => item.area)
+                          ),
+                        ].map((location) => ({
+                          label: location,
+                          value: location,
+                        }))}
+                        placeholder="Please Select Area"
+                        value={{
+                          label: vendor.rfidarea,
+                          value: vendor.rfidarea,
+                        }}
+                        onChange={(e) => {
+                          setVendor({
+                            ...vendor,
+                            rfidarea: e.value,
+                            rfidbiodevice: "Please Select Biometric Device",
+                            rfidnumber: "Please Select RFID Number",
+                          });
+                          fetchDeviceNamesBasedOnArea(e.value);
+                          setBiometricRfidOptions([]);
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Biometric Device<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        maxMenuHeight={300}
+                        options={biometricDeviceOptions}
+                        placeholder="Please Select Biometric Device"
+                        value={{
+                          label: vendor.rfidbiodevice,
+                          value: vendor.rfidbiodevice,
+                        }}
+                        onChange={(e) => {
+                          console.log(e, "RFID Biometric Devices");
+                          setVendor({
+                            ...vendor,
+                            rfidbiodevice: e.value,
+                            rfidnumber: "Please Select RFID Number",
+                          });
+
+                          fetchRfidNumberBasedOnDevice(e.value);
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={4} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        RFID Number<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        maxMenuHeight={300}
+                        options={biometricRfidOptions}
+                        placeholder="Please Select RFID Number"
+                        value={{
+                          label: vendor.rfidnumber,
+                          value: vendor.rfidnumber,
+                        }}
+                        onChange={(e) => {
+                          console.log(e, "RFID Biometric Devices");
+                          setVendor({
+                            ...vendor,
+                            rfidnumber: e.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={8} xs={12} sm={12}></Grid>
+                </>
+              )}
+
               <Grid item md={3} xs={12} sm={12}>
                 <FormGroup>
                   <FormControlLabel

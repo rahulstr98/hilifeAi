@@ -91,8 +91,8 @@ function BiometricUsersGrouping() {
       min: "mm",
       second: "ss",
     });
-         const [totalProjects, setTotalProjects] = useState(0);
-          const [totalPages, setTotalPages] = useState(0);
+  const [totalProjects, setTotalProjects] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const validateTimeInterval = (time) => {
     if (time.second === "ss") {
       return { valid: false, message: "Please select seconds" };
@@ -135,11 +135,11 @@ function BiometricUsersGrouping() {
     paireddeviceone: "Please Select First Device",
     paireddevicetwo: "",
     pairedstatus: false,
-    companydevice:"Please Select Company",
-    branchdevice:"Please Select Branch",
-    unitdevice:"Please Select Unit",
-    floordevice:"Please Select Floor",
-    areadevice:"Please Select Area",
+    companydevice: "Please Select Company",
+    branchdevice: "Please Select Branch",
+    unitdevice: "Please Select Unit",
+    floordevice: "Please Select Floor",
+    areadevice: "Please Select Area",
   });
   const [pairedDeviceGroupingEdit, setPairedDeviceGroupingEdit] = useState({
     paireddeviceone: "Please Select First Device",
@@ -212,17 +212,20 @@ function BiometricUsersGrouping() {
       );
     }
   };
-  const fetchDeviceNamesBasedOnAreaEdit = async (company, branch) => {
+  const fetchDeviceNamesBasedOnAreaEdit = async (biometric, area) => {
     setPageName(!pageName);
     try {
       const response = await axios.post(
-        SERVICE.ALL_BIOMETRICDEVICES_PAIRED_DEVICES_AND_UNPAIRED_USER,
+        SERVICE.ALL_BIOMETRICDEVICES_PAIRED_DEVICES_AND_UNPAIRED,
         {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-          company: company,
-          branch: branch,
+          company: biometric?.companydevice,
+          branch: biometric?.branchdevice,
+          unit: biometric?.unitdevice,
+          floor: biometric?.floordevice,
+          area: area,
         }
       );
       console.log(response?.data, "response?.data");
@@ -499,8 +502,8 @@ function BiometricUsersGrouping() {
     "Company",
     "Branch",
     "Unit",
-    "Floor",
-    "Area",
+    "Team",
+    "Depa",
     "Employee Name",
     "Pair Device 1",
     "Attendance In 1",
@@ -557,19 +560,19 @@ function BiometricUsersGrouping() {
   const [selectedRows, setSelectedRows] = useState([]);
   const [searchQueryManage, setSearchQueryManage] = useState("");
   const [UsersGroupingArray, setUsersGroupingArray] = useState([]);
- const {
-     isUserRoleCompare,
-     alldepartment,
-     allareagrouping,
-     isAssignBranch,
-     pageName,
-     setPageName,
-     buttonStyles,
-     isUserRoleAccess,
-     allfloor,
-     allUsersData,
-     allTeam,
-   } = useContext(UserRoleAccessContext);
+  const {
+    isUserRoleCompare,
+    alldepartment,
+    allareagrouping,
+    isAssignBranch,
+    pageName,
+    setPageName,
+    buttonStyles,
+    isUserRoleAccess,
+    allfloor,
+    allUsersData,
+    allTeam,
+  } = useContext(UserRoleAccessContext);
 
   const accessbranch = isUserRoleAccess?.role?.includes("Manager")
     ? isAssignBranch?.map((data) => ({
@@ -629,7 +632,7 @@ function BiometricUsersGrouping() {
           branchaddress: data?.branchaddress,
         }));
 
-         const filteredAreas = allareagrouping.filter((area) =>
+  const filteredAreas = allareagrouping.filter((area) =>
     accessbranch.some(
       (access) =>
         access.company === area.company &&
@@ -888,6 +891,7 @@ function BiometricUsersGrouping() {
       return a.value;
     });
     setPairedDeviceGroupingCreate({
+      ...pairedDeviceGroupingCreate,
       paireddeviceone: "Please Select First Device",
       paireddevicetwo: "",
       pairedstatus: false,
@@ -1078,6 +1082,7 @@ function BiometricUsersGrouping() {
     ?.filter(
       (u) =>
         valueCompanyCat?.includes(u.company) &&
+        valueBranchCat?.includes(u.branch) &&
         valueDepartmentCat?.includes(u.department)
     )
     .map((u) => ({
@@ -1243,6 +1248,11 @@ function BiometricUsersGrouping() {
           paireddeviceone: String(pairedDeviceGroupingCreate.paireddeviceone),
           paireddevicetwo: String(pairedDeviceGroupingCreate.paireddevicetwo),
           pairedstatus: pairedDeviceGroupingCreate.pairedstatus,
+          companydevice: pairedDeviceGroupingCreate.companydevice,
+          branchdevice: pairedDeviceGroupingCreate.branchdevice,
+          unitdevice: pairedDeviceGroupingCreate.unitdevice,
+          floordevice: pairedDeviceGroupingCreate.floordevice,
+          areadevice: pairedDeviceGroupingCreate.areadevice,
           attendanceinone: AttendanceInSwitchFirst,
           attendanceoutone: AttendanceOutSwitchFirst,
           attendanceinoutone: AttendanceInOutSwitchFirst,
@@ -1265,6 +1275,12 @@ function BiometricUsersGrouping() {
           hourTwo: timeIntHourMinSecSecond?.hour,
           minTwo: timeIntHourMinSecSecond?.min,
           secTwo: timeIntHourMinSecSecond?.second,
+          addedby: [
+            {
+              name: String(isUserRoleAccess?.username),
+              date: String(new Date()),
+            },
+          ],
         }
       );
       // console.log(response?.data, "attendance")
@@ -1300,7 +1316,7 @@ function BiometricUsersGrouping() {
       const answer =
         response?.data?.usersgrouping?.length > 0
           ? response?.data?.usersgrouping?.map((item, index) => ({
-              _id: item._id,
+              id: item._id,
               serialNumber: index + 1,
               company:
                 item.company?.length > 0
@@ -1553,10 +1569,7 @@ function BiometricUsersGrouping() {
           ?.map((item) => item?.value)
           ?.some((key) => data?.companyname?.includes(key)) &&
         data?.paireddeviceone === pairedDeviceGroupingCreate?.paireddeviceone &&
-        data?.type === filterState?.type &&
-        data?.pairedstatus &&
-        pairedDeviceGroupingCreate?.pairedstatus &&
-        data?.paireddevicetwo === pairedDeviceGroupingCreate?.paireddevicetwo
+        data?.type === filterState?.type
     );
 
     const Switches =
@@ -1644,6 +1657,41 @@ function BiometricUsersGrouping() {
       setPopupContentMalert("Please Select Device Name!");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingCreate?.companydevice === "Please Select Company" ||
+      pairedDeviceGroupingCreate?.companydevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Company!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingCreate?.branchdevice === "Please Select Branch" ||
+      pairedDeviceGroupingCreate?.branchdevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Branch!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingCreate?.unitdevice === "Please Select Unit" ||
+      pairedDeviceGroupingCreate?.unitdevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Unit!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingCreate?.floordevice === "Please Select Floor" ||
+      pairedDeviceGroupingCreate?.floordevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Floor!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingCreate?.areadevice === "Please Select Company" ||
+      pairedDeviceGroupingCreate?.areadevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Area!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
     } else if (Switches) {
       setPopupContentMalert("Please Select Any of the Switches");
       setPopupSeverityMalert("warning");
@@ -1675,6 +1723,7 @@ function BiometricUsersGrouping() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
+      // console.log(TypeDepart , "TypeDepart")
       sendRequest();
     }
   };
@@ -1715,6 +1764,11 @@ function BiometricUsersGrouping() {
       paireddeviceone: "Please Select First Device",
       paireddevicetwo: "",
       pairedstatus: false,
+      companydevice: "Please Select Company",
+      branchdevice: "Please Select Branch",
+      unitdevice: "Please Select Unit",
+      floordevice: "Please Select Floor",
+      areadevice: "Please Select Area",
     });
     setPairedDeviceOptions([]);
     setAttendanceInSwitchFirst(false);
@@ -1789,7 +1843,7 @@ function BiometricUsersGrouping() {
       paireddevicetwo: "",
       pairedstatus: false,
     });
-    fetchDeviceNamesBasedOnAreaEdit(valueCompanyCatEdit, values);
+    // fetchDeviceNamesBasedOnAreaEdit(valueCompanyCatEdit, values);
     setSelectedOptionsBranchEdit(options);
     setValueUnitCatEdit([]);
     setSelectedOptionsUnitEdit([]);
@@ -2019,10 +2073,7 @@ function BiometricUsersGrouping() {
           ?.map((item) => item?.value)
           ?.some((key) => data?.companyname?.includes(key)) &&
         data?.paireddeviceone === pairedDeviceGroupingEdit?.paireddeviceone &&
-        data?.type === filterStateEdit?.type &&
-        data?.pairedstatus &&
-        pairedDeviceGroupingEdit?.pairedstatus &&
-        data?.paireddevicetwo === pairedDeviceGroupingEdit?.paireddevicetwo
+        data?.type === filterStateEdit?.type
     );
     console.log(duplicate, "duplicate");
 
@@ -2109,6 +2160,41 @@ function BiometricUsersGrouping() {
       setPopupContentMalert("Please Select Device 1");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingEdit?.companydevice === "Please Select Company" ||
+      pairedDeviceGroupingEdit?.companydevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Company!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingEdit?.branchdevice === "Please Select Branch" ||
+      pairedDeviceGroupingEdit?.branchdevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Branch!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingEdit?.unitdevice === "Please Select Unit" ||
+      pairedDeviceGroupingEdit?.unitdevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Unit!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingEdit?.floordevice === "Please Select Floor" ||
+      pairedDeviceGroupingEdit?.floordevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Floor!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    } else if (
+      pairedDeviceGroupingEdit?.areadevice === "Please Select Company" ||
+      pairedDeviceGroupingEdit?.areadevice === ""
+    ) {
+      setPopupContentMalert("Please Select Device Area!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
     } else if (Switches) {
       setPopupContentMalert("Please Select Any of the Switches");
       setPopupSeverityMalert("warning");
@@ -2183,6 +2269,11 @@ function BiometricUsersGrouping() {
           paireddeviceone: String(pairedDeviceGroupingEdit.paireddeviceone),
           paireddevicetwo: String(pairedDeviceGroupingEdit.paireddevicetwo),
           pairedstatus: pairedDeviceGroupingEdit.pairedstatus,
+          companydevice: pairedDeviceGroupingEdit.companydevice,
+          branchdevice: pairedDeviceGroupingEdit.branchdevice,
+          unitdevice: pairedDeviceGroupingEdit.unitdevice,
+          floordevice: pairedDeviceGroupingEdit.floordevice,
+          areadevice: pairedDeviceGroupingEdit.areadevice,
           attendanceinone: AttendanceInSwitchFirstEdit,
           attendanceoutone: AttendanceOutSwitchFirstEdit,
           attendanceinoutone: AttendanceInOutSwitchFirstEdit,
@@ -2190,7 +2281,7 @@ function BiometricUsersGrouping() {
           exitoutone: ExitOutSwitchFirstEdit,
           exitinoutone: ExitInOutSwitchFirstEdit,
           breakone: BreakSwitchFirstEdit,
-          breaktwo: AttendanceInSwitchFirstEdit,
+          breaktwo: BreakSwitchSecondEdit,
           attendanceintwo: AttendanceInSwitchSecondEdit,
           attendanceouttwo: AttendanceOutSwitchSecondEdit,
           attendanceinouttwo: AttendanceInOutSwitchSecondEdit,
@@ -2205,6 +2296,13 @@ function BiometricUsersGrouping() {
           hourTwo: timeIntHourMinSecSecondEdit?.hour,
           minTwo: timeIntHourMinSecSecondEdit?.min,
           secTwo: timeIntHourMinSecSecondEdit?.second,
+                updatedby: [
+            ...updateby,
+            {
+              name: String(isUserRoleAccess.companyname),
+              date: String(new Date()),
+            },
+          ],
         }
       );
       // console.log(response?.data, "attendance")
@@ -2308,9 +2406,7 @@ function BiometricUsersGrouping() {
       );
       const editData = res?.data?.susersgrouping;
       setUsersGroupingArrayEdit(res?.data?.susersgrouping);
-      if (page === "info") {
-        handleClickOpeninfo();
-      } else if (page === "edit") {
+      if (page === "edit") {
         const {
           attendanceinone,
           attendanceoutone,
@@ -2318,6 +2414,11 @@ function BiometricUsersGrouping() {
           visitorinone,
           visitoroutone,
           visitorinoutone,
+          companydevice,
+          branchdevice,
+          unitdevice,
+          floordevice,
+          areadevice,
           exitinone,
           exitoutone,
           exitinoutone,
@@ -2357,8 +2458,13 @@ function BiometricUsersGrouping() {
           paireddeviceone: res?.data?.susersgrouping?.paireddeviceone,
           paireddevicetwo: res?.data?.susersgrouping?.paireddevicetwo,
           pairedstatus: res?.data?.susersgrouping?.pairedstatus,
+          companydevice,
+          branchdevice,
+          unitdevice,
+          floordevice,
+          areadevice,
         });
-        fetchDeviceNamesBasedOnAreaEdit(editData?.company, editData?.branch);
+        fetchDeviceNamesBasedOnAreaEdit(editData, editData?.areadevice);
         setAttendanceInSwitchFirstEdit(attendanceinone);
         setAttendanceOutSwitchFirstEdit(attendanceoutone);
         setAttendanceInOutSwitchFirstEdit(attendanceinoutone);
@@ -2439,6 +2545,30 @@ function BiometricUsersGrouping() {
       } else if (page === "view") {
         handleClickOpenview();
       }
+    } catch (err) {
+      console.log(err, "err");
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
+  };
+  const getinfo = async (e, page) => {
+    setPageName(!pageName);
+    try {
+      let res = await axios.get(
+        `${SERVICE.SINGLE_BIOMETRIC_USERS_ATTENDANCE_GROUPING}/${e}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }
+      );
+      const editData = res?.data?.susersgrouping;
+      setUsersGroupingArrayEdit(editData);
+      handleClickOpeninfo();
     } catch (err) {
       console.log(err, "err");
       handleApiError(
@@ -2630,7 +2760,7 @@ function BiometricUsersGrouping() {
             <Button
               sx={userStyle.buttonedit}
               onClick={() => {
-                getinfoCode(params.data.id, "info");
+                getinfo(params.data.id, "info");
               }}
             >
               <InfoOutlinedIcon sx={buttonStyles.buttoninfo} />
@@ -2642,7 +2772,7 @@ function BiometricUsersGrouping() {
   ];
   const rowDataTable = filteredDatas.map((item, index) => {
     return {
-      id: item._id,
+      id: item.id,
       serialNumber: item.serialNumber,
       company: item.company,
       branch: item.branch,
@@ -3201,248 +3331,246 @@ function BiometricUsersGrouping() {
                   </FormControl>
                 </Grid>
               )}
- <Grid item md={6}                                                                                                                                                                                                                                                     ></Grid>
+              {/* <Grid item md={6}                                                                                                                                                                                                                                                     ></Grid> */}
 
-                               <>
-                                  <Grid item md={3} xs={12} sm={6}>
-                                    <FormControl fullWidth size="small">
-                                      <Typography>
-                                        Company <b style={{ color: "red" }}>*</b>
-                                      </Typography>
-                                      <Selects
-                                        options={accessbranch
-                                          .map((data) => ({
-                                            label: data.company,
-                                            value: data.company,
-                                          }))
-                                          .filter((item, index, self) => {
-                                            return (
-                                              self.findIndex(
-                                                (i) =>
-                                                  i.label === item.label &&
-                                                  i.value === item.value
-                                              ) === index
-                                            );
-                                          })}
-                                        styles={colourStyles}
-                                        value={{
-                                          label: pairedDeviceGroupingCreate.companydevice,
-                                          value: pairedDeviceGroupingCreate.companydevice,
-                                        }}
-                                        onChange={(e) => {
-                                          setPairedDeviceGroupingCreate({
-                                            ...pairedDeviceGroupingCreate,
-                                            companydevice: e.value,
-                                            branchdevice: "Please Select Branch",
-                                            unitdevice: "Please Select Unit",
-                                            floordevice: "Please Select Floor",
-                                            areadevice: "Please Select Area",
-                                            paireddeviceone: "Please Select First Device",
-                                            paireddevicetwo: "",
-                                            pairedstatus: false,
-                                          });
-                                          // setValuePairedDevices([]);
-                                          setPairedDeviceOptions([]);
-                                          // setSelectedPairedDeviceOptions([]);
-                                          handleClearButtons();
-                                        }}
-                                      />
-                                    </FormControl>
-                                  </Grid>
-                                  <Grid item md={3} xs={12} sm={6}>
-                                    <FormControl fullWidth size="small">
-                                      <Typography>
-                                        Branch<b style={{ color: "red" }}>*</b>
-                                      </Typography>
-                                      <Selects
-                                        options={accessbranch
-                                          ?.filter(
-                                            (comp) =>
-                                              comp.company ===
-                                              pairedDeviceGroupingCreate?.companydevice
-                                          )
-                                          .map((data) => ({
-                                            label: data.branch,
-                                            value: data.branch,
-                                            branchcode: data.branchcode,
-                                          }))
-                                          .filter((item, index, self) => {
-                                            return (
-                                              self.findIndex(
-                                                (i) =>
-                                                  i.label === item.label &&
-                                                  i.value === item.value
-                                              ) === index
-                                            );
-                                          })}
-                                        styles={colourStyles}
-                                        value={{
-                                          label: pairedDeviceGroupingCreate.branchdevice,
-                                          value: pairedDeviceGroupingCreate.branchdevice,
-                                        }}
-                                        onChange={(e) => {
-                                          setPairedDeviceGroupingCreate({
-                                            ...pairedDeviceGroupingCreate,
-                                            branchdevice: e.value,
-                                            unitdevice: "Please Select Unit",
-                                            floordevice: "Please Select Floor",
-                                            areadevice: "Please Select Area",
-                                            paireddeviceone: "Please Select First Device",
-                                            paireddevicetwo: "",
-                                            pairedstatus: false,
-                                          });
-                                          // setValuePairedDevices([]);
-                                          setPairedDeviceOptions([]);
-                                          // setSelectedPairedDeviceOptions([]);
-                                          handleClearButtons();
-                                        }}
-                                      />
-                                    </FormControl>
-                                  </Grid>
-                                  <Grid item md={3} xs={12} sm={6}>
-                                    <FormControl fullWidth size="small">
-                                      <Typography>
-                                        Unit<b style={{ color: "red" }}>*</b>
-                                      </Typography>
-                                      <Selects
-                                        options={accessbranch
-                                          ?.filter(
-                                            (comp) =>
-                                              comp.company ===
-                                                pairedDeviceGroupingCreate?.companydevice &&
-                                              comp.branch === pairedDeviceGroupingCreate?.branchdevice
-                                          )
-                                          .map((data) => ({
-                                            label: data.unit,
-                                            value: data.unit,
-                                            unitcode: data.unitcode,
-                                          }))
-                                          .filter((item, index, self) => {
-                                            return (
-                                              self.findIndex(
-                                                (i) =>
-                                                  i.label === item.label &&
-                                                  i.value === item.value
-                                              ) === index
-                                            );
-                                          })}
-                                        styles={colourStyles}
-                                        value={{
-                                          label: pairedDeviceGroupingCreate.unitdevice,
-                                          value: pairedDeviceGroupingCreate.unitdevice,
-                                        }}
-                                        onChange={(e) => {
-                                          setPairedDeviceGroupingCreate({
-                                            ...pairedDeviceGroupingCreate,
-                                            unitdevice: e.value,
-                                            floordevice: "Please Select Floor",
-                                            areadevice: "Please Select Area",
-                                            paireddeviceone: "Please Select First Device",
-                                            paireddevicetwo: "",
-                                            pairedstatus: false,
-                                          });
-                                          // setValuePairedDevices([]);
-                                          setPairedDeviceOptions([]);
-                                          // setSelectedPairedDeviceOptions([]);
-                                          handleClearButtons();
-                                        }}
-                                      />
-                                    </FormControl>
-                                  </Grid>
-                                  <Grid item md={3} xs={12} sm={6}>
-                                    <FormControl fullWidth size="small">
-                                      <Typography>
-                                        Floor<b style={{ color: "red" }}>*</b>
-                                      </Typography>
-                                      <Selects
-                                        options={allfloor
-                                          ?.filter(
-                                            (u) =>
-                                              pairedDeviceGroupingCreate?.branchdevice === u.branch
-                                          )
-                                          .map((u) => ({
-                                            ...u,
-                                            label: u.name,
-                                            value: u.name,
-                                          }))
-                                          .filter((item, index, self) => {
-                                            return (
-                                              self.findIndex(
-                                                (i) =>
-                                                  i.label === item.label &&
-                                                  i.value === item.value
-                                              ) === index
-                                            );
-                                          })}
-                                        styles={colourStyles}
-                                        value={{
-                                          label: pairedDeviceGroupingCreate.floordevice,
-                                          value: pairedDeviceGroupingCreate.floordevice,
-                                        }}
-                                        onChange={(e) => {
-                                          setPairedDeviceGroupingCreate({
-                                            ...pairedDeviceGroupingCreate,
-                                            floordevice: e.value,
-                                            areadevice: "Please Select Area",
-                                            paireddeviceone: "Please Select First Device",
-                                            paireddevicetwo: "",
-                                            pairedstatus: false,
-                                          });
-                                          // setValuePairedDevices([]);
-                                          setPairedDeviceOptions([]);
-                                          // setSelectedPairedDeviceOptions([]);
-                                          handleClearButtons();
-                                        }}
-                                      />
-                                    </FormControl>
-                                  </Grid>
-                                  <Grid item md={3} xs={12} sm={6}>
-                                    <FormControl fullWidth size="small">
-                                      <Typography>
-                                        Area<b style={{ color: "red" }}>*</b>
-                                      </Typography>
-                                      <Selects
-                                        maxMenuHeight={300}
-                                        options={filteredAreas
-                                          .filter(
-                                            (item) =>
-                                              pairedDeviceGroupingCreate?.floordevice ===
-                                                item.floor &&
-                                              pairedDeviceGroupingCreate?.branchdevice === item.branch
-                                          )
-                                          .flatMap((item) => item.area)
-                                          .map((location) => ({
-                                            label: location,
-                                            value: location,
-                                          }))}
-                                        value={{
-                                          label: pairedDeviceGroupingCreate.areadevice,
-                                          value: pairedDeviceGroupingCreate.areadevice,
-                                        }}
-                                        onChange={(e) => {
-                                          setPairedDeviceGroupingCreate({
-                                            ...pairedDeviceGroupingCreate,
-                                            areadevice: e.value,
-                                            paireddeviceone: "Please Select First Device",
-                                            paireddevicetwo: "",
-                                            pairedstatus: false,
-                                          });
-                                          fetchDeviceNamesBasedOnArea(
-                                            pairedDeviceGroupingCreate,
-                                            e.value
-                                          );
-                                          // setValuePairedDevices([]);
-                                          // setSelectedPairedDeviceOptions([]);
-                                          handleClearButtons();
-                                        }}
-                                      />
-                                    </FormControl>
-                                    <br />
-                                    <br />
-                                  </Grid>
-                                </>
+              <>
+                <Grid item md={3} xs={12} sm={6}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Company <b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <Selects
+                      options={accessbranch
+                        .map((data) => ({
+                          label: data.company,
+                          value: data.company,
+                        }))
+                        .filter((item, index, self) => {
+                          return (
+                            self.findIndex(
+                              (i) =>
+                                i.label === item.label && i.value === item.value
+                            ) === index
+                          );
+                        })}
+                      styles={colourStyles}
+                      value={{
+                        label: pairedDeviceGroupingCreate.companydevice,
+                        value: pairedDeviceGroupingCreate.companydevice,
+                      }}
+                      onChange={(e) => {
+                        setPairedDeviceGroupingCreate({
+                          ...pairedDeviceGroupingCreate,
+                          companydevice: e.value,
+                          branchdevice: "Please Select Branch",
+                          unitdevice: "Please Select Unit",
+                          floordevice: "Please Select Floor",
+                          areadevice: "Please Select Area",
+                          paireddeviceone: "Please Select First Device",
+                          paireddevicetwo: "",
+                          pairedstatus: false,
+                        });
+                        // setValuePairedDevices([]);
+                        setPairedDeviceOptions([]);
+                        // setSelectedPairedDeviceOptions([]);
+                        handleClearButtons();
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item md={3} xs={12} sm={6}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Branch<b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <Selects
+                      options={accessbranch
+                        ?.filter(
+                          (comp) =>
+                            comp.company ===
+                            pairedDeviceGroupingCreate?.companydevice
+                        )
+                        .map((data) => ({
+                          label: data.branch,
+                          value: data.branch,
+                          branchcode: data.branchcode,
+                        }))
+                        .filter((item, index, self) => {
+                          return (
+                            self.findIndex(
+                              (i) =>
+                                i.label === item.label && i.value === item.value
+                            ) === index
+                          );
+                        })}
+                      styles={colourStyles}
+                      value={{
+                        label: pairedDeviceGroupingCreate.branchdevice,
+                        value: pairedDeviceGroupingCreate.branchdevice,
+                      }}
+                      onChange={(e) => {
+                        setPairedDeviceGroupingCreate({
+                          ...pairedDeviceGroupingCreate,
+                          branchdevice: e.value,
+                          unitdevice: "Please Select Unit",
+                          floordevice: "Please Select Floor",
+                          areadevice: "Please Select Area",
+                          paireddeviceone: "Please Select First Device",
+                          paireddevicetwo: "",
+                          pairedstatus: false,
+                        });
+                        // setValuePairedDevices([]);
+                        setPairedDeviceOptions([]);
+                        // setSelectedPairedDeviceOptions([]);
+                        handleClearButtons();
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item md={3} xs={12} sm={6}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Unit<b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <Selects
+                      options={accessbranch
+                        ?.filter(
+                          (comp) =>
+                            comp.company ===
+                              pairedDeviceGroupingCreate?.companydevice &&
+                            comp.branch ===
+                              pairedDeviceGroupingCreate?.branchdevice
+                        )
+                        .map((data) => ({
+                          label: data.unit,
+                          value: data.unit,
+                          unitcode: data.unitcode,
+                        }))
+                        .filter((item, index, self) => {
+                          return (
+                            self.findIndex(
+                              (i) =>
+                                i.label === item.label && i.value === item.value
+                            ) === index
+                          );
+                        })}
+                      styles={colourStyles}
+                      value={{
+                        label: pairedDeviceGroupingCreate.unitdevice,
+                        value: pairedDeviceGroupingCreate.unitdevice,
+                      }}
+                      onChange={(e) => {
+                        setPairedDeviceGroupingCreate({
+                          ...pairedDeviceGroupingCreate,
+                          unitdevice: e.value,
+                          floordevice: "Please Select Floor",
+                          areadevice: "Please Select Area",
+                          paireddeviceone: "Please Select First Device",
+                          paireddevicetwo: "",
+                          pairedstatus: false,
+                        });
+                        // setValuePairedDevices([]);
+                        setPairedDeviceOptions([]);
+                        // setSelectedPairedDeviceOptions([]);
+                        handleClearButtons();
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item md={3} xs={12} sm={6}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Floor<b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <Selects
+                      options={allfloor
+                        ?.filter(
+                          (u) =>
+                            pairedDeviceGroupingCreate?.branchdevice ===
+                            u.branch
+                        )
+                        .map((u) => ({
+                          ...u,
+                          label: u.name,
+                          value: u.name,
+                        }))
+                        .filter((item, index, self) => {
+                          return (
+                            self.findIndex(
+                              (i) =>
+                                i.label === item.label && i.value === item.value
+                            ) === index
+                          );
+                        })}
+                      styles={colourStyles}
+                      value={{
+                        label: pairedDeviceGroupingCreate.floordevice,
+                        value: pairedDeviceGroupingCreate.floordevice,
+                      }}
+                      onChange={(e) => {
+                        setPairedDeviceGroupingCreate({
+                          ...pairedDeviceGroupingCreate,
+                          floordevice: e.value,
+                          areadevice: "Please Select Area",
+                          paireddeviceone: "Please Select First Device",
+                          paireddevicetwo: "",
+                          pairedstatus: false,
+                        });
+                        // setValuePairedDevices([]);
+                        setPairedDeviceOptions([]);
+                        // setSelectedPairedDeviceOptions([]);
+                        handleClearButtons();
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item md={3} xs={12} sm={6}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Area<b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <Selects
+                      maxMenuHeight={300}
+                      options={filteredAreas
+                        .filter(
+                          (item) =>
+                            pairedDeviceGroupingCreate?.floordevice ===
+                              item.floor &&
+                            pairedDeviceGroupingCreate?.branchdevice ===
+                              item.branch
+                        )
+                        .flatMap((item) => item.area)
+                        .map((location) => ({
+                          label: location,
+                          value: location,
+                        }))}
+                      value={{
+                        label: pairedDeviceGroupingCreate.areadevice,
+                        value: pairedDeviceGroupingCreate.areadevice,
+                      }}
+                      onChange={(e) => {
+                        setPairedDeviceGroupingCreate({
+                          ...pairedDeviceGroupingCreate,
+                          areadevice: e.value,
+                          paireddeviceone: "Please Select First Device",
+                          paireddevicetwo: "",
+                          pairedstatus: false,
+                        });
+                        fetchDeviceNamesBasedOnArea(
+                          pairedDeviceGroupingCreate,
+                          e.value
+                        );
+                        // setValuePairedDevices([]);
+                        // setSelectedPairedDeviceOptions([]);
+                        handleClearButtons();
+                      }}
+                    />
+                  </FormControl>
+                  <br />
+                  <br />
+                </Grid>
+              </>
               <Grid container spacing={1}>
- 
                 <Grid item md={3} xs={12} sm={6}>
                   <FormControl fullWidth size="small">
                     <Typography>
@@ -3692,72 +3820,135 @@ function BiometricUsersGrouping() {
                         {/* HOURS */}
                         <Grid item xs={4}>
                           <FormControl size="small" fullWidth>
-                            <Select
-                              value={timeIntHourMinSecFirst.hour}
-                              onChange={(e) =>
+                            <Selects
+                              options={hours
+                                .map((data) => ({
+                                  label: data,
+                                  value: data,
+                                }))
+                                .filter((item, index, self) => {
+                                  return (
+                                    self.findIndex(
+                                      (i) =>
+                                        i.label === item.label &&
+                                        i.value === item.value
+                                    ) === index
+                                  );
+                                })}
+                              styles={colourStyles}
+                              value={{
+                                label: timeIntHourMinSecFirst.hour,
+                                value: timeIntHourMinSecFirst.hour,
+                              }}
+                              onChange={(e) => {
                                 setTimeIntHourMinSecFirst((prev) => ({
                                   ...prev,
                                   hour: e.target.value,
-                                }))
-                              }
-                            >
-                              <MenuItem value="hh" disabled>
-                                hh
-                              </MenuItem>
-                              {hours.map((h) => (
-                                <MenuItem key={h} value={h}>
-                                  {h}
-                                </MenuItem>
-                              ))}
-                            </Select>
+                                }));
+                              }}
+                            />{" "}
                           </FormControl>
                         </Grid>
 
                         {/* MINUTES */}
                         <Grid item xs={4}>
                           <FormControl size="small" fullWidth>
-                            <Select
-                              value={timeIntHourMinSecFirst.min}
-                              onChange={(e) =>
+                            <Selects
+                              options={minutesSeconds
+                                .map((data) => ({
+                                  label: data,
+                                  value: data,
+                                }))
+                                .filter((item, index, self) => {
+                                  return (
+                                    self.findIndex(
+                                      (i) =>
+                                        i.label === item.label &&
+                                        i.value === item.value
+                                    ) === index
+                                  );
+                                })}
+                              styles={colourStyles}
+                              value={{
+                                label: timeIntHourMinSecFirst.min,
+                                value: timeIntHourMinSecFirst.min,
+                              }}
+                              onChange={(e) => {
                                 setTimeIntHourMinSecFirst((prev) => ({
                                   ...prev,
                                   min: e.target.value,
-                                }))
-                              }
-                            >
-                              <MenuItem value="mm" disabled>
-                                mm
-                              </MenuItem>
-                              {minutesSeconds.map((m) => (
-                                <MenuItem key={m} value={m}>
-                                  {m}
-                                </MenuItem>
-                              ))}
-                            </Select>
+                                }));
+                              }}
+                            />
+                            {/* <Select
+                                        value={timeIntHourMinSecFirst.min}
+                                        onChange={(e) =>
+                                          setTimeIntHourMinSecFirst((prev) => ({
+                                            ...prev,
+                                            min: e.target.value,
+                                          }))
+                                        }
+                                      >
+                                        <MenuItem value="mm" disabled>
+                                          mm
+                                        </MenuItem>
+                                        {minutesSeconds.map((m) => (
+                                          <MenuItem key={m} value={m}>
+                                            {m}
+                                          </MenuItem>
+                                        ))}
+                                      </Select> */}
                           </FormControl>
                         </Grid>
 
                         {/* SECONDS */}
                         <Grid item xs={4}>
                           <FormControl size="small" fullWidth>
-                            <Select
-                              value={timeIntHourMinSecFirst.second}
-                              onChange={(e) =>
+                            <Selects
+                              options={minutesSeconds
+                                .map((data) => ({
+                                  label: data,
+                                  value: data,
+                                }))
+                                .filter((item, index, self) => {
+                                  return (
+                                    self.findIndex(
+                                      (i) =>
+                                        i.label === item.label &&
+                                        i.value === item.value
+                                    ) === index
+                                  );
+                                })}
+                              styles={colourStyles}
+                              value={{
+                                label: timeIntHourMinSecFirst.second,
+                                value: timeIntHourMinSecFirst.second,
+                              }}
+                              onChange={(e) => {
                                 setTimeIntHourMinSecFirst((prev) => ({
                                   ...prev,
                                   second: e.target.value,
-                                }))
-                              }
-                            >
-                              <MenuItem value="ss" disabled>
-                                ss
-                              </MenuItem>
-                              {minutesSeconds.map((s) => (
-                                <MenuItem key={s} value={s}>
-                                  {s}
-                                </MenuItem>
-                              ))}
-                            </Select>
+                                }));
+                              }}
+                            />
+                            {/* <Select
+                                        value={timeIntHourMinSecFirst.second}
+                                        onChange={(e) =>
+                                          setTimeIntHourMinSecFirst((prev) => ({
+                                            ...prev,
+                                            second: e.target.value,
+                                          }))
+                                        }
+                                      >
+                                        <MenuItem value="ss" disabled>
+                                          ss
+                                        </MenuItem>
+                                        {minutesSeconds.map((s) => (
+                                          <MenuItem key={s} value={s}>
+                                            {s}
+                                          </MenuItem>
+                                        ))}
+                                      </Select> */}
                           </FormControl>
                         </Grid>
                       </Grid>
@@ -3997,74 +4188,153 @@ function BiometricUsersGrouping() {
                             {/* HOURS */}
                             <Grid item xs={4}>
                               <FormControl size="small" fullWidth>
-                                <Select
-                                  value={timeIntHourMinSecSecond.hour}
-                                  onChange={(e) =>
+                                <Selects
+                                  options={hours
+                                    .map((data) => ({
+                                      label: data,
+                                      value: data,
+                                    }))
+                                    .filter((item, index, self) => {
+                                      return (
+                                        self.findIndex(
+                                          (i) =>
+                                            i.label === item.label &&
+                                            i.value === item.value
+                                        ) === index
+                                      );
+                                    })}
+                                  styles={colourStyles}
+                                  value={{
+                                    label: timeIntHourMinSecSecond.hour,
+                                    value: timeIntHourMinSecSecond.hour,
+                                  }}
+                                  onChange={(e) => {
                                     setTimeIntHourMinSecSecond((prev) => ({
                                       ...prev,
                                       hour: e.target.value,
-                                    }))
-                                  }
-                                >
-                                  {" "}
-                                  <MenuItem value="hh" disabled>
-                                    hh
-                                  </MenuItem>
-                                  {hours.map((h) => (
-                                    <MenuItem key={h} value={h}>
-                                      {h}
+                                    }));
+                                  }}
+                                />
+                                {/* <Select
+                                    value={timeIntHourMinSecSecond.hour}
+                                    onChange={(e) =>
+                                      setTimeIntHourMinSecSecond((prev) => ({
+                                        ...prev,
+                                        hour: e.target.value,
+                                      }))
+                                    }
+                                  >
+                                    <MenuItem value="hh" disabled>
+                                      hh
                                     </MenuItem>
-                                  ))}
-                                </Select>
+                                    {hours.map((h) => (
+                                      <MenuItem key={h} value={h}>
+                                        {h}
+                                      </MenuItem>
+                                    ))}
+                                  </Select> */}
                               </FormControl>
                             </Grid>
 
                             {/* MINUTES */}
                             <Grid item xs={4}>
                               <FormControl size="small" fullWidth>
-                                <Select
-                                  value={timeIntHourMinSecSecond.min}
-                                  onChange={(e) =>
+                                <Selects
+                                  options={minutesSeconds
+                                    .map((data) => ({
+                                      label: data,
+                                      value: data,
+                                    }))
+                                    .filter((item, index, self) => {
+                                      return (
+                                        self.findIndex(
+                                          (i) =>
+                                            i.label === item.label &&
+                                            i.value === item.value
+                                        ) === index
+                                      );
+                                    })}
+                                  styles={colourStyles}
+                                  value={{
+                                    label: timeIntHourMinSecSecond.min,
+                                    value: timeIntHourMinSecSecond.min,
+                                  }}
+                                  onChange={(e) => {
                                     setTimeIntHourMinSecSecond((prev) => ({
                                       ...prev,
                                       min: e.target.value,
-                                    }))
-                                  }
-                                >
-                                  {" "}
-                                  <MenuItem value="mm" disabled>
-                                    mm
-                                  </MenuItem>
-                                  {minutesSeconds.map((m) => (
-                                    <MenuItem key={m} value={m}>
-                                      {m}
+                                    }));
+                                  }}
+                                />
+                                {/* <Select
+                                    value={timeIntHourMinSecSecond.min}
+                                    onChange={(e) =>
+                                      setTimeIntHourMinSecSecond((prev) => ({
+                                        ...prev,
+                                        min: e.target.value,
+                                      }))
+                                    }
+                                  >
+                                    <MenuItem value="mm" disabled>
+                                      mm
                                     </MenuItem>
-                                  ))}
-                                </Select>
+                                    {minutesSeconds.map((m) => (
+                                      <MenuItem key={m} value={m}>
+                                        {m}
+                                      </MenuItem>
+                                    ))}
+                                  </Select> */}
                               </FormControl>
                             </Grid>
 
                             {/* SECONDS */}
                             <Grid item xs={4}>
                               <FormControl size="small" fullWidth>
-                                <Select
-                                  value={timeIntHourMinSecSecond.second}
-                                  onChange={(e) =>
+                                <Selects
+                                  options={minutesSeconds
+                                    .map((data) => ({
+                                      label: data,
+                                      value: data,
+                                    }))
+                                    .filter((item, index, self) => {
+                                      return (
+                                        self.findIndex(
+                                          (i) =>
+                                            i.label === item.label &&
+                                            i.value === item.value
+                                        ) === index
+                                      );
+                                    })}
+                                  styles={colourStyles}
+                                  value={{
+                                    label: timeIntHourMinSecSecond.second,
+                                    value: timeIntHourMinSecSecond.second,
+                                  }}
+                                  onChange={(e) => {
                                     setTimeIntHourMinSecSecond((prev) => ({
                                       ...prev,
                                       second: e.target.value,
-                                    }))
-                                  }
-                                >
-                                  <MenuItem value="ss" disabled>
-                                    ss
-                                  </MenuItem>
-                                  {minutesSeconds.map((s) => (
-                                    <MenuItem key={s} value={s}>
-                                      {s}
+                                    }));
+                                  }}
+                                />
+                                {/* <Select
+                                    value={timeIntHourMinSecSecond.second}
+                                    onChange={(e) =>
+                                      setTimeIntHourMinSecSecond((prev) => ({
+                                        ...prev,
+                                        second: e.target.value,
+                                      }))
+                                    }
+                                  >
+                                    <MenuItem value="ss" disabled>
+                                      ss
                                     </MenuItem>
-                                  ))}
-                                </Select>
+                                    {minutesSeconds.map((s) => (
+                                      <MenuItem key={s} value={s}>
+                                        {s}
+                                      </MenuItem>
+                                    ))}
+                                  </Select> */}
                               </FormControl>
                             </Grid>
                           </Grid>
@@ -4911,6 +5181,246 @@ function BiometricUsersGrouping() {
                       </FormControl>
                     </Grid>
                   )}
+
+                  <Grid item md={3} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Company <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        options={accessbranch
+                          .map((data) => ({
+                            label: data.company,
+                            value: data.company,
+                          }))
+                          .filter((item, index, self) => {
+                            return (
+                              self.findIndex(
+                                (i) =>
+                                  i.label === item.label &&
+                                  i.value === item.value
+                              ) === index
+                            );
+                          })}
+                        styles={colourStyles}
+                        value={{
+                          label: pairedDeviceGroupingEdit.companydevice,
+                          value: pairedDeviceGroupingEdit.companydevice,
+                        }}
+                        onChange={(e) => {
+                          setPairedDeviceGroupingEdit({
+                            ...pairedDeviceGroupingEdit,
+                            companydevice: e.value,
+                            branchdevice: "Please Select Branch",
+                            unitdevice: "Please Select Unit",
+                            floordevice: "Please Select Floor",
+                            areadevice: "Please Select Area",
+                            paireddeviceone: "Please Select First Device",
+                            paireddevicetwo: "",
+                            pairedstatus: false,
+                          });
+                          // setValuePairedDevices([]);
+                          setPairedDeviceOptionsEdit([]);
+                          // setSelectedPairedDeviceOptions([]);
+                          handleClearButtonsEdit();
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Branch<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        options={accessbranch
+                          ?.filter(
+                            (comp) =>
+                              comp.company ===
+                              pairedDeviceGroupingEdit?.companydevice
+                          )
+                          .map((data) => ({
+                            label: data.branch,
+                            value: data.branch,
+                            branchcode: data.branchcode,
+                          }))
+                          .filter((item, index, self) => {
+                            return (
+                              self.findIndex(
+                                (i) =>
+                                  i.label === item.label &&
+                                  i.value === item.value
+                              ) === index
+                            );
+                          })}
+                        styles={colourStyles}
+                        value={{
+                          label: pairedDeviceGroupingEdit.branchdevice,
+                          value: pairedDeviceGroupingEdit.branchdevice,
+                        }}
+                        onChange={(e) => {
+                          setPairedDeviceGroupingEdit({
+                            ...pairedDeviceGroupingEdit,
+                            branchdevice: e.value,
+                            unitdevice: "Please Select Unit",
+                            floordevice: "Please Select Floor",
+                            areadevice: "Please Select Area",
+                            paireddeviceone: "Please Select First Device",
+                            paireddevicetwo: "",
+                            pairedstatus: false,
+                          });
+                          // setValuePairedDevices([]);
+                          setPairedDeviceOptionsEdit([]);
+                          // setSelectedPairedDeviceOptions([]);
+                          handleClearButtonsEdit();
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Unit<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        options={accessbranch
+                          ?.filter(
+                            (comp) =>
+                              comp.company ===
+                                pairedDeviceGroupingEdit?.companydevice &&
+                              comp.branch ===
+                                pairedDeviceGroupingEdit?.branchdevice
+                          )
+                          .map((data) => ({
+                            label: data.unit,
+                            value: data.unit,
+                            unitcode: data.unitcode,
+                          }))
+                          .filter((item, index, self) => {
+                            return (
+                              self.findIndex(
+                                (i) =>
+                                  i.label === item.label &&
+                                  i.value === item.value
+                              ) === index
+                            );
+                          })}
+                        styles={colourStyles}
+                        value={{
+                          label: pairedDeviceGroupingEdit.unitdevice,
+                          value: pairedDeviceGroupingEdit.unitdevice,
+                        }}
+                        onChange={(e) => {
+                          setPairedDeviceGroupingEdit({
+                            ...pairedDeviceGroupingEdit,
+                            unitdevice: e.value,
+                            floordevice: "Please Select Floor",
+                            areadevice: "Please Select Area",
+                            paireddeviceone: "Please Select First Device",
+                            paireddevicetwo: "",
+                            pairedstatus: false,
+                          });
+                          // setValuePairedDevices([]);
+                          setPairedDeviceOptionsEdit([]);
+                          // setSelectedPairedDeviceOptions([]);
+                          handleClearButtonsEdit();
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Floor<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        options={allfloor
+                          ?.filter(
+                            (u) =>
+                              pairedDeviceGroupingEdit?.branchdevice ===
+                              u.branch
+                          )
+                          .map((u) => ({
+                            ...u,
+                            label: u.name,
+                            value: u.name,
+                          }))
+                          .filter((item, index, self) => {
+                            return (
+                              self.findIndex(
+                                (i) =>
+                                  i.label === item.label &&
+                                  i.value === item.value
+                              ) === index
+                            );
+                          })}
+                        styles={colourStyles}
+                        value={{
+                          label: pairedDeviceGroupingEdit.floordevice,
+                          value: pairedDeviceGroupingEdit.floordevice,
+                        }}
+                        onChange={(e) => {
+                          setPairedDeviceGroupingEdit({
+                            ...pairedDeviceGroupingEdit,
+                            floordevice: e.value,
+                            areadevice: "Please Select Area",
+                            paireddeviceone: "Please Select First Device",
+                            paireddevicetwo: "",
+                            pairedstatus: false,
+                          });
+                          // setValuePairedDevices([]);
+                          setPairedDeviceOptionsEdit([]);
+                          // setSelectedPairedDeviceOptions([]);
+                          handleClearButtonsEdit();
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Area<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <Selects
+                        maxMenuHeight={300}
+                        options={filteredAreas
+                          .filter(
+                            (item) =>
+                              pairedDeviceGroupingEdit?.floordevice ===
+                                item.floor &&
+                              pairedDeviceGroupingEdit?.branchdevice ===
+                                item.branch
+                          )
+                          .flatMap((item) => item.area)
+                          .map((location) => ({
+                            label: location,
+                            value: location,
+                          }))}
+                        value={{
+                          label: pairedDeviceGroupingEdit.areadevice,
+                          value: pairedDeviceGroupingEdit.areadevice,
+                        }}
+                        onChange={(e) => {
+                          setPairedDeviceGroupingEdit({
+                            ...pairedDeviceGroupingEdit,
+                            areadevice: e.value,
+                            paireddeviceone: "Please Select First Device",
+                            paireddevicetwo: "",
+                            pairedstatus: false,
+                          });
+                          fetchDeviceNamesBasedOnAreaEdit(
+                            pairedDeviceGroupingEdit,
+                            e.value
+                          );
+                          // setValuePairedDevices([]);
+                          // setSelectedPairedDeviceOptions([]);
+                          handleClearButtonsEdit();
+                        }}
+                      />
+                    </FormControl>
+                    <br />
+                    <br />
+                  </Grid>
                 </Grid>
                 <Grid container spacing={1}>
                   <Grid item md={5} xs={12} sm={6}>
@@ -5178,7 +5688,34 @@ function BiometricUsersGrouping() {
                           {/* HOURS */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
+                              <Selects
+                                options={hours
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirstEdit.hour,
+                                  value: timeIntHourMinSecFirstEdit.hour,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecFirstEdit((prev) => ({
+                                    ...prev,
+                                    hour: e.target.value,
+                                  }));
+                                }}
+                              />
+                              {/* <Select
                                 value={timeIntHourMinSecFirstEdit.hour}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
@@ -5187,23 +5724,49 @@ function BiometricUsersGrouping() {
                                   }))
                                 }
                               >
-                                {" "}
-                                <MenuItem value="hh" disabled>
-                                  hh
-                                </MenuItem>
+                                 <MenuItem value="hh" disabled>
+    hh
+  </MenuItem>
                                 {hours.map((h) => (
                                   <MenuItem key={h} value={h}>
                                     {h}
                                   </MenuItem>
                                 ))}
-                              </Select>
+                              </Select> */}
                             </FormControl>
                           </Grid>
 
                           {/* MINUTES */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
+                              <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirstEdit.min,
+                                  value: timeIntHourMinSecFirstEdit.min,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecFirstEdit((prev) => ({
+                                    ...prev,
+                                    min: e.target.value,
+                                  }));
+                                }}
+                              />
+                              {/* <Select
                                 value={timeIntHourMinSecFirstEdit.min}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
@@ -5220,14 +5783,41 @@ function BiometricUsersGrouping() {
                                     {m}
                                   </MenuItem>
                                 ))}
-                              </Select>
+                              </Select> */}
                             </FormControl>
                           </Grid>
 
                           {/* SECONDS */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
+                              <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirstEdit.second,
+                                  value: timeIntHourMinSecFirstEdit.second,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecFirstEdit((prev) => ({
+                                    ...prev,
+                                    second: e.target.value,
+                                  }));
+                                }}
+                              />
+                              {/* <Select
                                 value={timeIntHourMinSecFirstEdit.second}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
@@ -5244,7 +5834,7 @@ function BiometricUsersGrouping() {
                                     {s}
                                   </MenuItem>
                                 ))}
-                              </Select>
+                              </Select> */}
                             </FormControl>
                           </Grid>
                         </Grid>
@@ -5507,7 +6097,36 @@ function BiometricUsersGrouping() {
                               {/* HOURS */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                  <Selects
+                                    options={hours
+                                      .map((data) => ({
+                                        label: data,
+                                        value: data,
+                                      }))
+                                      .filter((item, index, self) => {
+                                        return (
+                                          self.findIndex(
+                                            (i) =>
+                                              i.label === item.label &&
+                                              i.value === item.value
+                                          ) === index
+                                        );
+                                      })}
+                                    styles={colourStyles}
+                                    value={{
+                                      label: timeIntHourMinSecSecondEdit.hour,
+                                      value: timeIntHourMinSecSecondEdit.hour,
+                                    }}
+                                    onChange={(e) => {
+                                      setTimeIntHourMinSecSecondEdit(
+                                        (prev) => ({
+                                          ...prev,
+                                          hour: e.target.value,
+                                        })
+                                      );
+                                    }}
+                                  />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecondEdit.hour}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
@@ -5518,7 +6137,6 @@ function BiometricUsersGrouping() {
                                       )
                                     }
                                   >
-                                    {" "}
                                     <MenuItem value="hh" disabled>
                                       hh
                                     </MenuItem>
@@ -5527,14 +6145,43 @@ function BiometricUsersGrouping() {
                                         {h}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
 
                               {/* MINUTES */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                  <Selects
+                                    options={minutesSeconds
+                                      .map((data) => ({
+                                        label: data,
+                                        value: data,
+                                      }))
+                                      .filter((item, index, self) => {
+                                        return (
+                                          self.findIndex(
+                                            (i) =>
+                                              i.label === item.label &&
+                                              i.value === item.value
+                                          ) === index
+                                        );
+                                      })}
+                                    styles={colourStyles}
+                                    value={{
+                                      label: timeIntHourMinSecSecondEdit.min,
+                                      value: timeIntHourMinSecSecondEdit.min,
+                                    }}
+                                    onChange={(e) => {
+                                      setTimeIntHourMinSecSecondEdit(
+                                        (prev) => ({
+                                          ...prev,
+                                          min: e.target.value,
+                                        })
+                                      );
+                                    }}
+                                  />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecondEdit.min}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
@@ -5553,14 +6200,43 @@ function BiometricUsersGrouping() {
                                         {m}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
 
                               {/* SECONDS */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                  <Selects
+                                    options={minutesSeconds
+                                      .map((data) => ({
+                                        label: data,
+                                        value: data,
+                                      }))
+                                      .filter((item, index, self) => {
+                                        return (
+                                          self.findIndex(
+                                            (i) =>
+                                              i.label === item.label &&
+                                              i.value === item.value
+                                          ) === index
+                                        );
+                                      })}
+                                    styles={colourStyles}
+                                    value={{
+                                      label: timeIntHourMinSecSecondEdit.second,
+                                      value: timeIntHourMinSecSecondEdit.second,
+                                    }}
+                                    onChange={(e) => {
+                                      setTimeIntHourMinSecSecondEdit(
+                                        (prev) => ({
+                                          ...prev,
+                                          second: e.target.value,
+                                        })
+                                      );
+                                    }}
+                                  />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecondEdit.second}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
@@ -5579,7 +6255,7 @@ function BiometricUsersGrouping() {
                                         {s}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
                             </Grid>

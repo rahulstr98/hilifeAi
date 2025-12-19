@@ -382,7 +382,7 @@ function EditMovietolive() {
       handleClickOpenPopupMalert();
     } else {
       setLoadingBiometric(true);
-      if (['Brand1', 'Brand2', 'Brand3', 'Bowee']?.includes(deviceDetails?.brand)) {
+      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)) {
         setLoadingBiometric(false);
         fetchUsersAvailability(deviceDetails, biometricDevicename);
       } else {
@@ -396,7 +396,7 @@ function EditMovietolive() {
   const handleBioEditOldData = (e) => {
     e.preventDefault();
     setLoadingBiometric(true);
-    if (!['Brand1', 'Brand2', 'Brand3', 'Bowee']?.includes(deviceDetails?.brand)) {
+    if (!['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)) {
       fetchUsersDeleteData(BioOldUserCheck?.cloudIDC);
     } else if (['Bowee']?.includes(deviceDetails.brand)) {
       sendEditRequestRole();
@@ -412,7 +412,7 @@ function EditMovietolive() {
   const fetchUsersAvailability = async (device, biometricdevicename) => {
     console.log(device, biometricdevicename, "Device Name")
     try {
-      if (['Brand1', 'Brand2', 'Brand3']?.includes(device.brand)) {
+      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan']?.includes(device.brand)) {
         const [res, response] = await Promise.all([
           axios.post(SERVICE.BIOMETRIC_USER_ID_CHECK, {
             headers: { Authorization: `Bearer ${auth.APIToken}` },
@@ -503,11 +503,11 @@ function EditMovietolive() {
       setPopupContentMalert('Please Select Biometric User Role!');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
-    } else if (deviceDetails?.brand === 'Brand1' && biometricrole === 'Administrator' && !documentFiles) {
+    } else if (deviceDetails?.brand === 'Bio-Socket' && biometricrole === 'Administrator' && !documentFiles) {
       setPopupContentMalert('Please Add Face Image');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } else if (deviceDetails?.brand === 'Brand3') {
+    } else if (deviceDetails?.brand === 'Bowee-Chandichan') {
       setPopupContentMalert('Currently Not is Use');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
@@ -522,7 +522,7 @@ function EditMovietolive() {
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
     } else {
-      if (['Brand1', 'Brand2', 'Brand3']?.includes(deviceDetails.brand)) {
+      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan']?.includes(deviceDetails.brand)) {
         handleAddNewBiometricDevices();
       } else if (['Bowee']?.includes(deviceDetails.brand)) {
         handleNewUserAddBowee();
@@ -592,24 +592,24 @@ function EditMovietolive() {
           signType: 'RSA',
           version: '1.0.0',
         };
-        let finalCommand = deviceDetails.brand === 'Brand1' ? brand1CommandAddUser : deviceDetails.brand === 'Brand2' ? brand2Command : deviceDetails.brand === 'Brand3' ? brand3Command : '';
+        let finalCommand = deviceDetails.brand === 'Bio-Socket' ? brand1CommandAddUser : deviceDetails.brand === 'Bowee-Witzee' ? brand2Command : deviceDetails.brand === 'Bowee-Chandichan' ? brand3Command : '';
         let res = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD_NEW, {
           headers: { Authorization: `Bearer ${auth.APIToken}` },
           command: finalCommand,
           brand: deviceDetails.brand,
           brand1: brand1CommandImage,
         });
-        if (deviceDetails?.brand === 'Brand1' ? res?.data?.alldeviceinfo?.result : deviceDetails?.brand === 'Brand2' ? res?.data?.alldeviceinfo : false) {
+        if (deviceDetails?.brand === 'Bio-Socket' ? res?.data?.alldeviceinfo?.result : deviceDetails?.brand === 'Bowee-Witzee' ? res?.data?.alldeviceinfo : false) {
           let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
             headers: { Authorization: `Bearer ${auth.APIToken}` },
             biometricUserIDC: BiometricId,
             cloudIDC: deviceDetails.biometricserialno,
             dataupload: 'new',
-            downloadedFaceTemplateN: deviceDetails.brand === 'Brand1' && documentFiles?.data ? 1 : 0,
+            downloadedFaceTemplateN: deviceDetails.brand === 'Bio-Socket' && documentFiles?.data ? 1 : 0,
             downloadedFingerTemplateN: 0,
             fingerCountN: 0,
             isEnabledC: 'Yes',
-            isFaceEnrolledC: deviceDetails.brand === 'Brand1' && documentFiles?.data ? 'Yes' : 'No',
+            isFaceEnrolledC: deviceDetails.brand === 'Bio-Socket' && documentFiles?.data ? 'Yes' : 'No',
             privilegeC: biometricrole,
             pwdc: '',
             staffNameC: enableLoginName ? String(third) : employee?.username,
@@ -818,7 +818,7 @@ function EditMovietolive() {
         // ],
       });
 
-      if (res?.data?.success && !['Brand1', 'Brand2', 'Brand3', 'Bowee']?.includes(BioUserDataActions?.brandname)) {
+      if (res?.data?.success && !['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(BioUserDataActions?.brandname)) {
         let res = await axios.post(SERVICE.BIOMETRIC_GET_SEND_COMMAND, {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
@@ -6317,7 +6317,7 @@ function EditMovietolive() {
       handleClickOpenPopupMalert();
       return;
     }
-    if ((BiometricPostDevice?.cloudIDC || BioEditUserCheck) && !['Brand1', 'Brand2', 'Brand3', 'Bowee']?.includes(deviceDetails?.brand)) {
+    if ((BiometricPostDevice?.cloudIDC || BioEditUserCheck) && !['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)) {
       handleCommitUserBiometric(e);
     }
     sendEditRequest();
@@ -9679,7 +9679,7 @@ function EditMovietolive() {
                       </Grid>
 
                       {/* Upload Section (only show when documentFiles is null) */}
-                      {!documentFiles && ['Brand1', 'Bowee']?.includes(deviceDetails?.brand) && (
+                      {!documentFiles && ['Bio-Socket', 'Bowee']?.includes(deviceDetails?.brand) && (
                         <Grid item xs={12} sm={12} md={3}>
                           <FormControl fullWidth size="small">
                             <Typography mb={1}>Upload Profile</Typography>
@@ -9702,7 +9702,7 @@ function EditMovietolive() {
                       )}
 
                       {/* Uploaded Document Section */}
-                      {documentFiles && ['Brand1', 'Bowee']?.includes(deviceDetails?.brand) && (
+                      {documentFiles && ['Bio-Socket', 'Bowee']?.includes(deviceDetails?.brand) && (
                         <Grid item xs={12} sm={12} md={3}>
                           <Box textAlign="center">
                             <img src={documentFiles.preview} alt="Uploaded" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: 4 }} />

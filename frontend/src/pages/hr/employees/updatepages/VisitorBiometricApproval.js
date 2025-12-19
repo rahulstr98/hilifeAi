@@ -94,7 +94,6 @@ function VisitorBiometricApproval() {
   const [openPopupMalert, setOpenPopupMalert] = useState(false);
   const [popupContentMalert, setPopupContentMalert] = useState("");
   const [totalProjects, setTotalProjects] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
   const [popupSeverityMalert, setPopupSeverityMalert] = useState("");
   const handleClickOpenPopupMalert = () => {
     setOpenPopupMalert(true);
@@ -113,16 +112,27 @@ function VisitorBiometricApproval() {
   };
 
   let exportColumnNames = [
+    "Company",
+    "Branch",
+    "Unit",
+    "Floor",
+    "Area",
     "Device Name",
-    "User Id",
-    "User Name",
+    "Visitor Id",
+    "Visitor Name",
     "Visitor Created Date",
     "Visitor Email",
     "Visitor Contact Number",
     "Approval Status",
-    "User Status",
+    "Visitor Status",
+    "Visitor Entry From",
   ];
   let exportRowValues = [
+    "company",
+    "branch",
+    "unit",
+    "floor",
+    "area",
     "cloudIDC",
     "biometricUserIDC",
     "staffNameC",
@@ -130,7 +140,8 @@ function VisitorBiometricApproval() {
     "visitoremail",
     "visitorcontactnumber",
     "isEnabledC",
-    "status",
+    "visitorpagedetails",
+    "visitorpage",
   ];
   const [approvalVisitorsList, setApprovalVisitorsList] = useState([]);
   const [EnabledapprovalVisitorsList, setEnabledApprovalVisitorsList] =
@@ -582,6 +593,13 @@ function VisitorBiometricApproval() {
     visitorCreatedDate: true,
     visitoremail: true,
     visitorcontactnumber: true,
+    company: true,
+    branch: true,
+    unit: true,
+    floor: true,
+    area: true,
+    visitorpage: true,
+    visitorpagedetails: true,
   };
 
   const [columnVisibility, setColumnVisibility] = useState(
@@ -650,6 +668,7 @@ function VisitorBiometricApproval() {
   //get all Sub vendormasters.
   const fetchAppprovalBiometricDevices = async () => {
     setPageName(!pageName);
+     setLoader(true);
     try {
       let res_vendor = await axios.post(
         SERVICE.GET_FILTERED_BIO_DEVICES_VISITORS,
@@ -661,7 +680,7 @@ function VisitorBiometricApproval() {
           approval: ["Enable", "Disable"],
         }
       );
-      setLoader(true);
+     
       const answer =
         res_vendor?.data?.visitorslist?.length > 0
           ? res_vendor?.data?.visitorslist
@@ -690,7 +709,7 @@ function VisitorBiometricApproval() {
       setEnabledApprovalVisitorsList(answerEnabled);
       setLoader(false);
     } catch (err) {
-      setLoader(true);
+     setLoader(false);
       handleApiError(
         err,
         setPopupContentMalert,
@@ -759,6 +778,26 @@ function VisitorBiometricApproval() {
     );
   });
 
+  const filteredData = filteredDatas.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
+  const totalPages = Math.ceil(filteredDatas.length / pageSize);
+  const visiblePages = Math.min(totalPages, 3);
+
+  const firstVisiblePage = Math.max(1, page - 1);
+  const lastVisiblePage = Math.min(
+    firstVisiblePage + visiblePages - 1,
+    totalPages
+  );
+
+  const pageNumbers = [];
+
+  for (let i = firstVisiblePage; i <= lastVisiblePage; i++) {
+    pageNumbers.push(i);
+  }
+
+
   const [selectAllChecked, setSelectAllChecked] = useState(false);
 
   const CheckboxHeader = ({ selectAllChecked, onSelectAll }) => (
@@ -783,7 +822,7 @@ function VisitorBiometricApproval() {
   //get single row to edit....
   const getApprovalDocument = async (selectedIds, candidateid) => {
     setPageName(!pageName);
-    setLoader(true);
+    // setLoader(true);
     try {
       let response = await axios.post(
         `${SERVICE.ENABLE_VISITORS_DETAILS_BY_ID}`,
@@ -795,7 +834,7 @@ function VisitorBiometricApproval() {
         }
       );
       await fetchAppprovalBiometricDevices();
-      setLoader(false);
+      // setLoader(false);
       handleCloseModcheckbox();
       setPageDialog(0);
       setSelectedRows([]);
@@ -807,6 +846,7 @@ function VisitorBiometricApproval() {
       // }
     } catch (err) {
       console.log(err, "err");
+      // setLoader(false);
       handleApiError(
         err,
         setPopupContentMalert,
@@ -885,6 +925,52 @@ function VisitorBiometricApproval() {
         </Grid>
       ),
     },
+
+    {
+      field: "company",
+      headerName: "Company",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.company,
+      headerClassName: "bold-header",
+      // pinned: "left",
+    },
+    {
+      field: "branch",
+      headerName: "Branch",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.branch,
+      headerClassName: "bold-header",
+      // pinned: "left",
+    },
+    {
+      field: "unit",
+      headerName: "Unit",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.unit,
+      headerClassName: "bold-header",
+      // pinned: "left",
+    },
+    {
+      field: "floor",
+      headerName: "Floor",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.floor,
+      headerClassName: "bold-header",
+      // pinned: "left",
+    },
+    {
+      field: "area",
+      headerName: "Area",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.area,
+      headerClassName: "bold-header",
+      // pinned: "left",
+    },
     {
       field: "cloudIDC",
       headerName: "Device Name",
@@ -896,7 +982,7 @@ function VisitorBiometricApproval() {
     },
     {
       field: "staffNameC",
-      headerName: "User Name",
+      headerName: "Visitor Name",
       flex: 0,
       width: 200,
       hide: !columnVisibility.staffNameC,
@@ -932,7 +1018,7 @@ function VisitorBiometricApproval() {
     },
     {
       field: "biometricUserIDC",
-      headerName: "User Id",
+      headerName: "Visitor Id",
       flex: 0,
       width: 150,
       minHeight: "40px",
@@ -940,16 +1026,32 @@ function VisitorBiometricApproval() {
       // pinned: "left",
     },
     {
-      field: "status",
-      headerName: "User Status",
+      field: "visitorpagedetails",
+      headerName: "Visitor Status",
       flex: 0,
       width: 150,
-      hide: !columnVisibility.status,
+      hide: !columnVisibility.visitorpagedetails,
       headerClassName: "bold-header",
     },
+    {
+      field: "visitorpage",
+      headerName: "Visitor Entry From",
+      flex: 0,
+      width: 150,
+      hide: !columnVisibility.visitorpage,
+      headerClassName: "bold-header",
+    },
+    // {
+    //   field: "visitorpagedetails",
+    //   headerName: "Visitor Access",
+    //   flex: 0,
+    //   width: 150,
+    //   hide: !columnVisibility.visitorpagedetails,
+    //   headerClassName: "bold-header",
+    // },
   ];
 
-  const rowDataTable = filteredDatas.map((item) => {
+  const rowDataTable = filteredData.map((item) => {
     return {
       id: item.id,
       serialNumber: item.serialNumber,
@@ -969,6 +1071,8 @@ function VisitorBiometricApproval() {
       area: item.area,
       status: item.status,
       expirytime: item.expirytime,
+      visitorpage: item.visitorpage,
+      visitorpagedetails: item.visitorpagedetails,
     };
   });
   console.log(rowDataTable);
@@ -1207,7 +1311,6 @@ function VisitorBiometricApproval() {
                     />
                   </FormControl>
                 </Grid>
-                
 
                 <Grid item md={4} xs={12} sm={12} sx={{ marginTop: "25px" }}>
                   <Grid container spacing={3}>

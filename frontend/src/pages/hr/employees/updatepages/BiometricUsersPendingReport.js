@@ -377,7 +377,7 @@ function BiometricUsersPendingReport() {
     const handleCommitUserBiometric = async (e) => {
         e.preventDefault();
         try {
-            if (BiometricPostDevice?.devicetype === "boxtel") {
+            if (BiometricPostDevice?.devicetype === "Boxtell") {
                 let res = await axios.post(SERVICE.BIOMETRIC_GET_SEND_COMMAND, {
                     headers: {
                         Authorization: `Bearer ${auth.APIToken}`,
@@ -1018,7 +1018,7 @@ function BiometricUsersPendingReport() {
                 CloudIDC: e?.cloudIDC,
             });
             let brandName = res?.data?.devicebrand ? res?.data?.devicebrand?.brand : "";
-            if (brandName === "Brand1") {
+            if (brandName === "Bio-Socket") {
                 setPopupContentMalert("Currently Not In Use");
                 setPopupSeverityMalert("warning");
                 handleClickOpenPopupMalert();
@@ -1033,12 +1033,12 @@ function BiometricUsersPendingReport() {
                 //     }
                 // });
             }
-            else if (brandName === 'Brand2') {
+            else if (brandName === 'Bowee-Witzee') {
                 setPopupContentMalert("Currently Not In Use");
                 setPopupSeverityMalert("warning");
                 handleClickOpenPopupMalert();
             }
-            else if (brandName === 'Brand3') {
+            else if (brandName === 'Bowee-Chandichan') {
                 setPopupContentMalert("Currently Not In Use");
                 setPopupSeverityMalert("warning");
                 handleClickOpenPopupMalert();
@@ -1072,7 +1072,7 @@ function BiometricUsersPendingReport() {
             });
             setUnmatchedUserData(e)
             let brandName = res?.data?.devicebrand ? res?.data?.devicebrand?.brand : "";
-            if (brandName === "Brand1") {
+            if (brandName === "Bio-Socket") {
                 if (mode === "Delete") {
                     setPopupContentMalert("Currently Not In Use");
                     setPopupSeverityMalert("warning");
@@ -1098,13 +1098,13 @@ function BiometricUsersPendingReport() {
 
                 }
             }
-            else if (brandName === 'Brand2') {
+            else if (brandName === 'Bowee-Witzee') {
                 // handleClickOpenAction()
                 setPopupContentMalert("Currently Not In Use");
                 setPopupSeverityMalert("warning");
                 handleClickOpenPopupMalert();
             }
-            else if (brandName === 'Brand3') {
+            else if (brandName === 'Bowee-Chandichan') {
                 // handleClickOpenAction()
                 setPopupContentMalert("Currently Not In Use");
                 setPopupSeverityMalert("warning");
@@ -1178,7 +1178,7 @@ function BiometricUsersPendingReport() {
                     },
                 ],
             });
-            if (res?.data?.success && !["Brand1", "Brand2", "Brand3", 'Bowee']?.includes(BioUserDataActions?.brandname)) {
+            if (res?.data?.success && !["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", 'Bowee']?.includes(BioUserDataActions?.brandname)) {
                 let res = await axios.post(SERVICE.BIOMETRIC_GET_SEND_COMMAND, {
                     headers: {
                         Authorization: `Bearer ${auth.APIToken}`,
@@ -1187,7 +1187,7 @@ function BiometricUsersPendingReport() {
                     biometricUserIDC: BioUserDataActions?.biometricUserIDC,
                     deviceCommandN: BioUserDataActions?.mode === "Enable" ? "6" : (BioUserDataActions?.mode === "Disable" ? "7" : "8"),
                 });
-            } else if (res?.data?.success && ["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(BioUserDataActions?.brandname)) {
+            } else if (res?.data?.success && ["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(BioUserDataActions?.brandname)) {
                 let res = await axios.post(SERVICE.BIOMETRIC_COMMAND_EXECUTION, {
                     headers: {
                         Authorization: `Bearer ${auth.APIToken}`,
@@ -1273,7 +1273,7 @@ function BiometricUsersPendingReport() {
                 ],
             });
 
-            if (res?.data?.success && !["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(BioUserDataActions?.brandname)) {
+            if (res?.data?.success && !["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(BioUserDataActions?.brandname)) {
                 let res = await axios.post(SERVICE.BIOMETRIC_GET_SEND_COMMAND, {
                     headers: {
                         Authorization: `Bearer ${auth.APIToken}`,

@@ -81,24 +81,22 @@ function BiometricPairedDevicesGrouping() {
   const [timeIntervalTwo, setTimeIntervalTwo] = useState(false);
   const [timeIntervalTwoEdit, setTimeIntervalTwoEdit] = useState(false);
   const validateTimeInterval = (time) => {
-  if (time.second === "ss") {
-    return { valid: false, message: "Please select seconds" };
-  }
-  if (time.min === "mm") {
-    return { valid: false, message: "Please select minutes" };
-  }
-  // Optional extra validation:
-  if (time.hour === "hh") {
-    return { valid: false, message: "Please select hours" };
-  }
-  if(time.hour === "00" && time.min === "00" && time.second === "00"){
-    return { valid: false, message: "Please select Correct Time" };
-  }
+    if (time.second === "ss") {
+      return { valid: false, message: "Please select seconds" };
+    }
+    if (time.min === "mm") {
+      return { valid: false, message: "Please select minutes" };
+    }
+    // Optional extra validation:
+    if (time.hour === "hh") {
+      return { valid: false, message: "Please select hours" };
+    }
+    if (time.hour === "00" && time.min === "00" && time.second === "00") {
+      return { valid: false, message: "Please select Correct Time" };
+    }
 
-
-
-  return { valid: true };
-};
+    return { valid: true };
+  };
 
   const [timeIntHourMinSecFirst, setTimeIntHourMinSecFirst] = useState({
     hour: "hh",
@@ -106,7 +104,7 @@ function BiometricPairedDevicesGrouping() {
     second: "ss",
   });
   const [timeIntHourMinSecSecond, setTimeIntHourMinSecSecond] = useState({
-     hour: "hh",
+    hour: "hh",
     min: "mm",
     second: "ss",
   });
@@ -117,9 +115,9 @@ function BiometricPairedDevicesGrouping() {
   });
   const [timeIntHourMinSecSecondEdit, setTimeIntHourMinSecSecondEdit] =
     useState({
-    hour: "hh",
-    min: "mm",
-    second: "ss",
+      hour: "hh",
+      min: "mm",
+      second: "ss",
     });
   const [AttendanceInSwitchFirst, setAttendanceInSwitchFirst] = useState(false);
   const [AttendanceOutSwitchFirst, setAttendanceOutSwitchFirst] =
@@ -700,7 +698,7 @@ function BiometricPairedDevicesGrouping() {
         response?.data?.biometricpaireddevicesgrouping?.length > 0
           ? response?.data?.biometricpaireddevicesgrouping?.map(
               (item, index) => ({
-                _id: item._id,
+                id: item._id,
                 serialNumber: index + 1,
                 company: item.company,
                 branch: item.branch,
@@ -1352,12 +1350,13 @@ function BiometricPairedDevicesGrouping() {
         item.unit === pairedDeviceGroupingCreate.unit &&
         item.floor === pairedDeviceGroupingCreate.floor &&
         item.area === pairedDeviceGroupingCreate.area &&
-        item.paireddeviceone === pairedDeviceGroupingCreate.paireddeviceone &&
-        item.paireddevicetwo === pairedDeviceGroupingCreate.paireddevicetwo
+        item.paireddeviceone?.toLowerCase() === pairedDeviceGroupingCreate.paireddeviceone?.toLowerCase()
     );
     console.log(isNameMatch, "isNameMatch");
-     const checkTimeInterval = validateTimeInterval(timeIntHourMinSecFirst);
-     const checkTimeIntervalSecond = validateTimeInterval(timeIntHourMinSecSecond);
+    const checkTimeInterval = validateTimeInterval(timeIntHourMinSecFirst);
+    const checkTimeIntervalSecond = validateTimeInterval(
+      timeIntHourMinSecSecond
+    );
     const Switches =
       !AttendanceInOutSwitchFirst &&
       !AttendanceInSwitchFirst &&
@@ -1430,14 +1429,11 @@ function BiometricPairedDevicesGrouping() {
       setPopupContentMalert("Please Select Device 1");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    }
-
-     else if (Switches) {
+    } else if (Switches) {
       setPopupContentMalert("Please Select Any of the Switches");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-    else if (
+    } else if (
       breakSwitches &&
       pairedDeviceGroupingCreate.pairedstatus &&
       AttendanceSwitches &&
@@ -1451,18 +1447,15 @@ function BiometricPairedDevicesGrouping() {
       !validateExitSwitches()
     ) {
       return; // Stop save
-    }
-         else if (timeIntervalOne && !checkTimeInterval.valid ) {
+    } else if (timeIntervalOne && !checkTimeInterval.valid) {
       setPopupContentMalert(checkTimeInterval?.message);
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-     else if (timeIntervalTwo && !checkTimeIntervalSecond.valid ) {
+    } else if (timeIntervalTwo && !checkTimeIntervalSecond.valid) {
       setPopupContentMalert(checkTimeIntervalSecond?.message);
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-     else if (isNameMatch) {
+    } else if (isNameMatch) {
       setPopupContentMalert("Device Already Grouped!");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -1484,16 +1477,16 @@ function BiometricPairedDevicesGrouping() {
       pairedstatus: false,
     });
     setTimeIntHourMinSecSecond({
-     hour: "hh",
-    min: "mm",
-    second: "ss",
+      hour: "hh",
+      min: "mm",
+      second: "ss",
     });
     setTimeIntervalTwo(false);
     setTimeIntervalOne(false);
     setTimeIntHourMinSecFirst({
-     hour: "hh",
-    min: "mm",
-    second: "ss",
+      hour: "hh",
+      min: "mm",
+      second: "ss",
     });
     setValuePairedDevices([]);
     setPairedDeviceOptions([]);
@@ -1763,7 +1756,7 @@ function BiometricPairedDevicesGrouping() {
           exitoutone: ExitOutSwitchFirstEdit,
           exitinoutone: ExitInOutSwitchFirstEdit,
           breakone: BreakSwitchFirstEdit,
-          breaktwo: AttendanceInSwitchFirstEdit,
+          breaktwo: BreakSwitchSecondEdit,
           attendanceintwo: AttendanceInSwitchSecondEdit,
           attendanceouttwo: AttendanceOutSwitchSecondEdit,
           attendanceinouttwo: AttendanceInOutSwitchSecondEdit,
@@ -1813,13 +1806,14 @@ function BiometricPairedDevicesGrouping() {
         item.unit === pairedDeviceGroupingEdit.unit &&
         item.floor === pairedDeviceGroupingEdit.floor &&
         item.area === pairedDeviceGroupingEdit.area &&
-        item.paireddeviceone === pairedDeviceGroupingEdit.paireddeviceone &&
-        item.paireddevicetwo === pairedDeviceGroupingEdit.paireddevicetwo
+        item.paireddeviceone?.toLowerCase() === pairedDeviceGroupingEdit.paireddeviceone?.toLowerCase() 
     );
 
     console.log(isNameMatch, valuePairedDevices, "isNameMatch");
-         const checkTimeInterval = validateTimeInterval(timeIntHourMinSecFirstEdit);
-     const checkTimeIntervalSecond = validateTimeInterval(timeIntHourMinSecSecondEdit);
+    const checkTimeInterval = validateTimeInterval(timeIntHourMinSecFirstEdit);
+    const checkTimeIntervalSecond = validateTimeInterval(
+      timeIntHourMinSecSecondEdit
+    );
     const Switches =
       !AttendanceInOutSwitchFirstEdit &&
       !AttendanceInSwitchFirstEdit &&
@@ -1890,8 +1884,7 @@ function BiometricPairedDevicesGrouping() {
       setPopupContentMalert("Please Select Device 1");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    }
-     else if (Switches) {
+    } else if (Switches) {
       setPopupContentMalert("Please Select Any of the Switches");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -1909,19 +1902,15 @@ function BiometricPairedDevicesGrouping() {
       !validateExitSwitchesEdit()
     ) {
       return; // Stop save
-    }
-    
-         else if (timeIntervalOneEdit && !checkTimeInterval.valid ) {
+    } else if (timeIntervalOneEdit && !checkTimeInterval.valid) {
       setPopupContentMalert(checkTimeInterval?.message);
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-     else if (timeIntervalTwoEdit && !checkTimeIntervalSecond.valid ) {
+    } else if (timeIntervalTwoEdit && !checkTimeIntervalSecond.valid) {
       setPopupContentMalert(checkTimeIntervalSecond?.message);
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-    else if (isNameMatch) {
+    } else if (isNameMatch) {
       setPopupContentMalert("Device Already Grouped!");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -2091,14 +2080,20 @@ function BiometricPairedDevicesGrouping() {
     );
   });
 
-    const filteredData = filteredDatas.slice((page - 1) * pageSize, page * pageSize);
+  const filteredData = filteredDatas.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
 
   const totalPages = Math.ceil(filteredDatas.length / pageSize);
 
   const visiblePages = Math.min(totalPages, 3);
 
   const firstVisiblePage = Math.max(1, page - 1);
-  const lastVisiblePage = Math.min(firstVisiblePage + visiblePages - 1, totalPages);
+  const lastVisiblePage = Math.min(
+    firstVisiblePage + visiblePages - 1,
+    totalPages
+  );
 
   const pageNumbers = [];
 
@@ -2262,7 +2257,7 @@ function BiometricPairedDevicesGrouping() {
 
   const rowDataTable = filteredData.map((item, index) => {
     return {
-      id: item._id,
+      id: item.id,
       serialNumber: item.serialNumber,
       company: item.company,
       branch: item.branch,
@@ -2696,7 +2691,9 @@ function BiometricPairedDevicesGrouping() {
                           setPairedDeviceGroupingCreate({
                             ...pairedDeviceGroupingCreate,
                             paireddeviceone: e.value,
-                            paireddevicetwo:secondDevice ?  secondDevice?.value:"",
+                            paireddevicetwo: secondDevice
+                              ? secondDevice?.value
+                              : "",
                             isVisitorOne: e.isVisitor,
                             isVisitorTwo: secondDevice
                               ? secondDevice?.isVisitor
@@ -2896,11 +2893,11 @@ function BiometricPairedDevicesGrouping() {
                             checked={timeIntervalOne}
                             onChange={() => {
                               setTimeIntervalOne((val) => !val);
-                               setTimeIntHourMinSecFirst({
-                              hour: "hh",
-                              min: "mm",
-                              second: "ss",
-                            });
+                              setTimeIntHourMinSecFirst({
+                                hour: "hh",
+                                min: "mm",
+                                second: "ss",
+                              });
                             }}
                             color="primary"
                           />
@@ -2921,31 +2918,67 @@ function BiometricPairedDevicesGrouping() {
                           {/* HOURS */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
-                                value={timeIntHourMinSecFirst.hour}
-                                onChange={(e) =>
+                              <Selects
+                                options={hours
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirst.hour,
+                                  value: timeIntHourMinSecFirst.hour,
+                                }}
+                                onChange={(e) => {
                                   setTimeIntHourMinSecFirst((prev) => ({
                                     ...prev,
                                     hour: e.target.value,
-                                  }))
-                                }
-                              >
-                                 <MenuItem value="hh" disabled>
-    hh
-  </MenuItem>
-                                {hours.map((h) => (
-                                  <MenuItem key={h} value={h}>
-                                    {h}
-                                  </MenuItem>
-                                ))}
-                              </Select>
+                                  }));
+                                }}
+                              />{" "}
                             </FormControl>
                           </Grid>
 
                           {/* MINUTES */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
+                              <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirst.min,
+                                  value: timeIntHourMinSecFirst.min,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecFirst((prev) => ({
+                                    ...prev,
+                                    min: e.target.value,
+                                  }));
+                                }}
+                              />
+                              {/* <Select
                                 value={timeIntHourMinSecFirst.min}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirst((prev) => ({
@@ -2954,22 +2987,49 @@ function BiometricPairedDevicesGrouping() {
                                   }))
                                 }
                               >
-                                 <MenuItem value="mm" disabled>
-    mm
-  </MenuItem>
+                                <MenuItem value="mm" disabled>
+                                  mm
+                                </MenuItem>
                                 {minutesSeconds.map((m) => (
                                   <MenuItem key={m} value={m}>
                                     {m}
                                   </MenuItem>
                                 ))}
-                              </Select>
+                              </Select> */}
                             </FormControl>
                           </Grid>
 
                           {/* SECONDS */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
+                              <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirst.second,
+                                  value: timeIntHourMinSecFirst.second,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecFirst((prev) => ({
+                                    ...prev,
+                                    second: e.target.value,
+                                  }));
+                                }}
+                              />
+                              {/* <Select
                                 value={timeIntHourMinSecFirst.second}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirst((prev) => ({
@@ -2978,15 +3038,15 @@ function BiometricPairedDevicesGrouping() {
                                   }))
                                 }
                               >
-                                 <MenuItem value="ss" disabled>
-    ss
-  </MenuItem>
+                                <MenuItem value="ss" disabled>
+                                  ss
+                                </MenuItem>
                                 {minutesSeconds.map((s) => (
                                   <MenuItem key={s} value={s}>
                                     {s}
                                   </MenuItem>
                                 ))}
-                              </Select>
+                              </Select> */}
                             </FormControl>
                           </Grid>
                         </Grid>
@@ -3210,11 +3270,11 @@ function BiometricPairedDevicesGrouping() {
                                 checked={timeIntervalTwo}
                                 onChange={() => {
                                   setTimeIntervalTwo((val) => !val);
-                                   setTimeIntHourMinSecSecond({
-                              hour: "hh",
-                              min: "mm",
-                              second: "ss",
-                            });
+                                  setTimeIntHourMinSecSecond({
+                                    hour: "hh",
+                                    min: "mm",
+                                    second: "ss",
+                                  });
                                 }}
                                 color="primary"
                               />
@@ -3234,7 +3294,34 @@ function BiometricPairedDevicesGrouping() {
                               {/* HOURS */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                   <Selects
+                                options={hours
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecSecond.hour,
+                                  value: timeIntHourMinSecSecond.hour,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecSecond((prev) => ({
+                                    ...prev,
+                                    hour: e.target.value,
+                                  }));
+                                }}
+                              />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecond.hour}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
@@ -3243,22 +3330,49 @@ function BiometricPairedDevicesGrouping() {
                                       }))
                                     }
                                   >
-                                     <MenuItem value="hh" disabled>
-    hh
-  </MenuItem>
+                                    <MenuItem value="hh" disabled>
+                                      hh
+                                    </MenuItem>
                                     {hours.map((h) => (
                                       <MenuItem key={h} value={h}>
                                         {h}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
 
                               {/* MINUTES */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                   <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecSecond.min,
+                                  value: timeIntHourMinSecSecond.min,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecSecond((prev) => ({
+                                    ...prev,
+                                    min: e.target.value,
+                                  }));
+                                }}
+                              />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecond.min}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
@@ -3267,22 +3381,49 @@ function BiometricPairedDevicesGrouping() {
                                       }))
                                     }
                                   >
-                                     <MenuItem value="mm" disabled>
-    mm
-  </MenuItem>
+                                    <MenuItem value="mm" disabled>
+                                      mm
+                                    </MenuItem>
                                     {minutesSeconds.map((m) => (
                                       <MenuItem key={m} value={m}>
                                         {m}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
 
                               {/* SECONDS */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                           <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecSecond.second,
+                                  value: timeIntHourMinSecSecond.second,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecSecond((prev) => ({
+                                    ...prev,
+                                    second: e.target.value,
+                                  }));
+                                }}
+                              />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecond.second}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
@@ -3291,15 +3432,15 @@ function BiometricPairedDevicesGrouping() {
                                       }))
                                     }
                                   >
-                                     <MenuItem value="ss" disabled>
-    ss
-  </MenuItem>
+                                    <MenuItem value="ss" disabled>
+                                      ss
+                                    </MenuItem>
                                     {minutesSeconds.map((s) => (
                                       <MenuItem key={s} value={s}>
                                         {s}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
                             </Grid>
@@ -3843,11 +3984,11 @@ function BiometricPairedDevicesGrouping() {
                             checked={timeIntervalOneEdit}
                             onChange={() => {
                               setTimeIntervalOneEdit((val) => !val);
-                               setTimeIntHourMinSecFirstEdit({
-                              hour: "hh",
-                              min: "mm",
-                              second: "ss",
-                            });
+                              setTimeIntHourMinSecFirstEdit({
+                                hour: "hh",
+                                min: "mm",
+                                second: "ss",
+                              });
                             }}
                             color="primary"
                           />
@@ -3868,7 +4009,34 @@ function BiometricPairedDevicesGrouping() {
                           {/* HOURS */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
+                              <Selects
+                                options={hours
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirstEdit.hour,
+                                  value: timeIntHourMinSecFirstEdit.hour,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecFirstEdit((prev) => ({
+                                    ...prev,
+                                    hour: e.target.value,
+                                  }));
+                                }}
+                              />
+                              {/* <Select
                                 value={timeIntHourMinSecFirstEdit.hour}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
@@ -3885,14 +4053,41 @@ function BiometricPairedDevicesGrouping() {
                                     {h}
                                   </MenuItem>
                                 ))}
-                              </Select>
+                              </Select> */}
                             </FormControl>
                           </Grid>
 
                           {/* MINUTES */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
+                                    <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirstEdit.min,
+                                  value: timeIntHourMinSecFirstEdit.min,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecFirstEdit((prev) => ({
+                                    ...prev,
+                                    min: e.target.value,
+                                  }));
+                                }}
+                              />
+                              {/* <Select
                                 value={timeIntHourMinSecFirstEdit.min}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
@@ -3901,22 +4096,49 @@ function BiometricPairedDevicesGrouping() {
                                   }))
                                 }
                               >
-                                 <MenuItem value="mm" disabled>
-    mm
-  </MenuItem>
+                                <MenuItem value="mm" disabled>
+                                  mm
+                                </MenuItem>
                                 {minutesSeconds.map((m) => (
                                   <MenuItem key={m} value={m}>
                                     {m}
                                   </MenuItem>
                                 ))}
-                              </Select>
+                              </Select> */}
                             </FormControl>
                           </Grid>
 
                           {/* SECONDS */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                              <Select
+                                   <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecFirstEdit.second,
+                                  value: timeIntHourMinSecFirstEdit.second,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecFirstEdit((prev) => ({
+                                    ...prev,
+                                    second: e.target.value,
+                                  }));
+                                }}
+                              />
+                              {/* <Select
                                 value={timeIntHourMinSecFirstEdit.second}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
@@ -3925,15 +4147,15 @@ function BiometricPairedDevicesGrouping() {
                                   }))
                                 }
                               >
-                                 <MenuItem value="ss" disabled>
-    ss
-  </MenuItem>
+                                <MenuItem value="ss" disabled>
+                                  ss
+                                </MenuItem>
                                 {minutesSeconds.map((s) => (
                                   <MenuItem key={s} value={s}>
                                     {s}
                                   </MenuItem>
                                 ))}
-                              </Select>
+                              </Select> */}
                             </FormControl>
                           </Grid>
                         </Grid>
@@ -4172,11 +4394,11 @@ function BiometricPairedDevicesGrouping() {
                                 checked={timeIntervalTwoEdit}
                                 onChange={() => {
                                   setTimeIntervalTwoEdit((val) => !val);
-                                   setTimeIntHourMinSecSecondEdit({
-                              hour: "hh",
-                              min: "mm",
-                              second: "ss",
-                            });
+                                  setTimeIntHourMinSecSecondEdit({
+                                    hour: "hh",
+                                    min: "mm",
+                                    second: "ss",
+                                  });
                                 }}
                                 color="primary"
                               />
@@ -4196,7 +4418,34 @@ function BiometricPairedDevicesGrouping() {
                               {/* HOURS */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                   <Selects
+                                options={hours
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecSecondEdit.hour,
+                                  value: timeIntHourMinSecSecondEdit.hour,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecSecondEdit((prev) => ({
+                                    ...prev,
+                                    hour: e.target.value,
+                                  }));
+                                }}
+                              />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecondEdit.hour}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
@@ -4207,22 +4456,49 @@ function BiometricPairedDevicesGrouping() {
                                       )
                                     }
                                   >
-                                     <MenuItem value="hh" disabled>
-    hh
-  </MenuItem>
+                                    <MenuItem value="hh" disabled>
+                                      hh
+                                    </MenuItem>
                                     {hours.map((h) => (
                                       <MenuItem key={h} value={h}>
                                         {h}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
 
                               {/* MINUTES */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                   <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecSecondEdit.min,
+                                  value: timeIntHourMinSecSecondEdit.min,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecSecondEdit((prev) => ({
+                                    ...prev,
+                                    min: e.target.value,
+                                  }));
+                                }}
+                              />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecondEdit.min}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
@@ -4233,22 +4509,49 @@ function BiometricPairedDevicesGrouping() {
                                       )
                                     }
                                   >
-                                     <MenuItem value="mm" disabled>
-    mm
-  </MenuItem>
+                                    <MenuItem value="mm" disabled>
+                                      mm
+                                    </MenuItem>
                                     {minutesSeconds.map((m) => (
                                       <MenuItem key={m} value={m}>
                                         {m}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
 
                               {/* SECONDS */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                  <Select
+                                  <Selects
+                                options={minutesSeconds
+                                  .map((data) => ({
+                                    label: data,
+                                    value: data,
+                                  }))
+                                  .filter((item, index, self) => {
+                                    return (
+                                      self.findIndex(
+                                        (i) =>
+                                          i.label === item.label &&
+                                          i.value === item.value
+                                      ) === index
+                                    );
+                                  })}
+                                styles={colourStyles}
+                                value={{
+                                  label: timeIntHourMinSecSecondEdit.second,
+                                  value: timeIntHourMinSecSecondEdit.second,
+                                }}
+                                onChange={(e) => {
+                                  setTimeIntHourMinSecSecondEdit((prev) => ({
+                                    ...prev,
+                                    second: e.target.value,
+                                  }));
+                                }}
+                              />
+                                  {/* <Select
                                     value={timeIntHourMinSecSecondEdit.second}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
@@ -4259,15 +4562,15 @@ function BiometricPairedDevicesGrouping() {
                                       )
                                     }
                                   >
-                                     <MenuItem value="ss" disabled>
-    ss
-  </MenuItem>
+                                    <MenuItem value="ss" disabled>
+                                      ss
+                                    </MenuItem>
                                     {minutesSeconds.map((s) => (
                                       <MenuItem key={s} value={s}>
                                         {s}
                                       </MenuItem>
                                     ))}
-                                  </Select>
+                                  </Select> */}
                                 </FormControl>
                               </Grid>
                             </Grid>

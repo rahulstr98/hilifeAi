@@ -698,12 +698,13 @@ function RaiseticketMaster() {
 
   const handleOnChanegFieldsCheckDateTimeRestrict = (data, e, indexs, index, id, val) => {
     if (val === 'Date') {
+      console.log(e , 'e')
       if (e) {
         const updatedTodos = [...CheckingTableModification];
         updatedTodos[indexs].total[index].value = e;
         setCheckingTableModification(updatedTodos);
       } else {
-        setPopupContentMalert('Please Select Allowed Dates');
+        setPopupContentMalert('Invalid date selected. Please choose a date within the last 2 days');
         setPopupSeverityMalert('info');
         handleClickOpenPopupMalert();
       }

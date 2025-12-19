@@ -21,7 +21,7 @@ function getStatus(lastOnlineTimeC, newDate) {
   const newDateObj = new Date(newDate);
   const timeDifference = newDateObj - lastOnlineDate;
   const timeDifferenceInMinutes = timeDifference / (1000 * 60);
-  return timeDifferenceInMinutes <= 1.8 ? "Active" : "In-Active";
+  return timeDifferenceInMinutes <= 5 ? "Active" : "In-Active";
 }
 
 function parseDate(dateStr) {
@@ -138,6 +138,7 @@ const getUserParticularDeviceStatus = async ({ presentDate, device }) => {
         },
       },
     ]);
+    console.log(result , "result")
     updatedDeviceInfo =
       result?.length > 0
         ? result?.map((device) => {
@@ -239,10 +240,12 @@ exports.getParticularDeviceOnlineStatus = catchAsyncErrors(
     let deviceonlinestatus;
     try {
       const { date, cloudIDC } = req?.body;
+      
       deviceonlinestatus = await getUserParticularDeviceStatus({
         presentDate: date,
         device: cloudIDC,
       });
+      console.log(date , cloudIDC , deviceonlinestatus)
       return res.status(200).json({
         deviceonlinestatus,
       });

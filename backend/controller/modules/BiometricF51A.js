@@ -64,10 +64,6 @@ async function fetchRemoteControlCheck(command, commandName) {
     return false; // ❌ Failure
   }
 }
-
-
-
-
 async function fetchDeviceLogs() {
     try {
         // Step 1: Get logs

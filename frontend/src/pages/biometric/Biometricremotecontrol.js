@@ -69,10 +69,10 @@ function BiometricRemoteControl() {
         setOpenPopupMalert(false);
     };
     const brandButtonAccess = {
-        Brand1: ["remotecontrol", "maintenance", "dooropen", "restart", "deletuserinfo", "reset", "deletealllogs"],
-        Brand2: ["remotecontrol", "maintenance", "dooropen", "restart", "reset", "deletuserinfo", "deletealllogs"],
-        Brand3: ["remotecontrol", "maintenance", "dooropen", "restart", "shutdown", "reset", "deletuserinfo"],
-        Bowee: ["remotecontrol", "unlock", "maintenance", "turnoffalarm", "firealarm", "alarm", "doornormalopen", "remotedoorclosing", "remotelocking", "dooropen", "restart", "reset"],
+        "Bio-Socket": ["remotecontrol", "maintenance", "dooropen", "restart", "deletuserinfo", "reset", "deletealllogs"],
+        "Bowee-Witzee": ["remotecontrol", "maintenance", "dooropen", "restart", "reset", "deletuserinfo", "deletealllogs"],
+        "Bowee-Chandichan": ["remotecontrol", "maintenance", "dooropen", "restart", "shutdown", "reset", "deletuserinfo"],
+        "Bowee": ["remotecontrol", "unlock", "maintenance", "turnoffalarm", "firealarm", "alarm", "doornormalopen", "remotedoorclosing", "remotelocking", "dooropen", "restart", "reset"],
     };
 
     const allowedActions = brandButtonAccess[biometricDeviceManagement.brandname] || [];
@@ -608,7 +608,7 @@ console.log(res_branch?.data?.biometricdevicemanagement , "res_branch?.data?.bio
                                     </Grid>
 
 
-                                    {deviceOnlineStatus && <Grid item md={3} xs={12} sm={12}>
+                                    {deviceOnlineStatus && biometricDeviceManagement.brandname !== 'Bowee-Witzee' && <Grid item md={3} xs={12} sm={12}>
                                         <Box display="flex" flexDirection="column" alignItems="center" gap={1}>
                                             <Typography variant="subtitle1" fontWeight="bold">
                                                 Device Status
@@ -637,7 +637,7 @@ console.log(res_branch?.data?.biometricdevicemanagement , "res_branch?.data?.bio
                                 {/* This is button starting */}
 
                                 {/* {biometricDeviceManagement.biometricdeviceid && ( */}
-                                {biometricDeviceManagement.biometricdeviceid !== "Please Select Biometric Device ID" && deviceOnlineStatus === "Active" && (
+                                {biometricDeviceManagement.biometricdeviceid !== "Please Select Biometric Device ID" && (deviceOnlineStatus === "Active" || biometricDeviceManagement.brandname === 'Bowee-Witzee') &&(
                                     <>
                                         {/* Remote Control Section */}
                                         {allowedActions.includes("remotecontrol") && (

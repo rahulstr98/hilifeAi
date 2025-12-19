@@ -125,7 +125,7 @@ const BiometricForm = ({
   const [deviceOnlineStatus, setDeviceOnlineStatus] = useState('');
   const fetchBioInfoStatus = async (device) => {
     try {
-      if (!['Brand1', 'Brand2', 'Brand3']?.includes(device.brand)) {
+      if (!['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan']?.includes(device.brand)) {
         await axios.post(SERVICE.BIOMETRIC_GET_SEND_COMMAND, {
           headers: { Authorization: `Bearer ${auth.APIToken}` },
           deviceCommandN: '2',
@@ -160,7 +160,7 @@ const BiometricForm = ({
       handleClickOpenPopupMalert();
     } else {
       setLoadingBiometric(true);
-      if (['Brand1', 'Brand2', 'Brand3', 'Bowee']?.includes(deviceDetails?.brand)) {
+      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)) {
         setLoadingBiometric(false);
         fetchUsersAvailability(deviceDetails, employee?.biometricdevicename);
       } else {
@@ -174,7 +174,7 @@ const BiometricForm = ({
 
   const fetchUsersAvailability = async (device, biometricdevicename) => {
     try {
-      if (['Brand1', 'Brand2', 'Brand3']?.includes(device.brand)) {
+      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan']?.includes(device.brand)) {
         const [res, response] = await Promise.all([
           axios.post(SERVICE.BIOMETRIC_USER_ID_CHECK, {
             headers: { Authorization: `Bearer ${auth.APIToken}` },
@@ -283,11 +283,11 @@ const BiometricForm = ({
       setPopupContentMalert('Please Select Biometric User Role!');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } else if (deviceDetails?.brand === 'Brand1' && employee?.biometricrole === 'Administrator' && !documentFiles) {
+    } else if (deviceDetails?.brand === 'Bio-Socket' && employee?.biometricrole === 'Administrator' && !documentFiles) {
       setPopupContentMalert('Please Add Face Image');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    } else if (deviceDetails?.brand === 'Brand3') {
+    } else if (deviceDetails?.brand === 'Bowee-Chandichan') {
       setPopupContentMalert('Currently Not is Use');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
@@ -300,7 +300,7 @@ const BiometricForm = ({
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     } else {
-      if (['Brand1', 'Brand2', 'Brand3']?.includes(deviceDetails.brand)) {
+      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan']?.includes(deviceDetails.brand)) {
         handleAddNewBiometricDevices();
       } else if (['Bowee']?.includes(deviceDetails.brand)) {
         handleNewUserAddBowee();
@@ -397,7 +397,7 @@ const BiometricForm = ({
       setBiometricPostDevice({
         biometricUserIDC: BiometricId,
         cloudIDC: employee.biometricdevicename,
-        devicetype: 'boxtel',
+        devicetype: 'Boxtell',
       });
 
       setEmployee((prev) => ({
@@ -473,24 +473,24 @@ const BiometricForm = ({
           signType: 'RSA',
           version: '1.0.0',
         };
-        let finalCommand = deviceDetails.brand === 'Brand1' ? brand1CommandAddUser : deviceDetails.brand === 'Brand2' ? brand2Command : deviceDetails.brand === 'Brand3' ? brand3Command : '';
+        let finalCommand = deviceDetails.brand === 'Bio-Socket' ? brand1CommandAddUser : deviceDetails.brand === 'Bowee-Witzee' ? brand2Command : deviceDetails.brand === 'Bowee-Chandichan' ? brand3Command : '';
         let res = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD_NEW, {
           headers: { Authorization: `Bearer ${auth.APIToken}` },
           command: finalCommand,
           brand: deviceDetails.brand,
           brand1: brand1CommandImage,
         });
-        if (deviceDetails?.brand === 'Brand1' ? res?.data?.alldeviceinfo?.result : deviceDetails?.brand === 'Brand2' ? res?.data?.alldeviceinfo : false) {
+        if (deviceDetails?.brand === 'Bio-Socket' ? res?.data?.alldeviceinfo?.result : deviceDetails?.brand === 'Bowee-Witzee' ? res?.data?.alldeviceinfo : false) {
           let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
             headers: { Authorization: `Bearer ${auth.APIToken}` },
             biometricUserIDC: BiometricId,
             cloudIDC: deviceDetails.biometricserialno,
             dataupload: 'new',
-            downloadedFaceTemplateN: deviceDetails.brand === 'Brand1' && documentFiles?.data ? 1 : 0,
+            downloadedFaceTemplateN: deviceDetails.brand === 'Bio-Socket' && documentFiles?.data ? 1 : 0,
             downloadedFingerTemplateN: 0,
             fingerCountN: 0,
             isEnabledC: 'Yes',
-            isFaceEnrolledC: deviceDetails.brand === 'Brand1' && documentFiles?.data ? 'Yes' : 'No',
+            isFaceEnrolledC: deviceDetails.brand === 'Bio-Socket' && documentFiles?.data ? 'Yes' : 'No',
             privilegeC: employee.biometricrole,
             pwdc: '',
             staffNameC: enableLoginName ? String(third) : employee.username,
@@ -614,7 +614,7 @@ const BiometricForm = ({
           </Grid>
 
           {/* Upload Section (only show when documentFiles is null) */}
-          {!documentFiles && ['Brand1', 'Bowee']?.includes(deviceDetails?.brand) && (
+          {!documentFiles && ['Bio-Socket', 'Bowee']?.includes(deviceDetails?.brand) && (
             <Grid item xs={12} sm={12} md={3}>
               <FormControl fullWidth size="small">
                 <Typography mb={1}>
@@ -639,7 +639,7 @@ const BiometricForm = ({
           )}
 
           {/* Uploaded Document Section */}
-          {documentFiles && ['Brand1', 'Bowee']?.includes(deviceDetails?.brand) && (
+          {documentFiles && ['Bio-Socket', 'Bowee']?.includes(deviceDetails?.brand) && (
             <Grid item xs={12} sm={12} md={3}>
               <Box textAlign="center">
                 <img src={documentFiles.preview} alt="Uploaded" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: 4 }} />
@@ -665,7 +665,7 @@ const BiometricForm = ({
               </Typography>
               <Selects
                 options={
-                  ['Brand1', 'Brand2', 'Brand3', 'Bowee']?.includes(deviceDetails?.brand)
+                  ['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)
                     ? [
                         { label: 'User', value: 'User' },
                         { label: 'Administrator', value: 'Administrator' },

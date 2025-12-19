@@ -945,6 +945,7 @@ function BiometricUnregisteredUsers() {
       clockDateTimeD: item.clockDateTimeD,
       photourl: item.photourl,
       verifyC: item.verifyC,
+      // verifyC: item.verifyC,
     };
   });
   const rowsWithCheckboxes = rowDataTable.map((row) => ({

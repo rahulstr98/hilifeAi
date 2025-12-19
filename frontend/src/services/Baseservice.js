@@ -5053,7 +5053,7 @@ export const SERVICE = {
   CREATE_APPLICATIONNAME: `${BASE_URL}/api/applicationname/new`,
   SINGLE_APPLICATIONNAME: `${BASE_URL}/api/applicationname`,
   ALL_APPLICATIONNAME: `${BASE_URL}/api/applicationnames`,
-  CREATE_BIOMETRICDEVICEMANAGEMENT: `${BASE_URL}/api/biometricdevicemanagement/new`,
+ 
   SINGLE_BIOMETRICDEVICEMANAGEMENT: `${BASE_URL}/api/biometricdevicemanagement`,
   ALL_BIOMETRICDEVICEMANAGEMENT: `${BASE_URL}/api/biometricdevicemanagements`,
 
@@ -5504,7 +5504,7 @@ export const SERVICE = {
   CREATE_BIOMETRICDEVICESPAIRING: `${BASE_URL}/api/biometricdevicespairing/new`,
   SINGLE_BIOMETRICDEVICESPAIRING: `${BASE_URL}/api/biometricdevicespairing`,
   ALL_BIOMETRICDEVICESPAIRING: `${BASE_URL}/api/biometricdevicespairing`,
-  ALL_BIOMETRICDEVICES_BASED_ON_AREA: `${BASE_URL}/api/biometricdevicesbasedonarea`,
+
   ALL_BIOMETRICDEVICES_PAIRED_DEVICES_BASED_ON_AREA: `${BASE_URL}/api/biometricpaireddevicesbasedonarea`,
   CREATE_BIOMETRIC_PAIRED_DEVICE_GROUPING: `${BASE_URL}/api/biometricpaireddevicegrouping/new`,
   SINGLE_BIOMETRIC_PAIRED_DEVICE_GROUPING: `${BASE_URL}/api/biometricpaireddevicegrouping`,
@@ -5596,5 +5596,13 @@ export const SERVICE = {
         BIOMETRIC_VISITORS_ATTENDANCE_REPORT_CHECK: `${BASE_URL}/api/biometricvisitorsattendancereportcheck`,
         ALL_BIOMETRICDEVICE_OFFLINE_HISTORY: `${BASE_URL}/api/biometricdevicesofflinehistory`,
 
+         CREATE_BIOMETRICDEVICEMANAGEMENT: `${BASE_URL}/api/biometricdevicemanagement/new`,
+           ALL_BIOMETRICDEVICES_BASED_ON_AREA: `${BASE_URL}/api/biometricdevicesbasedonarea`,
+  ALL_BIOMETRICDEVICES_BASED_ON_AREA_RFID_DETAILS: `${BASE_URL}/api/biometricdevicesbasedonarearfiddetails`,
+  REPORTINGTOEMPLOYEECHANGE_USER: `${BASE_URL}/api/reportingtoemployeechangeuser`,
+
+
+    DYNAMICNOTICEPERIODAPPLIES: `${BASE_URL}/api/dynamicnoticeperiodapplycontroller`,
+      CHECKUSERPRESENTINLDAP: `${BASE_URL}/api/checkuserispresent`,
 
 };

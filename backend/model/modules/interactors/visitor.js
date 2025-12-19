@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const VisitorsSchema = new Schema({
   salarytable: [
@@ -322,6 +322,35 @@ const VisitorsSchema = new Schema({
     required: false,
   },
   requestfollowupactionuptime: {
+    type: String,
+    required: false,
+  },
+
+  rfiddevicecompany: {
+    type: [String],
+    required: false,
+  },
+  rfiddevicebranch: {
+    type: [String],
+    required: false,
+  },
+  rfiddeviceunit: {
+    type: [String],
+    required: false,
+  },
+  rfiddevicefloor: {
+    type: [String],
+    required: false,
+  },
+  rfiddevicearea: {
+    type: String,
+    required: false,
+  },
+  rfiddevicename: {
+    type: String,
+    required: false,
+  },
+  rfiddevicenumber: {
     type: String,
     required: false,
   },
@@ -923,6 +952,7 @@ const VisitorsSchema = new Schema({
         type: String,
         required: false,
       },
+
       escortinformation: {
         type: Boolean,
         required: false,
@@ -1119,4 +1149,4 @@ VisitorsSchema.index({
   addvisitorin: 1,
   followuparray: { $slice: -1 },
 });
-module.exports = mongoose.model('visitors', VisitorsSchema);
+module.exports = mongoose.model("visitors", VisitorsSchema);

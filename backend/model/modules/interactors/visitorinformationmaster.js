@@ -5,6 +5,37 @@ const VisitorinformationmasterSchema = new Schema({
     type: String,
     required: false,
   },
+
+  
+       rfiddevicecompany: {
+        type: [String],
+        required: false,
+      },
+      rfiddevicebranch: {
+        type: [String],
+        required: false,
+      },
+      rfiddeviceunit: {
+        type: [String],
+        required: false,
+      },
+      rfiddevicefloor: {
+        type: [String],
+        required: false,
+      },
+      rfiddevicearea: {
+        type: String,
+        required: false,
+      },
+      rfiddevicename: {
+        type: String,
+        required: false,
+      },
+      rfiddevicenumber: {
+        type: String,
+        required: false,
+      },
+
   interviewpreferedatetime: {
     type: String,
     required: false,

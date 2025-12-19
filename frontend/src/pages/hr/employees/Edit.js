@@ -344,7 +344,7 @@ function Editemployee() {
     } else {
       setLoadingBiometric(true);
       if (
-        ["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(deviceDetails?.brand)
+        ["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(deviceDetails?.brand)
       ) {
         setLoadingBiometric(false);
         fetchUsersAvailability(deviceDetails, biometricDevicename);
@@ -360,7 +360,7 @@ function Editemployee() {
     e.preventDefault();
     setLoadingBiometric(true);
     if (
-      !["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(deviceDetails?.brand)
+      !["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(deviceDetails?.brand)
     ) {
       fetchUsersDeleteData(BioOldUserCheck?.cloudIDC);
     } else if (["Bowee"]?.includes(deviceDetails.brand)) {
@@ -376,7 +376,7 @@ function Editemployee() {
   const fetchUsersAvailability = async (device, biometricdevicename) => {
     console.log(device, biometricdevicename, "Device Name");
     try {
-      if (["Brand1", "Brand2", "Brand3"]?.includes(device.brand)) {
+      if (["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan"]?.includes(device.brand)) {
         const [res, response] = await Promise.all([
           axios.post(SERVICE.BIOMETRIC_USER_ID_CHECK, {
             headers: { Authorization: `Bearer ${auth.APIToken}` },
@@ -484,14 +484,14 @@ function Editemployee() {
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (
-      deviceDetails?.brand === "Brand1" &&
+      deviceDetails?.brand === "Bio-Socket" &&
       biometricrole === "Administrator" &&
       !documentFiles
     ) {
       setPopupContentMalert("Please Add Face Image");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (deviceDetails?.brand === "Brand3") {
+    } else if (deviceDetails?.brand === "Bowee-Chandichan") {
       setPopupContentMalert("Currently Not is Use");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -504,7 +504,7 @@ function Editemployee() {
       setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
-      if (["Brand1", "Brand2", "Brand3"]?.includes(deviceDetails.brand)) {
+      if (["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan"]?.includes(deviceDetails.brand)) {
         handleAddNewBiometricDevices();
       } else if (["Bowee"]?.includes(deviceDetails.brand)) {
         handleNewUserAddBowee();
@@ -577,11 +577,11 @@ function Editemployee() {
           version: "1.0.0",
         };
         let finalCommand =
-          deviceDetails.brand === "Brand1"
+          deviceDetails.brand === "Bio-Socket"
             ? brand1CommandAddUser
-            : deviceDetails.brand === "Brand2"
+            : deviceDetails.brand === "Bowee-Witzee"
             ? brand2Command
-            : deviceDetails.brand === "Brand3"
+            : deviceDetails.brand === "Bowee-Chandichan"
             ? brand3Command
             : "";
         let res = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD_NEW, {
@@ -591,9 +591,9 @@ function Editemployee() {
           brand1: brand1CommandImage,
         });
         if (
-          deviceDetails?.brand === "Brand1"
+          deviceDetails?.brand === "Bio-Socket"
             ? res?.data?.alldeviceinfo?.result
-            : deviceDetails?.brand === "Brand2"
+            : deviceDetails?.brand === "Bowee-Witzee"
             ? res?.data?.alldeviceinfo
             : false
         ) {
@@ -603,12 +603,12 @@ function Editemployee() {
             cloudIDC: deviceDetails.biometricserialno,
             dataupload: "new",
             downloadedFaceTemplateN:
-              deviceDetails.brand === "Brand1" && documentFiles?.data ? 1 : 0,
+              deviceDetails.brand === "Bio-Socket" && documentFiles?.data ? 1 : 0,
             downloadedFingerTemplateN: 0,
             fingerCountN: 0,
             isEnabledC: "Yes",
             isFaceEnrolledC:
-              deviceDetails.brand === "Brand1" && documentFiles?.data
+              deviceDetails.brand === "Bio-Socket" && documentFiles?.data
                 ? "Yes"
                 : "No",
             privilegeC: biometricrole,
@@ -6506,7 +6506,7 @@ function Editemployee() {
 
       if (
         res?.data?.success &&
-        !["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(
+        !["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(
           BioUserDataActions?.brandname
         )
       ) {
@@ -14837,7 +14837,7 @@ function Editemployee() {
       ) {
         if (
           (BiometricPostDevice?.cloudIDC || BioEditUserCheck) &&
-          !["Brand1", "Brand2", "Brand3", "Bowee"]?.includes(
+          !["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(
             deviceDetails?.brand
           )
         ) {
@@ -27960,7 +27960,7 @@ function Editemployee() {
 
                       {/* Upload Section (only show when documentFiles is null) */}
                       {!documentFiles &&
-                        ["Brand1", "Bowee"]?.includes(deviceDetails?.brand) && (
+                        ["Bio-Socket", "Bowee"]?.includes(deviceDetails?.brand) && (
                           <Grid item xs={12} sm={12} md={3}>
                             <FormControl fullWidth size="small">
                               <Typography mb={1}>Upload Profile</Typography>
@@ -27991,7 +27991,7 @@ function Editemployee() {
 
                       {/* Uploaded Document Section */}
                       {documentFiles &&
-                        ["Brand1", "Bowee"]?.includes(deviceDetails?.brand) && (
+                        ["Bio-Socket", "Bowee"]?.includes(deviceDetails?.brand) && (
                           <Grid item xs={12} sm={12} md={3}>
                             <Box textAlign="center">
                               <img

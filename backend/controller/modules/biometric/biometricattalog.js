@@ -25,6 +25,16 @@ exports.getAllattLog = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
+function toYMD(dateTimeStr) {
+  if (!dateTimeStr) return null;
+
+  // "17-10-2025 22:13:04"
+  const [datePart] = dateTimeStr.split(" ");
+  const [dd, mm, yyyy] = datePart.split("-");
+
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 exports.getAllDuplicateBiometricLogs = catchAsyncErrors(
   async (req, res, next) => {
     try {
@@ -39,6 +49,7 @@ exports.getAllDuplicateBiometricLogs = catchAsyncErrors(
         updateOne: {
           filter: {
             clockDateTimeD: log.clockDateTimeD,
+            clockDateOnly: toYMD(log.clockDateTimeD),
             staffNameC: log.staffNameC,
             biometricUserIDC: log.biometricUserIDC,
             cloudIDC: log.cloudIDC,
@@ -844,13 +855,166 @@ exports.getUsersAttendanceReportsAaaJewellers = catchAsyncErrors(
   }
 );
 
+// function addShiftStatus(data) {
+//   // Step 1: Build shiftStatus per user from Main Shift
+//   const userShiftStatusMap = {};
+
+//   data.forEach((item) => {
+//     if (item.shiftMode === "Main Shift") {
+//       const shift = item.shift || "";
+
+//       // Example: "09:00AMto07:00PM"
+//       const isDayShift = /AMto.*PM$/i.test(shift);
+
+//       userShiftStatusMap[item.rowusername] = isDayShift
+//         ? "Day Shift"
+//         : "Night Shift";
+//     }
+//   });
+
+//   // Step 2: Attach shiftStatus to all records (Main + Second Shift)
+//   return data.map((item) => ({
+//     ...item,
+//     shiftStatus: userShiftStatusMap[item.rowusername] || "",
+//   }));
+// }
+
+function addShiftStatus(data) {
+  const userShiftStatusMap = {};
+  const userHoursDiffMap = {};
+
+  // Step 1: Group by username
+  const grouped = {};
+
+  data.forEach((item) => {
+    if (!grouped[item.rowusername]) {
+      grouped[item.rowusername] = [];
+    }
+    grouped[item.rowusername].push(item);
+  });
+
+  // Step 2: Calculate shiftStatus & hoursDifference per user
+  Object.entries(grouped).forEach(([username, shifts]) => {
+    // ----- SHIFT STATUS (from Main Shift)
+    const mainShift = shifts.find((s) => s.shiftMode === "Main Shift");
+    if (mainShift) {
+      const shift = mainShift.shift || "";
+      const isDayShift = /AMto.*PM$/i.test(shift);
+
+      userShiftStatusMap[username] = isDayShift ? "Day Shift" : "Night Shift";
+    }
+
+    // ----- HOURS DIFFERENCE (only if double shift)
+    if (shifts.length > 1) {
+      // Sort shifts by orgStartTime
+      shifts.sort(
+        (a, b) =>
+          new Date(a.shiftdate?.orgStartTime) -
+          new Date(b.shiftdate?.orgStartTime)
+      );
+
+      const firstEnd = new Date(shifts[0]?.shiftdate?.orgEndTime);
+      const secondStart = new Date(shifts[1]?.shiftdate?.orgStartTime);
+      let diffMs = secondStart - firstEnd;
+
+      // Handle midnight crossover
+      if (diffMs < 0) {
+        diffMs += 24 * 60 * 60 * 1000;
+      }
+
+      userHoursDiffMap[username] = +(diffMs / (1000 * 60 * 60)).toFixed(2);
+    } else {
+      userHoursDiffMap[username] = 0;
+    }
+  });
+
+  // Step 3: Attach values to all records
+  return data.map((item) => ({
+    ...item,
+    shiftStatus: userShiftStatusMap[item.rowusername] || "",
+    hoursDifference: userHoursDiffMap[item.rowusername] / 2 || 0,
+  }));
+}
+
+function addOneSecondAndFormat(isoDate, seconds) {
+  if (!isoDate) return "";
+
+  const date = new Date(isoDate);
+
+  // Add 1 second
+  date.setSeconds(date.getSeconds() + seconds);
+
+  const pad = (n) => String(n).padStart(2, "0");
+
+  return (
+    `${pad(date.getDate())}-${pad(
+      date.getMonth() + 1
+    )}-${date.getFullYear()} ` +
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(
+      date.getSeconds()
+    )}`
+  );
+}
+
+function expandDateRange(userDates) {
+  if (!userDates?.length) return [];
+
+  // Convert DD/MM/YYYY → Date
+  const toDate = (d) => {
+    const [day, month, year] = d.split("/");
+    return new Date(year, month - 1, day);
+  };
+
+  // Sort dates
+  const dates = userDates
+    .map((d) => toDate(d.formattedDate))
+    .sort((a, b) => a - b);
+
+  // Add one day before & after
+  const start = new Date(dates[0]);
+  start.setDate(start.getDate() - 1);
+
+  const end = new Date(dates[dates.length - 1]);
+  end.setDate(end.getDate() + 1);
+
+  // Build full range
+  const result = [];
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+
+    // result.push(`${dd}-${mm}-${yyyy}`);
+    result.push(`${yyyy}-${mm}-${dd}`);
+  }
+
+  return result;
+}
+
+function addTwoHours(isoDate, hours, mode = "Add") {
+  if (!isoDate) return null;
+
+  const date = new Date(isoDate);
+
+  const diff = Number(hours) || 0;
+
+  if (mode === "Sub") {
+    date.setHours(date.getHours() - diff);
+  } else {
+    // "Add" (default)
+    date.setHours(date.getHours() + diff);
+  }
+
+  return date;
+}
+
 //To get the users Attendance Reports
 exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
   async (req, res, next) => {
     let answer, usersCollection, filteredData;
     let { company, branch, usernames, type, userDates, workmode } = req.body;
     try {
-      console.log("Hitted Here");
+      // console.log("Hitted Here");
       let query = {};
       if (type !== "Deactivate" && usernames?.length > 0) {
         query.username = { $in: usernames };
@@ -1050,7 +1214,6 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
 
       // 1. Create a map of device serials to grouped biometric user data by username and type
       const biometricGroupingMap = {};
-
       for (const group of biometricUsersGrouping) {
         const {
           deviceserialnumber,
@@ -1073,7 +1236,6 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           inoutdevice: attendanceinout,
         });
       }
-
       const pairedSerials = Object.values(biometricGroupingMap)
         .flat()
         .filter(Boolean);
@@ -1093,15 +1255,19 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           $nin: pairedSerials,
         };
       }
-      // console.log(biometricGroupingMap, pairedSerials, "biometricGroupingMap")
-
+      const resultDate = expandDateRange(userDates);
       answer = await getUserClockinAndClockoutStatus({
         employee: usernamesFilter,
         userDates: userDates,
       });
-
+      const resultShiftValues = addShiftStatus(answer?.finaluser);
       usersCollection = await Biometricattlog.aggregate([
-        { $match: matchQuery },
+        {
+          $match: {
+            ...matchQuery,
+            clockDateOnly: { $in: resultDate },
+          },
+        },
         {
           $lookup: {
             from: "users",
@@ -1189,6 +1355,25 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             },
           },
         },
+        //         {
+        //   $project: {
+        //     clockDateOnly: 1,
+        //     clockDateTimeD: 1,
+        //     staffNameC: 1,
+        //     cloudIDC: 1,
+        //     empcode: 1,
+        //     company: 1,
+        //     branch: 1,
+        //     unit: 1,
+        //     team: 1,
+        //     department: 1,
+        //     companyname: 1,
+        //     indevice: 1,
+        //     outdevice: 1,
+        //     inoutdevice: 1,
+        //     _id: 1
+        //   }
+        // }
         {
           $project: {
             userDetails: 0,
@@ -1197,7 +1382,12 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           },
         },
       ]);
-      // console.log(usersCollection?.length, usersCollection[0])
+      const VariableCheck = usersCollection?.map(
+        (data, index) =>
+          `${index + 1}-${data?.biometriccommonname}-${data?.cloudIDC}-${
+            data?.indevice
+          }-${data?.outdevice}--${data?.inoutdevice}-${data?.clockDateTimeD}`
+      );
       let filteredUsers = [];
       usersCollection.forEach((user) => {
         const userSerial = user.cloudIDC;
@@ -1266,26 +1456,89 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
         }
         filteredUsers.push(user);
       });
+      const shiftKeyCount = {};
 
-      console.log(
-        filteredUsers?.length,
-        new Set([...filteredUsers?.map((data) => data?.cloudIDC)]),
-        "filteredUsers"
-      );
-      filteredData = answer?.finaluser?.flatMap(
-        ({ rowusername, shiftdate, shift }) => {
+      resultShiftValues.forEach((item) => {
+        const key = `${item.rowusername}_${item.rowformattedDate}`;
+        shiftKeyCount[key] = (shiftKeyCount[key] || 0) + 1;
+      });
+      const hasTwoShifts = (rowusername, rowformattedDate) => {
+        const key = `${rowusername}_${rowformattedDate}`;
+        return shiftKeyCount[key] > 1;
+      };
+
+      // console.log( resultShiftValues, 'resultShiftValues')
+
+      // filteredData = [resultShiftValues[0]].flatMap(
+      filteredData = resultShiftValues.flatMap(
+        ({
+          rowusername,
+          shiftdate,
+          shift,
+          shiftMode,
+          shifttype,
+          rowformattedDate,
+          shiftStatus,
+          hoursDifference,
+        }) => {
           const matchedUsers = filteredUsers
             .filter((user) => user.staffNameC === rowusername)
             .map((user) => {
+              const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
               if (!user.indevice && !user.outdevice && !user.inoutdevice) {
                 return null;
               }
-              const startTime = shiftdate?.startTime
-                ? new Date(shiftdate.startTime)
-                : null;
-              const endTime = shiftdate?.endTime
-                ? new Date(shiftdate.endTime)
-                : null;
+              let startTime = null;
+              let endTime = null;
+              if (isDoubleShift) {
+                if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
+                  startTime = shiftdate?.startTime;
+                  endTime = addTwoHours(
+                    shiftdate?.orgEndTime,
+                    hoursDifference,
+                    "Add"
+                  );
+                } else if (
+                  shiftStatus === "Day Shift" &&
+                  shiftMode === "Second Shift"
+                ) {
+                  startTime = addTwoHours(
+                    shiftdate?.orgStartTime,
+                    hoursDifference,
+                    "Sub"
+                  );
+                  endTime = shiftdate?.endTime;
+                } else if (
+                  shiftStatus === "Night Shift" &&
+                  shiftMode === "Main Shift"
+                ) {
+                  startTime = addTwoHours(
+                    shiftdate?.orgStartTime,
+                    hoursDifference,
+                    "Sub"
+                  );
+                  endTime = shiftdate?.endTime;
+                } else if (
+                  shiftStatus === "Night Shift" &&
+                  shiftMode === "Second Shift"
+                ) {
+                  startTime = shiftdate?.startTime;
+                  endTime = addTwoHours(
+                    shiftdate?.orgEndTime,
+                    hoursDifference,
+                    "Add"
+                  );
+                }
+              } else {
+                startTime = shiftdate?.startTime
+                  ? new Date(shiftdate.startTime)
+                  : null;
+                endTime = shiftdate?.endTime
+                  ? new Date(shiftdate.endTime)
+                  : null;
+              }
+
+              // console.log(startTime ,endTime, "endTime")
               const [datePart, timePart] = user?.clockDateTimeD.split(" ");
               const [day, month, year] = datePart.split("-");
               const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
@@ -1298,7 +1551,10 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
               return null;
             })
             .filter(Boolean);
+
+          console.log(matchedUsers , "matchedUsers")
           // Categorize by device types
+          const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
           const inDevices = matchedUsers.filter((d) => d.indevice);
           const outDevices = matchedUsers.filter((d) => d.outdevice);
           const inOutDevices = matchedUsers.filter((d) => d.inoutdevice);
@@ -1313,7 +1569,6 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           const sortedInOutDevices = [...inOutDevices].sort(
             (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
           );
-          console.log(sortedInOutDevices?.length, "filteredUsers");
           let inTime = null;
           let outTime = null;
           let inTimeVerified = null;
@@ -1322,43 +1577,148 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           let outTimeVerifiedDevice = null;
 
           // Determine inTime
-          if (sortedInDevices.length > 0) {
+          if (!isDoubleShift && sortedInDevices.length > 0) {
             inTime = sortedInDevices[0].clockDateTimeD;
             inTimeVerified = sortedInDevices[0].verifyC;
             inTimeVerifiedDevice = sortedInDevices[0].biometriccommonname;
-          } else if (sortedInOutDevices.length > 0) {
+          } else if (!isDoubleShift && sortedInOutDevices.length > 0) {
             inTime = sortedInOutDevices[0].clockDateTimeD;
             inTimeVerified = sortedInOutDevices[0].verifyC;
             inTimeVerifiedDevice = sortedInOutDevices[0].biometriccommonname;
+          } else if (isDoubleShift && matchedUsers?.length > 0) {
+            const firstDeviceBasedOnTime = matchedUsers?.sort(
+              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+            );
+            const firatDeviceIn = firstDeviceBasedOnTime[0];
+            const firstInDevice = matchedUsers
+              ?.filter((data) => data?.indevice || data?.inoutdevice)
+              .sort((a, b) => new Date(a.clockTime) - new Date(b.clockTime));
+            // const first = firstInDevice[firstInDevice.length - 1];
+            inTimeVerified = firstInDevice[0]?.verifyC;
+            inTimeVerifiedDevice = firstInDevice[0]?.biometriccommonname;
+            if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
+              console.log(shiftMode, "1");
+              inTime = firstInDevice[0].clockDateTimeD;
+             
+            } else if (
+              shiftStatus === "Day Shift" &&
+              shiftMode === "Second Shift"
+            ) {
+              const ifInTime =
+                shiftdate?.orgStartTime <
+                parseDDMMYYYY(firstInDevice[0]?.clockDateTimeD)
+                  ? addOneSecondAndFormat(shiftdate?.orgStartTime, 1)
+                  : firstInDevice[0]?.clockDateTimeD;
+              inTime = firstInDevice[0]?.indevice
+                ? ifInTime
+                : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
+              console.log(shiftMode, "2");
+            } else if (
+              shiftStatus === "Night Shift" &&
+              shiftMode === "Main Shift"
+            ) {
+              const ifInTime =
+                shiftdate?.orgStartTime <
+                parseDDMMYYYY(firstInDevice[0]?.clockDateTimeD)
+                  ? addOneSecondAndFormat(shiftdate?.orgStartTime, 1)
+                  : firstInDevice[0]?.clockDateTimeD;
+              inTime = firstInDevice[0]?.indevice
+                ? ifInTime
+                : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
+              console.log(firstInDevice[0]?.indevice, shiftMode, "3");
+            } else if (
+              shiftStatus === "Night Shift" &&
+              shiftMode === "Second Shift"
+            ) {
+              inTime = firstInDevice[0].clockDateTimeD;
+              console.log(shiftMode, "4");
+            }
           }
 
           // Determine outTime
-          if (sortedOutDevices.length > 0) {
+          if (!isDoubleShift && sortedOutDevices.length > 0) {
             const LastDeviceBasedOnTime = matchedUsers?.sort(
               (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
             );
             const last =
               LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
-            console.log(last, "filteredUsers");
 
             if (last?.outdevice) {
               outTime = last.clockDateTimeD;
               outTimeVerified = last.verifyC;
               outTimeVerifiedDevice = last.biometriccommonname;
             }
-          }
-          // else if (sortedInOutDevices.length > 0 && sortedInOutDevices.length % 2 === 0) {
-          else if (sortedInOutDevices.length > 1) {
+          } else if (!isDoubleShift && sortedInOutDevices.length > 1) {
             const LastDeviceBasedOnTime = matchedUsers?.sort(
               (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
             );
             const last =
               LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
-            console.log(last, "last");
             if (last?.inoutdevice) {
               outTime = last.clockDateTimeD;
               outTimeVerified = last.verifyC;
               outTimeVerifiedDevice = last.biometriccommonname;
+            }
+          } else if (isDoubleShift && matchedUsers?.length > 0) {
+            const LastDeviceBasedOnTime = matchedUsers?.sort(
+              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+            );
+            const lastDeviceOut =
+              LastDeviceBasedOnTime[LastDeviceBasedOnTime?.length - 1];
+            const lastOutDevice = matchedUsers
+              ?.filter((data) => data?.outdevice || data?.inoutdevice)
+              .sort((a, b) => new Date(a.clockTime) - new Date(b.clockTime));
+            const last = lastOutDevice.length
+              ? lastOutDevice[lastOutDevice.length - 1]
+              : "";
+            const hasOutDevice =
+              lastDeviceOut?.outdevice || lastDeviceOut?.inoutdevice;
+            const shiftEndTime = addOneSecondAndFormat(
+              shiftdate?.orgEndTime,
+              0
+            );
+            outTimeVerified = last?.verifyC;
+            outTimeVerifiedDevice = last?.biometriccommonname;
+            if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
+              outTime = hasOutDevice
+                ? shiftdate?.orgEndTime >
+                  parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
+                  ? shiftEndTime
+                  : lastDeviceOut?.clockDateTimeD
+                : shiftEndTime;
+              console.log(shiftMode, "1");
+            } else if (
+              shiftStatus === "Day Shift" &&
+              shiftMode === "Second Shift"
+            ) {
+              outTime =
+                last &&
+                shiftdate?.orgEndTime < parseDDMMYYYY(last?.clockDateTimeD)
+                  ? last.clockDateTimeD
+                  : shiftEndTime;
+              console.log(last, shiftMode, outTime, "2");
+            } else if (
+              shiftStatus === "Night Shift" &&
+              shiftMode === "Main Shift"
+            ) {
+              outTime = hasOutDevice
+                ? shiftdate?.orgEndTime >
+                  parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
+                  ? shiftEndTime
+                  : lastDeviceOut?.clockDateTimeD
+                : shiftEndTime;
+              console.log(shiftMode, "3");
+            } else if (
+              shiftStatus === "Night Shift" &&
+              shiftMode === "Second Shift"
+            ) {
+              outTime =
+                last &&
+                shiftdate?.orgEndTime < parseDDMMYYYY(last?.clockDateTimeD)
+                  ? last.clockDateTimeD
+                  : shiftEndTime;
+                  console.log(lastOutDevice , matchedUsers,"lastOutDevice")
+              console.log(shiftMode, "4");
             }
           }
           const fallbackUser = filteredUsers.find(
@@ -1377,9 +1737,10 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           };
         }
       );
-
+      // console.log(filteredData?.length ,"hitted")
       function formatToAmPm(dateStr) {
-        let [day, month, year, time] = dateStr.split(/[-\s]/);
+        if (!dateStr) return null;
+        let [day, month, year, time] = dateStr?.split(/[-\s]/);
         let formattedDate = new Date(`${year}-${month}-${day}T${time}`);
         let formattedTime = formattedDate.toLocaleString("en-US", {
           hour: "2-digit",
@@ -1395,6 +1756,8 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
         answer,
         usersCollection,
         filteredData: filteredData?.filter((data) => data?.companyname),
+        VariableCheck,
+        resultShiftValues,
       });
     } catch (err) {
       console.log(err, "err");
@@ -1611,7 +1974,7 @@ exports.getUnmatchedUsersAttendanceReportsCheck = catchAsyncErrors(
         {
           $match: {
             cloudIDC: { $in: serialNos?.[0]?.serials },
-             status: { $ne: "Visitor" }
+            status: { $ne: "Visitor" },
           },
         },
         {
@@ -1640,19 +2003,16 @@ exports.getUnmatchedUsersAttendanceReportsCheck = catchAsyncErrors(
       const unmatchedUsernames = answer.map((user) => user.staffNameC);
       // console.log(unmatchedUsernames, 'unmatchedUsernames')
       const unmatchedUsernamesIDC = answer.map((user) => user.biometricUserIDC);
+      // const resultDate = expandDateRange(userDates);
       usersCollection = await Biometricattlog.aggregate([
         {
           $match: {
             staffNameC: { $in: unmatchedUsernames },
             cloudIDC: { $in: serialNos?.[0]?.serials },
-          },
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "staffNameC",
-            foreignField: "username",
-            as: "userDetails",
+            clockDateOnly: {
+              $gte: fromdate, // "2025-10-15"
+              $lte: todate, // "2025-10-17"
+            },
           },
         },
         {
@@ -1688,13 +2048,13 @@ exports.getUnmatchedUsersAttendanceReportsCheck = catchAsyncErrors(
         },
         {
           $addFields: {
-            empcode: { $arrayElemAt: ["$userDetails.empcode", 0] },
-            company: { $arrayElemAt: ["$userDetails.company", 0] },
-            branch: { $arrayElemAt: ["$userDetails.branch", 0] },
-            unit: { $arrayElemAt: ["$userDetails.unit", 0] },
-            team: { $arrayElemAt: ["$userDetails.team", 0] },
-            department: { $arrayElemAt: ["$userDetails.department", 0] },
-            companyname: { $arrayElemAt: ["$userDetails.companyname", 0] },
+            // empcode: { $arrayElemAt: ["$userDetails.empcode", 0] },
+            company: { $arrayElemAt: ["$biometricDevice.company", 0] },
+            branch: { $arrayElemAt: ["$biometricDevice.branch", 0] },
+            unit: { $arrayElemAt: ["$biometricDevice.unit", 0] },
+            floor: { $arrayElemAt: ["$biometricDevice.floor", 0] },
+            area: { $arrayElemAt: ["$biometricDevice.area", 0] },
+            // companyname: { $arrayElemAt: ["$userDetails.companyname", 0] },
             biometriccommonname: {
               $arrayElemAt: ["$biometricDevice.biometriccommonname", 0],
             },
@@ -1735,7 +2095,7 @@ exports.getUnmatchedUsersAttendanceReportsCheck = catchAsyncErrors(
         },
         {
           $project: {
-            userDetails: 0,
+            // userDetails: 0,
             biometricDevice: 0,
             deviceMatched: 0,
           },
@@ -1743,7 +2103,7 @@ exports.getUnmatchedUsersAttendanceReportsCheck = catchAsyncErrors(
       ]);
 
       const groupedUsers = groupDataByDate(usersCollection, fromdate, todate);
-     
+
       const attendanceSummary = calculateAttendanceCheck(groupedUsers);
 
       return res.status(200).json({
@@ -1847,12 +2207,12 @@ exports.getBiometricVisitorsAttendanceReport = catchAsyncErrors(
         },
       ]);
 
-      console.log(query , serialNos?.[0]?.serials , "serialNos?.[0]?.serials")
+      console.log(query, serialNos?.[0]?.serials, "serialNos?.[0]?.serials");
       const answer = await Biouploaduserinfo.aggregate([
         {
           $match: {
             cloudIDC: { $in: serialNos?.[0]?.serials },
-            status:"Visitor"
+            status: "Visitor",
           },
         },
         {
@@ -1890,18 +2250,53 @@ exports.getBiometricVisitorsAttendanceReport = catchAsyncErrors(
         },
         {
           $lookup: {
-            from: "users",
-            localField: "staffNameC",
-            foreignField: "username",
-            as: "userDetails",
-          },
-        },
-        {
-          $lookup: {
             from: "biometricdevicemanagements",
             localField: "cloudIDC",
             foreignField: "biometricserialno",
             as: "biometricDevice",
+          },
+        },
+        {
+          $lookup: {
+            from: "biouploaduserinfos",
+            let: {
+              staffName: "$staffNameC",
+              cloudId: "$cloudIDC",
+              biometricUserId: "$biometricUserIDC",
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ["$staffNameC", "$$staffName"] },
+                      { $eq: ["$cloudIDC", "$$cloudId"] },
+                      { $eq: ["$biometricUserIDC", "$$biometricUserId"] },
+                    ],
+                  },
+                },
+              },
+              {
+                $project: {
+                  _id: 0,
+                  visitorpage: 1,
+                  visitorpagedetails: 1,
+                  visitorcontactnumber: 1,
+                },
+              },
+            ],
+            as: "bioUploadInfo",
+          },
+        },
+        {
+          $addFields: {
+            visitorpage: { $arrayElemAt: ["$bioUploadInfo.visitorpage", 0] },
+            visitorpagedetails: {
+              $arrayElemAt: ["$bioUploadInfo.visitorpagedetails", 0],
+            },
+            visitorcontactnumber: {
+              $arrayElemAt: ["$bioUploadInfo.visitorcontactnumber", 0],
+            },
           },
         },
         {
@@ -1929,13 +2324,11 @@ exports.getBiometricVisitorsAttendanceReport = catchAsyncErrors(
         },
         {
           $addFields: {
-            empcode: { $arrayElemAt: ["$userDetails.empcode", 0] },
-            company: { $arrayElemAt: ["$userDetails.company", 0] },
-            branch: { $arrayElemAt: ["$userDetails.branch", 0] },
-            unit: { $arrayElemAt: ["$userDetails.unit", 0] },
-            team: { $arrayElemAt: ["$userDetails.team", 0] },
-            department: { $arrayElemAt: ["$userDetails.department", 0] },
-            companyname: { $arrayElemAt: ["$userDetails.companyname", 0] },
+            company: { $arrayElemAt: ["$biometricDevice.company", 0] },
+            branch: { $arrayElemAt: ["$biometricDevice.branch", 0] },
+            unit: { $arrayElemAt: ["$biometricDevice.unit", 0] },
+            floor: { $arrayElemAt: ["$biometricDevice.floor", 0] },
+            area: { $arrayElemAt: ["$biometricDevice.area", 0] },
             biometriccommonname: {
               $arrayElemAt: ["$biometricDevice.biometriccommonname", 0],
             },
@@ -1976,15 +2369,15 @@ exports.getBiometricVisitorsAttendanceReport = catchAsyncErrors(
         },
         {
           $project: {
-            userDetails: 0,
             biometricDevice: 0,
             deviceMatched: 0,
+            bioUploadInfo: 0,
           },
         },
       ]);
 
       const groupedUsers = groupDataByDate(usersCollection, fromdate, todate);
-      console.log(groupedUsers[0]);
+      // console.log(groupedUsers[2]);
       const attendanceSummary = calculateAttendanceCheck(groupedUsers);
 
       return res.status(200).json({
@@ -2027,8 +2420,11 @@ const groupDataByDate = (data, fromDate, endDate) => {
       dateEntry.data.push(item);
       // Assign company, branch, and unit from the first available record
       if (!dateEntry.company) dateEntry.company = item.company || "";
+      // dateEntry.privilegeC = "User";
       if (!dateEntry.branch) dateEntry.branch = item.branch || "";
       if (!dateEntry.unit) dateEntry.unit = item.unit || "";
+      if (!dateEntry.floor) dateEntry.floor = item.floor || "";
+      if (!dateEntry.area) dateEntry.area = item.area || "";
       if (!dateEntry.biometriccommonname)
         dateEntry.biometriccommonname = item.biometriccommonname || "";
     }
@@ -2961,7 +3357,16 @@ const calculateAttendance = (usersData) => {
   );
 };
 
+function parseDDMMYYYY(dateTime) {
+  console.log(dateTime);
+  const [datePart, timePart] = dateTime.split(" ");
+  const [day, month, year] = datePart.split("-").map(Number);
+  const [hour, minute, second] = timePart.split(":").map(Number);
+
+  return new Date(year, month - 1, day, hour, minute, second);
+}
 const calculateAttendanceCheck = (usersData) => {
+  console.log(usersData[2]?.data, "usersData");
   const parseDate = (dateTime) => {
     const [datePart, timePart] = dateTime.split(" ");
     const [day, month, year] = datePart.split("-");
@@ -2980,7 +3385,10 @@ const calculateAttendanceCheck = (usersData) => {
   };
 
   return usersData.reduce(
-    (acc, { date, company, branch, unit, biometriccommonname, data }) => {
+    (
+      acc,
+      { date, company, branch, unit, floor, area, biometriccommonname, data }
+    ) => {
       const groupedUsers = {};
 
       // Group data by username
@@ -2999,7 +3407,18 @@ const calculateAttendanceCheck = (usersData) => {
         const inDevices = records.filter((r) => r.indevice);
         const outDevices = records.filter((r) => r.outdevice);
         const inOutDevices = records.filter((r) => r.inoutdevice);
+        let visitorcontactnumber = "";
+        let visitorpage = "";
+        let visitorpagedetails = "";
+        const visitorSource = records.find(
+          (r) => r.visitorcontactnumber || r.visitorpage || r.visitorpagedetails
+        );
 
+        if (visitorSource) {
+          visitorcontactnumber = visitorSource.visitorcontactnumber || "";
+          visitorpage = visitorSource.visitorpage || "";
+          visitorpagedetails = visitorSource.visitorpagedetails || "";
+        }
         const sortedInDevices = [...inDevices].sort(
           (a, b) => parseDate(a.clockDateTimeD) - parseDate(b.clockDateTimeD)
         );
@@ -3139,15 +3558,20 @@ const calculateAttendanceCheck = (usersData) => {
             });
           }
         }
-
+        console.log(data, "data");
         acc.push({
           date: date.split("-").reverse().join("-"),
           company,
           branch,
           unit,
+          floor,
+          area,
           biometriccommonname,
           biometricUserIDC,
           username,
+          visitorcontactnumber,
+          visitorpage,
+          visitorpagedetails,
           inTime: inTime ? formatToAmPm(inTime) : "-",
           outTime: outTime ? formatToAmPm(outTime) : "-",
           totalHours,
@@ -7704,17 +8128,20 @@ exports.getUsersTeamHierarchyAttendanceReportsCheck = catchAsyncErrors(
         };
       }
       // console.log(biometricGroupingMap, pairedSerials, "biometricGroupingMap")
-
+      const resultDate = expandDateRange(userDates);
       answer = await getUserClockinAndClockoutStatus({
         employee: usernamesFilter,
         userDates: userDates,
       });
       const finalUserShiftBased = filterShifts(answer?.finaluser, dateNow);
+      const resultShiftValues = addShiftStatus(answer?.finaluser);
+
       usersCollection = await Biometricattlog.aggregate([
         {
           $match: {
             staffNameC: { $in: usernamesFilter },
             cloudIDC: { $in: serialNos[0].serials },
+            clockDateOnly: { $in: resultDate },
           },
         },
         {
@@ -7881,17 +8308,86 @@ exports.getUsersTeamHierarchyAttendanceReportsCheck = catchAsyncErrors(
         }
         filteredUsers.push(user);
       });
-      filteredData = answer?.finaluser?.flatMap(
-        ({ rowusername, shiftdate, shift, shifttype }) => {
+
+      const shiftKeyCount = {};
+
+      resultShiftValues.forEach((item) => {
+        const key = `${item.rowusername}_${item.rowformattedDate}`;
+        shiftKeyCount[key] = (shiftKeyCount[key] || 0) + 1;
+      });
+      const hasTwoShifts = (rowusername, rowformattedDate) => {
+        const key = `${rowusername}_${rowformattedDate}`;
+        return shiftKeyCount[key] > 1;
+      };
+
+      filteredData = resultShiftValues?.flatMap(
+        ({
+          rowusername,
+          shiftdate,
+          shift,
+          shiftMode,
+          shifttype,
+          rowformattedDate,
+          shiftStatus,
+          hoursDifference,
+        }) => {
           const matchedUsers = filteredUsers
             .filter((user) => user.staffNameC === rowusername)
             .map((user) => {
-              const startTime = shiftdate?.startTime
-                ? new Date(shiftdate.startTime)
-                : null;
-              const endTime = shiftdate?.endTime
-                ? new Date(shiftdate.endTime)
-                : null;
+              const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
+              if (!user.indevice && !user.outdevice && !user.inoutdevice) {
+                return null;
+              }
+              let startTime = null;
+              let endTime = null;
+              if (isDoubleShift) {
+                if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
+                  startTime = shiftdate?.startTime;
+                  endTime = addTwoHours(
+                    shiftdate?.orgEndTime,
+                    hoursDifference,
+                    "Add"
+                  );
+                } else if (
+                  shiftStatus === "Day Shift" &&
+                  shiftMode === "Second Shift"
+                ) {
+                  startTime = addTwoHours(
+                    shiftdate?.orgStartTime,
+                    hoursDifference,
+                    "Sub"
+                  );
+                  endTime = shiftdate?.endTime;
+                } else if (
+                  shiftStatus === "Night Shift" &&
+                  shiftMode === "Main Shift"
+                ) {
+                  startTime = addTwoHours(
+                    shiftdate?.orgStartTime,
+                    hoursDifference,
+                    "Sub"
+                  );
+                  endTime = shiftdate?.endTime;
+                } else if (
+                  shiftStatus === "Night Shift" &&
+                  shiftMode === "Second Shift"
+                ) {
+                  startTime = shiftdate?.startTime;
+                  endTime = addTwoHours(
+                    shiftdate?.orgEndTime,
+                    hoursDifference,
+                    "Add"
+                  );
+                }
+              } else {
+                startTime = shiftdate?.startTime
+                  ? new Date(shiftdate.startTime)
+                  : null;
+                endTime = shiftdate?.endTime
+                  ? new Date(shiftdate.endTime)
+                  : null;
+              }
+
               const [datePart, timePart] = user?.clockDateTimeD.split(" ");
               const [day, month, year] = datePart.split("-");
               const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
@@ -7909,15 +8405,21 @@ exports.getUsersTeamHierarchyAttendanceReportsCheck = catchAsyncErrors(
             })
             .filter(Boolean);
 
+          const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
           const inDevices = matchedUsers.filter((u) => u.indevice);
           const outDevices = matchedUsers.filter((u) => u.outdevice);
           const inOutDevices = matchedUsers.filter((u) => u.inoutdevice);
 
-          const sortByClockTime = (a, b) =>
-            new Date(a.clockTime) - new Date(b.clockTime);
-          inDevices.sort(sortByClockTime);
-          outDevices.sort(sortByClockTime);
-          inOutDevices.sort(sortByClockTime);
+          // Sort all by datetime
+          const sortedInDevices = [...inDevices].sort(
+            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+          );
+          const sortedOutDevices = [...outDevices].sort(
+            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+          );
+          const sortedInOutDevices = [...inOutDevices].sort(
+            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+          );
 
           let inTime = null,
             outTime = null;
@@ -7927,43 +8429,110 @@ exports.getUsersTeamHierarchyAttendanceReportsCheck = catchAsyncErrors(
           let inTimeVerifiedDevice = null;
           let outTimeVerifiedDevice = null;
 
-          if (inDevices.length > 0) {
-            inTime = inDevices[0].clockDateTimeD;
-            inTimeVerified = inDevices[0].verifyC;
-            inTimeVerifiedDevice = inDevices[0].biometriccommonname;
-          } else if (inOutDevices.length > 0) {
-            inTime = inOutDevices[0].clockDateTimeD;
-            inTimeVerified = inOutDevices[0].verifyC;
-            inTimeVerifiedDevice = inOutDevices[0].biometriccommonname;
-          }
-
-          if (outDevices.length > 0) {
-            const LastDeviceBasedOnTime = matchedUsers?.sort(
+          // Determine inTime
+          if (!isDoubleShift && sortedInDevices.length > 0) {
+            inTime = sortedInDevices[0].clockDateTimeD;
+            inTimeVerified = sortedInDevices[0].verifyC;
+            inTimeVerifiedDevice = sortedInDevices[0].biometriccommonname;
+          } else if (!isDoubleShift && sortedInOutDevices.length > 0) {
+            inTime = sortedInOutDevices[0].clockDateTimeD;
+            inTimeVerified = sortedInOutDevices[0].verifyC;
+            inTimeVerifiedDevice = sortedInOutDevices[0].biometriccommonname;
+          } else if (isDoubleShift) {
+            const firstDeviceBasedOnTime = matchedUsers?.sort(
               (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
             );
-            const lastOut =
-              LastDeviceBasedOnTime[LastDeviceBasedOnTime?.length - 1];
-            if (lastOut?.outdevice === true) {
-              outEntry = lastOut;
-              outTime = lastOut.clockDateTimeD;
-              outTimeVerified = lastOut.verifyC;
-              outTimeVerifiedDevice = lastOut.biometriccommonname;
+            const firatDeviceIn = firstDeviceBasedOnTime[0];
+            const firstInDevice = matchedUsers
+              ?.filter((data) => data?.indevice || data?.inoutdevice)
+              .sort((a, b) => new Date(a.clockTime) - new Date(b.clockTime));
+            // const first = firstInDevice[firstInDevice.length - 1];
+            inTimeVerified = firstInDevice[0]?.verifyC;
+            inTimeVerifiedDevice = firstInDevice[0]?.biometriccommonname;
+            if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
+              inTime = firstInDevice[0].clockDateTimeD;
+            } else if (
+              shiftStatus === "Day Shift" &&
+              shiftMode === "Second Shift"
+            ) {
+              inTime = firatDeviceIn?.indevice
+                ? firatDeviceIn?.clockDateTimeD
+                : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
+            } else if (
+              shiftStatus === "Night Shift" &&
+              shiftMode === "Main Shift"
+            ) {
+              inTime = firatDeviceIn?.indevice
+                ? firatDeviceIn?.clockDateTimeD
+                : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
+            } else if (
+              shiftStatus === "Night Shift" &&
+              shiftMode === "Second Shift"
+            ) {
+              inTime = firstInDevice[0].clockDateTimeD;
             }
           }
-          //  else if (inOutDevices.length % 2 === 0 && inOutDevices.length > 0) {
-          else if (inOutDevices.length > 1) {
+
+          // Determine outTime
+          if (!isDoubleShift && sortedOutDevices.length > 0) {
             const LastDeviceBasedOnTime = matchedUsers?.sort(
               (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
             );
-            const lastInOut =
+            const last =
+              LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
+
+            if (last?.outdevice) {
+              outTime = last.clockDateTimeD;
+              outTimeVerified = last.verifyC;
+              outTimeVerifiedDevice = last.biometriccommonname;
+            }
+          } else if (!isDoubleShift && sortedInOutDevices.length > 1) {
+            const LastDeviceBasedOnTime = matchedUsers?.sort(
+              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+            );
+            const last =
+              LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
+            if (last?.inoutdevice) {
+              outTime = last.clockDateTimeD;
+              outTimeVerified = last.verifyC;
+              outTimeVerifiedDevice = last.biometriccommonname;
+            }
+          } else if (isDoubleShift) {
+            const LastDeviceBasedOnTime = matchedUsers?.sort(
+              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+            );
+            const lastDeviceOut =
               LastDeviceBasedOnTime[LastDeviceBasedOnTime?.length - 1];
-            if (
-              lastInOut?.outdevice === true ||
-              lastInOut?.inoutdevice === true
+            const lastOutDevice = matchedUsers
+              ?.filter((data) => data?.outdevice || data?.inoutdevice)
+              .sort((a, b) => new Date(a.clockTime) - new Date(b.clockTime));
+            const last = lastOutDevice[lastOutDevice.length - 1];
+
+            outTimeVerified = last.verifyC;
+            outTimeVerifiedDevice = last.biometriccommonname;
+            if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
+              outTime =
+                lastDeviceOut?.outdevice || lastDeviceOut?.inoutdevice
+                  ? lastDeviceOut?.clockDateTimeD
+                  : addOneSecondAndFormat(shiftdate?.orgEndTime, 0);
+            } else if (
+              shiftStatus === "Day Shift" &&
+              shiftMode === "Second Shift"
             ) {
-              outTime = lastInOut.clockDateTimeD;
-              outTimeVerified = lastInOut.verifyC;
-              outTimeVerifiedDevice = lastInOut.biometriccommonname;
+              outTime = last.clockDateTimeD;
+            } else if (
+              shiftStatus === "Night Shift" &&
+              shiftMode === "Main Shift"
+            ) {
+              outTime =
+                lastDeviceOut?.outdevice || lastDeviceOut?.inoutdevice
+                  ? lastDeviceOut?.clockDateTimeD
+                  : addOneSecondAndFormat(shiftdate?.orgEndTime, 0);
+            } else if (
+              shiftStatus === "Night Shift" &&
+              shiftMode === "Second Shift"
+            ) {
+              outTime = last.clockDateTimeD;
             }
           }
 
@@ -8104,7 +8673,6 @@ const getAllTrainingHierarchyReports = async (req) => {
       levelFinal,
       req?.body?.pagename
     );
-    console.log(uniqueNames?.length, pageControlsData?.length, "unique");
     let restrictList = hierarchyData
       ?.filter((data) => data?.reportData?.length > 0)
       ?.flatMap((Data) => Data?.employeename);
@@ -8197,7 +8765,6 @@ const getAllTrainingHierarchyReports = async (req) => {
     let myallTotalNames = DataAccessMode
       ? uniqueNames
       : [...hierarchyFinal, ...branches];
-    console.log(DataAccessMode, myallTotalNames?.length);
     const finalResultTask = await User.find(
       {
         enquirystatus: { $nin: ["Enquiry Purpose"] },
@@ -8250,7 +8817,6 @@ const getAllTrainingHierarchyReports = async (req) => {
         $project: { supervisorchoose: 1, employeename: 1, reportData: 1 },
       },
     ]);
-    // console.log(DataAccessMode , uniqueNames?.length,pageControlsData?.length , "es")
 
     let restrictListTeam = DataAccessMode
       ? pageControlsData
@@ -8275,11 +8841,6 @@ const getAllTrainingHierarchyReports = async (req) => {
 
     overallRestrictList = overallEmpNames?.filter((data) =>
       overallResList?.includes(data)
-    );
-    console.log(
-      hierarchyFinal,
-      overallResList?.length,
-      overallRestrictList?.length
     );
   } catch (err) {
     console.error("Error fetching reports:", err);
