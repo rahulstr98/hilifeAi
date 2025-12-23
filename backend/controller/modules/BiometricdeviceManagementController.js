@@ -58,10 +58,8 @@ exports.getAllBiometricDeviceManagement = catchAsyncErrors(
   }
 );
 
-
 const mapIdsIfExists = (arr) =>
-  Array.isArray(arr) && arr.length ? arr.map(d => d._id) : undefined;
-
+  Array.isArray(arr) && arr.length ? arr.map((d) => d._id) : undefined;
 
 // get All Biometric Device Management => /api/biometricdevicemanagementoveralledit
 exports.getBiometricDeviceManagementOverallEdit = catchAsyncErrors(
@@ -76,7 +74,7 @@ exports.getBiometricDeviceManagementOverallEdit = catchAsyncErrors(
         usersGrouping,
         onlineStatus,
         offlinehistory,
-        userinfos
+        userinfos,
       ] = await Promise.all([
         BiometricDevicesPairing.find(
           { pairdevices: biometriccommonname },
@@ -134,24 +132,144 @@ exports.getBiometricDeviceManagementOverallEdit = catchAsyncErrors(
 
       // ---------- REMOVE EMPTY KEYS ----------
       Object.keys(matchedDatas).forEach(
-        key => matchedDatas[key] === undefined && delete matchedDatas[key]
+        (key) => matchedDatas[key] === undefined && delete matchedDatas[key]
       );
 
       Object.keys(matchedCloudIDC).forEach(
-        key => matchedCloudIDC[key] === undefined && delete matchedCloudIDC[key]
+        (key) =>
+          matchedCloudIDC[key] === undefined && delete matchedCloudIDC[key]
       );
 
       return res.status(200).json({
         matchedDatas,
         matchedCloudIDC,
       });
-
     } catch (err) {
       return next(new ErrorHandler("Records not found!", 404));
     }
   }
 );
+// get Update Biometric Device Management => /api/hrfacilityRoute.route("/overalleditupdatebiometricdevicemanagement").post(updateOverallLinkedBiometricDeviceManagement);
+exports.updateOverallLinkedBiometricDeviceManagement = catchAsyncErrors(
+  async (req, res, next) => {
+    const { biometriccommonname, biometricserialno } = req?.body?.olddata || {};
+    const {
+      biometriccommonname: newBiometriccommonname,
+      biometricserialno: newBiometricserialno,
+    } = req?.body?.newdata || {};
 
+    try {
+      const updateTasks = [];
+
+      // ---------- UPDATE biometriccommonname REFERENCES ----------
+      if (biometriccommonname && newBiometriccommonname) {
+        updateTasks.push(
+          BiometricDevicesPairing.updateMany(
+            { pairdevices: biometriccommonname },
+            {
+              $set: {
+                "pairdevices.$[device]": newBiometriccommonname,
+              },
+            },
+            {
+              arrayFilters: [{ device: biometriccommonname }],
+            }
+          ),
+
+          BiometricPairedDevicesGrouping.updateMany(
+            {
+              $or: [
+                { paireddeviceone: biometriccommonname },
+                { paireddevicetwo: biometriccommonname },
+              ],
+            },
+            [
+              {
+                $set: {
+                  paireddeviceone: {
+                    $cond: [
+                      { $eq: ["$paireddeviceone", biometriccommonname] },
+                      newBiometriccommonname,
+                      "$paireddeviceone",
+                    ],
+                  },
+                  paireddevicetwo: {
+                    $cond: [
+                      { $eq: ["$paireddevicetwo", biometriccommonname] },
+                      newBiometriccommonname,
+                      "$paireddevicetwo",
+                    ],
+                  },
+                },
+              },
+            ]
+          ),
+          BiometricUsersGrouping.updateMany(
+            {
+              $or: [
+                { paireddeviceone: biometriccommonname },
+                { paireddevicetwo: biometriccommonname },
+              ],
+            },
+            [
+              {
+                $set: {
+                  paireddeviceone: {
+                    $cond: [
+                      { $eq: ["$paireddeviceone", biometriccommonname] },
+                      newBiometriccommonname,
+                      "$paireddeviceone",
+                    ],
+                  },
+                  paireddevicetwo: {
+                    $cond: [
+                      { $eq: ["$paireddevicetwo", biometriccommonname] },
+                      newBiometriccommonname,
+                      "$paireddevicetwo",
+                    ],
+                  },
+                },
+              },
+            ]
+          )
+        );
+      }
+
+      // ---------- UPDATE biometricserialno (cloudIDC) REFERENCES ----------
+      if (biometricserialno && newBiometricserialno) {
+        updateTasks.push(
+          Biometriconlinestatus.updateMany(
+            { cloudIDC: biometricserialno },
+            { $set: { cloudIDC: newBiometricserialno } }
+          ),
+
+          BiometricOfflineHistory.updateMany(
+            { cloudIDC: biometricserialno },
+            { $set: { cloudIDC: newBiometricserialno } }
+          ),
+
+          Biouploaduserinfo.updateMany(
+            { cloudIDC: biometricserialno },
+            { $set: { cloudIDC: newBiometricserialno } }
+          )
+        );
+      }
+
+      const updateResults = await Promise.all(updateTasks);
+
+      return res.status(200).json({
+        success: true,
+        message: "Biometric references updated successfully",
+        updatesExecuted: updateResults.length,
+      });
+    } catch (err) {
+      console.error(err);
+      return next(
+        new ErrorHandler("Failed to update biometric references", 500)
+      );
+    }
+  }
+);
 
 // Bulk Delete
 exports.getOverallBulkBiometricDevicesDelete = catchAsyncErrors(

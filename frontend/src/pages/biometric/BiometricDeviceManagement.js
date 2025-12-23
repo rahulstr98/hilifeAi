@@ -137,6 +137,17 @@ function BiometricDeviceManagement() {
   const [filteredRowData, setFilteredRowData] = useState([]);
   const [filteredChanges, setFilteredChanges] = useState(null);
   const [btnUpload, setBtnUpload] = useState(false);
+    // Error Popup model
+    const [isErrorOpenpop, setIsErrorOpenpop] = useState(false);
+    const [showAlertpop, setShowAlertpop] = useState();
+  
+    const handleClickOpenerrpop = () => {
+      setIsErrorOpenpop(true);
+    };
+    const handleCloseerrpop = () => {
+      setIsErrorOpenpop(false);
+    };
+  
   const [biometricDeviceManagement, setBiometricDeviceManagement] = useState({
     mode: "New",
     brand: "Please Select Brand",
@@ -1920,6 +1931,7 @@ function BiometricDeviceManagement() {
       setFilteredRowData([]);
       setFilteredChanges(null);
       await fetchEmployee();
+       await getOverallEditSectionUpdate(sourceEdit ,payload);
       fetchSource();
       handleCloseModEdit();
       setPopupContent("Updated Successfully");
@@ -1934,6 +1946,23 @@ function BiometricDeviceManagement() {
       );
     }
   };
+
+    //overall edit section for all pages
+    const getOverallEditSectionUpdate = async (oldData , newData) => {
+      setPageName(!pageName);
+      try {
+        let res = await axios.post(SERVICE.OVERALL_EDIT_UPDATE_BIOMETRIC_DEVICE_MANAGEMENT, {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          olddata: oldData,
+          newdata: newData,
+        });
+      } catch (err) {
+        handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      }
+    };
+  
 
   const editSubmit = async (e) => {
     e.preventDefault();
@@ -2085,14 +2114,29 @@ if(!(
       handleClickOpenPopupMalert();
     } 
     else if (sourceEdit?.biometricserialno !== biometricDeviceManagementEdit.biometricserialno) {
-      setPopupContentMalert(commonCloudIdcLinked ? `Serial Number is linked in ${commonCloudIdcLinked?.toString()} pages`: null);
-      setPopupSeverityMalert("warning");
-      handleClickOpenPopupMalert();
+      // setPopupContentMalert();
+      // setPopupSeverityMalert("warning");
+      // handleClickOpenPopupMalert();
+         setShowAlertpop(
+              <>
+                <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
+                <p style={{ fontSize: '20px', fontWeight: 900 }}>{commonCloudIdcLinked ? `Serial Number is linked in ${commonCloudIdcLinked?.toString()} pages`: null}</p>
+              </>
+            );
+      handleClickOpenerrpop();
     }
     else if (sourceEdit?.biometriccommonname !== commonname) {
-      setPopupContentMalert(commonNameLinked ? `Device Common Name is linked in ${commonNameLinked?.toString()} pages`: null);
-      setPopupSeverityMalert("warning");
-      handleClickOpenPopupMalert();
+      // setPopupContentMalert(commonNameLinked ? `Device Common Name is linked in ${commonNameLinked?.toString()} pages`: null);
+      // setPopupSeverityMalert("warning");
+      // handleClickOpenPopupMalert();
+      setShowAlertpop(
+              <>
+                <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
+                <p style={{ fontSize: '20px', fontWeight: 900 }}>{commonNameLinked ? `Device Common Name is linked in ${commonNameLinked?.toString()} pages`: null}</p>
+              </>
+            );
+      handleClickOpenerrpop();
+      // handleClickOpenerrpop();
     }
     else {
       sendEditRequest(commonname);
@@ -6978,6 +7022,45 @@ if(!(
           </Button>
         </DialogActions>
       </Dialog>
+      {/* ALERT DIALOG */}
+      <Box>
+        <Dialog open={isErrorOpenpop} onClose={handleCloseerrpop} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
+            <Typography variant="h6">{showAlertpop}</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              sx={buttonStyles.buttonsubmit}
+              onClick={() => {
+                sendEditRequest();
+                handleCloseerrpop();
+              }}
+            >
+              ok
+            </Button>
+            <Button
+              style={{
+                backgroundColor: '#f4f4f4',
+                color: '#444',
+                boxShadow: 'none',
+                borderRadius: '3px',
+                padding: '7px 13px',
+                border: '1px solid #0000006b',
+                '&:hover': {
+                  '& .css-bluauu-MuiButtonBase-root-MuiButton-root': {
+                    backgroundColor: '#f4f4f4',
+                  },
+                },
+              }}
+              onClick={handleCloseerrpop}
+              sx={buttonStyles.btncancel}
+            >
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Box>
 
       {/* webcam alert start */}
       <Dialog

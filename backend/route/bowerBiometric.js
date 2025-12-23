@@ -401,6 +401,7 @@ console.log(token ,"TOken")
         clockDateTimeD: formatUnixToDateTime(item.RecordDate),
         verifyC: getVerificationMethod(item.RecordType),
         staffNameC: item.Name,
+        CardNum: item.CardNum,
         cloudIDC: devicename?.data?.result ? devicename?.data?.content : "",
       }));
       const ArrayUnRegisterRecords = result?.content?.DataList?.filter(
@@ -411,6 +412,7 @@ console.log(token ,"TOken")
         clockDateTimeD: formatUnixToDateTime(item.RecordDate),
         verifyC: getVerificationMethod(item.RecordType),
         staffNameC: item.Name,
+        CardNum: item.CardNum,
         cloudIDC: devicename?.data?.result ? devicename?.data?.content : "",
         photoC: `${url}${item.Photo}`,
       }));
@@ -983,7 +985,7 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
             AccessType: 0,
             OpenTimes: 0,
             Photo: req?.body.photo,
-            // ExpirationDate: expirationToday
+            cardNum: 4678146
           };
 
           // Add the visitor to the device

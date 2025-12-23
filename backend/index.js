@@ -444,7 +444,8 @@ cron.schedule("0 0 * * *", async () => {
 //   console.log('🔄 Running attendance fetch at', new Date().toLocaleString());
 //   const biometricdevicemanagement = await BiometricDeviceManagement.find({ brand: "Bowee" }, { biometricassignedip: 1 });
 
-//   const IPAddresss = biometricdevicemanagement?.map(data => `http://${data?.biometricassignedip}`);
+//   // const IPAddresss = biometricdevicemanagement?.map(data => `http://${data?.biometricassignedip}`);
+//   const IPAddresss = ["http://192.168.85.15"];
 //   // console.log(IPAddresss , 'IPAddresss');
 //   if (IPAddresss?.length > 0) {
 //     const deviceUrls = IPAddresss;
@@ -454,8 +455,9 @@ cron.schedule("0 0 * * *", async () => {
 //         const result = await getAttendanceDetails(url);
 
 //         if (result.success) {
+//           console.log(result.ArrayRecords)
 //           // removeDuplicateLogs(result.ArrayRecords);
-//           main(result)
+//           // main(result)
 //           console.log(`✅ Attendance fetched from ${url}`);
 //         } else {
 //           console.error(`❌ Failed to fetch from ${url}:`, result.message);

@@ -719,7 +719,28 @@ function BiometricVisitorsAttendanceReport() {
             console.log(response?.data, "attendance")
 
             // setMeetingArray(response?.data?.filteredData)
-            setMeetingArray(response?.data?.answer?.map((data, index) => ({ ...data, serialNumber: index + 1 })));
+            setMeetingArray(response?.data?.answer?.map((item, index) => ({serialNumber: index + 1,
+                  id: item._id,
+            // serialNumber: item.serialNumber,
+            company: item.company,
+            branch: item.branch,
+            unit: item.unit,
+            floor: item.floor,
+            area: item.area,
+            totalHours: item.totalHours,
+            biometricUserIDC: item.biometricUserIDC,
+            date: item.date,
+            data: item.data,
+            username: item.username,
+            biometriccommonname: item.biometriccommonname,
+            inTime: item.inTime,
+            inTimeVerifiedDevice: item.inTimeVerifiedDevice,
+            inTimeVerified: item.inTimeVerified,
+            outTime: item.outTime,
+            outTimeVerifiedDevice: item.outTimeVerifiedDevice,
+            outTimeVerified: item.outTimeVerified,
+            privilegeC: "Visitor",
+             })));
             setLoader(false);
 
         } catch (err) {
@@ -1133,6 +1154,8 @@ function BiometricVisitorsAttendanceReport() {
             company: item.company,
             branch: item.branch,
             unit: item.unit,
+            floor: item.floor,
+            area: item.area,
             totalHours: item.totalHours,
             biometricUserIDC: item.biometricUserIDC,
             date: item.date,

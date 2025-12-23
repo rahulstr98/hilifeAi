@@ -30,6 +30,10 @@ const biometricattlogSchema = new Schema({
         type: String,
         required: false,
     },
+    CardNum: {
+        type: String,
+        required: false,
+    },
     clockDateOnly: {
         type: String,
         required: false,

@@ -1002,7 +1002,7 @@ function addTwoHours(isoDate, hours, mode = "Add") {
     date.setHours(date.getHours() - diff);
   } else {
     // "Add" (default)
-    date.setHours(date.getHours() + diff);y
+    date.setHours(date.getHours() + diff);
     
   }
 
@@ -1558,7 +1558,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             })
             .filter(Boolean);
 
-          console.log(matchedUsers , "matchedUsers")
+          // console.log(matchedUsers , "matchedUsers")
           // Categorize by device types
           const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
           const inDevices = matchedUsers.filter((d) => d.indevice);
@@ -1687,7 +1687,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             outTimeVerifiedDevice = last?.biometriccommonname;
             if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
               outTime = hasOutDevice
-                ? reduceHours(shiftdate?.orgEndTime,1) >
+                ? shiftdate?.orgEndTime >
                   parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
                   ? shiftEndTime
                   : lastDeviceOut?.clockDateTimeD
@@ -1720,7 +1720,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             ) {
               outTime =
                 last &&
-                 reduceHours(shiftdate?.orgEndTime, 1) < parseDDMMYYYY(last?.clockDateTimeD)
+                 shiftdate?.orgEndTime < parseDDMMYYYY(last?.clockDateTimeD)
                   ? last.clockDateTimeD
                   : shiftEndTime;
                   console.log(lastOutDevice , matchedUsers,"lastOutDevice")

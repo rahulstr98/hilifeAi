@@ -5608,5 +5608,6 @@ export const SERVICE = {
 
 
       BIOMETRIC_DEVICE_MANAGEMENT_OVERALL_EDIT: `${BASE_URL}/api/biometricdevicemanagementoveralledit`,
+      OVERALL_EDIT_UPDATE_BIOMETRIC_DEVICE_MANAGEMENT: `${BASE_URL}/api/overalleditupdatebiometricdevicemanagement`,
 
 };
