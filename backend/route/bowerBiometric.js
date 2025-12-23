@@ -365,7 +365,7 @@ exports.sendUserDetailsToDevice = async (rawPeopleJson, base64Photo, url) => {
 exports.getAttendanceDetails = async (url) => {
   try {
     const token = await performLogin(url);
-
+console.log(token ,"TOken")
     if (!token) {
       console.error("Token not received");
       return { success: false, message: "Token not received" };

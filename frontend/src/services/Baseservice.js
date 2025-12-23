@@ -5605,4 +5605,8 @@ export const SERVICE = {
     DYNAMICNOTICEPERIODAPPLIES: `${BASE_URL}/api/dynamicnoticeperiodapplycontroller`,
       CHECKUSERPRESENTINLDAP: `${BASE_URL}/api/checkuserispresent`,
 
+
+
+      BIOMETRIC_DEVICE_MANAGEMENT_OVERALL_EDIT: `${BASE_URL}/api/biometricdevicemanagementoveralledit`,
+
 };

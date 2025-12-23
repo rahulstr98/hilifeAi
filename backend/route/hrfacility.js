@@ -166,6 +166,7 @@ const {
     getcompanyBranchbasedBiometricDevices,
     biometricdevicelastindex,
     getAllBiometricAttendanceDevices,
+    getBiometricDeviceManagementOverallEdit,
     // getDeviceNewLogs,
     getBiometricAssignedIpAsset
 } = require("../controller/modules/BiometricdeviceManagementController.js");
@@ -181,6 +182,7 @@ hrfacilityRoute.route("/overallbullbiometricdevicedelete").post(getOverallBulkBi
 hrfacilityRoute.route("/singlebiodevicemanagementdelete").post(getSingleBulkBiometricDevicesDelete);
 hrfacilityRoute.route("/getduplicatebiometricdevicegrouping").post(getDuplicateBiometricDeviceGrouping);
 hrfacilityRoute.route("/getcompanybranchbasedbiodevicees").post(getcompanyBranchbasedBiometricDevices);
+hrfacilityRoute.route("/biometricdevicemanagementoveralledit").post(getBiometricDeviceManagementOverallEdit);
 // hrfacilityRoute.route("/getdevicenewlogs").post(getDeviceNewLogs);
 hrfacilityRoute.route("/biometricassignedipasset").post(getBiometricAssignedIpAsset);
 hrfacilityRoute

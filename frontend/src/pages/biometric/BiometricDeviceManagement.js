@@ -111,6 +111,8 @@ function BiometricDeviceManagement() {
     { label: "Bowee-Chandichan", value: "Bowee-Chandichan" },
     { label: "Bowee-Standard", value: "Bowee-Standard" },
   ];
+  const [commonNameLinked, setCommonNameLinked] = useState(null);
+  const [commonCloudIdcLinked, setCommonCloudIdcLinked] = useState(null);
   const [advancedFilter, setAdvancedFilter] = useState(null);
   const [additionalFilters, setAdditionalFilters] = useState([]);
   const [ModelOptions, setModelOptions] = useState([]);
@@ -168,7 +170,7 @@ function BiometricDeviceManagement() {
       biometricdeviceid: "",
       biometricserialno: "",
       biometricassignedip: "",
-       biometricassignedurl: "",
+      biometricassignedurl: "",
     });
   const [getOverAllCountDelete, setGetOverallCountDelete] = useState("");
   const [openPopupMalert, setOpenPopupMalert] = useState(false);
@@ -865,7 +867,11 @@ function BiometricDeviceManagement() {
               ?.slice(-3)
               ?.toUpperCase() +
             "_" +
-            (biometricDeviceManagement?.brand === "Bowee-Chandichan" ? "00" : biometricDeviceManagement?.biometricassignedip?.split(".")?.pop()) +
+            (biometricDeviceManagement?.brand === "Bowee-Chandichan"
+              ? "00"
+              : biometricDeviceManagement?.biometricassignedip
+                  ?.split(".")
+                  ?.pop()) +
             "#" +
             0;
       let codenum = refNo.split("#");
@@ -906,9 +912,10 @@ function BiometricDeviceManagement() {
         biometricDeviceManagement?.biometricdeviceid?.slice(-3).toUpperCase() +
         "_" +
         // biometricDeviceManagement?.biometricserialno?.slice(-3) + "_" +
-                   (biometricDeviceManagement?.brand === "Bowee-Chandichan" ? "00" : biometricDeviceManagement?.biometricassignedip?.split(".")?.pop()) +
- +
-        "#" +
+        (biometricDeviceManagement?.brand === "Bowee-Chandichan"
+          ? "00"
+          : biometricDeviceManagement?.biometricassignedip?.split(".")?.pop()) +
+        +"#" +
         postfixLength;
 
       return newval;
@@ -967,8 +974,11 @@ function BiometricDeviceManagement() {
           ?.slice(-3)
           .toUpperCase() +
         "_" +
-                    (biometricDeviceManagementEdit?.brand === "Bowee-Chandichan" ? "00" : biometricDeviceManagementEdit?.biometricassignedip?.split(".")?.pop()) +
-
+        (biometricDeviceManagementEdit?.brand === "Bowee-Chandichan"
+          ? "00"
+          : biometricDeviceManagementEdit?.biometricassignedip
+              ?.split(".")
+              ?.pop()) +
         // biometricDeviceManagementEdit?.biometricassignedip?.split(".").pop() +
         "#" +
         prefixLength;
@@ -1347,7 +1357,7 @@ function BiometricDeviceManagement() {
         biometricdeviceid: "",
         biometricserialno: "",
         biometricassignedip: "",
-         biometricassignedurl: "",
+        biometricassignedurl: "",
         rfidDevice: false,
         rfidnumber: "",
       }));
@@ -1473,12 +1483,11 @@ function BiometricDeviceManagement() {
       setPopupContentMalert("Please Enter Biometric Assigned IP");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-    else if (biometricDeviceManagement.biometricassignedurl === "") {
+    } else if (biometricDeviceManagement.biometricassignedurl === "") {
       setPopupContentMalert("Please Enter Biometric Assigned URL");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    }else if (
+    } else if (
       biometricDeviceManagement?.mode === "New" &&
       !ipFormat.test(biometricDeviceManagement.biometricassignedip)
     ) {
@@ -1518,7 +1527,7 @@ function BiometricDeviceManagement() {
       biometricdeviceid: "",
       biometricserialno: "",
       biometricassignedip: "",
-       biometricassignedurl: "",
+      biometricassignedurl: "",
       mode: "New",
     });
     setSearchQuery("");
@@ -1584,9 +1593,56 @@ function BiometricDeviceManagement() {
         unitcode: unitCode?.unitcode,
         floorcode: floorcode?.code,
       });
+      handleCheckOverallEdit(res?.data?.sbiometricdevicemanagement);
 
       handleClickOpenEdit();
     } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
+  };
+  const handleCheckOverallEdit = async (device) => {
+    setPageName(!pageName);
+    try {
+      let res = await axios.post(
+        `${SERVICE.BIOMETRIC_DEVICE_MANAGEMENT_OVERALL_EDIT}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          device: device,
+        }
+      );
+      const keyNameMap = {
+        biometricdevicespairing: "Biometric Devices Pairing",
+        biometricpaireddevice: "Biometric Paired Device Grouping",
+        biometricusersgrouping: "Biometric Users Grouping",
+        offlinehistory: "Biometric Device Offline History",
+        onlineStatus: "Biometric Online Status",
+        userinfos: "Biometric User Info Details",
+      };
+
+      const pagesData = res?.data?.matchedDatas ? res?.data?.matchedDatas : {};
+      const mapPages = Object.keys(pagesData).map(
+        (key) => keyNameMap[key] || key
+      );
+      const pagesDataCloudIDC = res?.data?.matchedCloudIDC
+        ? res?.data?.matchedCloudIDC
+        : {};
+      const mapPagesCloudIDC = Object.keys(pagesDataCloudIDC).map(
+        (key) => keyNameMap[key] || key
+      );
+      console.log(res?.data, mapPages, mapPagesCloudIDC);
+      setCommonNameLinked(mapPages?.length ? mapPages : null);
+      setCommonCloudIdcLinked(
+        mapPagesCloudIDC?.length ? mapPagesCloudIDC : null
+      );
+    } catch (err) {
+      console.log(err, "err");
       handleApiError(
         err,
         setPopupContentMalert,
@@ -1793,11 +1849,9 @@ function BiometricDeviceManagement() {
   let subprojectsid = sourceEdit?._id;
   console.log(todoscheckSignatureEdit, "todoscheckSignatureEdit");
   //editing the single data...
-  const sendEditRequest = async () => {
+  const sendEditRequest = async (commonname) => {
     setPageName(!pageName);
-    const commonname = await fetchBiometricLastIndexCodeEdit(
-      biometricDeviceManagementEdit?.area
-    );
+
     try {
       const formData = new FormData();
 
@@ -1899,6 +1953,16 @@ function BiometricDeviceManagement() {
     const ipFormat =
       /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$/;
     console.log(biometricDeviceManagementEdit, "biometricDeviceManagementEdit");
+    let commonname;
+if(!(
+      biometricDeviceManagementEdit?.mode === "New" &&
+      (biometricDeviceManagementEdit.area === "Please Select Area" ||
+        !biometricDeviceManagementEdit.area)
+    )){
+     commonname = await fetchBiometricLastIndexCodeEdit(
+      biometricDeviceManagementEdit?.area);
+    }
+
     if (
       biometricDeviceManagementEdit?.mode === "New" &&
       (biometricDeviceManagementEdit.company === "Please Select Company" ||
@@ -1974,24 +2038,21 @@ function BiometricDeviceManagement() {
       setPopupContentMalert("Please Select Biometric Serial No");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-    else if (
+    } else if (
       biometricDeviceManagementEdit?.mode === "New" &&
       biometricDeviceManagementEdit.biometricassignedip === ""
     ) {
       setPopupContentMalert("Please Enter Biometric Assigned IP");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-    else if (
+    } else if (
       biometricDeviceManagementEdit?.mode === "New" &&
       biometricDeviceManagementEdit.biometricassignedurl === ""
     ) {
       setPopupContentMalert("Please Enter Biometric Assigned URL");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-    else if (
+    } else if (
       biometricDeviceManagementEdit?.mode === "Existing" &&
       biometricDeviceManagementEdit.biometricassignedip === ""
     ) {
@@ -2022,8 +2083,19 @@ function BiometricDeviceManagement() {
       setPopupContentMalert("Data Already exists!");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else {
-      sendEditRequest();
+    } 
+    else if (sourceEdit?.biometricserialno !== biometricDeviceManagementEdit.biometricserialno) {
+      setPopupContentMalert(commonCloudIdcLinked ? `Serial Number is linked in ${commonCloudIdcLinked?.toString()} pages`: null);
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    }
+    else if (sourceEdit?.biometriccommonname !== commonname) {
+      setPopupContentMalert(commonNameLinked ? `Device Common Name is linked in ${commonNameLinked?.toString()} pages`: null);
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    }
+    else {
+      sendEditRequest(commonname);
     }
   };
 
@@ -2772,7 +2844,7 @@ function BiometricDeviceManagement() {
                           brand: e.value === "New" ? "Please Select Brand" : "",
                           model: e.value === "New" ? "Please Select Model" : "",
                           biometricassignedip: "",
-                           biometricassignedurl: "",
+                          biometricassignedurl: "",
                           biometricserialno:
                             e.value === "New"
                               ? ""
@@ -3000,7 +3072,10 @@ function BiometricDeviceManagement() {
                           maxMenuHeight={300}
                           options={[
                             ...new Map(
-                               BrandOptions.map(i => [i.value.toLowerCase(), i])
+                              BrandOptions.map((i) => [
+                                i.value.toLowerCase(),
+                                i,
+                              ])
                             ).values(),
                           ]}
                           placeholder="Please Select Brand"
@@ -3013,12 +3088,12 @@ function BiometricDeviceManagement() {
                               ...biometricDeviceManagement,
                               brand: e.value,
                               biometricassignedip: "",
-                           biometricassignedurl: "",
-                          biometricserialno:
-                            e.value === "New"
-                              ? ""
-                              : "Please Select Serial Number",
-                          biometricdeviceid: "",
+                              biometricassignedurl: "",
+                              biometricserialno:
+                                e.value === "New"
+                                  ? ""
+                                  : "Please Select Serial Number",
+                              biometricdeviceid: "",
                             });
                           }}
                         />
@@ -3116,71 +3191,75 @@ function BiometricDeviceManagement() {
                       </FormControl>
                     </Grid>
 
-                  { biometricDeviceManagement.brand === "Bowee-Chandichan" ? 
-                 
-                  <Grid item md={3} xs={12} sm={6}>
-                      <FormControl fullWidth size="small">
-                        <Typography>
-                          Biometric Assigned URL{" "}
-                          <b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <OutlinedInput
-                          id="component-outlined"
-                          type="text"
-                          placeholder="Please Enter Biometric Assigned URL"
-                          value={biometricDeviceManagement.biometricassignedurl}
-                          onChange={(e) => {
-                            const enteredValue = e.target.value;
-                                setBiometricDeviceManagement({
-                                  ...biometricDeviceManagement,
-                                  biometricassignedurl: enteredValue,
-                                });
-                          }}
-                        />
-                      </FormControl>
-                    </Grid>
-                    :
-                     <Grid item md={3} xs={12} sm={6}>
-                      <FormControl fullWidth size="small">
-                        <Typography>
-                          Biometric Assigned IP{" "}
-                          <b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <OutlinedInput
-                          id="component-outlined"
-                          type="text"
-                          placeholder="Please Enter Biometric Assigned IP"
-                          value={biometricDeviceManagement.biometricassignedip}
-                          onChange={(e) => {
-                            const enteredValue = e.target.value;
-
-                            // Regex to match partial IP address structure
-                            if (
-                              enteredValue === "" ||
-                              /^(\d{1,3}\.){0,3}\d{0,3}$/.test(enteredValue) // Matches up to 3 octets and the last segment
-                            ) {
-                              // Split the entered value by dots
-                              const segments = enteredValue.split(".");
-
-                              // Ensure all segments are numbers between 0 and 255
-                              const isValid = segments.every(
-                                (segment) =>
-                                  segment === "" ||
-                                  (Number(segment) >= 0 &&
-                                    Number(segment) <= 255)
-                              );
-
-                              if (isValid) {
-                                setBiometricDeviceManagement({
-                                  ...biometricDeviceManagement,
-                                  biometricassignedip: enteredValue,
-                                });
-                              }
+                    {biometricDeviceManagement.brand === "Bowee-Chandichan" ? (
+                      <Grid item md={3} xs={12} sm={6}>
+                        <FormControl fullWidth size="small">
+                          <Typography>
+                            Biometric Assigned URL{" "}
+                            <b style={{ color: "red" }}>*</b>
+                          </Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            placeholder="Please Enter Biometric Assigned URL"
+                            value={
+                              biometricDeviceManagement.biometricassignedurl
                             }
-                          }}
-                        />
-                      </FormControl>
-                    </Grid>}
+                            onChange={(e) => {
+                              const enteredValue = e.target.value;
+                              setBiometricDeviceManagement({
+                                ...biometricDeviceManagement,
+                                biometricassignedurl: enteredValue,
+                              });
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+                    ) : (
+                      <Grid item md={3} xs={12} sm={6}>
+                        <FormControl fullWidth size="small">
+                          <Typography>
+                            Biometric Assigned IP{" "}
+                            <b style={{ color: "red" }}>*</b>
+                          </Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            placeholder="Please Enter Biometric Assigned IP"
+                            value={
+                              biometricDeviceManagement.biometricassignedip
+                            }
+                            onChange={(e) => {
+                              const enteredValue = e.target.value;
+
+                              // Regex to match partial IP address structure
+                              if (
+                                enteredValue === "" ||
+                                /^(\d{1,3}\.){0,3}\d{0,3}$/.test(enteredValue) // Matches up to 3 octets and the last segment
+                              ) {
+                                // Split the entered value by dots
+                                const segments = enteredValue.split(".");
+
+                                // Ensure all segments are numbers between 0 and 255
+                                const isValid = segments.every(
+                                  (segment) =>
+                                    segment === "" ||
+                                    (Number(segment) >= 0 &&
+                                      Number(segment) <= 255)
+                                );
+
+                                if (isValid) {
+                                  setBiometricDeviceManagement({
+                                    ...biometricDeviceManagement,
+                                    biometricassignedip: enteredValue,
+                                  });
+                                }
+                              }
+                            }}
+                          />
+                        </FormControl>
+                      </Grid>
+                    )}
                     <Grid item md={2} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <FormControlLabel
@@ -3986,36 +4065,41 @@ function BiometricDeviceManagement() {
                         />
                       </FormControl>
                     </Grid>
-                  { biometricDeviceManagement?.brand === "Bowee-Chandechan" ?
-                         <Grid item md={3} xs={12} sm={6}>
-                      <FormControl fullWidth size="small">
-                        <Typography>
-                          Biometric Assigned URL{" "}
-                          <b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <OutlinedInput
-                          id="component-outlined"
-                          type="text"
-                          placeholder="Please Enter Biometric Assigned URL"
-                          value={biometricDeviceManagement.biometricassignedurl}
-                        />
-                      </FormControl>
-                    </Grid>
-                    
-                  : <Grid item md={3} xs={12} sm={6}>
-                      <FormControl fullWidth size="small">
-                        <Typography>
-                          Biometric Assigned IP{" "}
-                          <b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <OutlinedInput
-                          id="component-outlined"
-                          type="text"
-                          placeholder="Please Enter Biometric Assigned IP"
-                          value={biometricDeviceManagement.biometricassignedip}
-                        />
-                      </FormControl>
-                    </Grid>}
+                    {biometricDeviceManagement?.brand === "Bowee-Chandechan" ? (
+                      <Grid item md={3} xs={12} sm={6}>
+                        <FormControl fullWidth size="small">
+                          <Typography>
+                            Biometric Assigned URL{" "}
+                            <b style={{ color: "red" }}>*</b>
+                          </Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            placeholder="Please Enter Biometric Assigned URL"
+                            value={
+                              biometricDeviceManagement.biometricassignedurl
+                            }
+                          />
+                        </FormControl>
+                      </Grid>
+                    ) : (
+                      <Grid item md={3} xs={12} sm={6}>
+                        <FormControl fullWidth size="small">
+                          <Typography>
+                            Biometric Assigned IP{" "}
+                            <b style={{ color: "red" }}>*</b>
+                          </Typography>
+                          <OutlinedInput
+                            id="component-outlined"
+                            type="text"
+                            placeholder="Please Enter Biometric Assigned IP"
+                            value={
+                              biometricDeviceManagement.biometricassignedip
+                            }
+                          />
+                        </FormControl>
+                      </Grid>
+                    )}
                   </>
                 )}
 
@@ -4340,11 +4424,14 @@ function BiometricDeviceManagement() {
                           </Typography>
                           <Selects
                             maxMenuHeight={300}
-                             options={[
-                            ...new Map(
-                               BrandOptions.map(i => [i.value.toLowerCase(), i])
-                            ).values(),
-                          ]}
+                            options={[
+                              ...new Map(
+                                BrandOptions.map((i) => [
+                                  i.value.toLowerCase(),
+                                  i,
+                                ])
+                              ).values(),
+                            ]}
                             placeholder="Please Select Brand"
                             value={{
                               label: biometricDeviceManagementEdit.brand,
@@ -4355,12 +4442,12 @@ function BiometricDeviceManagement() {
                                 ...biometricDeviceManagementEdit,
                                 brand: e.value,
                                 biometricassignedip: "",
-                           biometricassignedurl: "",
-                          biometricserialno:
-                            e.value === "New"
-                              ? ""
-                              : "Please Select Serial Number",
-                          biometricdeviceid: "",
+                                biometricassignedurl: "",
+                                biometricserialno:
+                                  e.value === "New"
+                                    ? ""
+                                    : "Please Select Serial Number",
+                                biometricdeviceid: "",
                               });
                             }}
                           />
@@ -4459,73 +4546,76 @@ function BiometricDeviceManagement() {
                         </FormControl>
                       </Grid>
 
-                      { biometricDeviceManagementEdit?.brand === "Bowee-Chandechan" ?
-                         <Grid item md={3} xs={12} sm={6}>
-                      <FormControl fullWidth size="small">
-                        <Typography>
-                          Biometric Assigned URL{" "}
-                          <b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <OutlinedInput
-                          id="component-outlined"
-                          type="text"
-                          placeholder="Please Enter Biometric Assigned URL"
-                          value={biometricDeviceManagementEdit.biometricassignedurl}
-                          onChange={(e) => {
-                            const enteredValue = e.target.value;
+                      {biometricDeviceManagementEdit?.brand ===
+                      "Bowee-Chandechan" ? (
+                        <Grid item md={3} xs={12} sm={6}>
+                          <FormControl fullWidth size="small">
+                            <Typography>
+                              Biometric Assigned URL{" "}
+                              <b style={{ color: "red" }}>*</b>
+                            </Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Please Enter Biometric Assigned URL"
+                              value={
+                                biometricDeviceManagementEdit.biometricassignedurl
+                              }
+                              onChange={(e) => {
+                                const enteredValue = e.target.value;
                                 setBiometricDeviceManagementEdit({
                                   ...biometricDeviceManagementEdit,
                                   biometricassignedurl: enteredValue,
                                 });
-                          }}
-                        />
-                      </FormControl>
-                    </Grid>
-                    :
-                      <Grid item md={3} xs={12} sm={6}>
-                        <FormControl fullWidth size="small">
-                          <Typography>
-                            Biometric Assigned IP{" "}
-                            <b style={{ color: "red" }}>*</b>
-                          </Typography>
-                          <OutlinedInput
-                            id="component-outlined"
-                            type="text"
-                            placeholder="Please Enter Biometric Assigned IP"
-                            value={
-                              biometricDeviceManagementEdit.biometricassignedip
-                            }
-                            onChange={(e) => {
-                              const enteredValue = e.target.value;
-
-                              // Regex to match partial IP address structure
-                              if (
-                                enteredValue === "" ||
-                                /^(\d{1,3}\.){0,3}\d{0,3}$/.test(enteredValue) // Matches up to 3 octets and the last segment
-                              ) {
-                                // Split the entered value by dots
-                                const segments = enteredValue.split(".");
-
-                                // Ensure all segments are numbers between 0 and 255
-                                const isValid = segments.every(
-                                  (segment) =>
-                                    segment === "" ||
-                                    (Number(segment) >= 0 &&
-                                      Number(segment) <= 255)
-                                );
-
-                                if (isValid) {
-                                  setBiometricDeviceManagementEdit({
-                                    ...biometricDeviceManagementEdit,
-                                    biometricassignedip: enteredValue,
-                                  });
-                                }
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                      ) : (
+                        <Grid item md={3} xs={12} sm={6}>
+                          <FormControl fullWidth size="small">
+                            <Typography>
+                              Biometric Assigned IP{" "}
+                              <b style={{ color: "red" }}>*</b>
+                            </Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Please Enter Biometric Assigned IP"
+                              value={
+                                biometricDeviceManagementEdit.biometricassignedip
                               }
-                            }}
-                          />
-                        </FormControl>
-                      </Grid>
-}
+                              onChange={(e) => {
+                                const enteredValue = e.target.value;
+
+                                // Regex to match partial IP address structure
+                                if (
+                                  enteredValue === "" ||
+                                  /^(\d{1,3}\.){0,3}\d{0,3}$/.test(enteredValue) // Matches up to 3 octets and the last segment
+                                ) {
+                                  // Split the entered value by dots
+                                  const segments = enteredValue.split(".");
+
+                                  // Ensure all segments are numbers between 0 and 255
+                                  const isValid = segments.every(
+                                    (segment) =>
+                                      segment === "" ||
+                                      (Number(segment) >= 0 &&
+                                        Number(segment) <= 255)
+                                  );
+
+                                  if (isValid) {
+                                    setBiometricDeviceManagementEdit({
+                                      ...biometricDeviceManagementEdit,
+                                      biometricassignedip: enteredValue,
+                                    });
+                                  }
+                                }
+                              }}
+                            />
+                          </FormControl>
+                        </Grid>
+                      )}
                       <Grid item md={2} xs={12} sm={6}>
                         <FormControl fullWidth size="small">
                           <FormControlLabel
@@ -5385,39 +5475,42 @@ function BiometricDeviceManagement() {
                         </FormControl>
                       </Grid>
 
-                       { biometricDeviceManagementEdit?.brand === "Bowee-Chandechan" ?
-                         <Grid item md={3} xs={12} sm={6}>
-                      <FormControl fullWidth size="small">
-                        <Typography>
-                          Biometric Assigned URL{" "}
-                          <b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <OutlinedInput
-                          id="component-outlined"
-                          type="text"
-                          placeholder="Please Enter Biometric Assigned URL"
-                          value={biometricDeviceManagementEdit.biometricassignedurl}
-                        />
-                      </FormControl>
-                    </Grid>
-                    :
-                      <Grid item md={3} xs={12} sm={6}>
-                        <FormControl fullWidth size="small">
-                          <Typography>
-                            Biometric Assigned IP{" "}
-                            <b style={{ color: "red" }}>*</b>
-                          </Typography>
-                          <OutlinedInput
-                            id="component-outlined"
-                            type="text"
-                            placeholder="Please Enter Biometric Assigned IP"
-                            value={
-                              biometricDeviceManagementEdit.biometricassignedip
-                            }
-                          />
-                        </FormControl>
-                      </Grid>
-}
+                      {biometricDeviceManagementEdit?.brand ===
+                      "Bowee-Chandechan" ? (
+                        <Grid item md={3} xs={12} sm={6}>
+                          <FormControl fullWidth size="small">
+                            <Typography>
+                              Biometric Assigned URL{" "}
+                              <b style={{ color: "red" }}>*</b>
+                            </Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Please Enter Biometric Assigned URL"
+                              value={
+                                biometricDeviceManagementEdit.biometricassignedurl
+                              }
+                            />
+                          </FormControl>
+                        </Grid>
+                      ) : (
+                        <Grid item md={3} xs={12} sm={6}>
+                          <FormControl fullWidth size="small">
+                            <Typography>
+                              Biometric Assigned IP{" "}
+                              <b style={{ color: "red" }}>*</b>
+                            </Typography>
+                            <OutlinedInput
+                              id="component-outlined"
+                              type="text"
+                              placeholder="Please Enter Biometric Assigned IP"
+                              value={
+                                biometricDeviceManagementEdit.biometricassignedip
+                              }
+                            />
+                          </FormControl>
+                        </Grid>
+                      )}
                     </>
                   )}
                 </Grid>
@@ -6004,20 +6097,21 @@ function BiometricDeviceManagement() {
                   <Typography>{sourceEdit?.biometricserialno}</Typography>
                 </FormControl>
               </Grid>
-              {sourceEdit?.brand !== "Bowee-Chandichan" ?
-              <Grid item md={4} xs={12} sm={12}>
-                <FormControl fullWidth size="small">
-                  <Typography variant="h6">Biometric Assigned IP</Typography>
-                  <Typography>{sourceEdit?.biometricassignedip}</Typography>
-                </FormControl>
-              </Grid>
-              :
-              <Grid item md={4} xs={12} sm={12}>
-                <FormControl fullWidth size="small">
-                  <Typography variant="h6">Biometric Assigned URL</Typography>
-                  <Typography>{sourceEdit?.biometricassignedurl}</Typography>
-                </FormControl>
-              </Grid>}
+              {sourceEdit?.brand !== "Bowee-Chandichan" ? (
+                <Grid item md={4} xs={12} sm={12}>
+                  <FormControl fullWidth size="small">
+                    <Typography variant="h6">Biometric Assigned IP</Typography>
+                    <Typography>{sourceEdit?.biometricassignedip}</Typography>
+                  </FormControl>
+                </Grid>
+              ) : (
+                <Grid item md={4} xs={12} sm={12}>
+                  <FormControl fullWidth size="small">
+                    <Typography variant="h6">Biometric Assigned URL</Typography>
+                    <Typography>{sourceEdit?.biometricassignedurl}</Typography>
+                  </FormControl>
+                </Grid>
+              )}
               <Grid item md={4} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography variant="h6">Visitor Device</Typography>

@@ -470,6 +470,47 @@ cron.schedule("0 0 * * *", async () => {
 
 
 
+// cron.schedule('* * * * *', async () => {
+//   console.log('🔄 Running attendance fetch at', new Date().toLocaleString());
+
+//   // console.log(IPAddresss , 'IPAddresss');
+//   // if (IPAddresss?.length > 0) {
+//     const deviceUrls = `https://hilifeai.in/device1`;
+//   const adminPassword = process.env.BOWER_DEVICE_PASSWORD;
+//     const hash = crypto.randomUUID();
+//     const saltedPassword = hash + adminPassword + hash;
+//     const hashedPassword = crypto
+//       .createHash("md5")
+//       .update(saltedPassword)
+//       .digest("hex")
+//       .toUpperCase();
+  
+//     const payload = {
+//       password: hashedPassword,
+//       Hash: hash,
+//     };
+//     // console.log(payload ,adminPassword, "url")
+//     try {
+//       const response = await axios.post(`${deviceUrls}/api/User/Login`, payload, {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+  
+//       const token = response.data.content.token;
+//       console.log(token , "token")
+//       return token; // 🔸 return the token
+//     } catch (err) {
+//       console.log("Login failed:", err.response?.data || err.message);
+//       throw err;
+//     }
+//     // }
+//   // }
+
+// });
+
+
+
 
 
 
@@ -1539,18 +1580,18 @@ app.use(bodyParser.json());
 
 
 
-// app.post('/Device/Keepalive', (req, res) => {
-//   // Handle device keep-alive logic
-//   console.log(req?.body , moment().format("DD-MM-YYYY hh:mm:ss A") , "Running")
-//   res.json({
-//     Success: 0,
-//     AddPeople: 1,
-//     DeletePeople: 0,
-//     SyncParameter: 1,
-//     Remote: 1,
-//     UploadWorkParameter: 0
-//   });
-// });
+app.post('/api/Device/Keepalive', (req, res) => {
+  // Handle device keep-alive logic
+  console.log(req?.body , moment().format("DD-MM-YYYY hh:mm:ss A") , "Running")
+  res.json({
+    Success: 0,
+    AddPeople: 1,
+    DeletePeople: 0,
+    SyncParameter: 1,
+    Remote: 1,
+    UploadWorkParameter: 0
+  });
+});
 
 // Simulated pending actions per device SN (for demo)
 

@@ -1002,12 +1002,18 @@ function addTwoHours(isoDate, hours, mode = "Add") {
     date.setHours(date.getHours() - diff);
   } else {
     // "Add" (default)
-    date.setHours(date.getHours() + diff);
+    date.setHours(date.getHours() + diff);y
+    
   }
 
   return date;
 }
 
+function reduceHours(inputDate, hours = 1) {
+    const date = new Date(inputDate); // convert string to Date if needed
+    date.setHours(date.getHours() - hours);
+    return date;
+}
 //To get the users Attendance Reports
 exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
   async (req, res, next) => {
@@ -1681,7 +1687,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             outTimeVerifiedDevice = last?.biometriccommonname;
             if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
               outTime = hasOutDevice
-                ? shiftdate?.orgEndTime >
+                ? reduceHours(shiftdate?.orgEndTime,1) >
                   parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
                   ? shiftEndTime
                   : lastDeviceOut?.clockDateTimeD
@@ -1693,7 +1699,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             ) {
               outTime =
                 last &&
-                shiftdate?.orgEndTime < parseDDMMYYYY(last?.clockDateTimeD)
+                reduceHours(shiftdate?.orgEndTime, 1) < parseDDMMYYYY(last?.clockDateTimeD)
                   ? last.clockDateTimeD
                   : shiftEndTime;
               console.log(last, shiftMode, outTime, "2");
@@ -1701,8 +1707,8 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
               shiftStatus === "Night Shift" &&
               shiftMode === "Main Shift"
             ) {
-              outTime = hasOutDevice
-                ? shiftdate?.orgEndTime >
+               outTime = hasOutDevice
+                ? reduceHours(shiftdate?.orgEndTime,1) >
                   parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
                   ? shiftEndTime
                   : lastDeviceOut?.clockDateTimeD
@@ -1714,7 +1720,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             ) {
               outTime =
                 last &&
-                shiftdate?.orgEndTime < parseDDMMYYYY(last?.clockDateTimeD)
+                 reduceHours(shiftdate?.orgEndTime, 1) < parseDDMMYYYY(last?.clockDateTimeD)
                   ? last.clockDateTimeD
                   : shiftEndTime;
                   console.log(lastOutDevice , matchedUsers,"lastOutDevice")

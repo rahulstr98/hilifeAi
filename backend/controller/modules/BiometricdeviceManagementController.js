@@ -7,6 +7,10 @@ const Assetdetail = require("../../model/modules/account/assetdetails");
 const IpMaster = require("../../model/modules/account/ipmodel");
 const BiometricDevicesPairing = require("../../model/modules/biometric/BiometricDevicesPairingModel");
 const BiometricPairedDevicesGrouping = require("../../model/modules/biometric/BiometricPairedDevicesGroupingModel");
+const BiometricUsersGrouping = require("../../model/modules/biometric/BiometricUsersGroupingModel");
+const Biometriconlinestatus = require("../../model/modules/biometric/biometriconlinestatus");
+const BiometricOfflineHistory = require("../../model/modules/biometric/BiometricOfflineHistory");
+const Biouploaduserinfo = require("../../model/modules/biometric/uploaduserinfo");
 
 // const { sendCommandToDevice } = require('./deviceSocket');
 
@@ -53,6 +57,101 @@ exports.getAllBiometricDeviceManagement = catchAsyncErrors(
     });
   }
 );
+
+
+const mapIdsIfExists = (arr) =>
+  Array.isArray(arr) && arr.length ? arr.map(d => d._id) : undefined;
+
+
+// get All Biometric Device Management => /api/biometricdevicemanagementoveralledit
+exports.getBiometricDeviceManagementOverallEdit = catchAsyncErrors(
+  async (req, res, next) => {
+    const { biometriccommonname, biometricserialno } = req?.body?.device || {};
+
+    try {
+      // ---------- PARALLEL QUERIES ----------
+      const [
+        devicePairing,
+        pairedDevicegrouping,
+        usersGrouping,
+        onlineStatus,
+        offlinehistory,
+        userinfos
+      ] = await Promise.all([
+        BiometricDevicesPairing.find(
+          { pairdevices: biometriccommonname },
+          { _id: 1 }
+        ).lean(),
+
+        BiometricPairedDevicesGrouping.find(
+          {
+            $or: [
+              { paireddeviceone: biometriccommonname },
+              { paireddevicetwo: biometriccommonname },
+            ],
+          },
+          { _id: 1 }
+        ).lean(),
+
+        BiometricUsersGrouping.find(
+          {
+            $or: [
+              { paireddeviceone: biometriccommonname },
+              { paireddevicetwo: biometriccommonname },
+            ],
+          },
+          { _id: 1 }
+        ).lean(),
+
+        Biometriconlinestatus.find(
+          { cloudIDC: biometricserialno },
+          { _id: 1 }
+        ).lean(),
+
+        BiometricOfflineHistory.find(
+          { cloudIDC: biometricserialno },
+          { _id: 1 }
+        ).lean(),
+
+        Biouploaduserinfo.find(
+          { cloudIDC: biometricserialno },
+          { _id: 1 }
+        ).lean(),
+      ]);
+
+      // ---------- BUILD RESPONSE OBJECTS ----------
+      const matchedDatas = {
+        biometricdevicespairing: mapIdsIfExists(devicePairing),
+        biometricpaireddevice: mapIdsIfExists(pairedDevicegrouping),
+        biometricusersgrouping: mapIdsIfExists(usersGrouping),
+      };
+
+      const matchedCloudIDC = {
+        onlineStatus: mapIdsIfExists(onlineStatus),
+        offlinehistory: mapIdsIfExists(offlinehistory),
+        userinfos: mapIdsIfExists(userinfos),
+      };
+
+      // ---------- REMOVE EMPTY KEYS ----------
+      Object.keys(matchedDatas).forEach(
+        key => matchedDatas[key] === undefined && delete matchedDatas[key]
+      );
+
+      Object.keys(matchedCloudIDC).forEach(
+        key => matchedCloudIDC[key] === undefined && delete matchedCloudIDC[key]
+      );
+
+      return res.status(200).json({
+        matchedDatas,
+        matchedCloudIDC,
+      });
+
+    } catch (err) {
+      return next(new ErrorHandler("Records not found!", 404));
+    }
+  }
+);
+
 
 // Bulk Delete
 exports.getOverallBulkBiometricDevicesDelete = catchAsyncErrors(
@@ -558,12 +657,11 @@ exports.getSingleBiometricDeviceManagement = catchAsyncErrors(
 //     return res.status(200).json({ message: "Updated successfully" });
 // });
 
-
 exports.updateBiometricDeviceManagement = catchAsyncErrors(
   async (req, res, next) => {
     try {
-    //   console.log("BODY:", req.body);
-    //   console.log("FILES:", req.files);
+      //   console.log("BODY:", req.body);
+      //   console.log("FILES:", req.files);
 
       const id = req.params.id;
 
@@ -574,89 +672,86 @@ exports.updateBiometricDeviceManagement = catchAsyncErrors(
 
       const groupedFiles = req.groupedFiles || {};
       // ----------------------
-// REBUILD RFID ARRAY
-// ----------------------
-const finalRFIDArray = [];
+      // REBUILD RFID ARRAY
+      // ----------------------
+      const finalRFIDArray = [];
 
-const rfidArray = Array.isArray(req.body.rfidnumber)
-  ? req.body.rfidnumber
-  : [req.body.rfidnumber];
+      const rfidArray = Array.isArray(req.body.rfidnumber)
+        ? req.body.rfidnumber
+        : [req.body.rfidnumber];
 
-// ----------------------
-// CREATE EMPTY BASE STRUCTURE
-// ----------------------
-rfidArray.forEach((value) => {
-  finalRFIDArray.push({
-    rfidnumber: value,
-    files: []
-  });
-});
-
-// ----------------------
-// 1️⃣ ADD MULTER NEW FILES
-// Multer gives fieldname like: files[2]
-// So extract index directly
-// ----------------------
-if (req.files && Array.isArray(req.files)) {
-  req.files.forEach((file) => {
-    const match = file.fieldname.match(/files\[(\d+)\]/);
-    if (match) {
-      const index = parseInt(match[1]);
-
-      finalRFIDArray[index].files.push({
-        // file: {
-          filename: file.filename,
-          path: file.path,
-          mimetype: file.mimetype
-        // }
+      // ----------------------
+      // CREATE EMPTY BASE STRUCTURE
+      // ----------------------
+      rfidArray.forEach((value) => {
+        finalRFIDArray.push({
+          rfidnumber: value,
+          files: [],
+        });
       });
-    }
-  });
-}
 
-// ----------------------
-// 2️⃣ ADD EXISTING FILES
-// existingFiles[index] is JSON string or array of strings
-// ----------------------
-if (req.body.existingFiles) {
-  Object.keys(req.body.existingFiles).forEach((key) => {
-    const index = parseInt(key);
-    const data = req.body.existingFiles[key];
+      // ----------------------
+      // 1️⃣ ADD MULTER NEW FILES
+      // Multer gives fieldname like: files[2]
+      // So extract index directly
+      // ----------------------
+      if (req.files && Array.isArray(req.files)) {
+        req.files.forEach((file) => {
+          const match = file.fieldname.match(/files\[(\d+)\]/);
+          if (match) {
+            const index = parseInt(match[1]);
 
-    const arr = Array.isArray(data) ? data : [data];
-
-    arr.forEach((item) => {
-      try {
-        finalRFIDArray[index].files.push(JSON.parse(item));
-      } catch (e) {
-        console.log("Invalid existing file JSON:", item);
+            finalRFIDArray[index].files.push({
+              // file: {
+              filename: file.filename,
+              path: file.path,
+              mimetype: file.mimetype,
+              // }
+            });
+          }
+        });
       }
-    });
-  });
-}
 
-req.finalRFIDArray = finalRFIDArray;
+      // ----------------------
+      // 2️⃣ ADD EXISTING FILES
+      // existingFiles[index] is JSON string or array of strings
+      // ----------------------
+      if (req.body.existingFiles) {
+        Object.keys(req.body.existingFiles).forEach((key) => {
+          const index = parseInt(key);
+          const data = req.body.existingFiles[key];
 
+          const arr = Array.isArray(data) ? data : [data];
 
-      payload.rfidData = payload?.rfidDevice ? finalRFIDArray:[];
-// console.log(req.body, payload?.rfidData[2], "payload")
+          arr.forEach((item) => {
+            try {
+              finalRFIDArray[index].files.push(JSON.parse(item));
+            } catch (e) {
+              console.log("Invalid existing file JSON:", item);
+            }
+          });
+        });
+      }
 
-let ubiometricdevicemanagement = await BiometricDeviceManagement.findByIdAndUpdate(id, payload,{new:true});
+      req.finalRFIDArray = finalRFIDArray;
+
+      payload.rfidData = payload?.rfidDevice ? finalRFIDArray : [];
+      // console.log(req.body, payload?.rfidData[2], "payload")
+
+      let ubiometricdevicemanagement =
+        await BiometricDeviceManagement.findByIdAndUpdate(id, payload, {
+          new: true,
+        });
       return res.status(200).json({
         message: "Updated successfully",
         ubiometricdevicemanagement,
       });
-
     } catch (err) {
       console.error("Update error:", err);
       return res.status(500).json({ error: err.message });
     }
   }
 );
-
-
-
-
 
 // delete BiometricDeviceManagement by id => /api/operatingsystem/:id
 exports.deleteBiometricDeviceManagement = catchAsyncErrors(
