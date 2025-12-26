@@ -124,13 +124,14 @@ biometricRoute.route("/biodownloadusertemplate").post(getBioDownloadUserTemplate
 biometricRoute.route("/biopendingusertemplate").post(getBioPendingUserTemplate);
 
 
-const { getAllUploadUserInfo, addUploadUserInfo,getAllUserBioInfos,getBiometricVisitorDeletionDetails,getVisitorsEnableListDetailsById,getFilteredBiometricVisitorDetails ,getAllUsersFromDeviceToDatabase} = require("../controller/modules/biometric/uploaduserinfo");
+const { getAllUploadUserInfo, addUploadUserInfo,getAllUserBioInfos,addFloorWiseUserAccessInBiometricDevice,getBiometricVisitorDeletionDetails,getVisitorsEnableListDetailsById,getFilteredBiometricVisitorDetails ,getAllUsersFromDeviceToDatabase} = require("../controller/modules/biometric/uploaduserinfo");
 biometricRoute.route("/biouploaduserinfos").get(getAllUploadUserInfo);
 biometricRoute.route("/getfilteredbiometricvisitordetails").post(getFilteredBiometricVisitorDetails);
 biometricRoute.route("/enablevisitorsdetailsbyid").post(getVisitorsEnableListDetailsById);
 biometricRoute.route("/biometricvisitordeletiondetails").post(getBiometricVisitorDeletionDetails);
 biometricRoute.route("/biometricusersaddedlist").post(getAllUserBioInfos);
 biometricRoute.route("/importbiometricusersfromdevice").post(getAllUsersFromDeviceToDatabase);
+biometricRoute.route("/floorwiseuseraccessbiometricdevice").post(addFloorWiseUserAccessInBiometricDevice);
 biometricRoute.route("/addbiometricIndividualUser/new").post(addUploadUserInfo);
 
 
@@ -151,6 +152,29 @@ biometricRoute.route("/biometricIndividualduplicateUserCheck").post(getIndividua
 biometricRoute.route("/biometriceditusercheck").post(getEditBiometricUserCheck);
 
 
+
+const { getAllLiftAuthorityAccessManagement, getSingleLiftAuthorityAccessManagement, deleteLiftAuthorityAccessManagement, addLiftAuthorityAccessManagement, updateLiftAuthorityAccessManagement } = require('../controller/modules/biometric/elevator/liftauthorityaccessmanagement');
+biometricRoute.route('/allliftauthorityaccessmanagements').get(getAllLiftAuthorityAccessManagement);
+biometricRoute.route('/liftauthorityaccessmanagement/new').post(addLiftAuthorityAccessManagement);
+biometricRoute.route('/liftauthorityaccessmanagement/:id').delete(deleteLiftAuthorityAccessManagement).get(getSingleLiftAuthorityAccessManagement).put(updateLiftAuthorityAccessManagement);
+
+const {
+  addAssignElevatorPort,
+  deleteAssignElevatorPort,
+  updateAssignElevatorPort,
+  getAllAssignElevatorPort,
+  getSingleAssignElevatorPort,
+  assignElevatorPortList,
+  getOverallBulkAssignElevatorPortDelete,
+  getSingleBulkAssignElevatorPortDelete,
+} = require('../controller/modules/biometric/elevator/AssignElevatorPortController.js');
+
+biometricRoute.route('/assignelevatorports').get(getAllAssignElevatorPort);
+biometricRoute.route('/assignelevatorport/new').post(addAssignElevatorPort);
+biometricRoute.route('/assignelevatorportlist').post(assignElevatorPortList);
+biometricRoute.route('/overallbulkassignelevatorportdelete').post(getOverallBulkAssignElevatorPortDelete);
+biometricRoute.route('/singleassignelevatorportdelete').post(getSingleBulkAssignElevatorPortDelete);
+biometricRoute.route('/assignelevatorport/:id').get(getSingleAssignElevatorPort).put(updateAssignElevatorPort).delete(deleteAssignElevatorPort);
 
 
 

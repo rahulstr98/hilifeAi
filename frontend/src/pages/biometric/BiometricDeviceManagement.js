@@ -137,17 +137,17 @@ function BiometricDeviceManagement() {
   const [filteredRowData, setFilteredRowData] = useState([]);
   const [filteredChanges, setFilteredChanges] = useState(null);
   const [btnUpload, setBtnUpload] = useState(false);
-    // Error Popup model
-    const [isErrorOpenpop, setIsErrorOpenpop] = useState(false);
-    const [showAlertpop, setShowAlertpop] = useState();
-  
-    const handleClickOpenerrpop = () => {
-      setIsErrorOpenpop(true);
-    };
-    const handleCloseerrpop = () => {
-      setIsErrorOpenpop(false);
-    };
-  
+  // Error Popup model
+  const [isErrorOpenpop, setIsErrorOpenpop] = useState(false);
+  const [showAlertpop, setShowAlertpop] = useState();
+
+  const handleClickOpenerrpop = () => {
+    setIsErrorOpenpop(true);
+  };
+  const handleCloseerrpop = () => {
+    setIsErrorOpenpop(false);
+  };
+
   const [biometricDeviceManagement, setBiometricDeviceManagement] = useState({
     mode: "New",
     brand: "Please Select Brand",
@@ -165,6 +165,7 @@ function BiometricDeviceManagement() {
     biometricserialno: "",
     biometricassignedip: "",
     isVisitor: false,
+    isElevator: false,
     rfidDevice: false,
     rfidnumber: "",
   });
@@ -1341,6 +1342,7 @@ function BiometricDeviceManagement() {
         biometricDeviceManagement.biometricassignedurl
       ),
       isVisitor: biometricDeviceManagement?.isVisitor,
+      isElevator: biometricDeviceManagement?.isElevator,
       rfidDevice: biometricDeviceManagement?.rfidDevice,
       biometriccommonname: commonname,
       addedby: [
@@ -1905,6 +1907,7 @@ function BiometricDeviceManagement() {
         ),
         biometriccommonname: commonname,
         isVisitor: biometricDeviceManagementEdit?.isVisitor,
+        isElevator: biometricDeviceManagementEdit?.isElevator,
         rfidDevice: biometricDeviceManagementEdit?.rfidDevice,
 
         updatedby: [
@@ -1931,7 +1934,7 @@ function BiometricDeviceManagement() {
       setFilteredRowData([]);
       setFilteredChanges(null);
       await fetchEmployee();
-       await getOverallEditSectionUpdate(sourceEdit ,payload);
+      await getOverallEditSectionUpdate(sourceEdit, payload);
       fetchSource();
       handleCloseModEdit();
       setPopupContent("Updated Successfully");
@@ -1947,22 +1950,29 @@ function BiometricDeviceManagement() {
     }
   };
 
-    //overall edit section for all pages
-    const getOverallEditSectionUpdate = async (oldData , newData) => {
-      setPageName(!pageName);
-      try {
-        let res = await axios.post(SERVICE.OVERALL_EDIT_UPDATE_BIOMETRIC_DEVICE_MANAGEMENT, {
+  //overall edit section for all pages
+  const getOverallEditSectionUpdate = async (oldData, newData) => {
+    setPageName(!pageName);
+    try {
+      let res = await axios.post(
+        SERVICE.OVERALL_EDIT_UPDATE_BIOMETRIC_DEVICE_MANAGEMENT,
+        {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
           olddata: oldData,
           newdata: newData,
-        });
-      } catch (err) {
-        handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
-      }
-    };
-  
+        }
+      );
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
+  };
 
   const editSubmit = async (e) => {
     e.preventDefault();
@@ -1983,13 +1993,16 @@ function BiometricDeviceManagement() {
       /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$/;
     console.log(biometricDeviceManagementEdit, "biometricDeviceManagementEdit");
     let commonname;
-if(!(
-      biometricDeviceManagementEdit?.mode === "New" &&
-      (biometricDeviceManagementEdit.area === "Please Select Area" ||
-        !biometricDeviceManagementEdit.area)
-    )){
-     commonname = await fetchBiometricLastIndexCodeEdit(
-      biometricDeviceManagementEdit?.area);
+    if (
+      !(
+        biometricDeviceManagementEdit?.mode === "New" &&
+        (biometricDeviceManagementEdit.area === "Please Select Area" ||
+          !biometricDeviceManagementEdit.area)
+      )
+    ) {
+      commonname = await fetchBiometricLastIndexCodeEdit(
+        biometricDeviceManagementEdit?.area
+      );
     }
 
     if (
@@ -2112,33 +2125,45 @@ if(!(
       setPopupContentMalert("Data Already exists!");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } 
-    else if (sourceEdit?.biometricserialno !== biometricDeviceManagementEdit.biometricserialno) {
+    } else if (
+      sourceEdit?.biometricserialno !==
+      biometricDeviceManagementEdit.biometricserialno
+    ) {
       // setPopupContentMalert();
       // setPopupSeverityMalert("warning");
       // handleClickOpenPopupMalert();
-         setShowAlertpop(
-              <>
-                <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-                <p style={{ fontSize: '20px', fontWeight: 900 }}>{commonCloudIdcLinked ? `Serial Number is linked in ${commonCloudIdcLinked?.toString()} pages`: null}</p>
-              </>
-            );
+      setShowAlertpop(
+        <>
+          <ErrorOutlineOutlinedIcon
+            sx={{ fontSize: "100px", color: "orange" }}
+          />
+          <p style={{ fontSize: "20px", fontWeight: 900 }}>
+            {commonCloudIdcLinked
+              ? `Serial Number is linked in ${commonCloudIdcLinked?.toString()} pages`
+              : null}
+          </p>
+        </>
+      );
       handleClickOpenerrpop();
-    }
-    else if (sourceEdit?.biometriccommonname !== commonname) {
+    } else if (sourceEdit?.biometriccommonname !== commonname) {
       // setPopupContentMalert(commonNameLinked ? `Device Common Name is linked in ${commonNameLinked?.toString()} pages`: null);
       // setPopupSeverityMalert("warning");
       // handleClickOpenPopupMalert();
       setShowAlertpop(
-              <>
-                <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-                <p style={{ fontSize: '20px', fontWeight: 900 }}>{commonNameLinked ? `Device Common Name is linked in ${commonNameLinked?.toString()} pages`: null}</p>
-              </>
-            );
+        <>
+          <ErrorOutlineOutlinedIcon
+            sx={{ fontSize: "100px", color: "orange" }}
+          />
+          <p style={{ fontSize: "20px", fontWeight: 900 }}>
+            {commonNameLinked
+              ? `Device Common Name is linked in ${commonNameLinked?.toString()} pages`
+              : null}
+          </p>
+        </>
+      );
       handleClickOpenerrpop();
       // handleClickOpenerrpop();
-    }
-    else {
+    } else {
       sendEditRequest(commonname);
     }
   };
@@ -3133,10 +3158,7 @@ if(!(
                               brand: e.value,
                               biometricassignedip: "",
                               biometricassignedurl: "",
-                              biometricserialno:
-                                e.value === "New"
-                                  ? ""
-                                  : "Please Select Serial Number",
+                              biometricserialno:"",
                               biometricdeviceid: "",
                             });
                           }}
@@ -3207,31 +3229,6 @@ if(!(
                             // }
                           }}
                         />
-                        <FormControl fullWidth size="small">
-                          <FormControlLabel
-                            label="Visitor Device"
-                            control={
-                              <Checkbox
-                                sx={{
-                                  "& .MuiSvgIcon-root": {
-                                    fontSize: 40,
-                                    marginTop: 1,
-                                  },
-                                }}
-                                checked={
-                                  biometricDeviceManagement?.isVisitor || false
-                                }
-                                onChange={(e) =>
-                                  setBiometricDeviceManagement({
-                                    ...biometricDeviceManagement,
-                                    isVisitor: e.target.checked,
-                                  })
-                                }
-                                color="primary"
-                              />
-                            }
-                          />
-                        </FormControl>
                       </FormControl>
                     </Grid>
 
@@ -3304,6 +3301,61 @@ if(!(
                         </FormControl>
                       </Grid>
                     )}
+
+                    <Grid item md={2} xs={12} sm={6}>
+                      <FormControl fullWidth size="small">
+                        <FormControlLabel
+                          label="Visitor Device"
+                          control={
+                            <Checkbox
+                              sx={{
+                                "& .MuiSvgIcon-root": {
+                                  fontSize: 40,
+                                  marginTop: 1,
+                                },
+                              }}
+                              checked={
+                                biometricDeviceManagement?.isVisitor || false
+                              }
+                              onChange={(e) =>
+                                setBiometricDeviceManagement({
+                                  ...biometricDeviceManagement,
+                                  isVisitor: e.target.checked,
+                                })
+                              }
+                              color="primary"
+                            />
+                          }
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={2} xs={12} sm={6}>
+                      <FormControl fullWidth size="small">
+                        <FormControlLabel
+                          label="Elevator Device"
+                          control={
+                            <Checkbox
+                              sx={{
+                                "& .MuiSvgIcon-root": {
+                                  fontSize: 40,
+                                  marginTop: 1,
+                                },
+                              }}
+                              checked={
+                                biometricDeviceManagement?.isElevator || false
+                              }
+                              onChange={(e) =>
+                                setBiometricDeviceManagement({
+                                  ...biometricDeviceManagement,
+                                  isElevator: e.target.checked,
+                                })
+                              }
+                              color="primary"
+                            />
+                          }
+                        />
+                      </FormControl>
+                    </Grid>
                     <Grid item md={2} xs={12} sm={6}>
                       <FormControl fullWidth size="small">
                         <FormControlLabel
@@ -4561,7 +4613,7 @@ if(!(
                               });
                             }}
                           />
-                          <FormControl fullWidth size="small">
+                          {/* <FormControl fullWidth size="small">
                             <FormControlLabel
                               label="Visitor Device"
                               control={
@@ -4586,7 +4638,7 @@ if(!(
                                 />
                               }
                             />
-                          </FormControl>
+                          </FormControl> */}
                         </FormControl>
                       </Grid>
 
@@ -4660,6 +4712,62 @@ if(!(
                           </FormControl>
                         </Grid>
                       )}
+
+                                          <Grid item md={2} xs={12} sm={6}>
+                   <FormControl fullWidth size="small">
+                            <FormControlLabel
+                              label="Visitor Device"
+                              control={
+                                <Checkbox
+                                  sx={{
+                                    "& .MuiSvgIcon-root": {
+                                      fontSize: 40,
+                                      marginTop: 1,
+                                    },
+                                  }}
+                                  checked={
+                                    biometricDeviceManagementEdit?.isVisitor ||
+                                    false
+                                  }
+                                  onChange={(e) =>
+                                    setBiometricDeviceManagementEdit({
+                                      ...biometricDeviceManagementEdit,
+                                      isVisitor: e.target.checked,
+                                    })
+                                  }
+                                  color="primary"
+                                />
+                              }
+                            />
+                          </FormControl> 
+                    </Grid>
+                    <Grid item md={2} xs={12} sm={6}>
+                      <FormControl fullWidth size="small">
+                        <FormControlLabel
+                          label="Elevator Device"
+                          control={
+                            <Checkbox
+                              sx={{
+                                "& .MuiSvgIcon-root": {
+                                  fontSize: 40,
+                                  marginTop: 1,
+                                },
+                              }}
+                              checked={
+                                biometricDeviceManagementEdit?.isElevator || false
+                              }
+                              onChange={(e) =>
+                                setBiometricDeviceManagementEdit({
+                                  ...biometricDeviceManagementEdit,
+                                  isElevator: e.target.checked,
+                                })
+                              }
+                              color="primary"
+                            />
+                          }
+                        />
+                      </FormControl>
+                    </Grid>
                       <Grid item md={2} xs={12} sm={6}>
                         <FormControl fullWidth size="small">
                           <FormControlLabel
@@ -6164,6 +6272,12 @@ if(!(
               </Grid>
               <Grid item md={4} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
+                  <Typography variant="h6">Elevator Device</Typography>
+                  <Typography>{sourceEdit?.isElevator?.toString()}</Typography>
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <FormControl fullWidth size="small">
                   <Typography variant="h6">Device Common Name</Typography>
                   <Typography>{sourceEdit?.biometriccommonname}</Typography>
                 </FormControl>
@@ -7024,8 +7138,15 @@ if(!(
       </Dialog>
       {/* ALERT DIALOG */}
       <Box>
-        <Dialog open={isErrorOpenpop} onClose={handleCloseerrpop} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
+        <Dialog
+          open={isErrorOpenpop}
+          onClose={handleCloseerrpop}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
             <Typography variant="h6">{showAlertpop}</Typography>
           </DialogContent>
           <DialogActions>
@@ -7041,15 +7162,15 @@ if(!(
             </Button>
             <Button
               style={{
-                backgroundColor: '#f4f4f4',
-                color: '#444',
-                boxShadow: 'none',
-                borderRadius: '3px',
-                padding: '7px 13px',
-                border: '1px solid #0000006b',
-                '&:hover': {
-                  '& .css-bluauu-MuiButtonBase-root-MuiButton-root': {
-                    backgroundColor: '#f4f4f4',
+                backgroundColor: "#f4f4f4",
+                color: "#444",
+                boxShadow: "none",
+                borderRadius: "3px",
+                padding: "7px 13px",
+                border: "1px solid #0000006b",
+                "&:hover": {
+                  "& .css-bluauu-MuiButtonBase-root-MuiButton-root": {
+                    backgroundColor: "#f4f4f4",
                   },
                 },
               }}

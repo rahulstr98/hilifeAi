@@ -32,6 +32,10 @@ const BiometricdevicemanagementSchema = new Schema({
         type: Boolean,
         default: false
     },
+    isElevator: {
+        type: Boolean,
+        default: false
+    },
     branch: {
         type: String,
         required: false,

@@ -5610,4 +5610,16 @@ export const SERVICE = {
       BIOMETRIC_DEVICE_MANAGEMENT_OVERALL_EDIT: `${BASE_URL}/api/biometricdevicemanagementoveralledit`,
       OVERALL_EDIT_UPDATE_BIOMETRIC_DEVICE_MANAGEMENT: `${BASE_URL}/api/overalleditupdatebiometricdevicemanagement`,
 
+
+  LIFTAUTHORITYACCESSMANAGEMENT_CREATE: `${BASE_URL}/api/liftauthorityaccessmanagement/new`,
+  LIFTAUTHORITYACCESSMANAGEMENT_SINGLE: `${BASE_URL}/api/liftauthorityaccessmanagement`,
+  LIFTAUTHORITYACCESSMANAGEMENT_ALL: `${BASE_URL}/api/allliftauthorityaccessmanagements`,
+
+  CREATE_ASSIGN_ELEVATOR_PORT: `${BASE_URL}/api/assignelevatorport/new`,
+  ALL_ASSIGN_ELEVATOR_PORT: `${BASE_URL}/api/assignelevatorports`,
+  SINGLE_ASSIGN_ELEVATOR_PORT: `${BASE_URL}/api/assignelevatorport`,
+  ASSIGN_ELEVATOR_PORT_LIST: `${BASE_URL}/api/assignelevatorportlist`,
+  OVERALL_BULK_ASSIGN_ELEVATOR_PORT_DELETE: `${BASE_URL}/api/overallbulkassignelevatorportdelete`,
+  OVERALL_ASSIGN_ELEVATOR_PORT_DELETE: `${BASE_URL}/api/singleassignelevatorportdelete`,
+  FLOOR_WISE_USER_ACCESS_BIOMETRIC_DEVICE: `${BASE_URL_TTS}/api/floorwiseuseraccessbiometricdevice`,
 };

@@ -589,6 +589,73 @@ exports.getUserListForAllVisitors = async (url) => {
     };
   }
 };
+exports.getUserListByName = async (url, username) => {
+  try {
+    const token = await performLogin(url);
+
+    if (!token) {
+      console.error("Token not received");
+      return "";
+    }
+
+    const devicename = await axios.get(`${url}/api/GetDeviceSN`);
+    const deviceID = devicename?.data?.result
+      ? devicename?.data?.content
+      : "";
+
+    const pageSize = 100;
+    let pageIndex = 1;
+    let totalPages = 1;
+    let foundUserID = "";
+
+    do {
+      const command = {
+        PageIndex: pageIndex,
+        PageSize: pageSize,
+        Name: username,
+      };
+
+      const response = await axios.post(`${url}/api/People/Search`, command, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = response?.data;
+
+      if (result?.result === true) {
+        const dataList = result?.content?.DataList || [];
+        const totalCount = result?.content?.TotalCount || 0;
+
+        if (pageIndex === 1) {
+          totalPages = Math.ceil(totalCount / pageSize);
+        }
+
+        // 🔴 Find UserID immediately
+        const matchedUser = dataList.find(
+          (item) => item?.Name === username
+        );
+
+        if (matchedUser?.UserID) {
+          foundUserID = matchedUser.UserID;
+          break; // stop pagination once found
+        }
+
+        pageIndex++;
+      } else {
+        break;
+      }
+    } while (pageIndex <= totalPages);
+
+    // ✅ Final return as requested
+    return foundUserID || "";
+  } catch (err) {
+    console.error("Error in getUserListByName:", err);
+    return "";
+  }
+};
+
 
 // Helper to format Unix timestamp (seconds) to dd-MM-yyyy HH:mm:ss
 function formatUnixToDateTime(timestamp) {

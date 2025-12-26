@@ -2075,6 +2075,15 @@ userSchema.index({
   companyname: 1,
 })
 userSchema.index({
+  company: 1,
+  branch: 1,
+  unit: 1,
+  team: 1,
+  companyname: 1,
+  username: 1
+});
+
+userSchema.index({
   enquirystatus: 1,
   companyname: 1,
   resonablestatus: 1,

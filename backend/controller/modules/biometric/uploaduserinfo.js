@@ -2,11 +2,16 @@ const Biouploaduserinfo = require("../../../model/modules/biometric/uploaduserin
 const ErrorHandler = require("../../../utils/errorhandler");
 const catchAsyncErrors = require("../../../middleware/catchAsyncError");
 const BiometricDeviceManagement = require("../../../model/modules/BiometricDeviceManagementModel");
-const { getUserListForAllUsers } = require("../../../route/bowerBiometric");
+const {
+  getUserListForAllUsers,
+  getUserListByName,
+} = require("../../../route/bowerBiometric");
 const axios = require("axios");
 const cron = require("node-cron");
 const Visitors = require("../../../model/modules/interactors/visitor");
 const nodemailer = require("nodemailer");
+const User = require("../../../model/login/auth");
+const AssignElevatorPort = require("../../../model/modules/biometric/elevator/AssignElevatorPortModel");
 const moment = require("moment");
 const {
   sendCommandToBoweeDevice,
@@ -44,63 +49,62 @@ exports.getFilteredBiometricVisitorDetails = catchAsyncErrors(
         isEnabledC: { $in: resultApprovalStatus },
         status: "Visitor",
       });
-// console.log(resultApprovalStatus, "resultApprovalStatus")
+      // console.log(resultApprovalStatus, "resultApprovalStatus")
       visitorslist = await Biouploaduserinfo.aggregate([
-  // 1️⃣ Filter visitors based on array and status
-  {
-    $match: {
-      cloudIDC: { $in: devices },          // devices is an array
-      isEnabledC: { $in: resultApprovalStatus },
-      status: "Visitor"
-    }
-  },
+        // 1️⃣ Filter visitors based on array and status
+        {
+          $match: {
+            cloudIDC: { $in: devices }, // devices is an array
+            isEnabledC: { $in: resultApprovalStatus },
+            status: "Visitor",
+          },
+        },
 
-  // 2️⃣ Lookup device details based on cloudIDC <-> biometric serial number
-  {
-    $lookup: {
-      from: "biometricdevicemanagements",    // collection name in lowercase/plural form
-      localField: "cloudIDC",                // field in Biouploaduserinfo
-      foreignField: "biometricserialno", // field in BiometricDeviceManagement
-      as: "deviceInfo"
-    }
-  },
+        // 2️⃣ Lookup device details based on cloudIDC <-> biometric serial number
+        {
+          $lookup: {
+            from: "biometricdevicemanagements", // collection name in lowercase/plural form
+            localField: "cloudIDC", // field in Biouploaduserinfo
+            foreignField: "biometricserialno", // field in BiometricDeviceManagement
+            as: "deviceInfo",
+          },
+        },
 
-  // 3️⃣ Unwind device info
-  { $unwind: "$deviceInfo" },
+        // 3️⃣ Unwind device info
+        { $unwind: "$deviceInfo" },
 
-  // 4️⃣ Select required output
-  {
-    $project: {
-      _id: 1,
-      visitorid: 1,
-      visitorcontactnumber: 1,
-      visitoremail: 1,
-      visitorintime: 1,
-      visitorCreatedDate: 1,
-      companyname: 1,
-      isEnabledC: 1,
-      expirytime: 1,
-      startdate: 1,
-      privilegeC: 1,
-      status: 1,
-      isFaceEnrolledC: 1,
-      staffNameC: 1,
-      biometricUserIDC: 1,
-      cloudIDC: 1,
-      visitorpage: 1,
-      visitorpagedetails: 1,
-      // cloudIDC: 1,
+        // 4️⃣ Select required output
+        {
+          $project: {
+            _id: 1,
+            visitorid: 1,
+            visitorcontactnumber: 1,
+            visitoremail: 1,
+            visitorintime: 1,
+            visitorCreatedDate: 1,
+            companyname: 1,
+            isEnabledC: 1,
+            expirytime: 1,
+            startdate: 1,
+            privilegeC: 1,
+            status: 1,
+            isFaceEnrolledC: 1,
+            staffNameC: 1,
+            biometricUserIDC: 1,
+            cloudIDC: 1,
+            visitorpage: 1,
+            visitorpagedetails: 1,
+            // cloudIDC: 1,
 
-      // Pick required fields from device meta
-      company: "$deviceInfo.company",
-      branch: "$deviceInfo.branch",
-      unit: "$deviceInfo.unit",
-      floor: "$deviceInfo.floor",
-      area: "$deviceInfo.area",
-    }
-  }
-]);
-
+            // Pick required fields from device meta
+            company: "$deviceInfo.company",
+            branch: "$deviceInfo.branch",
+            unit: "$deviceInfo.unit",
+            floor: "$deviceInfo.floor",
+            area: "$deviceInfo.area",
+          },
+        },
+      ]);
 
       return res.status(200).json({
         visitorslist,
@@ -132,6 +136,180 @@ exports.getAllUserBioInfos = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Records not found!", 500));
   }
 });
+
+exports.addFloorWiseUserAccessInBiometricDevice = catchAsyncErrors(
+  async (req, res, next) => {
+    try {
+      const deviceDetails = req?.body?.user;
+      const oldEditData = deviceDetails?.oldEditData;
+console.log("hitted")
+      /* -------------------- PARALLEL DB FETCH -------------------- */
+      const [users, biometricDevices, elevatorPorts] = await Promise.all([
+        User.find(
+          {
+            company: { $in: deviceDetails?.company },
+            branch: { $in: deviceDetails?.branch },
+            unit: { $in: deviceDetails?.unit },
+            team: { $in: deviceDetails?.team },
+            companyname: { $in: deviceDetails?.employeename },
+          },
+          { _id: 0, username: 1 }
+        ),
+
+        BiometricDeviceManagement.find(
+          {
+            company: deviceDetails?.devicecompany,
+            branch: deviceDetails?.devicebranch,
+            floor: { $in: deviceDetails?.devicefloor },
+            isElevator: true,
+            model: "Bowee",
+          },
+          { _id: 0, biometricassignedip: 1 }
+        ),
+
+        AssignElevatorPort.find(
+          {
+            company: deviceDetails?.devicecompany,
+            branch: deviceDetails?.devicebranch,
+            floor: { $in: deviceDetails?.devicefloor },
+          },
+          { _id: 0, elevatorPort: 1 }
+        ),
+      ]);
+
+      console.log(users?.length ,biometricDevices?.length , elevatorPorts?.length)
+      if (users?.length && biometricDevices?.length && elevatorPorts?.length) {
+        const portString = elevatorPorts.map((p) => p.elevatorPort).join(",");
+
+        /* -------------------- COMMON BIOMETRIC PROCESSOR -------------------- */
+        const processBiometric = async (users, devices, port, actionFn) => {
+          const cache = new Map();
+
+          for (const user of users) {
+            for (const device of devices) {
+              const payload = {
+                username: user.username,
+                assignedip: `http://${device.biometricassignedip}`,
+                portnumber: port,
+              };
+
+              const cacheKey = `${payload.assignedip}|${payload.username}`;
+
+              let biometricUser;
+              if (cache.has(cacheKey)) {
+                biometricUser = cache.get(cacheKey);
+              } else {
+                biometricUser = await getUserListByName(
+                  payload.assignedip,
+                  payload.username
+                );
+                cache.set(cacheKey, biometricUser);
+              }
+
+              if (biometricUser) {
+                await actionFn(payload, biometricUser);
+              }
+            }
+          }
+        };
+
+        /* -------------------- ADD / UPDATE FLOORS -------------------- */
+        await processBiometric(
+          users,
+          biometricDevices,
+          portString,
+          EditBoweeFloorDetailsInBiometric
+        );
+
+        /* -------------------- DELETE FLOORS / USERS -------------------- */
+        if (deviceDetails?.deleteemployee?.length > 0) {
+          console.log(deviceDetails?.deleteemployee , "deviceDetails?.deleteemployee")
+          const deleteUsers = await User.find(
+            { companyname: { $in: deviceDetails.deleteemployee } },
+            { _id: 0, username: 1 }
+          );
+
+          let deleteDevices = biometricDevices;
+          let deletePorts = portString;
+          await processBiometric(
+            deleteUsers,
+            deleteDevices,
+            deletePorts,
+            DeleteBoweeFloorDetailsInBiometric
+          );
+        }
+
+        return res.status(200).json({
+          message: "Biometric floor access updated successfully",
+          summary: {
+            usersCount: users.length,
+            devicesCount: biometricDevices.length,
+            ports: portString,
+          },
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      return next(new ErrorHandler("Records not found!", 500));
+    }
+  }
+);
+
+const EditBoweeFloorDetailsInBiometric = async (biodetails, userid) => {
+  console.log(biodetails, userid ,"Hitted")
+  const userDetails = await getUserDetailsFromBoweeDevice(
+    userid,
+    biodetails.assignedip
+  );
+  const URL = `${biodetails?.assignedip}${userDetails?.Photo}`;
+
+  if (userDetails?.Photo) {
+    const base64String = await getBase64FromImageUrl(URL);
+    const PeopleJson = {
+      UserID: String(userid),
+      Name: biodetails?.username,
+      Photo: base64String,
+      Elevators: biodetails?.portnumber,
+    };
+    // console.log(PeopleJson , deviceURL)
+    const answer = await sendUserDetailsToDevice(
+      PeopleJson,
+      base64String,
+      biodetails.assignedip
+    );
+    return answer; // ✅ Return here
+  } else {
+    return { success: false, message: "Photo not found" }; // Handle missing photo
+  }
+};
+const DeleteBoweeFloorDetailsInBiometric = async (biodetails, userid) => {
+  console.log(biodetails, userid,"Hitted")
+  const userDetails = await getUserDetailsFromBoweeDevice(
+    userid,
+    biodetails.assignedip
+  );
+  const URL = `${biodetails?.assignedip}${userDetails?.Photo}`;
+
+  if (userDetails?.Photo) {
+    const base64String = await getBase64FromImageUrl(URL);
+    const PeopleJson = {
+      UserID: String(userid),
+      Name: biodetails?.username,
+      Photo: base64String,
+      Elevators: "",
+    };
+    // console.log(PeopleJson , deviceURL)
+    const answer = await sendUserDetailsToDevice(
+      PeopleJson,
+      base64String,
+      biodetails.assignedip
+    );
+    return answer; // ✅ Return here
+  } else {
+    return { success: false, message: "Photo not found" }; // Handle missing photo
+  }
+};
+
 exports.getAllUsersFromDeviceToDatabase = catchAsyncErrors(
   async (req, res, next) => {
     let { company, branch, unit, floor, area, biometricdevices } = req?.body;
@@ -326,7 +504,6 @@ exports.getBiometricVisitorDeletionDetails = catchAsyncErrors(
 
             const deviceURL = `http://${deviceIpAddress.biometricassignedip}`;
 
-
             await getCommandBoweeBiometricUserDisable(item, deviceURL);
           } catch (err) {
             console.log(
@@ -352,7 +529,7 @@ exports.getBiometricVisitorDeletionDetails = catchAsyncErrors(
 exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
   async (req, res, next) => {
     try {
-      const { ids} = req.body;
+      const { ids } = req.body;
 
       // console.log(ids, startdate, expirytime);
       const todayData = new Date().toISOString().slice(0, 10);
@@ -368,77 +545,78 @@ exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
         return next(new ErrorHandler("No visitor details found", 404));
       }
 
-    // Process each user (parallel)
-const visitorslist = await Promise.all(
-  userDetails.map(async (user) => {
-    console.log(user , "user")
-    if (todayData === user?.visitorCreatedDate) {
-      try {
-        // Get device assigned to visitor
-        const deviceInfo = await BiometricDeviceManagement.findOne({
-          biometricserialno: user.cloudIDC,
-        });
+      // Process each user (parallel)
+      const visitorslist = await Promise.all(
+        userDetails.map(async (user) => {
+          console.log(user, "user");
+          if (todayData === user?.visitorCreatedDate) {
+            try {
+              // Get device assigned to visitor
+              const deviceInfo = await BiometricDeviceManagement.findOne({
+                biometricserialno: user.cloudIDC,
+              });
 
-        const deviceURL = `http://${deviceInfo?.biometricassignedip}`;
+              const deviceURL = `http://${deviceInfo?.biometricassignedip}`;
 
-        console.log("User:", user.staffNameC);
-        console.log("Device URL:", deviceURL);
+              console.log("User:", user.staffNameC);
+              console.log("Device URL:", deviceURL);
 
-        // Run biometric edit command
-        const status = await getCommandBoweeBiometricUserEdit(
-          user,
-          user?.visitorCreatedDate,
-          user?.expirytime,
-          deviceURL
-        );
+              // Run biometric edit command
+              const status = await getCommandBoweeBiometricUserEdit(
+                user,
+                user?.visitorCreatedDate,
+                user?.expirytime,
+                deviceURL
+              );
 
-        return {
-          user: user.staffNameC,
-          deviceURL,
-          success: true,
-          status,
-        };
-      } catch (error) {
-        console.error("Device update failed for:", user.staffNameC, error);
+              return {
+                user: user.staffNameC,
+                deviceURL,
+                success: true,
+                status,
+              };
+            } catch (error) {
+              console.error(
+                "Device update failed for:",
+                user.staffNameC,
+                error
+              );
 
-        return {
-          user: user.staffNameC,
-          success: false,
-          error: error.message,
-        };
-      }
-    } else {
-      console.log("Hitted 295");
+              return {
+                user: user.staffNameC,
+                success: false,
+                error: error.message,
+              };
+            }
+          } else {
+            console.log("Hitted 295");
 
-      // perform update only for this user
-      await Biouploaduserinfo.updateOne(
-        { _id: user._id },
-        {
-          $set: {
-            startdate: user?.visitorCreatedDate,
-            expirytime: user?.expirytime,
-          },
-        }
+            // perform update only for this user
+            await Biouploaduserinfo.updateOne(
+              { _id: user._id },
+              {
+                $set: {
+                  startdate: user?.visitorCreatedDate,
+                  expirytime: user?.expirytime,
+                },
+              }
+            );
+
+            return {
+              user: user.staffNameC,
+              success: true,
+              message: "Startdate/expiry updated",
+            };
+          }
+        })
       );
 
-      return {
-        user: user.staffNameC,
+      return res.status(200).json({
         success: true,
-        message: "Startdate/expiry updated",
-      };
-    }
-  })
-);
-
-return res.status(200).json({
-  success: true,
-  visitorslist,
-});
-
+        visitorslist,
+      });
     } catch (err) {
-
-
-      console.log(err, "err")
+      console.log(err, "err");
       return next(new ErrorHandler("Records not found!", 500));
     }
   }
@@ -643,23 +821,33 @@ const getCommandBoweeBiometricUserEdit = async (
   return answer;
 };
 
-const getCommandBoweeBiometricUserDisable = async (biometricDeviceManagement, deviceURL) => {
-// console.log("Hitted")
-  const userDetails = await getUserDetailsFromBoweeDevice(biometricDeviceManagement?.biometricUserIDC, deviceURL);
+const getCommandBoweeBiometricUserDisable = async (
+  biometricDeviceManagement,
+  deviceURL
+) => {
+  // console.log("Hitted")
+  const userDetails = await getUserDetailsFromBoweeDevice(
+    biometricDeviceManagement?.biometricUserIDC,
+    deviceURL
+  );
   const URL = `${deviceURL}${userDetails?.Photo}`;
 
   if (userDetails?.Photo) {
     const base64String = await getBase64FromImageUrl(URL);
     const PeopleJson = {
-      "UserID": String(biometricDeviceManagement?.biometricUserIDC),
-      "Name": biometricDeviceManagement?.staffNameC,
-      "Job": "Staff",
-      "AccessType": 0,
-      "OpenTimes": 0 ,
-      "Photo": base64String
+      UserID: String(biometricDeviceManagement?.biometricUserIDC),
+      Name: biometricDeviceManagement?.staffNameC,
+      Job: "Staff",
+      AccessType: 0,
+      OpenTimes: 0,
+      Photo: base64String,
     };
-// console.log(PeopleJson , deviceURL)
-    const answer = await sendUserDetailsToDevice(PeopleJson, base64String , deviceURL);
+    // console.log(PeopleJson , deviceURL)
+    const answer = await sendUserDetailsToDevice(
+      PeopleJson,
+      base64String,
+      deviceURL
+    );
     return answer; // ✅ Return here
   } else {
     return { success: false, message: "Photo not found" }; // Handle missing photo

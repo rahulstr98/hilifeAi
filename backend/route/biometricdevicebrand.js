@@ -149,6 +149,36 @@ biometricdevicebrandRoute.route("/biometricIndividualduplicateUserCheck").post(g
 biometricdevicebrandRoute.route("/biometriceditusercheck").post(getEditBiometricUserCheck);
 
 
+
+
+const { getAllLiftAuthorityAccessManagement, getSingleLiftAuthorityAccessManagement, deleteLiftAuthorityAccessManagement, addLiftAuthorityAccessManagement, updateLiftAuthorityAccessManagement } = require('../controller/modules/biometric/elevator/liftauthorityaccessmanagement');
+biometricdevicebrandRoute.route('/allliftauthorityaccessmanagements').get(getAllLiftAuthorityAccessManagement);
+biometricdevicebrandRoute.route('/liftauthorityaccessmanagement/new').post(addLiftAuthorityAccessManagement);
+biometricdevicebrandRoute.route('/liftauthorityaccessmanagement/:id').delete(deleteLiftAuthorityAccessManagement).get(getSingleLiftAuthorityAccessManagement).put(updateLiftAuthorityAccessManagement);
+
+const {
+  addAssignElevatorPort,
+  deleteAssignElevatorPort,
+  updateAssignElevatorPort,
+  getAllAssignElevatorPort,
+  getSingleAssignElevatorPort,
+  assignElevatorPortList,
+  getOverallBulkAssignElevatorPortDelete,
+  getSingleBulkAssignElevatorPortDelete,
+} = require('../controller/modules/biometric/elevator/AssignElevatorPortController.js');
+
+biometricdevicebrandRoute.route('/assignelevatorports').get(getAllAssignElevatorPort);
+biometricdevicebrandRoute.route('/assignelevatorport/new').post(addAssignElevatorPort);
+biometricdevicebrandRoute.route('/assignelevatorportlist').post(assignElevatorPortList);
+biometricdevicebrandRoute.route('/overallbulkassignelevatorportdelete').post(getOverallBulkAssignElevatorPortDelete);
+biometricdevicebrandRoute.route('/singleassignelevatorportdelete').post(getSingleBulkAssignElevatorPortDelete);
+biometricdevicebrandRoute.route('/assignelevatorport/:id').get(getSingleAssignElevatorPort).put(updateAssignElevatorPort).delete(deleteAssignElevatorPort);
+
+
+
+
+
+
 //connect taskschedule form controller
 // const { getAllBioMetricBrand, getSingleBioMetricBrand, deleteBioMetricBrand, updateBioMetricBrand, addBioMetricBrand } = require('../controller/modules/biometric/biometricBrand');
 // biometricdevicebrandRoute.route('/allbiometricbrandmodel').get(getAllBioMetricBrand);

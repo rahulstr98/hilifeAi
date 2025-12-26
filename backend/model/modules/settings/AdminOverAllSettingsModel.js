@@ -1,6 +1,10 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const adminOverAllSettingsSchema = new Schema({
+  faceverificationswitch: {
+    type: Boolean,
+    required: false,
+  },
   overalltwofaswitch: {
     type: Boolean,
     required: false,
@@ -13,6 +17,10 @@ const adminOverAllSettingsSchema = new Schema({
     type: Boolean,
     required: false,
   },
+  candidatedocumentemailtemplate: {
+    type: String,
+    required: false,
+  },
   notificationswitch: {
     type: Boolean,
     required: false,
@@ -21,9 +29,22 @@ const adminOverAllSettingsSchema = new Schema({
     type: String,
     required: false,
   },
+  notificationdocument: {
+    type: String,
+    required: false,
+  },
+
+  notificationControl: {
+    type: Boolean,
+    required: false,
+  },
+  notificationfiletype: {
+    type: String,
+    required: false,
+  },
   notificationsound: {
     type: String,
-    required: false
+    required: false,
   },
   companykeyproducts: {
     type: Boolean,
@@ -42,6 +63,26 @@ const adminOverAllSettingsSchema = new Schema({
     type: String,
     required: false,
   },
+  todoconnections: [
+    {
+      hiconnectapikey: {
+        type: String,
+        required: false,
+      },
+      hiconnecturl: {
+        type: String,
+        required: false,
+      },
+      statusdetail: {
+        type: String,
+        required: false,
+      },
+      apikeystatus: {
+        type: Boolean,
+        required: false,
+      },
+    },
+  ],
   jobapplydays: {
     type: Number,
     required: false,
@@ -78,11 +119,38 @@ const adminOverAllSettingsSchema = new Schema({
     type: Boolean,
     required: false,
   },
+
+  loginbyworkstation: {
+    primary: {
+      type: Boolean,
+      required: false,
+    },
+    secondary: {
+      type: Boolean,
+      required: false,
+    },
+    wfh: {
+      type: Boolean,
+      required: false,
+    },
+    unauthorized: {
+      type: Boolean,
+      required: false,
+    },
+  },
   chatboxlink: {
     type: String,
     required: false,
   },
   companyname: {
+    type: String,
+    required: false,
+  },
+  companyshortname: {
+    type: String,
+    required: false,
+  },
+  companyfullname: {
     type: String,
     required: false,
   },
@@ -224,64 +292,64 @@ const adminOverAllSettingsSchema = new Schema({
   },
   opacitytextwatermark: {
     type: String,
-    default: "Semi-transparent (20% visible)",
+    default: 'Semi-transparent (20% visible)',
   },
   colorsandfonts: {
     navbgcolour: {
       type: String,
-      default: "#1976d2",
+      default: '#1976d2',
     },
     navfontcolour: {
       type: String,
-      default: "#ffffff",
+      default: '#ffffff',
     },
     companylogobfcolour: {
       type: String,
-      default: "#1976d2",
+      default: '#1976d2',
     },
     submitbgcolour: {
       type: String,
-      default: "#1976d2",
+      default: '#1976d2',
     },
     submitfontcolour: {
       type: String,
-      default: "#ffffff",
+      default: '#ffffff',
     },
     clearcancelbgcolour: {
       type: String,
-      default: "#f4f4f4",
+      default: '#f4f4f4',
     },
     clearcancelfontcolour: {
       type: String,
-      default: "#444",
+      default: '#444',
     },
     bulkdeletebgcolour: {
       type: String,
-      default: "#d32f2f",
+      default: '#d32f2f',
     },
     bulkdeletefontcolour: {
       type: String,
-      default: "#ffffff",
+      default: '#ffffff',
     },
     editiconcolour: {
       type: String,
-      default: "#1976d2",
+      default: '#1976d2',
     },
     deleteiconcolour: {
       type: String,
-      default: "#1976d2",
+      default: '#1976d2',
     },
     viewiconcolour: {
       type: String,
-      default: "#1976d2",
+      default: '#1976d2',
     },
     infoiconcolour: {
       type: String,
-      default: "#1976d2",
+      default: '#1976d2',
     },
     pageheadingfontsize: {
       type: String,
-      default: "medium",
+      default: 'medium',
     },
   },
 
@@ -299,6 +367,61 @@ const adminOverAllSettingsSchema = new Schema({
     required: false,
   },
 
+  minimumlength: {
+    type: String,
+    required: false,
+  },
+  maximumlengh: {
+    type: String,
+    required: false,
+  },
+  uppercase: {
+    type: String,
+    required: false,
+  },
+  lowercase: {
+    type: String,
+    required: false,
+  },
+  specialcharacter: {
+    type: String,
+    required: false,
+  },
+  imageformat: {
+    type: [String],
+    required: false,
+  },
+  dimensionswidth: {
+    type: String,
+    required: false,
+  },
+  height: {
+    type: String,
+    required: false,
+  },
+  filesize: {
+    type: String,
+    required: false,
+  },
+  backgroundcolour: {
+    type: String,
+    default: '#ffffff',
+  },
+  elevatorswitch: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  selectedfloors: {
+    type: [Number],
+    required: false,
+    default: [],
+  },
+  selectall: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 
   // addedby: [
   //     {
@@ -325,7 +448,4 @@ const adminOverAllSettingsSchema = new Schema({
 
   //     }],
 });
-module.exports = mongoose.model(
-  "adminOverAllSettings",
-  adminOverAllSettingsSchema
-);
+module.exports = mongoose.model('adminOverAllSettings', adminOverAllSettingsSchema);
