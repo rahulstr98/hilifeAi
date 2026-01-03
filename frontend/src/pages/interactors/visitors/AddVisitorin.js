@@ -1989,6 +1989,200 @@ function AddVisitorin() {
     return valueFloorLocationCat?.length ? valueFloorLocationCat.map(({ label }) => label)?.join(', ') : 'Please Select Floor';
   };
 
+
+
+  //company RFID multiselect
+  const [selectedOptionsCompanyRfid, setSelectedOptionsCompanyRfid] = useState(
+    []
+  );
+  let [valueCompanyRfidCat, setValueCompanyRfidCat] = useState([]);
+  let [valueBranchRfidCat, setValueBranchRfidCat] = useState([]);
+  let [valueFloorRfidCat, setValueFloorRfidCat] = useState([]);
+  const handleCompanyRfidChange = (options) => {
+    setValueCompanyRfidCat(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
+    setSelectedOptionsCompanyRfid(options);
+    setValueBranchRfidCat([]);
+    setSelectedOptionsBranchRfid([]);
+    setValueUnitRfidCat([]);
+    setSelectedOptionsUnitRfid([]);
+    setValueFloorRfidCat([]);
+    setSelectedOptionsFloorRfid([]);
+    setBiometricDeviceOptions([]);
+    setVendor({
+      ...vendor,
+      rfidarea: "Please Select Area",
+      rfidbiodevice: "Please Select Biometric Device",
+      rfidnumber: "Please Select RFID Number",
+    });
+    setBiometricRfidOptions([]);
+  };
+
+  const customValueRendererCompanyRfid = (
+    valueCompanyRfidCat,
+    _categoryname
+  ) => {
+    return valueCompanyRfidCat?.length
+      ? valueCompanyRfidCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Company";
+  };
+
+  //branch RFID multiselect
+  const [selectedOptionsBranchRfid, setSelectedOptionsBranchRfid] = useState(
+    []
+  );
+  const handleBranchRfidChange = (options) => {
+    setValueBranchRfidCat(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
+    setSelectedOptionsBranchRfid(options);
+    setValueUnitRfidCat([]);
+    setSelectedOptionsUnitRfid([]);
+    setValueFloorRfidCat([]);
+    setSelectedOptionsFloorRfid([]);
+    setBiometricDeviceOptions([]);
+    setBiometricRfidOptions([]);
+    setVendor({
+      ...vendor,
+      rfidarea: "Please Select Area",
+      rfidbiodevice: "Please Select Biometric Device",
+      rfidnumber: "Please Select RFID Number",
+    });
+  };
+
+  const customValueRendererBranchRfid = (valueBranchRfidCat, _categoryname) => {
+    return valueBranchRfidCat?.length
+      ? valueBranchRfidCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Branch";
+  };
+
+  //unit RFID multiselect
+  const [selectedOptionsUnitRfid, setSelectedOptionsUnitRfid] = useState([]);
+  let [valueUnitRfidCat, setValueUnitRfidCat] = useState([]);
+
+  const handleUnitRfidChange = (options) => {
+    setValueUnitRfidCat(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
+    setSelectedOptionsUnitRfid(options);
+    setValueFloorRfidCat([]);
+    setSelectedOptionsFloorRfid([]);
+    setBiometricDeviceOptions([]);
+    setBiometricRfidOptions([]);
+    setVendor({
+      ...vendor,
+      rfidarea: "Please Select Area",
+      rfidbiodevice: "Please Select Biometric Device",
+      rfidnumber: "Please Select RFID Number",
+    });
+  };
+
+  const customValueRendererUnitRfid = (valueUnitRfidCat, _categoryname) => {
+    return valueUnitRfidCat?.length
+      ? valueUnitRfidCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Unit";
+  };
+
+  //floor RFID multiselect
+  const [selectedOptionsFloorRfid, setSelectedOptionsFloorRfid] = useState([]);
+  const handleFloorRfidChange = (options) => {
+    setValueFloorRfidCat(
+      options.map((a, index) => {
+        return a.value;
+      })
+    );
+    setSelectedOptionsFloorRfid(options);
+    setBiometricDeviceOptions([]);
+    setBiometricRfidOptions([]);
+    setVendor({
+      ...vendor,
+      rfidarea: "Please Select Area",
+      rfidbiodevice: "Please Select Biometric Device",
+      rfidnumber: "Please Select RFID Number",
+    });
+  };
+
+  const customValueRendererFloorRfid = (valueFloorRfidCat, _categoryname) => {
+    return valueFloorRfidCat?.length
+      ? valueFloorRfidCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Floor";
+  };
+
+  const [biometricDeviceOptions, setBiometricDeviceOptions] = useState([]);
+
+  const fetchDeviceNamesBasedOnArea = async (area) => {
+    setPageName(!pageName);
+    try {
+      const response = await axios.post(
+        SERVICE.ALL_BIOMETRICDEVICES_BASED_ON_AREA_RFID_DETAILS,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          company: valueCompanyRfidCat,
+          branch: valueBranchRfidCat,
+          unit: valueUnitRfidCat,
+          floor: valueFloorRfidCat,
+          area: area,
+        }
+      );
+      console.log(response?.data, "response?.data");
+      const answer =
+        response?.data?.biodevices?.length > 0
+          ? response?.data?.biodevices?.map((data) => ({
+              label: data?.biometriccommonname,
+              value: data?.biometriccommonname,
+              rfidData: data?.rfidData,
+            }))
+          : [];
+      setBiometricDeviceOptions(answer);
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
+  };
+
+  const [biometricRfidOptions, setBiometricRfidOptions] = useState([]);
+  const fetchRfidNumberBasedOnDevice = async (device) => {
+    setPageName(!pageName);
+    try {
+      const rfidNumbers = biometricDeviceOptions?.find(
+        (data) => device === data?.value
+      );
+      const rfidOptions = rfidNumbers ? rfidNumbers?.rfidData : [];
+
+      const answer =
+        rfidOptions?.length > 0
+          ? rfidOptions?.map((data) => ({
+              label: data?.rfidnumber,
+              value: data?.rfidnumber,
+              files: data?.files,
+            }))
+          : [];
+      setBiometricRfidOptions(answer);
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert
+      );
+    }
+  };
+
+
+
   let name = 'create';
   let nameedit = 'edit';
   let allUploadedFiles = [];
@@ -2994,7 +3188,6 @@ function AddVisitorin() {
       setUploadBills([{ file: filteredFiles[0] }]);
     }
   };
-
   const handleAutoSelect = async () => {
     setPageName(!pageName);
     try {
@@ -6523,6 +6716,240 @@ function AddVisitorin() {
                     <Grid item md={6} xs={12} sm={12}></Grid>
                   </>
                 )}
+
+                             <Grid item md={3} xs={12} sm={12}>
+                                <FormGroup>
+                                  <FormControlLabel
+                                    control={<Checkbox checked={vendor.rfiddetails} />}
+                                    onChange={(e) =>
+                                      setVendor({
+                                        ...vendor,
+                                        rfiddetails: !vendor.rfiddetails,
+                                        rfidarea: "Please Select Area",
+                                        rfidbiodevice: "Please Select Biometric Device",
+                                        rfidnumber: "Please Select RFID Number",
+                                      })
+                                    }
+                                    label="RFID Details"
+                                  />
+                                </FormGroup>
+                              </Grid>
+                              <Grid item md={9} xs={12} sm={12}></Grid>
+                              {vendor.rfiddetails && (
+                                <>
+                                  <Grid item md={4} xs={12} sm={6}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        Company <b style={{ color: "red" }}>*</b>
+                                      </Typography>
+                                      <MultiSelect
+                                        options={accessbranch
+                                          ?.map((data) => ({
+                                            label: data.company,
+                                            value: data.company,
+                                          }))
+                                          ?.filter((item, index, self) => {
+                                            return (
+                                              self.findIndex(
+                                                (i) =>
+                                                  i.label === item.label &&
+                                                  i.value === item.value
+                                              ) === index
+                                            );
+                                          })}
+                                        value={selectedOptionsCompanyRfid}
+                                        onChange={(e) => {
+                                          handleCompanyRfidChange(e);
+                                        }}
+                                        valueRenderer={customValueRendererCompanyRfid}
+                                        labelledBy="Please Select Company"
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={4} xs={12} sm={6}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        Branch<b style={{ color: "red" }}>*</b>
+                                      </Typography>
+                                      <MultiSelect
+                                        options={accessbranch
+                                          ?.filter((comp) =>
+                                            valueCompanyRfidCat?.includes(comp.company)
+                                          )
+                                          ?.map((data) => ({
+                                            label: data.branch,
+                                            value: data.branch,
+                                          }))
+                                          ?.filter((item, index, self) => {
+                                            return (
+                                              self.findIndex(
+                                                (i) =>
+                                                  i.label === item.label &&
+                                                  i.value === item.value
+                                              ) === index
+                                            );
+                                          })}
+                                        value={selectedOptionsBranchRfid}
+                                        onChange={(e) => {
+                                          handleBranchRfidChange(e);
+                                        }}
+                                        valueRenderer={customValueRendererBranchRfid}
+                                        labelledBy="Please Select Branch"
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={4} xs={12} sm={6}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        Unit<b style={{ color: "red" }}>*</b>
+                                      </Typography>
+                                      <MultiSelect
+                                        options={accessbranch
+                                          ?.filter(
+                                            (comp) =>
+                                              valueCompanyRfidCat?.includes(comp.company) &&
+                                              valueBranchRfidCat?.includes(comp.branch)
+                                          )
+                                          ?.map((data) => ({
+                                            label: data.unit,
+                                            value: data.unit,
+                                          }))
+                                          ?.filter((item, index, self) => {
+                                            return (
+                                              self.findIndex(
+                                                (i) =>
+                                                  i.label === item.label &&
+                                                  i.value === item.value
+                                              ) === index
+                                            );
+                                          })}
+                                        value={selectedOptionsUnitRfid}
+                                        onChange={(e) => {
+                                          handleUnitRfidChange(e);
+                                        }}
+                                        valueRenderer={customValueRendererUnitRfid}
+                                        labelledBy="Please Select Unit"
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={4} xs={12} sm={6}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        Floor<b style={{ color: "red" }}>*</b>
+                                      </Typography>
+                                      <MultiSelect
+                                        options={allfloor
+                                          ?.filter((u) =>
+                                            valueBranchRfidCat?.includes(u.branch)
+                                          )
+                                          .map((u) => ({
+                                            ...u,
+                                            label: u.name,
+                                            value: u.name,
+                                          }))}
+                                        value={selectedOptionsFloorRfid}
+                                        onChange={(e) => {
+                                          handleFloorRfidChange(e);
+                                        }}
+                                        valueRenderer={customValueRendererFloorRfid}
+                                        labelledBy="Please Select Floor"
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={4} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        Area<b style={{ color: "red" }}>*</b>
+                                      </Typography>
+                                      <Selects
+                                        maxMenuHeight={300}
+                                        options={[
+                                          ...new Set(
+                                            filteredAreas
+                                              ?.filter(
+                                                (item) =>
+                                                  valueFloorRfidCat?.includes(item.floor) &&
+                                                  valueBranchRfidCat?.includes(item.branch) &&
+                                                  item?.locationareastatus
+                                                // item?.boardingareastatus
+                                              )
+                                              .flatMap((item) => item.area)
+                                          ),
+                                        ].map((location) => ({
+                                          label: location,
+                                          value: location,
+                                        }))}
+                                        placeholder="Please Select Area"
+                                        value={{
+                                          label: vendor.rfidarea,
+                                          value: vendor.rfidarea,
+                                        }}
+                                        onChange={(e) => {
+                                          setVendor({
+                                            ...vendor,
+                                            rfidarea: e.value,
+                                            rfidbiodevice: "Please Select Biometric Device",
+                                            rfidnumber: "Please Select RFID Number",
+                                          });
+                                          fetchDeviceNamesBasedOnArea(e.value);
+                                          setBiometricRfidOptions([]);
+                                        }}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={4} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        Biometric Device<b style={{ color: "red" }}>*</b>
+                                      </Typography>
+                                      <Selects
+                                        maxMenuHeight={300}
+                                        options={biometricDeviceOptions}
+                                        placeholder="Please Select Biometric Device"
+                                        value={{
+                                          label: vendor.rfidbiodevice,
+                                          value: vendor.rfidbiodevice,
+                                        }}
+                                        onChange={(e) => {
+                                          console.log(e, "RFID Biometric Devices");
+                                          setVendor({
+                                            ...vendor,
+                                            rfidbiodevice: e.value,
+                                            rfidnumber: "Please Select RFID Number",
+                                          });
+                
+                                          fetchRfidNumberBasedOnDevice(e.value);
+                                        }}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={4} xs={12} sm={12}>
+                                    <FormControl fullWidth size="small">
+                                      <Typography>
+                                        RFID Number<b style={{ color: "red" }}>*</b>
+                                      </Typography>
+                                      <Selects
+                                        maxMenuHeight={300}
+                                        options={biometricRfidOptions}
+                                        placeholder="Please Select RFID Number"
+                                        value={{
+                                          label: vendor.rfidnumber,
+                                          value: vendor.rfidnumber,
+                                        }}
+                                        onChange={(e) => {
+                                          console.log(e, "RFID Biometric Devices");
+                                          setVendor({
+                                            ...vendor,
+                                            rfidnumber: e.value,
+                                          });
+                                        }}
+                                      />
+                                    </FormControl>
+                                  </Grid>
+                                  <Grid item md={8} xs={12} sm={12}></Grid>
+                                </>
+                              )}
+                
                 <Grid item md={3} xs={12} sm={12}>
                   <FormGroup>
                     <FormControlLabel

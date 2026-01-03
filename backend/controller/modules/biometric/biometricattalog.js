@@ -855,85 +855,138 @@ exports.getUsersAttendanceReportsAaaJewellers = catchAsyncErrors(
   }
 );
 
-// function addShiftStatus(data) {
-//   // Step 1: Build shiftStatus per user from Main Shift
-//   const userShiftStatusMap = {};
 
-//   data.forEach((item) => {
-//     if (item.shiftMode === "Main Shift") {
-//       const shift = item.shift || "";
-
-//       // Example: "09:00AMto07:00PM"
-//       const isDayShift = /AMto.*PM$/i.test(shift);
-
-//       userShiftStatusMap[item.rowusername] = isDayShift
-//         ? "Day Shift"
-//         : "Night Shift";
-//     }
-//   });
-
-//   // Step 2: Attach shiftStatus to all records (Main + Second Shift)
-//   return data.map((item) => ({
-//     ...item,
-//     shiftStatus: userShiftStatusMap[item.rowusername] || "",
-//   }));
-// }
 
 function addShiftStatus(data) {
+  const groupedByDate = {};
   const userShiftStatusMap = {};
-  const userHoursDiffMap = {};
+  const groupedByUser = {};
 
-  // Step 1: Group by username
-  const grouped = {};
+  // 1️⃣ Group data and detect shiftStatus
+  data.forEach(item => {
+    // ⚠️ Skip Week Off rows entirely
+    if (item.shift === "Week Off") return;
 
-  data.forEach((item) => {
-    if (!grouped[item.rowusername]) {
-      grouped[item.rowusername] = [];
+    const dateKey = `${item.rowusername}_${item.shiftdate.date}`;
+    if (!groupedByDate[dateKey]) groupedByDate[dateKey] = [];
+    groupedByDate[dateKey].push(item);
+
+    if (!groupedByUser[item.rowusername]) {
+      groupedByUser[item.rowusername] = [];
     }
-    grouped[item.rowusername].push(item);
+    groupedByUser[item.rowusername].push(item);
+
+    // Detect shiftStatus from Main Shift
+    if (!userShiftStatusMap[item.rowusername] && item.shiftMode === "Main Shift") {
+      const shift = item.shift || "";
+      const isDayShift = /AMto.*PM$/i.test(shift);
+      userShiftStatusMap[item.rowusername] = isDayShift ? "Day Shift" : "Night Shift";
+    }
   });
 
-  // Step 2: Calculate shiftStatus & hoursDifference per user
-  Object.entries(grouped).forEach(([username, shifts]) => {
-    // ----- SHIFT STATUS (from Main Shift)
-    const mainShift = shifts.find((s) => s.shiftMode === "Main Shift");
-    if (mainShift) {
-      const shift = mainShift.shift || "";
-      const isDayShift = /AMto.*PM$/i.test(shift);
+  // 2️⃣ Sort each user's records by start time
+  Object.values(groupedByUser).forEach(userShifts => {
+    userShifts.sort(
+      (a, b) => new Date(a.shiftdate.orgStartTime) - new Date(b.shiftdate.orgStartTime)
+    );
+  });
 
-      userShiftStatusMap[username] = isDayShift ? "Day Shift" : "Night Shift";
+  // 3️⃣ Final mapping
+  return data.map(item => {
+    // ⚠️ Skip all calculations for Week Off
+    if (item.shift === "Week Off") {
+      return {
+        ...item,
+        shiftStatus: "",
+        hoursDifference: 0,
+        nightShiftDifference: 0,
+        nightShiftGapHours: 0
+      };
     }
 
-    // ----- HOURS DIFFERENCE (only if double shift)
-    if (shifts.length > 1) {
-      // Sort shifts by orgStartTime
+    const dateKey = `${item.rowusername}_${item.shiftdate.date}`;
+    const shifts = groupedByDate[dateKey] || [];
+    const userShifts = groupedByUser[item.rowusername] || [];
+
+    let hoursDifference = 0;
+    let nightShiftDifference = 0;
+    let nightShiftGapHours = 0;
+
+    // 🔹 SAME-DATE double shift calculation
+    if (shifts.length === 2) {
       shifts.sort(
         (a, b) =>
-          new Date(a.shiftdate?.orgStartTime) -
-          new Date(b.shiftdate?.orgStartTime)
+          new Date(a.shiftdate.orgStartTime) - new Date(b.shiftdate.orgStartTime)
       );
 
-      const firstEnd = new Date(shifts[0]?.shiftdate?.orgEndTime);
-      const secondStart = new Date(shifts[1]?.shiftdate?.orgStartTime);
+      const firstEnd = new Date(shifts[0].shiftdate.orgEndTime);
+      const secondStart = new Date(shifts[1].shiftdate.orgStartTime);
+console.log(shifts ,firstEnd?.toString() , secondStart?.toString())
       let diffMs = secondStart - firstEnd;
+      if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
 
-      // Handle midnight crossover
-      if (diffMs < 0) {
-        diffMs += 24 * 60 * 60 * 1000;
-      }
-
-      userHoursDiffMap[username] = +(diffMs / (1000 * 60 * 60)).toFixed(2);
-    } else {
-      userHoursDiffMap[username] = 0;
+      hoursDifference = +(diffMs / (1000 * 60 * 60)).toFixed(2);
     }
-  });
 
-  // Step 3: Attach values to all records
-  return data.map((item) => ({
-    ...item,
-    shiftStatus: userShiftStatusMap[item.rowusername] || "",
-    hoursDifference: userHoursDiffMap[item.rowusername] / 2 || 0,
-  }));
+    // 🌙 EXISTING NIGHT SHIFT cross-date calculation
+    if (userShiftStatusMap[item.rowusername] === "Night Shift") {
+      const index = userShifts.findIndex(u => u.id === item.id);
+
+      if (index > 0) {
+        const prevShift = userShifts[index - 1];
+
+        const prevOutTime = new Date(prevShift.shiftdate.orgEndTime);
+        const presentInTime = new Date(item.shiftdate.orgStartTime);
+
+        if (presentInTime < prevOutTime) {
+          let diffMs = prevOutTime - presentInTime;
+          nightShiftDifference = +(diffMs / (1000 * 60 * 60)).toFixed(2);
+        }
+      }
+    }
+
+    // 🌙 NEW NIGHT SHIFT USER CALCULATION
+    if (
+      userShiftStatusMap[item.rowusername] === "Night Shift" &&
+      item.shiftMode === "Second Shift"
+    ) {
+      const index = userShifts.findIndex(u => u.id === item.id);
+
+      if (index > 0) {
+        const prevShift = userShifts[index - 1];
+
+        if (prevShift.shiftMode === "Main Shift") {
+          const secondShiftStart = new Date(item.shiftdate.orgStartTime);
+          const prevMainShiftEnd = new Date(prevShift.shiftdate.orgEndTime);
+
+          const diffMs = secondShiftStart - prevMainShiftEnd;
+
+          if (diffMs > 0) {
+            nightShiftGapHours = +(diffMs / (1000 * 60 * 60)).toFixed(2);
+
+            // 🔹 HALF GAP ADJUSTMENT
+            const halfGapMs = diffMs / 2;
+
+            prevShift.shiftdate.endTime = new Date(
+              prevMainShiftEnd.getTime() + halfGapMs
+            );
+
+            item.shiftdate.startTime = new Date(
+              secondShiftStart.getTime() - halfGapMs
+            );
+          }
+        }
+      }
+    }
+
+    return {
+      ...item,
+      shiftStatus: userShiftStatusMap[item.rowusername] || "",
+      hoursDifference,
+      nightShiftDifference,
+      nightShiftGapHours
+    };
+  });
 }
 
 function addOneSecondAndFormat(isoDate, seconds) {
@@ -1014,13 +1067,46 @@ function reduceHours(inputDate, hours = 1) {
     date.setHours(date.getHours() - hours);
     return date;
 }
+
+function buildDateObject(date) {
+  const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(
+    date.getMonth() + 1
+  ).padStart(2, '0')}/${date.getFullYear()}`;
+
+  const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const dayCount = date.getDate();
+  const shiftMode = 'Main Shift';
+
+  const weekNo = getWeekNumberInMonth(date);
+  const weekNumberInMonth =
+    weekNo === 1 ? `${weekNo}st Week` :
+    weekNo === 2 ? `${weekNo}nd Week` :
+    weekNo === 3 ? `${weekNo}rd Week` :
+    `${weekNo}th Week`;
+
+  return { formattedDate, dayName, dayCount, shiftMode, weekNumberInMonth };
+}
+
+function getPreviousDateObject(inputFormattedDate) {
+  const [dd, mm, yyyy] = inputFormattedDate.split('/').map(Number);
+  const currentDate = new Date(yyyy, mm - 1, dd);
+
+  // 🔹 Previous day
+  currentDate.setDate(currentDate.getDate() - 1);
+
+  return buildDateObject(currentDate);
+}
+
 //To get the users Attendance Reports
 exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
   async (req, res, next) => {
     let answer, usersCollection, filteredData;
     let { company, branch, usernames, type, userDates, workmode } = req.body;
     try {
-      // console.log("Hitted Here");
+      // console.log(userDates , "Hitted Here");
+      const prevDateObj = getPreviousDateObject(userDates[0].formattedDate);
+      // const prevObj = getPreviousDateObject(userDates, userDates[0].formattedDate);
+      // console.log(prevDateObj);
       let query = {};
       if (type !== "Deactivate" && usernames?.length > 0) {
         query.username = { $in: usernames };
@@ -1264,8 +1350,10 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
       const resultDate = expandDateRange(userDates);
       answer = await getUserClockinAndClockoutStatus({
         employee: usernamesFilter,
-        userDates: userDates,
+        userDates: [prevDateObj , ...userDates],
+        // userDates: userDates,
       });
+      // console.log(answer?.finaluser , "nswer?.finaluser")
       const resultShiftValues = addShiftStatus(answer?.finaluser);
       usersCollection = await Biometricattlog.aggregate([
         {
@@ -1473,10 +1561,10 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
         return shiftKeyCount[key] > 1;
       };
 
-      // console.log( resultShiftValues, 'resultShiftValues')
+      console.log( resultShiftValues?.filter(data => data?.rowformattedDate !== prevDateObj?.formattedDate), 'resultShiftValues')
 
       // filteredData = [resultShiftValues[0]].flatMap(
-      filteredData = resultShiftValues.flatMap(
+      filteredData = resultShiftValues?.filter(data => data?.rowformattedDate !== prevDateObj?.formattedDate)?.flatMap(
         ({
           rowusername,
           shiftdate,
@@ -1508,12 +1596,14 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                   shiftStatus === "Day Shift" &&
                   shiftMode === "Second Shift"
                 ) {
+
                   startTime = addTwoHours(
                     shiftdate?.orgStartTime,
                     hoursDifference,
                     "Sub"
                   );
                   endTime = shiftdate?.endTime;
+
                 } else if (
                   shiftStatus === "Night Shift" &&
                   shiftMode === "Main Shift"
@@ -1524,6 +1614,8 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                     "Sub"
                   );
                   endTime = shiftdate?.endTime;
+                   //console.log(shiftStatus ,shiftMode , rowformattedDate ,hoursDifference,shiftdate?.orgStartTime, "endTime")
+
                 } else if (
                   shiftStatus === "Night Shift" &&
                   shiftMode === "Second Shift"
@@ -1544,7 +1636,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                   : null;
               }
 
-              // console.log(startTime ,endTime, "endTime")
+              
               const [datePart, timePart] = user?.clockDateTimeD.split(" ");
               const [day, month, year] = datePart.split("-");
               const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
@@ -1603,7 +1695,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             inTimeVerified = firstInDevice[0]?.verifyC;
             inTimeVerifiedDevice = firstInDevice[0]?.biometriccommonname;
             if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
-              console.log(shiftMode, "1");
+              // console.log(shiftMode, "1");
               inTime = firstInDevice[0].clockDateTimeD;
              
             } else if (
@@ -1618,7 +1710,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
               inTime = firstInDevice[0]?.indevice
                 ? ifInTime
                 : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
-              console.log(shiftMode, "2");
+             
             } else if (
               shiftStatus === "Night Shift" &&
               shiftMode === "Main Shift"
@@ -1631,13 +1723,14 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
               inTime = firstInDevice[0]?.indevice
                 ? ifInTime
                 : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
-              console.log(firstInDevice[0]?.indevice, shiftMode, "3");
+// console.log(inTime,"3");
+
             } else if (
               shiftStatus === "Night Shift" &&
               shiftMode === "Second Shift"
             ) {
               inTime = firstInDevice[0].clockDateTimeD;
-              console.log(shiftMode, "4");
+              console.log(inTime,"4" , matchedUsers , new Date(shiftdate?.orgStartTime)?.toString());
             }
           }
 
@@ -1692,7 +1785,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                   ? shiftEndTime
                   : lastDeviceOut?.clockDateTimeD
                 : shiftEndTime;
-              console.log(shiftMode, "1");
+              // console.log(shiftMode, "1");
             } else if (
               shiftStatus === "Day Shift" &&
               shiftMode === "Second Shift"
@@ -1702,7 +1795,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                 reduceHours(shiftdate?.orgEndTime, 1) < parseDDMMYYYY(last?.clockDateTimeD)
                   ? last.clockDateTimeD
                   : shiftEndTime;
-              console.log(last, shiftMode, outTime, "2");
+              // console.log(shiftMode, outTime, inTime ,"2");
             } else if (
               shiftStatus === "Night Shift" &&
               shiftMode === "Main Shift"
@@ -1713,7 +1806,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                   ? shiftEndTime
                   : lastDeviceOut?.clockDateTimeD
                 : shiftEndTime;
-              console.log(shiftMode, "3");
+              // console.log(shiftMode, "3");
             } else if (
               shiftStatus === "Night Shift" &&
               shiftMode === "Second Shift"
@@ -1723,8 +1816,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                  shiftdate?.orgEndTime < parseDDMMYYYY(last?.clockDateTimeD)
                   ? last.clockDateTimeD
                   : shiftEndTime;
-                  console.log(lastOutDevice , matchedUsers,"lastOutDevice")
-              console.log(shiftMode, "4");
+              // console.log(shiftMode, "4");
             }
           }
           const fallbackUser = filteredUsers.find(

@@ -1051,11 +1051,12 @@ function LiftAuthorityAccessManagement() {
         console.log("Hitted 3");
       let res = await axios.post(
         `${SERVICE.FLOOR_WISE_USER_ACCESS_BIOMETRIC_DEVICE}`,
+          { user: value },
         {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-          user: value,
+         
         }
       );
       console.log(res?.data?.alluploaduserinfo , "Hitted 3"); 

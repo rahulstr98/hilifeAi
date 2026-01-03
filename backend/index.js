@@ -1582,18 +1582,6 @@ app.use(bodyParser.json());
 
 
 
-app.post('/api/Device/Keepalive', (req, res) => {
-  // Handle device keep-alive logic
-  console.log(req?.body , moment().format("DD-MM-YYYY hh:mm:ss A") , "Running")
-  res.json({
-    Success: 0,
-    AddPeople: 1,
-    DeletePeople: 0,
-    SyncParameter: 1,
-    Remote: 1,
-    UploadWorkParameter: 0
-  });
-});
 
 // Simulated pending actions per device SN (for demo)
 
@@ -1687,19 +1675,258 @@ app.post('/api/Device/Keepalive', (req, res) => {
 
 
 
+// app.post('/Device/Keepalive', (req, res) => {
+//   // Handle device keep-alive logic
+//   console.log(req?.body , moment().format("DD-MM-YYYY hh:mm:ss A") , "Running")
+//   res.json({
+//     Success: 1,
+//     AddPeople: 0,
+//     DeletePeople: 0,
+//     SyncParameter: 0,
+//     Remote: 1,
+//     UploadWorkParameter: 0
+//   });
+// });
 
+const BoweeDeviceCommandQueue = require("./model/modules/biometric/BoweeDeviceCommandQueue.js");
+const boweeCommands = require("./model/modules/biometric/boweeCommands.js");
+app.post('/Device/Keepalive', async (req, res) => {
+  const deviceSn = req?.body?.DeviceSn;
 
-app.post('/Device/RemoteCommand', async (req, res) => {
- console.log('RemoteCommand hit:', req.body);
+  const command = await BoweeDeviceCommandQueue.findOne({
+    deviceSn,
+    status: "PENDING"
+  });
 
-  // Respond immediately
-  res.json({
-Success: 0,   
-//  PushAllPeople:1,
-  //  RepostRecord:1,
-"QueryPeople":[25]
-  }); 
+  const response = {
+    Success: 0,
+    AddPeople: 0,
+    DeletePeople: 0,
+    SyncParameter: 0,
+    Remote: 0,
+    UploadWorkParameter: 0
+  };
+
+  if (!command) return res.json(response);
+
+  const flags = boweeCommands.keepAlive[command.commandType];
+  if (!flags) return res.json(response);
+
+  response.Success = 1;
+  Object.assign(response, flags);
+
+  res.json(response);
 });
+app.post('/Device/RemoteCommand', async (req, res) => {
+  const deviceSn = req?.body?.SN;
+
+  // Get the oldest pending remote command for this device
+  const command = await BoweeDeviceCommandQueue.findOne({
+    deviceSn,
+    commandType: "REMOTE",  // only remote commands
+    status: "PENDING"
+  }).sort({ createdAt: 1 });
+
+  const response = {
+    Success: 0,
+    Message: ""
+  };
+
+  // No command found
+  if (!command) return res.json(response);
+
+  // Use remoteAction to fetch the correct instruction
+  const instructionDef = boweeCommands.remoteCommand[command.remoteAction];
+
+  if (!instructionDef) {
+    // Unknown remoteAction
+    await BoweeDeviceCommandQueue.findByIdAndUpdate(command._id, {
+      status: "FAILED"
+    });
+
+    return res.json({
+      Success: 0,
+      Message: `Invalid remote action: ${command.remoteAction}`
+    });
+  }
+
+  // If function, call with payload; else use static object
+  const instruction =
+    typeof instructionDef === "function"
+      ? instructionDef(command.payload)
+      : instructionDef;
+
+  // Mark command executed
+  await BoweeDeviceCommandQueue.findByIdAndUpdate(command._id, {
+    status: "EXECUTED"
+  });
+
+  // Return response to device
+  res.json({
+    Success: 1,
+    ...instruction
+  });
+});
+
+
+function unzipRecordDetailFromBuffer(buffer) {
+  return new Promise((resolve, reject) => {
+    zlib.gunzip(buffer, (err, unzipped) => {
+      if (err) return reject(err);
+
+      try {
+        const json = JSON.parse(unzipped.toString("utf8"));
+        resolve(json);
+      } catch (parseErr) {
+        reject(parseErr);
+      }
+    });
+  });
+}
+
+app.post("/Record/UploadIdentifyRecord", upload.any(), async (req, res) => {
+  try {
+    const recordFile = req.files?.find(
+      f => f.fieldname === "RecordDetail" || f.fieldname === "recordJson"
+    );
+
+    if (!recordFile?.buffer) {
+      return res.json({ Success: 0, Message: "Missing RecordDetail" });
+    }
+
+    const detail = await unzipRecordDetailFromBuffer(recordFile.buffer);
+
+    console.log("✔ Received RecordID:", detail.RecordID);
+
+    // await Attendance.create({
+    //   recordId: detail.RecordID,
+    //   userId: detail.UserID,
+    //   recordDate: new Date(detail.RecordDate * 1000),
+    //   recordType: detail.RecordType,
+    //   deviceSn: req.body.SN
+    // });
+
+    // ✅ ACK AFTER successful processing
+    return res.json({ Success: 1 });
+
+  } catch (err) {
+    console.error("❌ Record processing failed", err);
+
+    // ❗ Device will retry this record
+    return res.json({ Success: 0 });
+  }
+});
+
+
+
+
+
+
+
+const sampleUser = {
+  UserID: 1001,
+  Name: "Rahul Kumar",
+  Job: "Software Engineer",
+  CardNum: "CARD123456",
+  Password: "123456",
+  Department: "IT",
+  Phone: "9876543210"
+};
+
+app.post("/People/PushPeople", upload.any(), (req, res) => {
+  try {
+    const { SN = "FC-8245H25047289", PushType = 1, UserID } = req.body;
+    const detailFile = req.files?.find(f => f.fieldname === "Detail");
+
+    // 🔹 CASE 1: Device sends Detail (normal biometric flow)
+    if (detailFile) {
+      return zlib.gunzip(detailFile.buffer, (err, decoded) => {
+        if (err) {
+          console.error("❌ GZIP decode failed", err);
+          return res.json({ Success: 0, Message: "Detail unzip failed" });
+        }
+
+        try {
+          const personnelData = JSON.parse(decoded.toString("utf-8"));
+          processPersonnel(SN, PushType, personnelData);
+          return res.json({ Success: 1 });
+        } catch (e) {
+          console.error("❌ JSON parse failed", e);
+          return res.json({ Success: 0, Message: "Invalid Detail JSON" });
+        }
+      });
+    }
+
+    // 🔹 CASE 2: MANUAL TEST — create sample user JSON here
+    if (!detailFile && PushType == 1) {
+      const samplePersonnel = {
+        UserID: 1001,
+        Name: "Test User",
+        Job: "Developer",
+        CardNum: "CARD1001",
+        Password: "123456",
+        Department: "IT",
+        Phone: "9999999999"
+      };
+
+      console.log("🧪 Manually pushing sample personnel:", samplePersonnel);
+
+      processPersonnel(SN, PushType, samplePersonnel);
+
+      return res.json({
+        Success: 1,
+        Message: "Sample personnel pushed manually",
+        Data: samplePersonnel
+      });
+    }
+
+    // 🔹 CASE 3: Delete user
+    if (PushType == 3 && UserID) {
+      deleteUser(SN, UserID);
+      return res.json({ Success: 1 });
+    }
+
+    return res.json({ Success: 0, Message: "No Detail data received" });
+
+  } catch (err) {
+    console.error("❌ PushPeople Error:", err);
+    res.json({ Success: 0, Message: "Server error" });
+  }
+});
+
+
+function processPersonnel(SN, PushType, data) {
+  console.log("📥 Processing Personnel");
+  console.log("SN:", SN);
+  console.log("PushType:", PushType);
+  console.log("Data:", data);
+
+  // here you can insert/update MongoDB
+}
+
+function deleteUser(SN, userId) {
+  console.log("🗑️ Deleting user", userId, "from device", SN);
+}
+
+
+
+
+
+
+
+
+
+// app.post('/Device/RemoteCommand', async (req, res) => {
+//  console.log('RemoteCommand hit:', req.body);
+
+//   // Respond immediately
+//   res.json({
+// Success: 0,   
+// //  PushAllPeople:1,
+//   //  RepostRecord:1,
+// // ""QueryPeople":[1,2,3,4,5,6]
+//   }); 
+// });
 
 
 app.post('/People/DeletePeopleList', async (req, res) => {
@@ -1738,11 +1965,23 @@ console.log( req?.files , req?.headers, "UploadSystemRecord");
 Success: 1,   
   }); 
 });
-app.post('/Record/UploadIdentifyRecord', (req, res) => {
-  // console.log( req?.files ,res?.body ,  req?.headers, "UploadIdentifyRecord");
-  res.json({"Success": 1, message: "Received identify record" });
 
+
+// app.post('/Record/UploadIdentifyRecord', (req, res) => {
+//   console.log( req?.files ,res?.body ,  req?.headers, "UploadIdentifyRecord");
+//   res.json({"Success": 1, message: "Received identify record" });
+
+// });
+
+const uploadFiles = multer({
+  storage: multer.diskStorage({
+    destination: "BiometricImageFiles",
+    filename: (req, file, cb) =>
+      cb(null, Date.now() + "-" + file.originalname)
+  })
 });
+
+
 
 
 
@@ -1798,135 +2037,58 @@ peopleJson
   }
 });
 
+// app.post('/People/PushPeople', upload.any(),(req, res) => {
+//   const detailFile = req.files.find(f => f.fieldname === 'Detail');
+// let peopleJSON={}
+//   if (!detailFile) {
+//     console.error('❌ No Detail file received');
+//     return res.status(400).json({ Success: 0, Message: 'No Detail file found' });
+//   }
 
-app.post('/People/PushPeople', upload.any(),(req, res) => {
-  const detailFile = req.files.find(f => f.fieldname === 'Detail');
-let peopleJSON={}
-  if (!detailFile) {
-    console.error('❌ No Detail file received');
-    return res.status(400).json({ Success: 0, Message: 'No Detail file found' });
-  }
+//   zlib.gunzip(detailFile.buffer, (err, decodedBuffer) => {
+//     if (err) {
+//       console.error('❌ Failed to unzip Detail:', err);
+//       return res.status(500).json({ Success: 0, Message: 'Failed to unzip Detail' });
+//     }
 
-  zlib.gunzip(detailFile.buffer, (err, decodedBuffer) => {
-    if (err) {
-      console.error('❌ Failed to unzip Detail:', err);
-      return res.status(500).json({ Success: 0, Message: 'Failed to unzip Detail' });
-    }
+//     try {
+//       const personnelData = JSON.parse(decodedBuffer.toString('utf-8'));
+//       const { SN } = req.body;
+//       const { CardNum, Photo, UserID, Name, Password } = personnelData;
 
-    try {
-      const personnelData = JSON.parse(decodedBuffer.toString('utf-8'));
-      const { SN } = req.body;
-      const { CardNum, Photo, UserID, Name, Password } = personnelData;
+//       const newUser = { SN, CardNum, UserID, Name, Password };
 
-      const newUser = { SN, CardNum, UserID, Name, Password };
+//       // 🔍 Check for existing user by UserID
+//       const exists = uniqueUsers.some(user => user.UserID === newUser.UserID);
 
-      // 🔍 Check for existing user by UserID
-      const exists = uniqueUsers.some(user => user.UserID === newUser.UserID);
-
-      if (!exists) {
-        uniqueUsers.push(newUser); // ✅ Add only if unique
-        //console.log('✅ New user added:', newUser);
-      } else {
-        //console.log(`⚠️ Duplicate user skipped: ${newUser.UserID}`);
-        console.log(uniqueUsers, "Unique users");
-    //addUserToDevice(peopleJSON)
-      }
-//console.log("Hitted");
-      res.json({ Success: 1 , peopleJSON});
-    } catch (parseErr) {
-      console.error('❌ Failed to parse personnel JSON:', parseErr);
-      return res.status(500).json({ Success: 0, Message: 'Invalid JSON in Detail' });
-    }
-  });
-});
-
-
-
-
-
+//       if (!exists) {
+//         uniqueUsers.push(newUser); // ✅ Add only if unique
+//         //console.log('✅ New user added:', newUser);
+//       } else {
+//         //console.log(`⚠️ Duplicate user skipped: ${newUser.UserID}`);
+//         console.log(uniqueUsers, "Unique users");
+//     //addUserToDevice(peopleJSON)
+//       }
+// //console.log("Hitted");
+//       res.json({ Success: 1 , peopleJSON});
+//     } catch (parseErr) {
+//       console.error('❌ Failed to parse personnel JSON:', parseErr);
+//       return res.status(500).json({ Success: 0, Message: 'Invalid JSON in Detail' });
+//     }
+//   });
+// });
 // 4. DownloadPeopleList (sends personnel list to device)
-
 app.post('/People/DownloadPeopleList', async (req, res) => {
   const { SN, Limit } = req.body;
 
   console.log('DownloadPeopleList hit:', req.body, req.headers);
-
-  // Fetch personnel data from your DB based on the device SN (this is mock data)
-  const allPeople = [
-    {
-      UserID: "24",
-      Name: "John Doe",
-      Job: "Developer",
-      Department: "IT Department",
-      IdentityCard: "ID12345678",
-      Attachment: "Employee Badge Holder",
-      Photo: "",
-      PhotoMD5: "",
-      PhotoLen: 55020,
-      Password: "1234",
-      CardNum: "",
-      QRCode: "",
-      AccessType: 0, // 0: normal, 1: admin, 2: blacklist
-      ExpirationDate: 0, // 0 = never expires
-      OpenTimes: 65535,
-      KeepOpen: 1,
-      Timegroup: 6,
-      Holidays: "1,3,5,7",
-      Elevators: "1,2,3,4,5",
-      FaceFeature: "",
-      FaceFeatureMD5: "",
-      Fingerprints: [],
-      Palmveins: []
-    },
-    {
-      UserID: "25",
-      Name: "Jane Smith",
-      Job: "Manager",
-      Department: "Sales",
-      IdentityCard: "",
-      Attachment: "",
-      Photo: "",
-      PhotoMD5: "",
-      PhotoLen: 54321,
-      Password: "5678",
-      CardNum: "9876543210123456",
-      QRCode: "",
-      AccessType: 0,
-      ExpirationDate: 0,
-      OpenTimes: 65535,
-      KeepOpen: 0,
-      Timegroup: 3,
-      Holidays: "",
-      Elevators: "",
-      FaceFeature: "",
-      FaceFeatureMD5: "",
-      Fingerprints: [],
-      Palmveins: []
-    }
-  ];
-
-  const limitedList = allPeople.slice(0, Limit || 50);
-
-  // If no personnel left to send, return PeopleCount = 0
-  if (limitedList.length === 0) {
-    return res.json({
-      Success: 1,
-      Message: "No more personnel to send",
-      PeopleCount: 0,
-      PeopleList: []
-    });
-  }
-
   // Respond with the personnel list
   res.json({
     Success: 1,
-    Message: "Sending personnel data",
-    PeopleCount: limitedList.length,
-    PeopleList: limitedList
+    PeopleCount: 20,
+    PeopleList: []
   });
 });
-
-
 // 5. DownloadPeopleListResult (device sends result after processing list)
 app.post('/People/DownloadPeopleListResult', async (req, res) => {
   console.log('DownloadPeopleListResult hit:', req.body);
@@ -1936,13 +2098,10 @@ app.post('/People/DownloadPeopleListResult', async (req, res) => {
   console.log('Device result:', req.body);
 
   res.json({
-    Success: 0,
+    Success: 1,
     Message: "Acknowledged"
   });
 });
-
-
-
 // 4. DownloadPeopleList (sends personnel list to device)
 app.post('/People/Search', async (req, res) => {
   console.log('Search hit:', req.body);

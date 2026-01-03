@@ -104,8 +104,8 @@ async function fetchDeviceRecords(interType) {
             pageSize: 500,
             // startNoteTime: getTodayDate(),
             // endNoteTime: getTodayDate()
-            startNoteTime: "2025-11-25",
-            endNoteTime: "2025-11-28",
+            startNoteTime: "2025-12-30",
+            endNoteTime: "2025-12-30",
         };
         const form = new FormData();
         form.append("agentNo", "82391038574");
