@@ -1650,7 +1650,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             })
             .filter(Boolean);
 
-          // console.log(matchedUsers , "matchedUsers")
+          console.log(matchedUsers , "matchedUsers")
           // Categorize by device types
           const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
           const inDevices = matchedUsers.filter((d) => d.indevice);
@@ -1710,7 +1710,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
               inTime = firstInDevice[0]?.indevice
                 ? ifInTime
                 : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
-             
+             console.log(shiftdate?.orgStartTime   , )
             } else if (
               shiftStatus === "Night Shift" &&
               shiftMode === "Main Shift"
@@ -3457,6 +3457,7 @@ const calculateAttendance = (usersData) => {
 
 function parseDDMMYYYY(dateTime) {
   console.log(dateTime);
+  if(!dateTime) return 
   const [datePart, timePart] = dateTime.split(" ");
   const [day, month, year] = datePart.split("-").map(Number);
   const [hour, minute, second] = timePart.split(":").map(Number);

@@ -144,6 +144,7 @@ biometricRoute.route("/addbiometricunregistereduser/new").post(addBiometricUnreg
 
 
 
+
 // BIOMETRIC DEVICE RELATED ROUTES WHICH WAS LINKED FROM SITE
 const { getAllUploadUserFromSite, addUploadUserFromSite, getEditBiometricUserCheck, getIndividualUploadUserFromSite } = require("../controller/modules/biometric/uploaduserfromsite");
 biometricRoute.route("/biometricusersadditionlist").get(getAllUploadUserFromSite);
