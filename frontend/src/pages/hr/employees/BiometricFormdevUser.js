@@ -36,11 +36,11 @@ const BiometricFormdevUser = ({ employee, BiometricDeviceOptions, setEmployee, a
     const [loadingMessage, setLoadingMessage] = useState('Image is compressing...!');
     const handleResumeUpload = (event) => {
         const resume = event.target.files;
-        const allowedExtensions = ["png"];
+        const allowedExtensions = ["png", "jpg","jfif"];
         const file = resume[0];
         const fileExtension = file?.name?.split('.').pop().toLowerCase();
         const preview = URL.createObjectURL(file);
-        const maxFileSize = 150 * 1024;
+        const maxFileSize = 350 * 1024;
 
         if (!allowedExtensions.includes(fileExtension)) {
             setPopupContentMalert("Please upload a valid PNG file.");
@@ -49,7 +49,7 @@ const BiometricFormdevUser = ({ employee, BiometricDeviceOptions, setEmployee, a
             return;
         }
         if (file.size > maxFileSize) {
-            setPopupContentMalert("Image file size must be less than 150 KB.");
+            setPopupContentMalert("Image file size must be less than 350 KB.");
             setPopupSeverityMalert("warning");
             handleClickOpenPopupMalert();
             return;
@@ -204,7 +204,7 @@ const BiometricFormdevUser = ({ employee, BiometricDeviceOptions, setEmployee, a
         }
 
         else {
-
+console.log(deviceDetails?.brand , 'deviceDetails?.brand')
             setLoadingBiometric(true);
             if (["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(deviceDetails?.brand)) {
                 setLoadingBiometric(false);
@@ -255,11 +255,17 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
                     setBiometricId(Number(res?.data?.alldeviceinfo));
                 }
             } else if (device.brand === "Bowee") {
-                let bowee = await axios.post(SERVICE.BOWER_BIOMETRIC_NEW_USERID, { biometricdevicename: biometricdevicename }, {
+                 console.log("Bowee" , "Hittted")
+                // let bowee = await axios.post(SERVICE.BOWER_BIOMETRIC_NEW_USERID, { biometricdevicename: biometricdevicename }, {
+                //     headers: { Authorization: `Bearer ${auth.APIToken}` }
+
+                // });
+                let boweeGlobal = await axios.post(SERVICE.BOWER_BIOMETRIC_NEW_USERID_GLOBAL, { biometricdevicename: biometricdevicename }, {
                     headers: { Authorization: `Bearer ${auth.APIToken}` }
 
                 });
-                let duplicateCheck = bowee?.data?.NewUserID;
+                let duplicateCheck = boweeGlobal?.data?.nextUserId;
+                console.log(boweeGlobal?.data , duplicateCheck , "duplicateCheck")
                 setBiometricId(duplicateCheck);
             }
             else {
@@ -381,8 +387,6 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
 
     const handleNewUserAddBowee = async () => {
         try {
-
-
             const PeopleJson = {
                 "UserID": String(BiometricId),
                 "Name": enableLoginName ? String(third) : employee.username,
@@ -392,16 +396,16 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
                 "Photo": documentFiles?.data
             };
 
-            const response = await axios.post(
-                SERVICE.BOWER_BIOMETRIC_NEW_USER_ADD,
+            // const response = await axios.post(
+            //     SERVICE.BOWER_BIOMETRIC_NEW_USER_ADD,
 
-                {
-                    headers: { Authorization: `Bearer ${auth.APIToken}` },
-                    PeopleJson: PeopleJson,
-                    biometricdevicename: deviceDetails.biometricserialno
-                }
-            );
-            if (response.data?.success) {
+            //     {
+            //         headers: { Authorization: `Bearer ${auth.APIToken}` },
+            //         PeopleJson: PeopleJson,
+            //         biometricdevicename: deviceDetails.biometricserialno
+            //     }
+            // );
+            // if (response.data?.success) {
                 let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
                     headers: { Authorization: `Bearer ${auth.APIToken}` },
                     biometricUserIDC: BiometricId,
@@ -416,8 +420,9 @@ console.log(response?.data?.individualuser , "response?.data?.individualuser")
                     pwdc: "",
                     staffNameC: enableLoginName ? String(third) : employee.username,
                     companyname: employee.biometricname,
+                    photoImage:documentFiles?.data
                 });
-            }
+            // }
             setPopupContentMalert("Biometric Data Added");
             setPopupSeverityMalert("success");
             handleClickOpenPopupMalert();

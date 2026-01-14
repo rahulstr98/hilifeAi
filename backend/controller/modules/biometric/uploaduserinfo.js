@@ -32,6 +32,50 @@ exports.getAllUploadUserInfo = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Records not found!", 500));
   }
 });
+exports.getNewUserIdGlobal = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const deviceName = req?.body?.biometricdevicename;
+
+    if (!deviceName) {
+      return res.status(400).json({
+        Success: 0,
+        Message: "biometricdevicename is required",
+      });
+    }
+
+    const result = await Biouploaduserinfo.aggregate([
+      {
+        $match: {
+          cloudIDC: deviceName,
+          biometricUserIDC: { $regex: "^[0-9]+$" } // ensure numeric strings only
+        }
+      },
+      {
+        $project: {
+          numericUserId: { $toLong: "$biometricUserIDC" }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          maxUserId: { $max: "$numericUserId" }
+        }
+      }
+    ]);
+console.log(result , "result")
+    const maxUserId = result.length > 0 ? result[0].maxUserId : 0;
+
+    return res.status(200).json({
+      Success: 1,
+      maxUserId,
+      nextUserId: maxUserId + 1, // optional
+    });
+
+  } catch (err) {
+    return next(new ErrorHandler("Records not found!", 500));
+  }
+});
+
 exports.getFilteredBiometricVisitorDetails = catchAsyncErrors(
   async (req, res, next) => {
     let visitorslist;
@@ -47,7 +91,7 @@ exports.getFilteredBiometricVisitorDetails = catchAsyncErrors(
       visitorslist = await Biouploaduserinfo.find({
         cloudIDC: { $in: devices },
         isEnabledC: { $in: resultApprovalStatus },
-        status: "Visitor",
+        userstatus: "Visitor",
       });
       // console.log(resultApprovalStatus, "resultApprovalStatus")
       visitorslist = await Biouploaduserinfo.aggregate([
@@ -56,7 +100,7 @@ exports.getFilteredBiometricVisitorDetails = catchAsyncErrors(
           $match: {
             cloudIDC: { $in: devices }, // devices is an array
             isEnabledC: { $in: resultApprovalStatus },
-            status: "Visitor",
+            userstatus: "Visitor",
           },
         },
 
@@ -621,6 +665,93 @@ exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
     }
   }
 );
+
+function getUnixFromDateTime(dateStr, timeStr) {
+  try {
+    // 🔹 Indefinite
+    if (!dateStr || !timeStr) {
+      return 0;
+    }
+
+    const [year, month, day] = dateStr.split("-").map(Number);
+
+    const timeParts = timeStr.split(":").map(Number);
+    const hour = timeParts[0] || 0;
+    const minute = timeParts[1] || 0;
+    const second = timeParts[2] || 0;
+
+    const inputDate = new Date(year, month - 1, day, hour, minute, second);
+
+    if (isNaN(inputDate.getTime())) {
+      return 0;
+    }
+
+    // 🔹 Max allowed: 2099-12-31 23:59:00
+    const MAX_DATE = new Date("2099-12-31T23:59:00");
+
+    const finalDate = inputDate > MAX_DATE ? MAX_DATE : inputDate;
+
+    return Math.floor(finalDate.getTime() / 1000);
+  } catch (err) {
+    console.error("getUnixFromDateTime error:", err);
+    return 0;
+  }
+}
+
+exports.getVisitorsEnableListDetailsByIdGlobal = catchAsyncErrors(
+  async (req, res, next) => {
+    try {
+      const { ids } = req.body;
+console.log(ids , "iDS")
+      if (!Array.isArray(ids) || !ids.length) {
+        return res.status(400).json({
+          success: false,
+          message: "IDs array is required",
+        });
+      }
+
+      // 🔹 Fetch users
+      const users = await Biouploaduserinfo.find({
+        _id: { $in: ids },
+      });
+console.log(users?.length , "users")
+      // 🔹 Update each user
+      const bulkOps = users.map((user) => {
+        const expirationTime = getUnixFromDateTime(
+          user.visitorCreatedDate, // YYYY-MM-DD
+          user.expirytime           // HH:mm / HH:mm:ss
+        );
+
+        return {
+          updateOne: {
+            filter: { _id: user._id },
+            update: {
+              $set: {
+                expirationTime, // ✅ unix seconds
+                startdate: user.visitorCreatedDate,
+                dataupload:"new",
+                isEnabledC:"Yes"
+              },
+            },
+          },
+        };
+      });
+
+      if (bulkOps.length) {
+        await Biouploaduserinfo.bulkWrite(bulkOps);
+      }
+
+      return res.status(200).json({
+        success: true,
+        updatedCount: bulkOps.length,
+      });
+    } catch (err) {
+      console.error("Enable visitor error:", err);
+      return next(new ErrorHandler("Records not found!", 500));
+    }
+  }
+);
+
 
 cron.schedule("0 0 * * *", async () => {
   try {

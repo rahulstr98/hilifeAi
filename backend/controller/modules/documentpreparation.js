@@ -2,6 +2,7 @@ const DocumentPreparation = require("../../model/modules/documentpreparation");
 const Company = require("../../model/modules/setup/company");
 const Branch = require("../../model/modules/branch");
 const Unit = require("../../model/modules/unit");
+const moment= require("moment")
 const ErrorHandler = require("../../utils/errorhandler");
 const catchAsyncErrors = require("../../middleware/catchAsyncError");
 const TemplateCreation = require("../../model/modules/TemplateCreationModel");
@@ -209,6 +210,7 @@ exports.getDepartmentDesignationBasedOnDate = catchAsyncErrors(
       // res.json(result);
       finalresult = result;
     } catch (err) {
+      console.log(err , 'err')
       return next(new ErrorHandler("Records not found!", 404));
     }
 

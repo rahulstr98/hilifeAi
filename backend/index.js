@@ -1664,66 +1664,93 @@ const sampleUser = {
   Phone: "9876543210"
 };
 
-app.post("/People/PushPeople", upload.any(), (req, res) => {
+app.post("/People/PushPeople", upload.any(), async (req, res) => {
   try {
-    const { SN = "FC-8245H25047289", PushType = 1, UserID } = req.body;
-    const detailFile = req.files?.find(f => f.fieldname === "Detail");
+    const {
+      SN,
+      PushType,
+      UserID
+    } = req.body;
+console.log(req?.body , req?.files , "PushPeople")
+    if (!SN || !PushType) {
+      return res.json({ Success: 0, Message: "SN or PushType missing" });
+    }
 
-    // 🔹 CASE 1: Device sends Detail (normal biometric flow)
+    const files = req.files || [];
+    const detailFile = files.find(f => f.fieldname === "Detail");
+    const photoFile = files.find(f => f.fieldname === "Photo");
+
+    let detailJson = null;
+
+    // 🔹 Decode Detail (gzip JSON) if present
     if (detailFile) {
-      return zlib.gunzip(detailFile.buffer, (err, decoded) => {
-        if (err) {
-          console.error("❌ GZIP decode failed", err);
-          return res.json({ Success: 0, Message: "Detail unzip failed" });
-        }
+      try {
+        const decoded = await new Promise((resolve, reject) => {
+          zlib.gunzip(detailFile.buffer, (err, buf) =>
+            err ? reject(err) : resolve(buf)
+          );
+        });
+        detailJson = JSON.parse(decoded.toString("utf-8"));
+      } catch (err) {
+        console.error("❌ Detail decode error:", err);
+        return res.json({ Success: 0, Message: "Detail decode failed" });
+      }
+    }
 
-        try {
-          const personnelData = JSON.parse(decoded.toString("utf-8"));
-          processPersonnel(SN, PushType, personnelData);
-          return res.json({ Success: 1 });
-        } catch (e) {
-          console.error("❌ JSON parse failed", e);
-          return res.json({ Success: 0, Message: "Invalid Detail JSON" });
-        }
+    // =========================
+    // PUSH TYPE INTERPRETATION
+    // =========================
+
+    if ([1, 2, 4].includes(Number(PushType))) {
+      // Add / Update / Query
+      if (!detailJson) {
+        return res.json({
+          Success: 0,
+          Message: "Detail required for this PushType"
+        });
+      }
+
+      console.log("📥 PushPeople received");
+      console.log("SN:", SN);
+      console.log("PushType:", PushType);
+      console.log("Detail JSON:", detailJson);
+
+      if (photoFile) {
+        console.log("📸 Photo received:", {
+          filename: photoFile.originalname,
+          size: photoFile.size,
+          mimetype: photoFile.mimetype
+        });
+      }
+    }
+
+    if (Number(PushType) === 3) {
+      // Delete
+      if (!UserID) {
+        return res.json({
+          Success: 0,
+          Message: "UserID required for Delete"
+        });
+      }
+
+      console.log("🗑 Delete request received:", {
+        SN,
+        UserID
       });
     }
 
-    // 🔹 CASE 2: MANUAL TEST — create sample user JSON here
-    if (!detailFile && PushType == 1) {
-      const samplePersonnel = {
-        UserID: 1001,
-        Name: "Test User",
-        Job: "Developer",
-        CardNum: "CARD1001",
-        Password: "123456",
-        Department: "IT",
-        Phone: "9999999999"
-      };
+    // =========================
+    // SUCCESS RESPONSE
+    // =========================
 
-      console.log("🧪 Manually pushing sample personnel:", samplePersonnel);
-
-      processPersonnel(SN, PushType, samplePersonnel);
-
-      return res.json({
-        Success: 1,
-        Message: "Sample personnel pushed manually",
-        Data: samplePersonnel
-      });
-    }
-
-    // 🔹 CASE 3: Delete user
-    if (PushType == 3 && UserID) {
-      deleteUser(SN, UserID);
-      return res.json({ Success: 1 });
-    }
-
-    return res.json({ Success: 0, Message: "No Detail data received" });
+    return res.json({ Success: 1 });
 
   } catch (err) {
-    console.error("❌ PushPeople Error:", err);
-    res.json({ Success: 0, Message: "Server error" });
+    console.error("❌ PushPeople fatal error:", err);
+    return res.json({ Success: 0, Message: "Server error" });
   }
 });
+
 
 
 function processPersonnel(SN, PushType, data) {

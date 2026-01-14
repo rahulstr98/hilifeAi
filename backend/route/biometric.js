@@ -15,10 +15,11 @@ biometricRoute.route("/biometricsingleuseradd").post(addNewUserBiometricBrand);
 biometricRoute.route("/biometricsingleuserProfile").post(getSingleUserProfileString);
 biometricRoute.route("/biometricbrandmodel/:id").delete(deleteBioMetricBrand).get(getSingleBioMetricBrand).put(updateBioMetricBrand);
 
-const { getNewUserIdList, addNewUserToDevice,addNewVisitorToDevice, getAttendanceDetails } = require("./bowerBiometric");
+const { getNewUserIdList, addNewUserToDevice,addNewVisitorToDevice, addNewVisitorToDeviceGlobal,getAttendanceDetails } = require("./bowerBiometric");
 biometricRoute.route("/getnewbiometricuserid").post(getNewUserIdList);
 biometricRoute.route("/getnewbiometricuseradd").post(addNewUserToDevice);
 biometricRoute.route("/addnewbiometricvisitor").post(addNewVisitorToDevice);
+biometricRoute.route("/addnewbiometricvisitorGlobal").post(addNewVisitorToDeviceGlobal);
 biometricRoute.route("/getattendanceDetails").post(getAttendanceDetails);
 
 
@@ -124,10 +125,12 @@ biometricRoute.route("/biodownloadusertemplate").post(getBioDownloadUserTemplate
 biometricRoute.route("/biopendingusertemplate").post(getBioPendingUserTemplate);
 
 
-const { getAllUploadUserInfo, addUploadUserInfo,getAllUserBioInfos,addFloorWiseUserAccessInBiometricDevice,getBiometricVisitorDeletionDetails,getVisitorsEnableListDetailsById,getFilteredBiometricVisitorDetails ,getAllUsersFromDeviceToDatabase} = require("../controller/modules/biometric/uploaduserinfo");
+const { getAllUploadUserInfo, addUploadUserInfo,getAllUserBioInfos,getNewUserIdGlobal,addFloorWiseUserAccessInBiometricDevice,getBiometricVisitorDeletionDetails,getVisitorsEnableListDetailsByIdGlobal,getVisitorsEnableListDetailsById,getFilteredBiometricVisitorDetails ,getAllUsersFromDeviceToDatabase} = require("../controller/modules/biometric/uploaduserinfo");
 biometricRoute.route("/biouploaduserinfos").get(getAllUploadUserInfo);
+biometricRoute.route("/getnewbiometricuseridglobal").post(getNewUserIdGlobal);
 biometricRoute.route("/getfilteredbiometricvisitordetails").post(getFilteredBiometricVisitorDetails);
 biometricRoute.route("/enablevisitorsdetailsbyid").post(getVisitorsEnableListDetailsById);
+biometricRoute.route("/enablevisitorsdetailsbyidglobal").post(getVisitorsEnableListDetailsByIdGlobal);
 biometricRoute.route("/biometricvisitordeletiondetails").post(getBiometricVisitorDeletionDetails);
 biometricRoute.route("/biometricusersaddedlist").post(getAllUserBioInfos);
 biometricRoute.route("/importbiometricusersfromdevice").post(getAllUsersFromDeviceToDatabase);

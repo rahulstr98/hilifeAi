@@ -1239,9 +1239,7 @@ function BiometricUsersGrouping() {
           team: valueTeamCat,
           department: valueDepartmentCat,
           companyname:
-            filterState?.type === "Deactivate"
-              ? []
-              : filterEmployee?.map((data) => data?.value),
+            filterState?.type === "Individual" ? filterEmployee?.map((data) => data?.value): [],
           type: filterState?.type,
           devicename: filterState?.devicename,
           deviceserialnumber: filterState?.deviceserialnumber,
@@ -2259,10 +2257,8 @@ function BiometricUsersGrouping() {
           unit: valueUnitCatEdit,
           team: valueTeamCatEdit,
           department: valueDepartmentCatEdit,
-          companyname:
-            filterStateEdit?.type === "Deactivate"
-              ? []
-              : filterEmployee?.map((data) => data?.value),
+          companyname: 
+            filterStateEdit?.type === "Individual" ? filterEmployee?.map((data) => data?.value): [],
           type: filterStateEdit?.type,
           devicename: filterStateEdit?.devicename,
           deviceserialnumber: filterStateEdit?.deviceserialnumber,

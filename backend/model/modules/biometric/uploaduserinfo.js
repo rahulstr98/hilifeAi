@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const MAX_EXPIRY_UNIX = 4102444740;
 const uploaduserinfoSchema = new Schema({
   cloudIDC: {
     type: String,
@@ -77,6 +78,10 @@ const uploaduserinfoSchema = new Schema({
     type: String,
     required: false,
   },
+  userstatus: {
+    type: String,
+    required: false,
+  },
   visitoremail: {
     type: String,
     required: false,
@@ -96,6 +101,19 @@ const uploaduserinfoSchema = new Schema({
   visitorid: {
     type: String,
     required: false,
+  },
+  photoImage: {
+    type: String,
+    required: false,
+  },
+  PhotoMD5: {
+    type: String,
+    required: false,
+  },
+  expirationTime: {
+    type: Number, // unix timestamp (seconds)
+    default: MAX_EXPIRY_UNIX,
+    min: 0,
   },
   addedby: [
     {

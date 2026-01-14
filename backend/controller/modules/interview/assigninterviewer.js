@@ -22,7 +22,7 @@ exports.getAllAssigninterviewer = catchAsyncErrors(async (req, res, next) => {
     const filterQuery = { $or: branchFilter };
 
     assigninterview = await Assignedinterviewer.find(filterQuery);
-  } catch (err) { }
+  } catch (err) {}
   if (!assigninterview) {
     return next(new ErrorHandler("Assigninterviewer not found!", 404));
   }
@@ -31,23 +31,27 @@ exports.getAllAssigninterviewer = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-
-exports.getAllAssigninterviewerVisitor = catchAsyncErrors(async (req, res, next) => {
-  let assigninterview;
-  try {
-
-
-    assigninterview = await Assignedinterviewer.find({ type: req.body.type, fromcompany: req.body.fromcompany, frombranch: req.body.frombranch }, { employee: 1 });
-
-  } catch (err) { }
-  if (!assigninterview) {
-    return next(new ErrorHandler("Assigninterviewer not found!", 404));
+exports.getAllAssigninterviewerVisitor = catchAsyncErrors(
+  async (req, res, next) => {
+    let assigninterview;
+    try {
+      assigninterview = await Assignedinterviewer.find(
+        {
+          type: req.body.type,
+          fromcompany: req.body.fromcompany,
+          frombranch: req.body.frombranch,
+        },
+        { employee: 1 }
+      );
+    } catch (err) {}
+    if (!assigninterview) {
+      return next(new ErrorHandler("Assigninterviewer not found!", 404));
+    }
+    return res.status(200).json({
+      assigninterview,
+    });
   }
-  return res.status(200).json({
-    assigninterview,
-  });
-});
-
+);
 
 // Create new Holiday=> /api/powerstation/new
 exports.addAssigninterview = catchAsyncErrors(async (req, res, next) => {
@@ -103,12 +107,23 @@ exports.getAssignInterviewFilter = catchAsyncErrors(async (req, res, next) => {
   let assigninterview, result, user, userresult;
   let type = req.body.type;
   try {
-
     let query = {};
     Object.keys(req.body).forEach((key) => {
-      if (key !== "headers" && key !== "type") {
-        const value = req.body[key];
-        if (value !== "ALL" && value !== "") {
+      if (key === "headers" || key === "type") return;
+
+      const value = req.body[key];
+
+      if (value === "ALL" || value === "") return;
+
+      // 🔹 If type is Department → only allow department
+      if (type === "Department") {
+        if (key === "department") {
+          query.department = value.toString();
+        }
+      }
+      // 🔹 Otherwise → exclude department
+      else {
+        if (key !== "department") {
           query[key] = value.toString();
         }
       }
@@ -128,29 +143,69 @@ exports.getAssignInterviewFilter = catchAsyncErrors(async (req, res, next) => {
       }
     }
     result = await Assignedinterviewer.find(queryFilter);
-  
-    userresult = await User.find(
-      query,
-      {
-        resonablestatus: 1,
-        company: 1,
-        branch: 1,
-        unit: 1,
-        department: 1,
-        companyname: 1,
-        team: 1,
-      }
-    );
-    assigninterview = result.flatMap(ite => ite.employee);
-  console.log(result?.length, assigninterview ,userresult?.length, "query")
+
+    console.log(result?.length, type, queryFilter, query, "type");
+    assigninterview = result.flatMap((ite) => ite.employee);
+    userresult =
+      type === "Department"
+        ? await User.find(
+            {
+              companyname: { $in: assigninterview },
+              resonablestatus: {
+                $nin: [
+                  "Not Joined",
+                  "Postponed",
+                  "Rejected",
+                  "Closed",
+                  "Releave Employee",
+                  "Absconded",
+                  "Hold",
+                  "Terminate",
+                ],
+              },
+            },
+            {
+              resonablestatus: 1,
+              company: 1,
+              branch: 1,
+              unit: 1,
+              department: 1,
+              companyname: 1,
+              team: 1,
+            }
+          )
+        : await User.find(
+            {
+              ...query,
+              resonablestatus: {
+                $nin: [
+                  "Not Joined",
+                  "Postponed",
+                  "Rejected",
+                  "Closed",
+                  "Releave Employee",
+                  "Absconded",
+                  "Hold",
+                  "Terminate",
+                ],
+              },
+            },
+            {
+              resonablestatus: 1,
+              company: 1,
+              branch: 1,
+              unit: 1,
+              department: 1,
+              companyname: 1,
+              team: 1,
+            }
+          );
     user = userresult?.filter((data) =>
       assigninterview?.includes(data?.companyname)
     );
-
-      // console.log(result?.length, assigninterview ,userresult?.length, user,"query")
-
-
-  } catch (err) { }
+    // console.log(user?.length, "query");
+    console.log(result?.length, assigninterview, user, "query");
+  } catch (err) {}
 
   return res.status(200).json({
     user,
@@ -158,7 +213,7 @@ exports.getAssignInterviewFilter = catchAsyncErrors(async (req, res, next) => {
 });
 exports.getAssignInterviewFilterManual = catchAsyncErrors(
   async (req, res, next) => {
-    let assigninterview, result, user, userresult;
+    let assigninterview, result, user, userresult;  
     try {
       result = await Assignedinterviewer.find();
       userresult = await User.find(
@@ -195,7 +250,7 @@ exports.getAssignInterviewFilterManual = catchAsyncErrors(
       user = userresult?.filter((data) =>
         assigninterview?.includes(data?.companyname)
       );
-    } catch (err) { }
+    } catch (err) {}
 
     return res.status(200).json({
       user,

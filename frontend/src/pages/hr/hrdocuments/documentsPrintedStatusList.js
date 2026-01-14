@@ -1387,9 +1387,7 @@ function DocumentsPrintedStatusList() {
   const [isOpenLetterHeadPopup, setIsLetterHeadPopup] = useState(false);
   const [PageMailOpen, setPageMailOpen] = useState(false);
   const [PageUpdateOpen, setPageUpdateOpen] = useState(false);
-  const [headerOptions, setHeaderOptions] = useState(
-    "With Letter Head"
-  );
+  const [headerOptions, setHeaderOptions] = useState("With Letter Head");
   const [pagePopeOpen, setPagePopUpOpen] = useState("");
   const [DataTableId, setDataTableId] = useState("");
   const [selectedHeadOpt, setSelectedHeadOpt] = useState([]);
@@ -1428,10 +1426,10 @@ function DocumentsPrintedStatusList() {
       ? valueCate.map(({ label }) => label).join(", ")
       : "Please Select Letter Head";
   };
-  const handleClickOpenLetterHeader = (page , personId) => {
+  const handleClickOpenLetterHeader = (page, personId) => {
     setPagePopUpOpen(page);
     setIsLetterHeadPopup(true);
-    handleHeadChange(WithHeaderOptions , personId);
+    handleHeadChange(WithHeaderOptions, personId);
   };
 
   const handleClickCloseLetterHead = () => {
@@ -1543,7 +1541,7 @@ function DocumentsPrintedStatusList() {
         };
 
         setPersonId(headerFooterBase64);
-        handleClickOpenLetterHeader(pagename , headerFooterBase64);
+        handleClickOpenLetterHeader(pagename, headerFooterBase64);
         setDataTableId(e);
       }
     } catch (err) {
@@ -1609,7 +1607,7 @@ function DocumentsPrintedStatusList() {
       handleClickOpenMailOpen();
       // await fetchEmailForUser(id, convert, fromemail, ccemail, bccemail, email, pagename)
     } else {
-      handleClickOpenLetterHeader("Email" ,personId);
+      handleClickOpenLetterHeader("Email", personId);
       setEmailValuePage({
         id,
         convert,
@@ -1955,10 +1953,12 @@ function DocumentsPrintedStatusList() {
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
           const signatureNeed =
             response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword =
+            response?.data?.sdocumentPreparation?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -2019,16 +2019,19 @@ function DocumentsPrintedStatusList() {
                   doc.setTextColor(0, 0, 0);
                 }
 
-              { 
-                (response?.data?.sdocumentPreparation?.signature !== "Please Select Signature" && !response?.data?.sdocumentPreparation?.signature) &&
-                 doc.addImage(
-                  response?.data?.sdocumentPreparation.signature,
-                  "PNG",
-                  leftX,
-                  yPos,
-                  sigWidth,
-                  sigHeight
-                );}
+                {
+                  response?.data?.sdocumentPreparation?.signature !==
+                    "Please Select Signature" &&
+                    !response?.data?.sdocumentPreparation?.signature &&
+                    doc.addImage(
+                      response?.data?.sdocumentPreparation.signature,
+                      "PNG",
+                      leftX,
+                      yPos,
+                      sigWidth,
+                      sigHeight
+                    );
+                }
 
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
@@ -2049,7 +2052,11 @@ function DocumentsPrintedStatusList() {
 
               // --- Center: Seal (align with same yPos) ---
               const centerX = pageWidth / 2 - sealWidth / 2;
-              if (response?.data?.sdocumentPreparation?.seal && response?.data?.sdocumentPreparation?.seal !== "Please Select Seal") {
+              if (
+                response?.data?.sdocumentPreparation?.seal &&
+                response?.data?.sdocumentPreparation?.seal !==
+                  "Please Select Seal"
+              ) {
                 doc.addImage(
                   response?.data?.sdocumentPreparation.seal,
                   "PNG",
@@ -2537,10 +2544,12 @@ function DocumentsPrintedStatusList() {
           // if (response?.data?.sdocumentPreparation?.signatureneed) {
           const signatureNeed =
             response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
-
+          const hasReservedKeyword =
+            response?.data?.sdocumentPreparation?.reservedKeywords;
           if (
-            signatureNeed === "All Pages" ||
-            (signatureNeed === "End Page" && i === totalPages)
+            (signatureNeed === "All Pages" ||
+              (signatureNeed === "End Page" && i === totalPages)) &&
+            !(hasReservedKeyword && i === totalPages)
           ) {
             // Decide Y position right after content but above footer
             const imageY = contentEndY;
@@ -2601,16 +2610,19 @@ function DocumentsPrintedStatusList() {
                   doc.setTextColor(0, 0, 0);
                 }
 
-              { 
-                (response?.data?.sdocumentPreparation?.signature !== "Please Select Signature" && !response?.data?.sdocumentPreparation?.signature) &&
-                 doc.addImage(
-                  response?.data?.sdocumentPreparation.signature,
-                  "PNG",
-                  leftX,
-                  yPos,
-                  sigWidth,
-                  sigHeight
-                );}
+                {
+                  response?.data?.sdocumentPreparation?.signature !==
+                    "Please Select Signature" &&
+                    !response?.data?.sdocumentPreparation?.signature &&
+                    doc.addImage(
+                      response?.data?.sdocumentPreparation.signature,
+                      "PNG",
+                      leftX,
+                      yPos,
+                      sigWidth,
+                      sigHeight
+                    );
+                }
 
                 if (
                   response?.data?.sdocumentPreparation?.signaturetype ===
@@ -2631,8 +2643,11 @@ function DocumentsPrintedStatusList() {
 
               // --- Center: Seal (align with same yPos) ---
               const centerX = pageWidth / 2 - sealWidth / 2;
-                          if (response?.data?.sdocumentPreparation?.seal && response?.data?.sdocumentPreparation?.seal !== "Please Select Seal") {
-
+              if (
+                response?.data?.sdocumentPreparation?.seal &&
+                response?.data?.sdocumentPreparation?.seal !==
+                  "Please Select Seal"
+              ) {
                 doc.addImage(
                   response?.data?.sdocumentPreparation.seal,
                   "PNG",
@@ -3152,10 +3167,12 @@ function DocumentsPrintedStatusList() {
         // if (response?.data?.sdocumentPreparation?.signatureneed) {
         const signatureNeed =
           response?.data?.sdocumentPreparation?.signatureneed; // "All Pages" or "End Page"
-
+        const hasReservedKeyword =
+          response?.data?.sdocumentPreparation?.reservedKeywords;
         if (
-          signatureNeed === "All Pages" ||
-          (signatureNeed === "End Page" && i === totalPages)
+          (signatureNeed === "All Pages" ||
+            (signatureNeed === "End Page" && i === totalPages)) &&
+          !(hasReservedKeyword && i === totalPages)
         ) {
           // Decide Y position right after content but above footer
           const imageY = contentEndY;
@@ -3216,16 +3233,19 @@ function DocumentsPrintedStatusList() {
                 doc.setTextColor(0, 0, 0);
               }
 
-              { 
-                (response?.data?.sdocumentPreparation?.signature !== "Please Select Signature" && !response?.data?.sdocumentPreparation?.signature) &&
-                 doc.addImage(
-                  response?.data?.sdocumentPreparation.signature,
-                  "PNG",
-                  leftX,
-                  yPos,
-                  sigWidth,
-                  sigHeight
-                );}
+              {
+                response?.data?.sdocumentPreparation?.signature !==
+                  "Please Select Signature" &&
+                  !response?.data?.sdocumentPreparation?.signature &&
+                  doc.addImage(
+                    response?.data?.sdocumentPreparation.signature,
+                    "PNG",
+                    leftX,
+                    yPos,
+                    sigWidth,
+                    sigHeight
+                  );
+              }
 
               if (
                 response?.data?.sdocumentPreparation?.signaturetype ===
@@ -3246,8 +3266,11 @@ function DocumentsPrintedStatusList() {
 
             // --- Center: Seal (align with same yPos) ---
             const centerX = pageWidth / 2 - sealWidth / 2;
-                          if (response?.data?.sdocumentPreparation?.seal && response?.data?.sdocumentPreparation?.seal !== "Please Select Seal") {
-
+            if (
+              response?.data?.sdocumentPreparation?.seal &&
+              response?.data?.sdocumentPreparation?.seal !==
+                "Please Select Seal"
+            ) {
               doc.addImage(
                 response?.data?.sdocumentPreparation.seal,
                 "PNG",

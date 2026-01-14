@@ -365,7 +365,7 @@ exports.sendUserDetailsToDevice = async (rawPeopleJson, base64Photo, url) => {
 exports.getAttendanceDetails = async (url) => {
   try {
     const token = await performLogin(url);
-    console.log(token ,"TOken")
+    console.log(token, "TOken");
     if (!token) {
       console.error("Token not received");
       return { success: false, message: "Token not received" };
@@ -599,9 +599,7 @@ exports.getUserListByName = async (url, username) => {
     }
 
     const devicename = await axios.get(`${url}/api/GetDeviceSN`);
-    const deviceID = devicename?.data?.result
-      ? devicename?.data?.content
-      : "";
+    const deviceID = devicename?.data?.result ? devicename?.data?.content : "";
 
     const pageSize = 100;
     let pageIndex = 1;
@@ -633,9 +631,7 @@ exports.getUserListByName = async (url, username) => {
         }
 
         // 🔴 Find UserID immediately
-        const matchedUser = dataList.find(
-          (item) => item?.Name === username
-        );
+        const matchedUser = dataList.find((item) => item?.Name === username);
 
         if (matchedUser?.UserID) {
           foundUserID = matchedUser.UserID;
@@ -655,7 +651,6 @@ exports.getUserListByName = async (url, username) => {
     return "";
   }
 };
-
 
 // Helper to format Unix timestamp (seconds) to dd-MM-yyyy HH:mm:ss
 function formatUnixToDateTime(timestamp) {
@@ -1052,7 +1047,7 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
             AccessType: 0,
             OpenTimes: 0,
             Photo: req?.body.photo,
-            cardNum: 4678146
+            cardNum: 4678146,
           };
 
           // Add the visitor to the device
@@ -1070,7 +1065,9 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
             isFaceEnrolledC: req?.body.photo ? "Yes" : "No",
             privilegeC: "User",
             isEnabledC: "No",
-            status: "Visitor",
+            userstatus: "Visitor",
+            dataupload: "new",
+            photoImage: base64Photo,
             visitorintime: req?.body?.intime,
             visitorCreatedDate: req?.body?.expirydate,
             startdate: req?.body?.expirydate,
@@ -1129,6 +1126,141 @@ exports.addNewVisitorToDevice = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Internal server error", 500));
   }
 });
+
+exports.addNewVisitorToDeviceGlobal = catchAsyncErrors(async (req, res, next) => {
+  try {
+    const { company, branch, unit, floor, area } = req.body;
+
+    const clean = (arr) => (Array.isArray(arr) ? arr.filter(Boolean) : []);
+
+    const matchCondition = {
+      ...(clean(company).length && { company: { $in: clean(company) } }),
+      ...(clean(branch).length && { branch: { $in: clean(branch) } }),
+      ...(clean(unit).length && { unit: { $in: clean(unit) } }),
+      ...(clean(floor).length && { floor: { $in: clean(floor) } }),
+      ...(clean(area).length && { area: { $in: clean(area) } }),
+    };
+
+    /* --------------------------------------------------
+       1️⃣ Get exit-enabled paired devices
+    -------------------------------------------------- */
+    const pairedDetails = await BiometricPairedDevicesGrouping.find(
+      {
+        ...matchCondition,
+        $or: [
+          { exitinone: true },
+          { exitoutone: true },
+          { exitinoutone: true },
+          { exitintwo: true },
+          { exitouttwo: true },
+          { exitinouttwo: true },
+        ],
+      },
+      { paireddeviceone: 1, paireddevicetwo: 1 }
+    ).lean();
+
+    const pairedDevices = pairedDetails
+      .flatMap(d => [d.paireddeviceone, d.paireddevicetwo])
+      .filter(Boolean);
+
+    /* --------------------------------------------------
+       2️⃣ Get device serial numbers
+    -------------------------------------------------- */
+    const deviceDocs = await BiometricDeviceManagement.find(
+      {
+        ...matchCondition,
+        $or: [
+          { isVisitor: true },
+          { biometriccommonname: { $in: pairedDevices } },
+        ],
+      },
+      { biometricserialno: 1 }
+    ).lean();
+
+    if (!deviceDocs.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No visitor-enabled devices found",
+      });
+    }
+
+    const deviceSerials = deviceDocs.map(d => d.biometricserialno);
+
+    /* --------------------------------------------------
+       3️⃣ Get max biometricUserIDC ONCE
+    -------------------------------------------------- */
+    const maxResult = await Biouploaduserinfo.aggregate([
+      {
+        $match: {
+          biometricUserIDC: { $regex: "^[0-9]+$" },
+        },
+      },
+      {
+        $project: {
+          numericUserId: { $toLong: "$biometricUserIDC" },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          maxUserId: { $max: "$numericUserId" },
+        },
+      },
+    ]);
+
+    let nextUserId = maxResult.length ? maxResult[0].maxUserId + 1 : 1;
+
+    /* --------------------------------------------------
+       4️⃣ Prepare bulk upsert
+    -------------------------------------------------- */
+    const bulkOps = deviceSerials.map(serial => ({
+      updateOne: {
+        filter: {
+          cloudIDC: serial,
+          biometricUserIDC: String(nextUserId),
+          startdate: req.body.expirydate,
+        },
+        update: {
+          $setOnInsert: {
+            cloudIDC: serial,
+            biometricUserIDC: String(nextUserId),
+            staffNameC: req.body.name || "Visitor",
+            isFaceEnrolledC: req.body.photo ? "Yes" : "No",
+            privilegeC: "User",
+            isEnabledC: "No",
+            userstatus: "Visitor",
+            dataupload: "new",
+            photoImage: req.body.photo || null,
+            visitorintime: req.body.intime,
+            visitorCreatedDate: req.body.expirydate,
+            startdate: req.body.expirydate,
+            expirytime: addHoursWithLimit(req.body.intime, 4),
+            visitoremail: req.body.visitoremail,
+            visitorcontactnumber: req.body.visitorcontactnumber,
+            visitorid: req.body.visitorid,
+            visitorpage: req.body.page,
+            visitorpagedetails: req.body.pagedetails,
+          },
+        },
+        upsert: true,
+      },
+    }));
+
+    const bulkResult = await Biouploaduserinfo.bulkWrite(bulkOps);
+
+    return res.status(200).json({
+      success: true,
+      visitorUserId: nextUserId,
+      devicesProcessed: deviceSerials.length,
+      inserted: bulkResult.upsertedCount,
+    });
+
+  } catch (err) {
+    console.error("addNewVisitorToDeviceGlobal error:", err);
+    return next(new ErrorHandler("Internal server error", 500));
+  }
+});
+
 
 function addHoursWithLimit(time, hoursToAdd) {
   // Parse input time

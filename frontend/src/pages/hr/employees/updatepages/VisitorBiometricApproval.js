@@ -825,7 +825,7 @@ function VisitorBiometricApproval() {
     // setLoader(true);
     try {
       let response = await axios.post(
-        `${SERVICE.ENABLE_VISITORS_DETAILS_BY_ID}`,
+        `${SERVICE.ENABLE_VISITORS_DETAILS_BY_ID_GLOBAL}`,
         {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,

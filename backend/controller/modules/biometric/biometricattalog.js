@@ -295,575 +295,13 @@ exports.getUsersAttendanceReports = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Records not found!", 500));
   }
 });
-
-exports.getUsersAttendanceReportsAaaJewellers = catchAsyncErrors(
-  async (req, res, next) => {
-    let answer, usersCollection, filteredData;
-    let { company, branch, usernames, type, userDates, workmode } = req.body;
-    try {
-      //console.log('Hitted Here')
-      let query = {};
-      if (type !== "Deactivate" && usernames?.length > 0) {
-        query.username = { $in: usernames };
-      }
-      if (type === "Deactivate") {
-        query.resonablestatus = {
-          $in: [
-            "Not Joined",
-            "Postponed",
-            "Rejected",
-            "Closed",
-            "Releave Employee",
-            "Absconded",
-            "Hold",
-            "Terminate",
-          ],
-        };
-      }
-      if (type === "Deactivate" && company?.length > 0) {
-        query.company = { $in: company };
-      }
-      if (type === "Deactivate" && branch?.length > 0) {
-        query.branch = { $in: branch };
-      }
-      if (workmode?.length > 0) {
-        query.workmode = { $in: workmode };
-      }
-      const userDetails = await User.find(query, { username: 1 });
-      const usernamesFilter =
-        userDetails?.length > 0
-          ? userDetails?.map((data) => data?.username)
-          : [];
-
-      const serialNos = await BiometricPairedDevicesGrouping.aggregate([
-        // 1. Match records where any attendance flag is true
-        {
-          $match: {
-            $or: [
-              { attendanceinone: true },
-              { attendanceoutone: true },
-              { attendanceinoutone: true },
-              { attendanceintwo: true },
-              { attendanceoutwo: true },
-              { attendanceinouttwo: true },
-            ],
-          },
-        },
-        {
-          $project: {
-            devices: ["$paireddeviceone", "$paireddevicetwo"],
-          },
-        },
-
-        // 3. Flatten devices array
-        { $unwind: "$devices" },
-
-        // 4. Filter out null/empty device names
-        { $match: { devices: { $ne: null, $ne: "" } } },
-
-        // 5. Lookup in BiometricDeviceManagement
-        {
-          $lookup: {
-            from: "biometricdevicemanagements", // check actual collection name
-            localField: "devices",
-            foreignField: "biometriccommonname",
-            as: "matchedDevice",
-          },
-        },
-
-        // 6. Flatten lookup result
-        { $unwind: "$matchedDevice" },
-
-        // 7. Collect only serial numbers (deduped)
-        {
-          $group: {
-            _id: null,
-            serials: { $addToSet: "$matchedDevice.biometricserialno" },
-          },
-        },
-
-        // 8. Final projection: return only array
-        {
-          $project: {
-            _id: 0,
-            serials: 1,
-          },
-        },
-      ]);
-      const biometricUsersGrouping = await BiometricUsersGrouping.aggregate([
-        {
-          $match: {
-            $or: [
-              { attendanceinone: true },
-              { attendanceoutone: true },
-              { attendanceinoutone: true },
-              { attendanceintwo: true },
-              { attendanceouttwo: true },
-              { attendanceinouttwo: true },
-            ],
-          },
-        },
-        {
-          $project: {
-            companyname: 1,
-            type: 1,
-            paireddeviceone: {
-              device: "$paireddeviceone",
-              attendancein: "$attendanceinone",
-              attendanceout: "$attendanceoutone",
-              attendanceinout: "$attendanceinoutone",
-            },
-            paireddevicetwo: {
-              device: "$paireddevicetwo",
-              attendancein: "$attendanceintwo",
-              attendanceout: "$attendanceouttwo",
-              attendanceinout: "$attendanceinouttwo",
-            },
-          },
-        },
-        { $unwind: "$companyname" },
-        {
-          $lookup: {
-            from: "users",
-            localField: "companyname",
-            foreignField: "companyname",
-            as: "userMatch",
-          },
-        },
-        { $unwind: "$userMatch" },
-        {
-          $project: {
-            _id: 0,
-            companyname: 1,
-            type: 1,
-            username: "$userMatch.username",
-            userId: "$userMatch._id",
-            devices: [
-              {
-                device: "$paireddeviceone.device",
-                attendancein: "$paireddeviceone.attendancein",
-                attendanceout: "$paireddeviceone.attendanceout",
-                attendanceinout: "$paireddeviceone.attendanceinout",
-              },
-              {
-                device: "$paireddevicetwo.device",
-                attendancein: "$paireddevicetwo.attendancein",
-                attendanceout: "$paireddevicetwo.attendanceout",
-                attendanceinout: "$paireddevicetwo.attendanceinout",
-              },
-            ],
-          },
-        },
-        { $unwind: "$devices" },
-
-        // ✅ Lookup device details from biometricdevicemanagements
-        {
-          $lookup: {
-            from: "biometricdevicemanagements",
-            let: { deviceName: "$devices.device" },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $eq: ["$biometriccommonname", "$$deviceName"],
-                  },
-                },
-              },
-              {
-                $project: {
-                  biometricserialno: 1,
-                  biometriccommonname: 1,
-                  _id: 0,
-                },
-              },
-            ],
-            as: "matchedDevice",
-          },
-        },
-        {
-          $unwind: { path: "$matchedDevice", preserveNullAndEmptyArrays: true },
-        }, // keep rows even if no match
-        {
-          $project: {
-            companyname: 1,
-            type: 1,
-            username: 1,
-            userId: 1,
-            device: "$devices.device",
-            attendancein: "$devices.attendancein",
-            attendanceout: "$devices.attendanceout",
-            attendanceinout: "$devices.attendanceinout",
-            deviceserialnumber: "$matchedDevice.biometricserialno",
-            //  matchedDevice: 1
-          },
-        },
-      ]);
-      //console.log(biometricUsersGrouping, "biometricUsersGrouping");
-
-      // 1. Create a map of device serials to grouped biometric user data by username and type
-      const biometricGroupingMap = {};
-
-      for (const group of biometricUsersGrouping) {
-        const {
-          deviceserialnumber,
-          username,
-          type,
-          attendancein,
-          attendanceout,
-          attendanceinout,
-        } = group;
-
-        if (!biometricGroupingMap[deviceserialnumber]) {
-          biometricGroupingMap[deviceserialnumber] = [];
-        }
-
-        biometricGroupingMap[deviceserialnumber].push({
-          usernames: username,
-          type,
-          indevice: attendancein,
-          outdevice: attendanceout,
-          inoutdevice: attendanceinout,
-        });
-      }
-
-      const pairedSerials = Object.values(biometricGroupingMap)
-        .flat()
-        .filter(Boolean);
-      let matchQuery = {
-        staffNameC: { $in: usernamesFilter },
-      };
-
-      // only add condition if serialNos[0]?.serials exists and not empty
-      if (serialNos?.[0]?.serials?.length > 0) {
-        matchQuery.cloudIDC = { $in: serialNos[0].serials };
-      }
-
-      // only add $nin if pairedSerials has values
-      if (pairedSerials?.length > 0) {
-        matchQuery.cloudIDC = {
-          ...(matchQuery.cloudIDC || {}),
-          $nin: pairedSerials,
-        };
-      }
-      // console.log(biometricGroupingMap, pairedSerials, "biometricGroupingMap")
-
-      answer = await getUserClockinAndClockoutStatus({
-        employee: usernamesFilter,
-        userDates: userDates,
-      });
-
-      usersCollection = await Biometricattlog.aggregate([
-        { $match: matchQuery },
-        {
-          $lookup: {
-            from: "users",
-            localField: "staffNameC",
-            foreignField: "username",
-            as: "userDetails",
-          },
-        },
-        {
-          $lookup: {
-            from: "biometricdevicemanagements",
-            localField: "cloudIDC",
-            foreignField: "biometricserialno",
-            as: "biometricDevice",
-          },
-        },
-        // 🔹 Lookup pairing group based on device common name
-        {
-          $lookup: {
-            from: "biometricpaireddevicesgroupings",
-            let: {
-              commonName: {
-                $arrayElemAt: ["$biometricDevice.biometriccommonname", 0],
-              },
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $or: [
-                      { $eq: ["$paireddeviceone", "$$commonName"] },
-                      { $eq: ["$paireddevicetwo", "$$commonName"] },
-                    ],
-                  },
-                },
-              },
-            ],
-            as: "deviceMatched",
-          },
-        },
-        {
-          $addFields: {
-            empcode: { $arrayElemAt: ["$userDetails.empcode", 0] },
-            company: { $arrayElemAt: ["$userDetails.company", 0] },
-            branch: { $arrayElemAt: ["$userDetails.branch", 0] },
-            unit: { $arrayElemAt: ["$userDetails.unit", 0] },
-            team: { $arrayElemAt: ["$userDetails.team", 0] },
-            department: { $arrayElemAt: ["$userDetails.department", 0] },
-            companyname: { $arrayElemAt: ["$userDetails.companyname", 0] },
-            biometriccommonname: {
-              $arrayElemAt: ["$biometricDevice.biometriccommonname", 0],
-            },
-
-            // 🔹 Conditional assignment based on matching device
-            isDeviceOne: {
-              $eq: [
-                { $first: "$deviceMatched.paireddeviceone" },
-                { $first: "$biometricDevice.biometriccommonname" },
-              ],
-            },
-          },
-        },
-        {
-          $addFields: {
-            indevice: {
-              $cond: [
-                "$isDeviceOne",
-                { $first: "$deviceMatched.attendanceinone" },
-                { $first: "$deviceMatched.attendanceintwo" },
-              ],
-            },
-            outdevice: {
-              $cond: [
-                "$isDeviceOne",
-                { $first: "$deviceMatched.attendanceoutone" },
-                { $first: "$deviceMatched.attendanceouttwo" },
-              ],
-            },
-            inoutdevice: {
-              $cond: [
-                "$isDeviceOne",
-                { $first: "$deviceMatched.attendanceinoutone" },
-                { $first: "$deviceMatched.attendanceinouttwo" },
-              ],
-            },
-          },
-        },
-        {
-          $project: {
-            userDetails: 0,
-            biometricDevice: 0,
-            deviceMatched: 0,
-          },
-        },
-      ]);
-      // console.log(usersCollection?.length, usersCollection[0])
-      let filteredUsers = [];
-      usersCollection.forEach((user) => {
-        const userSerial = user.cloudIDC;
-        const username = user.staffNameC;
-
-        let matchedGroupings = [];
-
-        // 🔎 Find all groupings that contain this username
-        for (const [serial, groupings] of Object.entries(
-          biometricGroupingMap
-        )) {
-          const userGroupings = groupings.filter((g) =>
-            g.usernames.includes(username)
-          );
-          if (userGroupings.length > 0) {
-            const groupingsWithSerial = userGroupings.map((g) => ({
-              ...g,
-              deviceSerial: serial,
-            }));
-            matchedGroupings.push(...groupingsWithSerial);
-          }
-        }
-
-        if (matchedGroupings.length === 0) {
-          filteredUsers.push(user);
-          return;
-        }
-
-        // ✅ Only process if user's serial is one of the deviceSerials
-        const matchedForUserSerial = matchedGroupings.filter(
-          (g) => g.deviceSerial === userSerial
-        );
-
-        // We’ll store chosen priority once per username
-        let chosenGrouping = null;
-
-        if (matchedForUserSerial.length > 0) {
-          // Group groupings by deviceSerial
-          const devicePriorityMap = {};
-          const deviceGroupingMap = {};
-
-          matchedForUserSerial.forEach((g) => {
-            const serial = g.deviceSerial;
-            const existingType = devicePriorityMap[serial];
-
-            if (
-              !existingType ||
-              typePriority[g.type] < typePriority[existingType]
-            ) {
-              devicePriorityMap[serial] = g.type;
-              deviceGroupingMap[serial] = g; // Save full group to apply later
-            }
-          });
-
-          const userDeviceTopPriorityType = devicePriorityMap[userSerial];
-          chosenGrouping = deviceGroupingMap[userSerial];
-
-          if (userDeviceTopPriorityType && chosenGrouping) {
-            // Update the user's device flags ONLY for matching deviceSerial
-            user.indevice = chosenGrouping.indevice ?? false;
-            user.outdevice = chosenGrouping.outdevice ?? false;
-            user.inoutdevice = chosenGrouping.inoutdevice ?? false;
-          }
-        }
-        if (chosenGrouping) {
-        }
-        filteredUsers.push(user);
-      });
-
-      filteredData = answer?.finaluser?.flatMap(
-        ({ rowusername, shiftdate, shift }) => {
-          const matchedUsers = filteredUsers
-            .filter((user) => user.staffNameC === rowusername)
-            .map((user) => {
-              if (!user.indevice && !user.outdevice && !user.inoutdevice) {
-                return null;
-              }
-              const startTime = shiftdate?.startTime
-                ? new Date(shiftdate.startTime)
-                : null;
-              const endTime = shiftdate?.endTime
-                ? new Date(shiftdate.endTime)
-                : null;
-              const [datePart, timePart] = user?.clockDateTimeD.split(" ");
-              const [day, month, year] = datePart.split("-");
-              const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
-              // console.log(moment(shiftdate.startTime).format("DD-MM-YYYY hh:mm:ss a"), "startTime");
-              // console.log(moment(shiftdate.endTime).format("DD-MM-YYYY hh:mm:ss a"), "endTime");
-
-              if (startTime && endTime && !isNaN(clockTime)) {
-                if (clockTime >= startTime && clockTime <= endTime) {
-                  return { ...user, clockTime };
-                }
-              }
-              return null;
-            })
-            .filter(Boolean);
-          // console.log(matchedUsers, "matchedUsers")
-
-          // Categorize by device types
-          const inDevices = matchedUsers.filter((d) => d.indevice);
-          const outDevices = matchedUsers.filter((d) => d.outdevice);
-          const inOutDevices = matchedUsers.filter((d) => d.inoutdevice);
-
-          // Sort all by datetime
-          const sortedInDevices = [...inDevices].sort(
-            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-          );
-          const sortedOutDevices = [...outDevices].sort(
-            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-          );
-          const sortedInOutDevices = [...inOutDevices].sort(
-            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-          );
-          //console.log(sortedInOutDevices?.length, "filteredUsers")
-          let inTime = null;
-          let outTime = null;
-          let inTimeVerified = null;
-          let inTimeVerifiedDevice = null;
-          let outTimeVerified = null;
-          let outTimeVerifiedDevice = null;
-
-          // Determine inTime
-          if (sortedInDevices.length > 0) {
-            inTime = sortedInDevices[0].clockDateTimeD;
-            inTimeVerified = sortedInDevices[0].verifyC;
-            inTimeVerifiedDevice = sortedInDevices[0].biometriccommonname;
-          } else if (sortedInOutDevices.length > 0) {
-            inTime = sortedInOutDevices[0].clockDateTimeD;
-            inTimeVerified = sortedInOutDevices[0].verifyC;
-            inTimeVerifiedDevice = sortedInOutDevices[0].biometriccommonname;
-          }
-
-          // Determine outTime
-          if (sortedOutDevices.length > 0) {
-            const LastDeviceBasedOnTime = matchedUsers?.sort(
-              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-            );
-            const last =
-              LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
-            // console.log(last, "filteredUsers")
-
-            if (last?.outdevice) {
-              outTime = last.clockDateTimeD;
-              outTimeVerified = last.verifyC;
-              outTimeVerifiedDevice = last.biometriccommonname;
-            }
-          } else if (
-            sortedInOutDevices.length > 1
-            // && sortedInOutDevices.length % 2 === 0
-          ) {
-            const LastDeviceBasedOnTime = matchedUsers?.sort(
-              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-            );
-            const last =
-              LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
-            //console.log(last, "last")
-            if (last?.inoutdevice) {
-              outTime = last.clockDateTimeD;
-              outTimeVerified = last.verifyC;
-              outTimeVerifiedDevice = last.biometriccommonname;
-            }
-          }
-          const fallbackUser = filteredUsers.find(
-            (user) => user.staffNameC === rowusername
-          );
-
-          return {
-            shiftdate: shiftdate?.date || shift,
-            ...(matchedUsers?.length > 0 ? matchedUsers[0] : fallbackUser),
-            inTime: inTime ? formatToAmPm(inTime) : null,
-            outTime: outTime ? formatToAmPm(outTime) : null,
-            inTimeVerified,
-            inTimeVerifiedDevice,
-            outTimeVerified,
-            outTimeVerifiedDevice,
-          };
-        }
-      );
-
-      function formatToAmPm(dateStr) {
-        let [day, month, year, time] = dateStr.split(/[-\s]/);
-        let formattedDate = new Date(`${year}-${month}-${day}T${time}`);
-        let formattedTime = formattedDate.toLocaleString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true,
-        });
-
-        return `${day}-${month}-${year} ${formattedTime}`; // Remove space between time and AM/PM
-      }
-
-      return res.status(200).json({
-        answer,
-        usersCollection,
-        filteredData: filteredData?.filter((data) => data?.companyname),
-      });
-    } catch (err) {
-      console.log(err, "err");
-      return next(new ErrorHandler("Records not found!", 500));
-    }
-  }
-);
-
-
-
 function addShiftStatus(data) {
   const groupedByDate = {};
   const userShiftStatusMap = {};
   const groupedByUser = {};
 
   // 1️⃣ Group data and detect shiftStatus
-  data.forEach(item => {
+  data.forEach((item) => {
     // ⚠️ Skip Week Off rows entirely
     if (item.shift === "Week Off") return;
 
@@ -877,22 +315,28 @@ function addShiftStatus(data) {
     groupedByUser[item.rowusername].push(item);
 
     // Detect shiftStatus from Main Shift
-    if (!userShiftStatusMap[item.rowusername] && item.shiftMode === "Main Shift") {
+    if (
+      !userShiftStatusMap[item.rowusername] &&
+      item.shiftMode === "Main Shift"
+    ) {
       const shift = item.shift || "";
       const isDayShift = /AMto.*PM$/i.test(shift);
-      userShiftStatusMap[item.rowusername] = isDayShift ? "Day Shift" : "Night Shift";
+      userShiftStatusMap[item.rowusername] = isDayShift
+        ? "Day Shift"
+        : "Night Shift";
     }
   });
 
   // 2️⃣ Sort each user's records by start time
-  Object.values(groupedByUser).forEach(userShifts => {
+  Object.values(groupedByUser).forEach((userShifts) => {
     userShifts.sort(
-      (a, b) => new Date(a.shiftdate.orgStartTime) - new Date(b.shiftdate.orgStartTime)
+      (a, b) =>
+        new Date(a.shiftdate.orgStartTime) - new Date(b.shiftdate.orgStartTime)
     );
   });
 
   // 3️⃣ Final mapping
-  return data.map(item => {
+  return data.map((item) => {
     // ⚠️ Skip all calculations for Week Off
     if (item.shift === "Week Off") {
       return {
@@ -900,7 +344,7 @@ function addShiftStatus(data) {
         shiftStatus: "",
         hoursDifference: 0,
         nightShiftDifference: 0,
-        nightShiftGapHours: 0
+        nightShiftGapHours: 0,
       };
     }
 
@@ -916,12 +360,13 @@ function addShiftStatus(data) {
     if (shifts.length === 2) {
       shifts.sort(
         (a, b) =>
-          new Date(a.shiftdate.orgStartTime) - new Date(b.shiftdate.orgStartTime)
+          new Date(a.shiftdate.orgStartTime) -
+          new Date(b.shiftdate.orgStartTime)
       );
 
       const firstEnd = new Date(shifts[0].shiftdate.orgEndTime);
       const secondStart = new Date(shifts[1].shiftdate.orgStartTime);
-console.log(shifts ,firstEnd?.toString() , secondStart?.toString())
+      console.log(shifts, firstEnd?.toString(), secondStart?.toString());
       let diffMs = secondStart - firstEnd;
       if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
 
@@ -930,7 +375,7 @@ console.log(shifts ,firstEnd?.toString() , secondStart?.toString())
 
     // 🌙 EXISTING NIGHT SHIFT cross-date calculation
     if (userShiftStatusMap[item.rowusername] === "Night Shift") {
-      const index = userShifts.findIndex(u => u.id === item.id);
+      const index = userShifts.findIndex((u) => u.id === item.id);
 
       if (index > 0) {
         const prevShift = userShifts[index - 1];
@@ -950,7 +395,7 @@ console.log(shifts ,firstEnd?.toString() , secondStart?.toString())
       userShiftStatusMap[item.rowusername] === "Night Shift" &&
       item.shiftMode === "Second Shift"
     ) {
-      const index = userShifts.findIndex(u => u.id === item.id);
+      const index = userShifts.findIndex((u) => u.id === item.id);
 
       if (index > 0) {
         const prevShift = userShifts[index - 1];
@@ -984,11 +429,10 @@ console.log(shifts ,firstEnd?.toString() , secondStart?.toString())
       shiftStatus: userShiftStatusMap[item.rowusername] || "",
       hoursDifference,
       nightShiftDifference,
-      nightShiftGapHours
+      nightShiftGapHours,
     };
   });
 }
-
 function addOneSecondAndFormat(isoDate, seconds) {
   if (!isoDate) return "";
 
@@ -1008,7 +452,6 @@ function addOneSecondAndFormat(isoDate, seconds) {
     )}`
   );
 }
-
 function expandDateRange(userDates) {
   if (!userDates?.length) return [];
 
@@ -1043,7 +486,6 @@ function expandDateRange(userDates) {
 
   return result;
 }
-
 function addTwoHours(isoDate, hours, mode = "Add") {
   if (!isoDate) return null;
 
@@ -1056,39 +498,38 @@ function addTwoHours(isoDate, hours, mode = "Add") {
   } else {
     // "Add" (default)
     date.setHours(date.getHours() + diff);
-    
   }
 
   return date;
 }
-
 function reduceHours(inputDate, hours = 1) {
-    const date = new Date(inputDate); // convert string to Date if needed
-    date.setHours(date.getHours() - hours);
-    return date;
+  const date = new Date(inputDate); // convert string to Date if needed
+  date.setHours(date.getHours() - hours);
+  return date;
 }
-
 function buildDateObject(date) {
-  const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(
+  const formattedDate = `${String(date.getDate()).padStart(2, "0")}/${String(
     date.getMonth() + 1
-  ).padStart(2, '0')}/${date.getFullYear()}`;
+  ).padStart(2, "0")}/${date.getFullYear()}`;
 
-  const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
   const dayCount = date.getDate();
-  const shiftMode = 'Main Shift';
+  const shiftMode = "Main Shift";
 
   const weekNo = getWeekNumberInMonth(date);
   const weekNumberInMonth =
-    weekNo === 1 ? `${weekNo}st Week` :
-    weekNo === 2 ? `${weekNo}nd Week` :
-    weekNo === 3 ? `${weekNo}rd Week` :
-    `${weekNo}th Week`;
+    weekNo === 1
+      ? `${weekNo}st Week`
+      : weekNo === 2
+      ? `${weekNo}nd Week`
+      : weekNo === 3
+      ? `${weekNo}rd Week`
+      : `${weekNo}th Week`;
 
   return { formattedDate, dayName, dayCount, shiftMode, weekNumberInMonth };
 }
-
 function getPreviousDateObject(inputFormattedDate) {
-  const [dd, mm, yyyy] = inputFormattedDate.split('/').map(Number);
+  const [dd, mm, yyyy] = inputFormattedDate.split("/").map(Number);
   const currentDate = new Date(yyyy, mm - 1, dd);
 
   // 🔹 Previous day
@@ -1096,17 +537,13 @@ function getPreviousDateObject(inputFormattedDate) {
 
   return buildDateObject(currentDate);
 }
-
 //To get the users Attendance Reports
 exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
   async (req, res, next) => {
     let answer, usersCollection, filteredData;
     let { company, branch, usernames, type, userDates, workmode } = req.body;
     try {
-      // console.log(userDates , "Hitted Here");
       const prevDateObj = getPreviousDateObject(userDates[0].formattedDate);
-      // const prevObj = getPreviousDateObject(userDates, userDates[0].formattedDate);
-      // console.log(prevDateObj);
       let query = {};
       if (type !== "Deactivate" && usernames?.length > 0) {
         query.username = { $in: usernames };
@@ -1141,61 +578,6 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           : [];
 
       const serialNos = await BiometricPairedDevicesGrouping.aggregate([
-        // 1. Match records where any attendance flag is true
-        {
-          $match: {
-            $or: [
-              { attendanceinone: true },
-              { attendanceoutone: true },
-              { attendanceinoutone: true },
-              { attendanceintwo: true },
-              { attendanceoutwo: true },
-              { attendanceinouttwo: true },
-            ],
-          },
-        },
-        {
-          $project: {
-            devices: ["$paireddeviceone", "$paireddevicetwo"],
-          },
-        },
-
-        // 3. Flatten devices array
-        { $unwind: "$devices" },
-
-        // 4. Filter out null/empty device names
-        { $match: { devices: { $ne: null, $ne: "" } } },
-
-        // 5. Lookup in BiometricDeviceManagement
-        {
-          $lookup: {
-            from: "biometricdevicemanagements", // check actual collection name
-            localField: "devices",
-            foreignField: "biometriccommonname",
-            as: "matchedDevice",
-          },
-        },
-
-        // 6. Flatten lookup result
-        { $unwind: "$matchedDevice" },
-
-        // 7. Collect only serial numbers (deduped)
-        {
-          $group: {
-            _id: null,
-            serials: { $addToSet: "$matchedDevice.biometricserialno" },
-          },
-        },
-
-        // 8. Final projection: return only array
-        {
-          $project: {
-            _id: 0,
-            serials: 1,
-          },
-        },
-      ]);
-      const biometricUsersGrouping = await BiometricUsersGrouping.aggregate([
         {
           $match: {
             $or: [
@@ -1210,346 +592,513 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
         },
         {
           $project: {
-            companyname: 1,
-            type: 1,
-            paireddeviceone: {
-              device: "$paireddeviceone",
-              attendancein: "$attendanceinone",
-              attendanceout: "$attendanceoutone",
-              attendanceinout: "$attendanceinoutone",
-            },
-            paireddevicetwo: {
-              device: "$paireddevicetwo",
-              attendancein: "$attendanceintwo",
-              attendanceout: "$attendanceouttwo",
-              attendanceinout: "$attendanceinouttwo",
-            },
-          },
-        },
-        { $unwind: "$companyname" },
-        {
-          $lookup: {
-            from: "users",
-            localField: "companyname",
-            foreignField: "companyname",
-            as: "userMatch",
-          },
-        },
-        { $unwind: "$userMatch" },
-        {
-          $project: {
-            _id: 0,
-            companyname: 1,
-            type: 1,
-            username: "$userMatch.username",
-            userId: "$userMatch._id",
-            devices: [
-              {
-                device: "$paireddeviceone.device",
-                attendancein: "$paireddeviceone.attendancein",
-                attendanceout: "$paireddeviceone.attendanceout",
-                attendanceinout: "$paireddeviceone.attendanceinout",
-              },
-              {
-                device: "$paireddevicetwo.device",
-                attendancein: "$paireddevicetwo.attendancein",
-                attendanceout: "$paireddevicetwo.attendanceout",
-                attendanceinout: "$paireddevicetwo.attendanceinout",
-              },
-            ],
+            devices: ["$paireddeviceone", "$paireddevicetwo"],
           },
         },
         { $unwind: "$devices" },
+        { $match: { devices: { $ne: null, $ne: "" } } },
 
-        // ✅ Lookup device details from biometricdevicemanagements
+        /* ---------- ADD USER GROUPING DEVICES ---------- */
         {
-          $lookup: {
-            from: "biometricdevicemanagements",
-            let: { deviceName: "$devices.device" },
+          $unionWith: {
+            coll: "biometricusersgroupings",
             pipeline: [
               {
                 $match: {
-                  $expr: {
-                    $eq: ["$biometriccommonname", "$$deviceName"],
-                  },
+                  $or: [
+                    { attendanceinone: true },
+                    { attendanceoutone: true },
+                    { attendanceinoutone: true },
+                    { attendanceintwo: true },
+                    { attendanceouttwo: true },
+                    { attendanceinouttwo: true },
+                  ],
                 },
               },
               {
                 $project: {
-                  biometricserialno: 1,
-                  biometriccommonname: 1,
-                  _id: 0,
+                  devices: ["$paireddeviceone", "$paireddevicetwo"],
                 },
               },
+              { $unwind: "$devices" },
+              { $match: { devices: { $ne: null, $ne: "" } } },
             ],
+          },
+        },
+
+        /* ---------- RESOLVE TO SERIAL NUMBERS ---------- */
+        {
+          $lookup: {
+            from: "biometricdevicemanagements",
+            localField: "devices",
+            foreignField: "biometriccommonname",
             as: "matchedDevice",
           },
         },
+        { $unwind: "$matchedDevice" },
+
         {
-          $unwind: { path: "$matchedDevice", preserveNullAndEmptyArrays: true },
-        }, // keep rows even if no match
+          $group: {
+            _id: null,
+            serials: { $addToSet: "$matchedDevice.biometricserialno" },
+          },
+        },
         {
           $project: {
-            companyname: 1,
-            type: 1,
-            username: 1,
-            userId: 1,
-            device: "$devices.device",
-            attendancein: "$devices.attendancein",
-            attendanceout: "$devices.attendanceout",
-            attendanceinout: "$devices.attendanceinout",
-            deviceserialnumber: "$matchedDevice.biometricserialno",
-            //  matchedDevice: 1
+            _id: 0,
+            serials: 1,
           },
         },
       ]);
+const biometricUsersGrouping = await BiometricUsersGrouping.aggregate([
+  {
+    $match: {
+      $or: [
+        { attendanceinone: true },
+        { attendanceoutone: true },
+        { attendanceinoutone: true },
+        { attendanceintwo: true },
+        { attendanceouttwo: true },
+        { attendanceinouttwo: true },
+      ],
+    },
+  },
 
-      // 1. Create a map of device serials to grouped biometric user data by username and type
-      const biometricGroupingMap = {};
-      for (const group of biometricUsersGrouping) {
-        const {
-          deviceserialnumber,
-          username,
-          type,
-          attendancein,
-          attendanceout,
-          attendanceinout,
-        } = group;
+  /* ---------------------------------------
+     2️⃣ Resolve USERS (Priority-1)
+  --------------------------------------- */
+  {
+    $lookup: {
+      from: "users",
+      let: {
+        type: "$type",
+        companies: { $ifNull: ["$company", []] },
+        branches: { $ifNull: ["$branch", []] },
+        departments: { $ifNull: ["$department", []] },
+        units: { $ifNull: ["$unit", []] },
+        teams: { $ifNull: ["$team", []] },
+      },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $switch: {
+                branches: [
+                  {
+                    case: { $eq: ["$$type", "Individual"] },
+                    then: { $in: ["$company", "$$companies"] },
+                  },
+                  {
+                    case: { $eq: ["$$type", "Department"] },
+                    then: {
+                      $and: [
+                        { $in: ["$company", "$$companies"] },
+                        { $in: ["$branch", "$$branches"] },
+                        { $in: ["$department", "$$departments"] },
+                      ],
+                    },
+                  },
+                  {
+                    case: { $eq: ["$$type", "Team"] },
+                    then: {
+                      $and: [
+                        { $in: ["$company", "$$companies"] },
+                        { $in: ["$branch", "$$branches"] },
+                        { $in: ["$unit", "$$units"] },
+                        { $in: ["$team", "$$teams"] },
+                      ],
+                    },
+                  },
+                  {
+                    case: { $eq: ["$$type", "Unit"] },
+                    then: {
+                      $and: [
+                        { $in: ["$company", "$$companies"] },
+                        { $in: ["$branch", "$$branches"] },
+                        { $in: ["$unit", "$$units"] },
+                      ],
+                    },
+                  },
+                  {
+                    case: { $eq: ["$$type", "Branch"] },
+                    then: {
+                      $and: [
+                        { $in: ["$company", "$$companies"] },
+                        { $in: ["$branch", "$$branches"] },
+                      ],
+                    },
+                  },
+                ],
+                default: false,
+              },
+            },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            username: 1,
+            userId: "$_id",
+            companyname: "$company",   // ✅ FROM USERS
+          },
+        },
+      ],
+      as: "matchedUsers",
+    },
+  },
 
-        if (!biometricGroupingMap[deviceserialnumber]) {
-          biometricGroupingMap[deviceserialnumber] = [];
+  { $unwind: "$matchedUsers" },
+
+  /* ---------------------------------------
+     3️⃣ Attach devices
+  --------------------------------------- */
+  {
+    $project: {
+      username: "$matchedUsers.username",
+      userId: "$matchedUsers.userId",
+      companyname: "$matchedUsers.companyname", // ✅ USERS companyname
+      type: 1,
+      devices: ["$paireddeviceone", "$paireddevicetwo"],
+    },
+  },
+  { $unwind: "$devices" },
+
+  {
+    $lookup: {
+      from: "biometricdevicemanagements",
+      localField: "devices",
+      foreignField: "biometriccommonname",
+      as: "device",
+    },
+  },
+  { $unwind: "$device" },
+
+  {
+    $project: {
+      username: 1,
+      userId: 1,
+      companyname: 1,
+      type: 1,
+      deviceserialnumber: "$device.biometricserialno",
+    },
+  },
+
+  /* ---------------------------------------
+     4️⃣ Priority-2 (Type dominance)
+  --------------------------------------- */
+  {
+    $addFields: {
+      priority: {
+        $switch: {
+          branches: [
+            { case: { $eq: ["$type", "Individual"] }, then: 1 },
+            { case: { $eq: ["$type", "Department"] }, then: 2 },
+            { case: { $eq: ["$type", "Team"] }, then: 3 },
+            { case: { $eq: ["$type", "Unit"] }, then: 4 },
+            { case: { $eq: ["$type", "Branch"] }, then: 5 },
+            { case: { $eq: ["$type", "Company"] }, then: 6 },
+          ],
+          default: 99,
+        },
+      },
+    },
+  },
+
+  {
+    $group: {
+      _id: "$username",
+      minPriority: { $min: "$priority" },
+      rows: { $push: "$$ROOT" },
+    },
+  },
+  {
+    $project: {
+      rows: {
+        $filter: {
+          input: "$rows",
+          as: "row",
+          cond: { $eq: ["$$row.priority", "$minPriority"] },
+        },
+      },
+    },
+  },
+  { $unwind: "$rows" },
+  { $replaceRoot: { newRoot: "$rows" } },
+]);
+
+      const userPriorityMap = {};
+
+      for (const row of biometricUsersGrouping) {
+        const username = row.username;
+        const priority = typePriority[row.type];
+        if (!priority) continue;
+
+        if (
+          !userPriorityMap[username] ||
+          priority < userPriorityMap[username]
+        ) {
+          userPriorityMap[username] = priority;
+        }
+      }
+
+      const finalUserGrouping = biometricUsersGrouping.filter(
+        (row) => userPriorityMap[row.username] === typePriority[row.type]
+      );
+
+      /* ===================== 6. BUILD USER → DEVICE MAP ===================== */
+
+      const userDeviceMap = {};
+      const usersWithUserGrouping = new Set();
+
+      finalUserGrouping.forEach((row) => {
+        if (!row.deviceserialnumber) return;
+
+        if (!userDeviceMap[row.username]) {
+          userDeviceMap[row.username] = new Set();
         }
 
-        biometricGroupingMap[deviceserialnumber].push({
-          usernames: username,
-          type,
-          indevice: attendancein,
-          outdevice: attendanceout,
-          inoutdevice: attendanceinout,
-        });
-      }
-      const pairedSerials = Object.values(biometricGroupingMap)
-        .flat()
-        .filter(Boolean);
-      let matchQuery = {
-        staffNameC: { $in: usernamesFilter },
-      };
+        userDeviceMap[row.username].add(row.deviceserialnumber);
+        usersWithUserGrouping.add(row.username);
+      });
 
-      // only add condition if serialNos[0]?.serials exists and not empty
-      if (serialNos?.[0]?.serials?.length > 0) {
-        matchQuery.cloudIDC = { $in: serialNos[0].serials };
-      }
+      /* ===================== 7. FALLBACK FOR USERS WITHOUT GROUPING ===================== */
 
-      // only add $nin if pairedSerials has values
-      if (pairedSerials?.length > 0) {
-        matchQuery.cloudIDC = {
-          ...(matchQuery.cloudIDC || {}),
-          $nin: pairedSerials,
-        };
-      }
+      usernamesFilter.forEach((username) => {
+        if (!usersWithUserGrouping.has(username)) {
+          userDeviceMap[username] = new Set(serialNos?.[0]?.serials || []);
+        }
+      });
+
+      /* ===================== 8. CONVERT FOR AGGREGATION ===================== */
+
+      const userDeviceArray = Object.entries(userDeviceMap).map(
+        ([username, deviceSet]) => ({
+          username,
+          devices: Array.from(deviceSet),
+        })
+      );
+      console.log(userDeviceMap, userDeviceArray, "userDeviceArray");
       const resultDate = expandDateRange(userDates);
       answer = await getUserClockinAndClockoutStatus({
         employee: usernamesFilter,
-        userDates: [prevDateObj , ...userDates],
+        userDates: [prevDateObj, ...userDates],
         // userDates: userDates,
       });
-      // console.log(answer?.finaluser , "nswer?.finaluser")
+
       const resultShiftValues = addShiftStatus(answer?.finaluser);
       usersCollection = await Biometricattlog.aggregate([
+        /* -------------------- 1. BASE MATCH -------------------- */
         {
           $match: {
-            ...matchQuery,
             clockDateOnly: { $in: resultDate },
+            $expr: {
+              $in: [
+                "$cloudIDC",
+                {
+                  $let: {
+                    vars: {
+                      userRule: {
+                        $arrayElemAt: [
+                          {
+                            $filter: {
+                              input: userDeviceArray,
+                              as: "ud",
+                              cond: { $eq: ["$$ud.username", "$staffNameC"] },
+                            },
+                          },
+                          0,
+                        ],
+                      },
+                    },
+                    in: { $ifNull: ["$$userRule.devices", []] },
+                  },
+                },
+              ],
+            },
           },
         },
+        /* -------------------- 2. USER LOOKUP -------------------- */
         {
           $lookup: {
             from: "users",
             localField: "staffNameC",
             foreignField: "username",
-            as: "userDetails",
+            as: "user",
           },
         },
+        { $unwind: "$user" },
+
+        /* -------------------- 3. DEVICE LOOKUP (SERIAL → COMMON NAME) -------------------- */
         {
           $lookup: {
             from: "biometricdevicemanagements",
             localField: "cloudIDC",
             foreignField: "biometricserialno",
-            as: "biometricDevice",
+            as: "device",
           },
         },
-        // 🔹 Lookup pairing group based on device common name
+        { $unwind: "$device" },
+
+        /* -------------------- 4. USER GROUPING (TOP PRIORITY) -------------------- */
         {
           $lookup: {
-            from: "biometricpaireddevicesgroupings",
+            from: "biometricusersgroupings",
             let: {
-              commonName: {
-                $arrayElemAt: ["$biometricDevice.biometriccommonname", 0],
-              },
+              username: "$staffNameC",
+              deviceName: "$device.biometriccommonname",
             },
             pipeline: [
+              { $unwind: "$companyname" },
+              {
+                $lookup: {
+                  from: "users",
+                  localField: "companyname",
+                  foreignField: "companyname",
+                  as: "ugUser",
+                },
+              },
+              { $unwind: "$ugUser" },
               {
                 $match: {
                   $expr: {
-                    $or: [
-                      { $eq: ["$paireddeviceone", "$$commonName"] },
-                      { $eq: ["$paireddevicetwo", "$$commonName"] },
+                    $and: [
+                      { $eq: ["$ugUser.username", "$$username"] },
+                      {
+                        $or: [
+                          { $eq: ["$paireddeviceone", "$$deviceName"] },
+                          { $eq: ["$paireddevicetwo", "$$deviceName"] },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              },
+              {
+                $project: {
+                  _id: 0,
+                  indevice: {
+                    $cond: [
+                      { $eq: ["$paireddeviceone", "$$deviceName"] },
+                      "$attendanceinone",
+                      "$attendanceintwo",
+                    ],
+                  },
+                  outdevice: {
+                    $cond: [
+                      { $eq: ["$paireddeviceone", "$$deviceName"] },
+                      "$attendanceoutone",
+                      "$attendanceouttwo",
+                    ],
+                  },
+                  inoutdevice: {
+                    $cond: [
+                      { $eq: ["$paireddeviceone", "$$deviceName"] },
+                      "$attendanceinoutone",
+                      "$attendanceinouttwo",
                     ],
                   },
                 },
               },
             ],
-            as: "deviceMatched",
+            as: "userAttendanceRule",
           },
         },
-        {
-          $addFields: {
-            empcode: { $arrayElemAt: ["$userDetails.empcode", 0] },
-            company: { $arrayElemAt: ["$userDetails.company", 0] },
-            branch: { $arrayElemAt: ["$userDetails.branch", 0] },
-            unit: { $arrayElemAt: ["$userDetails.unit", 0] },
-            team: { $arrayElemAt: ["$userDetails.team", 0] },
-            department: { $arrayElemAt: ["$userDetails.department", 0] },
-            companyname: { $arrayElemAt: ["$userDetails.companyname", 0] },
-            biometriccommonname: {
-              $arrayElemAt: ["$biometricDevice.biometriccommonname", 0],
-            },
 
-            // 🔹 Conditional assignment based on matching device
-            isDeviceOne: {
-              $eq: [
-                { $first: "$deviceMatched.paireddeviceone" },
-                { $first: "$biometricDevice.biometriccommonname" },
-              ],
-            },
+        /* -------------------- 5. PAIRED DEVICE GROUPING (FALLBACK) -------------------- */
+        {
+          $lookup: {
+            from: "biometricpaireddevicesgroupings",
+            let: { deviceName: "$device.biometriccommonname" },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $or: [
+                      { $eq: ["$paireddeviceone", "$$deviceName"] },
+                      { $eq: ["$paireddevicetwo", "$$deviceName"] },
+                    ],
+                  },
+                },
+              },
+              {
+                $project: {
+                  _id: 0,
+                  indevice: {
+                    $cond: [
+                      { $eq: ["$paireddeviceone", "$$deviceName"] },
+                      "$attendanceinone",
+                      "$attendanceintwo",
+                    ],
+                  },
+                  outdevice: {
+                    $cond: [
+                      { $eq: ["$paireddeviceone", "$$deviceName"] },
+                      "$attendanceoutone",
+                      "$attendanceouttwo",
+                    ],
+                  },
+                  inoutdevice: {
+                    $cond: [
+                      { $eq: ["$paireddeviceone", "$$deviceName"] },
+                      "$attendanceinoutone",
+                      "$attendanceinouttwo",
+                    ],
+                  },
+                },
+              },
+            ],
+            as: "pairedAttendanceRule",
           },
         },
+
+        /* -------------------- 6. FINAL ATTENDANCE RULE DECISION -------------------- */
         {
           $addFields: {
             indevice: {
               $cond: [
-                "$isDeviceOne",
-                { $first: "$deviceMatched.attendanceinone" },
-                { $first: "$deviceMatched.attendanceintwo" },
+                { $gt: [{ $size: "$userAttendanceRule" }, 0] },
+                { $arrayElemAt: ["$userAttendanceRule.indevice", 0] },
+                { $arrayElemAt: ["$pairedAttendanceRule.indevice", 0] },
               ],
             },
             outdevice: {
               $cond: [
-                "$isDeviceOne",
-                { $first: "$deviceMatched.attendanceoutone" },
-                { $first: "$deviceMatched.attendanceouttwo" },
+                { $gt: [{ $size: "$userAttendanceRule" }, 0] },
+                { $arrayElemAt: ["$userAttendanceRule.outdevice", 0] },
+                { $arrayElemAt: ["$pairedAttendanceRule.outdevice", 0] },
               ],
             },
             inoutdevice: {
               $cond: [
-                "$isDeviceOne",
-                { $first: "$deviceMatched.attendanceinoutone" },
-                { $first: "$deviceMatched.attendanceinouttwo" },
+                { $gt: [{ $size: "$userAttendanceRule" }, 0] },
+                { $arrayElemAt: ["$userAttendanceRule.inoutdevice", 0] },
+                { $arrayElemAt: ["$pairedAttendanceRule.inoutdevice", 0] },
               ],
             },
+
+            /* -------------------- USER META -------------------- */
+            empcode: "$user.empcode",
+            company: "$user.company",
+            branch: "$user.branch",
+            unit: "$user.unit",
+            team: "$user.team",
+            department: "$user.department",
+            companyname: "$user.companyname",
+            biometriccommonname: "$device.biometriccommonname",
           },
         },
-        //         {
-        //   $project: {
-        //     clockDateOnly: 1,
-        //     clockDateTimeD: 1,
-        //     staffNameC: 1,
-        //     cloudIDC: 1,
-        //     empcode: 1,
-        //     company: 1,
-        //     branch: 1,
-        //     unit: 1,
-        //     team: 1,
-        //     department: 1,
-        //     companyname: 1,
-        //     indevice: 1,
-        //     outdevice: 1,
-        //     inoutdevice: 1,
-        //     _id: 1
-        //   }
-        // }
+
+        /* -------------------- 7. CLEANUP -------------------- */
         {
           $project: {
-            userDetails: 0,
-            biometricDevice: 0,
-            deviceMatched: 0,
+            user: 0,
+            device: 0,
+            userAttendanceRule: 0,
+            pairedAttendanceRule: 0,
           },
         },
       ]);
-      const VariableCheck = usersCollection?.map(
-        (data, index) =>
-          `${index + 1}-${data?.biometriccommonname}-${data?.cloudIDC}-${
-            data?.indevice
-          }-${data?.outdevice}--${data?.inoutdevice}-${data?.clockDateTimeD}`
-      );
-      let filteredUsers = [];
-      usersCollection.forEach((user) => {
-        const userSerial = user.cloudIDC;
-        const username = user.staffNameC;
-
-        let matchedGroupings = [];
-
-        // 🔎 Find all groupings that contain this username
-        for (const [serial, groupings] of Object.entries(
-          biometricGroupingMap
-        )) {
-          const userGroupings = groupings.filter((g) =>
-            g.usernames.includes(username)
-          );
-          if (userGroupings.length > 0) {
-            const groupingsWithSerial = userGroupings.map((g) => ({
-              ...g,
-              deviceSerial: serial,
-            }));
-            matchedGroupings.push(...groupingsWithSerial);
-          }
-        }
-
-        if (matchedGroupings.length === 0) {
-          filteredUsers.push(user);
-          return;
-        }
-
-        // ✅ Only process if user's serial is one of the deviceSerials
-        const matchedForUserSerial = matchedGroupings.filter(
-          (g) => g.deviceSerial === userSerial
-        );
-
-        // We’ll store chosen priority once per username
-        let chosenGrouping = null;
-
-        if (matchedForUserSerial.length > 0) {
-          // Group groupings by deviceSerial
-          const devicePriorityMap = {};
-          const deviceGroupingMap = {};
-
-          matchedForUserSerial.forEach((g) => {
-            const serial = g.deviceSerial;
-            const existingType = devicePriorityMap[serial];
-
-            if (
-              !existingType ||
-              typePriority[g.type] < typePriority[existingType]
-            ) {
-              devicePriorityMap[serial] = g.type;
-              deviceGroupingMap[serial] = g; // Save full group to apply later
-            }
-          });
-
-          const userDeviceTopPriorityType = devicePriorityMap[userSerial];
-          chosenGrouping = deviceGroupingMap[userSerial];
-
-          if (userDeviceTopPriorityType && chosenGrouping) {
-            // Update the user's device flags ONLY for matching deviceSerial
-            user.indevice = chosenGrouping.indevice ?? false;
-            user.outdevice = chosenGrouping.outdevice ?? false;
-            user.inoutdevice = chosenGrouping.inoutdevice ?? false;
-          }
-        }
-        if (chosenGrouping) {
-        }
-        filteredUsers.push(user);
-      });
+      const filteredUsers = usersCollection;
       const shiftKeyCount = {};
 
       resultShiftValues.forEach((item) => {
@@ -1561,280 +1110,291 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
         return shiftKeyCount[key] > 1;
       };
 
-      console.log( resultShiftValues?.filter(data => data?.rowformattedDate !== prevDateObj?.formattedDate), 'resultShiftValues')
-
+      // console.log(filteredUsers?.length, "filteredUsers");
       // filteredData = [resultShiftValues[0]].flatMap(
-      filteredData = resultShiftValues?.filter(data => data?.rowformattedDate !== prevDateObj?.formattedDate)?.flatMap(
-        ({
-          rowusername,
-          shiftdate,
-          shift,
-          shiftMode,
-          shifttype,
-          rowformattedDate,
-          shiftStatus,
-          hoursDifference,
-        }) => {
-          const matchedUsers = filteredUsers
-            .filter((user) => user.staffNameC === rowusername)
-            .map((user) => {
-              const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
-              if (!user.indevice && !user.outdevice && !user.inoutdevice) {
+      filteredData = resultShiftValues
+        ?.filter(
+          (data) => data?.rowformattedDate !== prevDateObj?.formattedDate
+        )
+        ?.flatMap(
+          ({
+            rowusername,
+            shiftdate,
+            shift,
+            shiftMode,
+            shifttype,
+            rowformattedDate,
+            shiftStatus,
+            hoursDifference,
+          }) => {
+            const matchedUsers = filteredUsers
+              .filter((user) => user.staffNameC === rowusername)
+              .map((user) => {
+                const isDoubleShift = hasTwoShifts(
+                  rowusername,
+                  rowformattedDate
+                );
+                if (!user.indevice && !user.outdevice && !user.inoutdevice) {
+                  return null;
+                }
+                let startTime = null;
+                let endTime = null;
+                if (isDoubleShift) {
+                  if (
+                    shiftStatus === "Day Shift" &&
+                    shiftMode === "Main Shift"
+                  ) {
+                    startTime = shiftdate?.startTime;
+                    endTime = addTwoHours(
+                      shiftdate?.orgEndTime,
+                      hoursDifference,
+                      "Add"
+                    );
+                  } else if (
+                    shiftStatus === "Day Shift" &&
+                    shiftMode === "Second Shift"
+                  ) {
+                    startTime = addTwoHours(
+                      shiftdate?.orgStartTime,
+                      hoursDifference,
+                      "Sub"
+                    );
+                    endTime = shiftdate?.endTime;
+                  } else if (
+                    shiftStatus === "Night Shift" &&
+                    shiftMode === "Main Shift"
+                  ) {
+                    startTime = addTwoHours(
+                      shiftdate?.orgStartTime,
+                      hoursDifference,
+                      "Sub"
+                    );
+                    endTime = shiftdate?.endTime;
+                    //console.log(shiftStatus ,shiftMode , rowformattedDate ,hoursDifference,shiftdate?.orgStartTime, "endTime")
+                  } else if (
+                    shiftStatus === "Night Shift" &&
+                    shiftMode === "Second Shift"
+                  ) {
+                    startTime = shiftdate?.startTime;
+                    endTime = addTwoHours(
+                      shiftdate?.orgEndTime,
+                      hoursDifference,
+                      "Add"
+                    );
+                  }
+                } else {
+                  startTime = shiftdate?.startTime
+                    ? new Date(shiftdate.startTime)
+                    : null;
+                  endTime = shiftdate?.endTime
+                    ? new Date(shiftdate.endTime)
+                    : null;
+                }
+
+                const [datePart, timePart] = user?.clockDateTimeD.split(" ");
+                const [day, month, year] = datePart.split("-");
+                const clockTime = new Date(
+                  `${year}-${month}-${day}T${timePart}`
+                );
+
+                if (startTime && endTime && !isNaN(clockTime)) {
+                  if (clockTime >= startTime && clockTime <= endTime) {
+                    return { ...user, clockTime };
+                  }
+                }
                 return null;
+              })
+              .filter(Boolean);
+
+            // console.log(matchedUsers , "matchedUsers")
+            // Categorize by device types
+            const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
+            const inDevices = matchedUsers.filter((d) => d.indevice);
+            const outDevices = matchedUsers.filter((d) => d.outdevice);
+            const inOutDevices = matchedUsers.filter((d) => d.inoutdevice);
+
+            // Sort all by datetime
+            const sortedInDevices = [...inDevices].sort(
+              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+            );
+            const sortedOutDevices = [...outDevices].sort(
+              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+            );
+            const sortedInOutDevices = [...inOutDevices].sort(
+              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+            );
+            let inTime = null;
+            let outTime = null;
+            let inTimeVerified = null;
+            let inTimeVerifiedDevice = null;
+            let outTimeVerified = null;
+            let outTimeVerifiedDevice = null;
+
+            // Determine inTime
+            if (!isDoubleShift && sortedInDevices.length > 0) {
+              inTime = sortedInDevices[0].clockDateTimeD;
+              inTimeVerified = sortedInDevices[0].verifyC;
+              inTimeVerifiedDevice = sortedInDevices[0].biometriccommonname;
+            } else if (!isDoubleShift && sortedInOutDevices.length > 0) {
+              inTime = sortedInOutDevices[0].clockDateTimeD;
+              inTimeVerified = sortedInOutDevices[0].verifyC;
+              inTimeVerifiedDevice = sortedInOutDevices[0].biometriccommonname;
+            } else if (isDoubleShift && matchedUsers?.length > 0) {
+              const firstDeviceBasedOnTime = matchedUsers?.sort(
+                (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+              );
+              const firatDeviceIn = firstDeviceBasedOnTime[0];
+              const firstInDevice = matchedUsers
+                ?.filter((data) => data?.indevice || data?.inoutdevice)
+                .sort((a, b) => new Date(a.clockTime) - new Date(b.clockTime));
+              // const first = firstInDevice[firstInDevice.length - 1];
+              inTimeVerified = firstInDevice[0]?.verifyC;
+              inTimeVerifiedDevice = firstInDevice[0]?.biometriccommonname;
+              if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
+                // console.log(shiftMode, "1");
+                inTime = firstInDevice[0]?.clockDateTimeD;
+              } else if (
+                shiftStatus === "Day Shift" &&
+                shiftMode === "Second Shift"
+              ) {
+                const ifInTime =
+                  shiftdate?.orgStartTime <
+                  parseDDMMYYYY(firstInDevice[0]?.clockDateTimeD)
+                    ? addOneSecondAndFormat(shiftdate?.orgStartTime, 1)
+                    : firstInDevice[0]?.clockDateTimeD;
+                inTime = firstInDevice[0]?.indevice
+                  ? ifInTime
+                  : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
+                console.log(shiftdate?.orgStartTime);
+              } else if (
+                shiftStatus === "Night Shift" &&
+                shiftMode === "Main Shift"
+              ) {
+                const ifInTime =
+                  shiftdate?.orgStartTime <
+                  parseDDMMYYYY(firstInDevice[0]?.clockDateTimeD)
+                    ? addOneSecondAndFormat(shiftdate?.orgStartTime, 1)
+                    : firstInDevice[0]?.clockDateTimeD;
+                inTime = firstInDevice[0]?.indevice
+                  ? ifInTime
+                  : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
+                // console.log(inTime,"3");
+              } else if (
+                shiftStatus === "Night Shift" &&
+                shiftMode === "Second Shift"
+              ) {
+                inTime = firstInDevice[0].clockDateTimeD;
+                console.log(
+                  inTime,
+                  "4",
+                  matchedUsers,
+                  new Date(shiftdate?.orgStartTime)?.toString()
+                );
               }
-              let startTime = null;
-              let endTime = null;
-              if (isDoubleShift) {
-                if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
-                  startTime = shiftdate?.startTime;
-                  endTime = addTwoHours(
-                    shiftdate?.orgEndTime,
-                    hoursDifference,
-                    "Add"
-                  );
-                } else if (
-                  shiftStatus === "Day Shift" &&
-                  shiftMode === "Second Shift"
-                ) {
+            }
 
-                  startTime = addTwoHours(
-                    shiftdate?.orgStartTime,
-                    hoursDifference,
-                    "Sub"
-                  );
-                  endTime = shiftdate?.endTime;
+            // Determine outTime
+            if (!isDoubleShift && sortedOutDevices.length > 0) {
+              const LastDeviceBasedOnTime = matchedUsers?.sort(
+                (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+              );
+              const last =
+                LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
 
-                } else if (
-                  shiftStatus === "Night Shift" &&
-                  shiftMode === "Main Shift"
-                ) {
-                  startTime = addTwoHours(
-                    shiftdate?.orgStartTime,
-                    hoursDifference,
-                    "Sub"
-                  );
-                  endTime = shiftdate?.endTime;
-                   //console.log(shiftStatus ,shiftMode , rowformattedDate ,hoursDifference,shiftdate?.orgStartTime, "endTime")
-
-                } else if (
-                  shiftStatus === "Night Shift" &&
-                  shiftMode === "Second Shift"
-                ) {
-                  startTime = shiftdate?.startTime;
-                  endTime = addTwoHours(
-                    shiftdate?.orgEndTime,
-                    hoursDifference,
-                    "Add"
-                  );
-                }
-              } else {
-                startTime = shiftdate?.startTime
-                  ? new Date(shiftdate.startTime)
-                  : null;
-                endTime = shiftdate?.endTime
-                  ? new Date(shiftdate.endTime)
-                  : null;
+              if (last?.outdevice) {
+                outTime = last.clockDateTimeD;
+                outTimeVerified = last.verifyC;
+                outTimeVerifiedDevice = last.biometriccommonname;
               }
-
-              
-              const [datePart, timePart] = user?.clockDateTimeD.split(" ");
-              const [day, month, year] = datePart.split("-");
-              const clockTime = new Date(`${year}-${month}-${day}T${timePart}`);
-
-              if (startTime && endTime && !isNaN(clockTime)) {
-                if (clockTime >= startTime && clockTime <= endTime) {
-                  return { ...user, clockTime };
-                }
+            } else if (!isDoubleShift && sortedInOutDevices.length > 1) {
+              const LastDeviceBasedOnTime = matchedUsers?.sort(
+                (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+              );
+              const last =
+                LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
+              if (last?.inoutdevice) {
+                outTime = last.clockDateTimeD;
+                outTimeVerified = last.verifyC;
+                outTimeVerifiedDevice = last.biometriccommonname;
               }
-              return null;
-            })
-            .filter(Boolean);
-
-          console.log(matchedUsers , "matchedUsers")
-          // Categorize by device types
-          const isDoubleShift = hasTwoShifts(rowusername, rowformattedDate);
-          const inDevices = matchedUsers.filter((d) => d.indevice);
-          const outDevices = matchedUsers.filter((d) => d.outdevice);
-          const inOutDevices = matchedUsers.filter((d) => d.inoutdevice);
-
-          // Sort all by datetime
-          const sortedInDevices = [...inDevices].sort(
-            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-          );
-          const sortedOutDevices = [...outDevices].sort(
-            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-          );
-          const sortedInOutDevices = [...inOutDevices].sort(
-            (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-          );
-          let inTime = null;
-          let outTime = null;
-          let inTimeVerified = null;
-          let inTimeVerifiedDevice = null;
-          let outTimeVerified = null;
-          let outTimeVerifiedDevice = null;
-
-          // Determine inTime
-          if (!isDoubleShift && sortedInDevices.length > 0) {
-            inTime = sortedInDevices[0].clockDateTimeD;
-            inTimeVerified = sortedInDevices[0].verifyC;
-            inTimeVerifiedDevice = sortedInDevices[0].biometriccommonname;
-          } else if (!isDoubleShift && sortedInOutDevices.length > 0) {
-            inTime = sortedInOutDevices[0].clockDateTimeD;
-            inTimeVerified = sortedInOutDevices[0].verifyC;
-            inTimeVerifiedDevice = sortedInOutDevices[0].biometriccommonname;
-          } else if (isDoubleShift && matchedUsers?.length > 0) {
-            const firstDeviceBasedOnTime = matchedUsers?.sort(
-              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-            );
-            const firatDeviceIn = firstDeviceBasedOnTime[0];
-            const firstInDevice = matchedUsers
-              ?.filter((data) => data?.indevice || data?.inoutdevice)
-              .sort((a, b) => new Date(a.clockTime) - new Date(b.clockTime));
-            // const first = firstInDevice[firstInDevice.length - 1];
-            inTimeVerified = firstInDevice[0]?.verifyC;
-            inTimeVerifiedDevice = firstInDevice[0]?.biometriccommonname;
-            if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
-              // console.log(shiftMode, "1");
-              inTime = firstInDevice[0].clockDateTimeD;
-             
-            } else if (
-              shiftStatus === "Day Shift" &&
-              shiftMode === "Second Shift"
-            ) {
-              const ifInTime =
-                shiftdate?.orgStartTime <
-                parseDDMMYYYY(firstInDevice[0]?.clockDateTimeD)
-                  ? addOneSecondAndFormat(shiftdate?.orgStartTime, 1)
-                  : firstInDevice[0]?.clockDateTimeD;
-              inTime = firstInDevice[0]?.indevice
-                ? ifInTime
-                : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
-             console.log(shiftdate?.orgStartTime   , )
-            } else if (
-              shiftStatus === "Night Shift" &&
-              shiftMode === "Main Shift"
-            ) {
-              const ifInTime =
-                shiftdate?.orgStartTime <
-                parseDDMMYYYY(firstInDevice[0]?.clockDateTimeD)
-                  ? addOneSecondAndFormat(shiftdate?.orgStartTime, 1)
-                  : firstInDevice[0]?.clockDateTimeD;
-              inTime = firstInDevice[0]?.indevice
-                ? ifInTime
-                : addOneSecondAndFormat(shiftdate?.orgStartTime, 1);
-// console.log(inTime,"3");
-
-            } else if (
-              shiftStatus === "Night Shift" &&
-              shiftMode === "Second Shift"
-            ) {
-              inTime = firstInDevice[0].clockDateTimeD;
-              console.log(inTime,"4" , matchedUsers , new Date(shiftdate?.orgStartTime)?.toString());
-            }
-          }
-
-          // Determine outTime
-          if (!isDoubleShift && sortedOutDevices.length > 0) {
-            const LastDeviceBasedOnTime = matchedUsers?.sort(
-              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-            );
-            const last =
-              LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
-
-            if (last?.outdevice) {
-              outTime = last.clockDateTimeD;
-              outTimeVerified = last.verifyC;
-              outTimeVerifiedDevice = last.biometriccommonname;
-            }
-          } else if (!isDoubleShift && sortedInOutDevices.length > 1) {
-            const LastDeviceBasedOnTime = matchedUsers?.sort(
-              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-            );
-            const last =
-              LastDeviceBasedOnTime[LastDeviceBasedOnTime.length - 1];
-            if (last?.inoutdevice) {
-              outTime = last.clockDateTimeD;
-              outTimeVerified = last.verifyC;
-              outTimeVerifiedDevice = last.biometriccommonname;
-            }
-          } else if (isDoubleShift && matchedUsers?.length > 0) {
-            const LastDeviceBasedOnTime = matchedUsers?.sort(
-              (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
-            );
-            const lastDeviceOut =
-              LastDeviceBasedOnTime[LastDeviceBasedOnTime?.length - 1];
-            const lastOutDevice = matchedUsers
-              ?.filter((data) => data?.outdevice || data?.inoutdevice)
-              .sort((a, b) => new Date(a.clockTime) - new Date(b.clockTime));
-            const last = lastOutDevice.length
-              ? lastOutDevice[lastOutDevice.length - 1]
-              : "";
-            const hasOutDevice =
-              lastDeviceOut?.outdevice || lastDeviceOut?.inoutdevice;
-            const shiftEndTime = addOneSecondAndFormat(
-              shiftdate?.orgEndTime,
-              0
-            );
-            outTimeVerified = last?.verifyC;
-            outTimeVerifiedDevice = last?.biometriccommonname;
-            if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
-              outTime = hasOutDevice
-                ? shiftdate?.orgEndTime >
-                  parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
-                  ? shiftEndTime
-                  : lastDeviceOut?.clockDateTimeD
-                : shiftEndTime;
-              // console.log(shiftMode, "1");
-            } else if (
-              shiftStatus === "Day Shift" &&
-              shiftMode === "Second Shift"
-            ) {
-              outTime =
-                last &&
-                reduceHours(shiftdate?.orgEndTime, 1) < parseDDMMYYYY(last?.clockDateTimeD)
-                  ? last.clockDateTimeD
+            } else if (isDoubleShift && matchedUsers?.length > 0) {
+              const LastDeviceBasedOnTime = matchedUsers?.sort(
+                (a, b) => new Date(a.clockTime) - new Date(b.clockTime)
+              );
+              const lastDeviceOut =
+                LastDeviceBasedOnTime[LastDeviceBasedOnTime?.length - 1];
+              const lastOutDevice = matchedUsers
+                ?.filter((data) => data?.outdevice || data?.inoutdevice)
+                .sort((a, b) => new Date(a.clockTime) - new Date(b.clockTime));
+              const last = lastOutDevice.length
+                ? lastOutDevice[lastOutDevice.length - 1]
+                : "";
+              const hasOutDevice =
+                lastDeviceOut?.outdevice || lastDeviceOut?.inoutdevice;
+              const shiftEndTime = addOneSecondAndFormat(
+                shiftdate?.orgEndTime,
+                0
+              );
+              outTimeVerified = last?.verifyC;
+              outTimeVerifiedDevice = last?.biometriccommonname;
+              if (shiftStatus === "Day Shift" && shiftMode === "Main Shift") {
+                outTime = hasOutDevice
+                  ? shiftdate?.orgEndTime >
+                    parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
+                    ? shiftEndTime
+                    : lastDeviceOut?.clockDateTimeD
                   : shiftEndTime;
-              // console.log(shiftMode, outTime, inTime ,"2");
-            } else if (
-              shiftStatus === "Night Shift" &&
-              shiftMode === "Main Shift"
-            ) {
-               outTime = hasOutDevice
-                ? reduceHours(shiftdate?.orgEndTime,1) >
-                  parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
-                  ? shiftEndTime
-                  : lastDeviceOut?.clockDateTimeD
-                : shiftEndTime;
-              // console.log(shiftMode, "3");
-            } else if (
-              shiftStatus === "Night Shift" &&
-              shiftMode === "Second Shift"
-            ) {
-              outTime =
-                last &&
-                 shiftdate?.orgEndTime < parseDDMMYYYY(last?.clockDateTimeD)
-                  ? last.clockDateTimeD
+                // console.log(shiftMode, "1");
+              } else if (
+                shiftStatus === "Day Shift" &&
+                shiftMode === "Second Shift"
+              ) {
+                outTime =
+                  last &&
+                  reduceHours(shiftdate?.orgEndTime, 1) <
+                    parseDDMMYYYY(last?.clockDateTimeD)
+                    ? last.clockDateTimeD
+                    : shiftEndTime;
+                // console.log(shiftMode, outTime, inTime ,"2");
+              } else if (
+                shiftStatus === "Night Shift" &&
+                shiftMode === "Main Shift"
+              ) {
+                outTime = hasOutDevice
+                  ? reduceHours(shiftdate?.orgEndTime, 1) >
+                    parseDDMMYYYY(lastDeviceOut?.clockDateTimeD)
+                    ? shiftEndTime
+                    : lastDeviceOut?.clockDateTimeD
                   : shiftEndTime;
-              // console.log(shiftMode, "4");
+                // console.log(shiftMode, "3");
+              } else if (
+                shiftStatus === "Night Shift" &&
+                shiftMode === "Second Shift"
+              ) {
+                outTime =
+                  last &&
+                  shiftdate?.orgEndTime < parseDDMMYYYY(last?.clockDateTimeD)
+                    ? last.clockDateTimeD
+                    : shiftEndTime;
+                // console.log(shiftMode, "4");
+              }
             }
-          }
-          const fallbackUser = filteredUsers.find(
-            (user) => user.staffNameC === rowusername
-          );
+            const fallbackUser = filteredUsers.find(
+              (user) => user.staffNameC === rowusername
+            );
 
-          return {
-            shiftdate: shiftdate?.date || shift,
-            ...(matchedUsers?.length > 0 ? matchedUsers[0] : fallbackUser),
-            inTime: inTime ? formatToAmPm(inTime) : null,
-            outTime: outTime ? formatToAmPm(outTime) : null,
-            inTimeVerified,
-            inTimeVerifiedDevice,
-            outTimeVerified,
-            outTimeVerifiedDevice,
-          };
-        }
-      );
+            return {
+              shiftdate: shiftdate?.date || shift,
+              ...(matchedUsers?.length > 0 ? matchedUsers[0] : fallbackUser),
+              inTime: inTime ? formatToAmPm(inTime) : null,
+              outTime: outTime ? formatToAmPm(outTime) : null,
+              inTimeVerified,
+              inTimeVerifiedDevice,
+              outTimeVerified,
+              outTimeVerifiedDevice,
+            };
+          }
+        );
       // console.log(filteredData?.length ,"hitted")
       function formatToAmPm(dateStr) {
         if (!dateStr) return null;
@@ -1854,7 +1414,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
         answer,
         usersCollection,
         filteredData: filteredData?.filter((data) => data?.companyname),
-        VariableCheck,
+
         resultShiftValues,
       });
     } catch (err) {
@@ -2939,6 +2499,7 @@ exports.getUsersExitReportsCheck = catchAsyncErrors(async (req, res, next) => {
         },
       },
     ]);
+    console.log(biometricUsersGrouping?.length, "biometricUsersGrouping");
     // 1. Create a map of device serials to grouped biometric user data by username and type
     const biometricGroupingMap = {};
 
@@ -2958,10 +2519,12 @@ exports.getUsersExitReportsCheck = catchAsyncErrors(async (req, res, next) => {
         inoutdevice: exitinout,
       });
     }
-
+    //  console.log(biometricGroupingMap , "biometricGroupingMap")
     const pairedSerials = Object.values(biometricGroupingMap)
       .flat()
       .filter(Boolean);
+
+    console.log(pairedSerials, "pairedSerials");
     let matchQuery = {
       staffNameC: { $in: usernamesFilter },
     };
@@ -2978,14 +2541,19 @@ exports.getUsersExitReportsCheck = catchAsyncErrors(async (req, res, next) => {
         $nin: pairedSerials,
       };
     }
-    console.log(biometricGroupingMap, pairedSerials, "biometricGroupingMap");
 
+    const resultDate = expandDateRange(userDates);
     answer = await getUserClockinAndClockoutStatus({
       employee: usernamesFilter,
       userDates: userDates,
     });
     usersCollection = await Biometricattlog.aggregate([
-      { $match: matchQuery },
+      {
+        $match: {
+          ...matchQuery,
+          clockDateOnly: { $in: resultDate },
+        },
+      },
       {
         $lookup: {
           from: "users",
@@ -3081,7 +2649,8 @@ exports.getUsersExitReportsCheck = catchAsyncErrors(async (req, res, next) => {
         },
       },
     ]);
-
+    console.log(matchQuery, "matchQuery");
+    //  console.log(usersCollection?.length , "usersCollection")
     let filteredUsers = [];
     usersCollection.forEach((user) => {
       const userSerial = user.cloudIDC;
@@ -3457,7 +3026,7 @@ const calculateAttendance = (usersData) => {
 
 function parseDDMMYYYY(dateTime) {
   console.log(dateTime);
-  if(!dateTime) return 
+  if (!dateTime) return;
   const [datePart, timePart] = dateTime.split(" ");
   const [day, month, year] = datePart.split("-").map(Number);
   const [hour, minute, second] = timePart.split(":").map(Number);

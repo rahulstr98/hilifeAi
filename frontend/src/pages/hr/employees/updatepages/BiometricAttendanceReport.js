@@ -686,6 +686,7 @@ function BiometricAttendanceReport() {
     }
     //add function
     const sendRequest = async () => {
+        console.log('Hitted')
         setLoader(true);
         setPageName(!pageName)
         const filterEmployee = filterState?.type === "Individual" ?

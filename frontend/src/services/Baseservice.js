@@ -5394,6 +5394,7 @@ export const SERVICE = {
 
   // BOWER BIOMETRIC DEVICE BASESERVICES
   BOWER_BIOMETRIC_NEW_USERID: `${BASE_URL}/api/getnewbiometricuserid`,
+
   BOWER_BIOMETRIC_NEW_USER_ADD: `${BASE_URL}/api/getnewbiometricuseradd`,
 
 
@@ -5537,6 +5538,7 @@ export const SERVICE = {
   BIOUSER_ADDED_LIST_TABLE: `${BASE_URL}/api/biometricusersaddedlist`,
   BIOMETRIC_VISITOR_DEVICES_LIST: `${BASE_URL}/api/biometricvisitordeviceslist`,
   BIOMETRIC_VISITOR_ADDITION: `${BASE_URL}/api/addnewbiometricvisitor`,
+ 
 
 
 
@@ -5591,6 +5593,7 @@ export const SERVICE = {
       GET_COMPANY_BRANCH_BIOMETRIC_DEVICES: `${BASE_URL}/api/getcompanybranchbasedbiodevicees`,
       GET_FILTERED_BIO_DEVICES_VISITORS: `${BASE_URL}/api/getfilteredbiometricvisitordetails`,
       ENABLE_VISITORS_DETAILS_BY_ID: `${BASE_URL}/api/enablevisitorsdetailsbyid`,
+      
       BIOMETRIC_VISITOR_DELETION_DETAILS: `${BASE_URL}/api/biometricvisitordeletiondetails`,
         ALL_BIOMETRICDEVICES_PAIRED_DEVICES_AND_UNPAIRED_USER: `${BASE_URL}/api/biometricpaireddevicesandunpaireduser`,
         BIOMETRIC_VISITORS_ATTENDANCE_REPORT_CHECK: `${BASE_URL}/api/biometricvisitorsattendancereportcheck`,
@@ -5622,4 +5625,10 @@ export const SERVICE = {
   OVERALL_BULK_ASSIGN_ELEVATOR_PORT_DELETE: `${BASE_URL}/api/overallbulkassignelevatorportdelete`,
   OVERALL_ASSIGN_ELEVATOR_PORT_DELETE: `${BASE_URL}/api/singleassignelevatorportdelete`,
   FLOOR_WISE_USER_ACCESS_BIOMETRIC_DEVICE: `${BASE_URL}/api/biofloorwiseuseraccessbiometricdevice`,
+
+
+
+    BOWER_BIOMETRIC_NEW_USERID_GLOBAL: `${BASE_URL}/api/getnewbiometricuseridglobal`,
+     BIOMETRIC_VISITOR_ADDITION_GLOBAL: `${BASE_URL}/api/addnewbiometricvisitorGlobal`,
+     ENABLE_VISITORS_DETAILS_BY_ID_GLOBAL: `${BASE_URL}/api/enablevisitorsdetailsbyidglobal`,
 };

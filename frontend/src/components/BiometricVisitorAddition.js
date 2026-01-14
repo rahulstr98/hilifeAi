@@ -63,7 +63,7 @@ const BiometricVisitorAddition = async ({
     const profileImage = await handleProfileImage(photo, "ProfilePhoto");
 
     // ✅ axios.post syntax fix — data first, then headers in config
-    const visitorAdd = await axios.post(SERVICE.BIOMETRIC_VISITOR_ADDITION, {
+    const visitorAdd = await axios.post(SERVICE.BIOMETRIC_VISITOR_ADDITION_GLOBAL, {
       company,
       branch,
       unit,

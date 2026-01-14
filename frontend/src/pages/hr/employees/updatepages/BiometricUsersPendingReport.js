@@ -1170,6 +1170,8 @@ function BiometricUsersPendingReport() {
                 biometricUserIDC: BioUserDataActions?.biometricUserIDC,
                 isEnabledC: BioUserDataActions?.mode === "Enable" ? "Yes" : (BioUserDataActions?.mode === "Disable" ? "No" : ""),
                 mode: BioUserDataActions?.mode,
+                dataupload:"new",
+                status:BioUserDataActions?.mode === "Delete" ? "delete": "",
                 updatedby: [
                     ...updateby,
                     {
@@ -1187,7 +1189,9 @@ function BiometricUsersPendingReport() {
                     biometricUserIDC: BioUserDataActions?.biometricUserIDC,
                     deviceCommandN: BioUserDataActions?.mode === "Enable" ? "6" : (BioUserDataActions?.mode === "Disable" ? "7" : "8"),
                 });
-            } else if (res?.data?.success && ["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(BioUserDataActions?.brandname)) {
+            } else if (res?.data?.success && ["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan",
+                //  "Bowee"
+                ]?.includes(BioUserDataActions?.brandname)) {
                 let res = await axios.post(SERVICE.BIOMETRIC_COMMAND_EXECUTION, {
                     headers: {
                         Authorization: `Bearer ${auth.APIToken}`,
@@ -1264,6 +1268,7 @@ function BiometricUsersPendingReport() {
                     Authorization: `Bearer ${auth.APIToken}`,
                 },
                 privilegeC: String(matchedDataRole),
+                dataupload:"new",
                 updatedby: [
                     ...updateby,
                     {
@@ -1284,16 +1289,16 @@ function BiometricUsersPendingReport() {
                     datastatus: "new",
                 });
             }
-            else if (res?.data?.success && ["Bowee"]?.includes(BioUserDataActions?.brandname)) {
-                let res = await axios.post(SERVICE.BIOMETRIC_COMMAND_EXECUTION, {
-                    headers: {
-                        Authorization: `Bearer ${auth.APIToken}`,
-                    },
-                    biometricDeviceManagement: BioUserDataActions,
-                    command: "Edit",
-                    role: String(matchedDataRole)
-                });
-            }
+            // else if (res?.data?.success && ["Bowee"]?.includes(BioUserDataActions?.brandname)) {
+            //     let res = await axios.post(SERVICE.BIOMETRIC_COMMAND_EXECUTION, {
+            //         headers: {
+            //             Authorization: `Bearer ${auth.APIToken}`,
+            //         },
+            //         biometricDeviceManagement: BioUserDataActions,
+            //         command: "Edit",
+            //         role: String(matchedDataRole)
+            //     });
+            // }
 
             handleCloseModEdit();
             setPopupContent("Updated Successfully");
@@ -2428,7 +2433,7 @@ function BiometricUsersPendingReport() {
                 <Box sx={{ padding: "20px 30px" }}>
                     <form onSubmit={editSubmit}>
                         <Grid container spacing={2}>
-                            <Typography sx={userStyle.HeaderText}>Edit Biometric Users Pending Report</Typography>
+                            <Typography sx={userStyle.HeaderText}>Edit Biometric Users Pending Reports</Typography>
                         </Grid>
                         <br />
                         <Grid container spacing={2}>
@@ -2516,7 +2521,7 @@ function BiometricUsersPendingReport() {
                 <Box sx={{ padding: "20px 30px" }}>
                     <form onSubmit={editSubmitRole}>
                         <Grid container spacing={2}>
-                            <Typography sx={userStyle.HeaderText}>Edit Biometric Users Pending Report</Typography>
+                            <Typography sx={userStyle.HeaderText}>Edit Biometric Users Pending Reported</Typography>
                         </Grid>
                         <br />
                         <Grid container spacing={2}>
