@@ -5375,7 +5375,7 @@ export const SERVICE = {
   BIOMETRICBRANDMODEL_CREATE: `${BASE_URL}/api/biometricbrandmodel/new`,
 
   // Command Execution section
-  BIOMETRIC_COMMAND_EXECUTION: `${BASE_URL}/api/biometriccommandexecution`,
+ 
   BIOMETRIC_USER_ID_CHECK: `${BASE_URL}/api/biometricuseridcheck`,
   BIOMETRIC_USER_SINGLE_ADD_NEW: `${BASE_URL}/api/biometricsingleuseradd`,
   BIOMETRIC_DEVICE_NEW_LOG: `${BASE_URL}/api/getdevicenewlogs`,
@@ -5631,4 +5631,5 @@ export const SERVICE = {
     BOWER_BIOMETRIC_NEW_USERID_GLOBAL: `${BASE_URL}/api/getnewbiometricuseridglobal`,
      BIOMETRIC_VISITOR_ADDITION_GLOBAL: `${BASE_URL}/api/addnewbiometricvisitorGlobal`,
      ENABLE_VISITORS_DETAILS_BY_ID_GLOBAL: `${BASE_URL}/api/enablevisitorsdetailsbyidglobal`,
+      BIOMETRIC_COMMAND_EXECUTION: `${BASE_URL}/api/biometriccommandexecution`,
 };

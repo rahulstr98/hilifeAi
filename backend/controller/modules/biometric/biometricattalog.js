@@ -543,6 +543,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
     let answer, usersCollection, filteredData;
     let { company, branch, usernames, type, userDates, workmode } = req.body;
     try {
+      console.log(usernames, "usernames");
       const prevDateObj = getPreviousDateObject(userDates[0].formattedDate);
       let query = {};
       if (type !== "Deactivate" && usernames?.length > 0) {
@@ -673,6 +674,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
               departments: { $ifNull: ["$department", []] },
               units: { $ifNull: ["$unit", []] },
               teams: { $ifNull: ["$team", []] },
+              companynames: { $ifNull: ["$companyname", []] },
             },
             pipeline: [
               {
@@ -682,8 +684,19 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                       branches: [
                         {
                           case: { $eq: ["$$type", "Individual"] },
-                          then: { $in: ["$company", "$$companies"] },
+                          then: {
+                            $and: [
+                              { $in: ["$company", "$$companies"] },
+                              { $in: ["$branch", "$$branches"] },
+                              { $in: ["$unit", "$$units"] },
+                              { $in: ["$team", "$$teams"] },
+
+                              // ✅ match by companyname (if your grouping stores employee name here)
+                              { $in: ["$companyname", "$$companynames"] },
+                            ],
+                          },
                         },
+
                         {
                           case: { $eq: ["$$type", "Department"] },
                           then: {
@@ -864,7 +877,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           devices: Array.from(deviceSet),
         }),
       );
-      console.log(userDeviceMap, userDeviceArray, "userDeviceArray");
+
       const resultDate = expandDateRange(userDates);
       answer = await getUserClockinAndClockoutStatus({
         employee: usernamesFilter,
@@ -873,39 +886,51 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
       });
 
       const resultShiftValues = addShiftStatus(answer?.finaluser);
+
+console.log("usernamesFilter includes vennilara:", usernamesFilter.includes("vennilara"));
+console.log("usernamesFilter:", usernamesFilter ,resultDate);
+
+
+
       usersCollection = await Biometricattlog.aggregate([
         /* -------------------- 1. BASE MATCH -------------------- */
         {
           $match: {
             staffNameC: { $in: usernamesFilter },
             clockDateOnly: { $in: resultDate },
-            $expr: {
-              $in: [
-                "$cloudIDC",
-                {
-                  $let: {
-                    vars: {
-                      userRule: {
-                        $arrayElemAt: [
-                          {
-                            $filter: {
-                              input: userDeviceArray,
-                              as: "ud",
-                              cond: { $eq: ["$$ud.username", "$staffNameC"] },
-                            },
-                          },
-                          0,
-                        ],
-                      },
+          $expr: {
+  $in: [
+    { $trim: { input: "$cloudIDC" } },
+    {
+      $map: {
+        input: {
+          $let: {
+            vars: {
+              userRule: {
+                $arrayElemAt: [
+                  {
+                    $filter: {
+                      input: userDeviceArray,
+                      as: "ud",
+                      cond: { $eq: ["$$ud.username", "$$ROOT.staffNameC"] },
                     },
-                    in: { $ifNull: ["$$userRule.devices", []] },
                   },
-                },
-              ],
+                  0,
+                ],
+              },
             },
+            in: { $ifNull: ["$$userRule.devices", []] },
           },
         },
+        as: "d",
+        in: { $trim: { input: "$$d" } },
+      },
+    },
+  ],
+},
 
+          },
+        },
         /* -------------------- 2. USER LOOKUP -------------------- */
         {
           $lookup: {
@@ -935,6 +960,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
             let: {
               username: "$staffNameC",
               userCompany: "$user.company",
+              userCompanyName: "$user.companyname",
               userBranch: "$user.branch",
               userUnit: "$user.unit",
               userTeam: "$user.team",
@@ -963,7 +989,25 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
                               { $eq: ["$type", "Individual"] },
                               {
                                 $in: [
-                                  "$$username",
+                                  "$$userCompany",
+                                  { $ifNull: ["$company", []] },
+                                ],
+                              },
+                              {
+                                $in: [
+                                  "$$userBranch",
+                                  { $ifNull: ["$branch", []] },
+                                ],
+                              },
+                              {
+                                $in: ["$$userUnit", { $ifNull: ["$unit", []] }],
+                              },
+                              {
+                                $in: ["$$userTeam", { $ifNull: ["$team", []] }],
+                              },
+                              {
+                                $in: [
+                                  "$$userCompanyName",
                                   { $ifNull: ["$companyname", []] },
                                 ],
                               },
@@ -1239,7 +1283,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
           },
         },
       ]);
-
+console.log(usersCollection?.length , "usersCollection")
       const filteredUsers = usersCollection;
       const shiftKeyCount = {};
 
@@ -1556,7 +1600,7 @@ exports.getUsersAttendanceReportsCheck = catchAsyncErrors(
         answer,
         usersCollection,
         filteredData: filteredData?.filter((data) => data?.companyname),
-
+        filteredUsers,
         resultShiftValues,
       });
     } catch (err) {
@@ -2500,6 +2544,7 @@ exports.getUsersExitReportsCheck = catchAsyncErrors(async (req, res, next) => {
           let: {
             username: "$staffNameC",
             userCompany: "$user.company",
+            userCompanyName: "$user.companyname",
             userBranch: "$user.branch",
             userUnit: "$user.unit",
             userTeam: "$user.team",
@@ -2528,7 +2573,7 @@ exports.getUsersExitReportsCheck = catchAsyncErrors(async (req, res, next) => {
                             { $eq: ["$type", "Individual"] },
                             {
                               $in: [
-                                "$$username",
+                                "$$userCompanyName",
                                 { $ifNull: ["$companyname", []] },
                               ],
                             },
@@ -3811,6 +3856,7 @@ exports.getUsersBranchWiseExitReportsCheck = catchAsyncErrors(
               let: {
                 username: "$staffNameC",
                 userCompany: "$user.company",
+                userCompanyName: "$user.companyname",
                 userBranch: "$user.branch",
                 userUnit: "$user.unit",
                 userTeam: "$user.team",
@@ -3839,7 +3885,7 @@ exports.getUsersBranchWiseExitReportsCheck = catchAsyncErrors(
                                 { $eq: ["$type", "Individual"] },
                                 {
                                   $in: [
-                                    "$$username",
+                                    "$$userCompanyName",
                                     { $ifNull: ["$companyname", []] },
                                   ],
                                 },
@@ -4941,6 +4987,7 @@ exports.getUsersNonEntryBranchWiseListCheck = catchAsyncErrors(
               let: {
                 username: "$staffNameC",
                 userCompany: "$user.company",
+                userCompanyName: "$user.companyname",
                 userBranch: "$user.branch",
                 userUnit: "$user.unit",
                 userTeam: "$user.team",
@@ -4969,7 +5016,7 @@ exports.getUsersNonEntryBranchWiseListCheck = catchAsyncErrors(
                                 { $eq: ["$type", "Individual"] },
                                 {
                                   $in: [
-                                    "$$username",
+                                    "$$userCompanyName",
                                     { $ifNull: ["$companyname", []] },
                                   ],
                                 },
@@ -5972,6 +6019,7 @@ exports.getUsersAttendanceTotalHoursReportsCheck = catchAsyncErrors(
             let: {
               username: "$staffNameC",
               userCompany: "$user.company",
+              userCompanyName: "$user.companyname",
               userBranch: "$user.branch",
               userUnit: "$user.unit",
               userTeam: "$user.team",
@@ -6000,7 +6048,7 @@ exports.getUsersAttendanceTotalHoursReportsCheck = catchAsyncErrors(
                               { $eq: ["$type", "Individual"] },
                               {
                                 $in: [
-                                  "$$username",
+                                  "$$userCompanyName",
                                   { $ifNull: ["$companyname", []] },
                                 ],
                               },
@@ -7591,6 +7639,7 @@ exports.getUsersTeamHierarchyAttendanceReportsCheck = catchAsyncErrors(
             let: {
               username: "$staffNameC",
               userCompany: "$user.company",
+              userCompanyName: "$user.companyname",
               userBranch: "$user.branch",
               userUnit: "$user.unit",
               userTeam: "$user.team",
@@ -7619,7 +7668,7 @@ exports.getUsersTeamHierarchyAttendanceReportsCheck = catchAsyncErrors(
                               { $eq: ["$type", "Individual"] },
                               {
                                 $in: [
-                                  "$$username",
+                                  "$$userCompanyName",
                                   { $ifNull: ["$companyname", []] },
                                 ],
                               },
