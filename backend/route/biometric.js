@@ -60,32 +60,25 @@ biometricRoute.route('/biometricpaireddevicegrouping/:id').get(getSingleBiometri
 const { getBiometricTestStatus } = require("../controller/modules/biometric/biometricteststatus");
 biometricRoute.route("/biometricteststatus").get(getBiometricTestStatus);
 
-const { getAllattLog, addAttLog, getUsersAttendanceReports, getUsersAttendanceReportsCheck,
-    getUsersBranchWiseExitReports, getUsersTeamHierarchyAttendanceReports, getUsersTeamHierarchyAttendanceReportsCheck,
-    getUnmatchedUsersAttendanceReports, getUsersNonEntryBranchWiseList, getUsersNonEntryBranchWiseListCheck,
+const { getAllattLog, addAttLog,  getUsersAttendanceReportsCheck,
+      getUsersTeamHierarchyAttendanceReportsCheck,
+     getUsersNonEntryBranchWiseListCheck,
     getUsersBranchWiseExitReportsCheck,
     getUsersAttendanceTotalHoursReportsCheck, getUnmatchedUsersAttendanceReportsCheck,
     getBiometricVisitorsAttendanceReport,
-    getUsersAttendanceTotalHoursReports, getUsersExitReports, getAllDuplicateBiometricLogs, getUsersExitReportsCheck, getOverallBiometricUsersAttendance } = require("../controller/modules/biometric/biometricattalog");
+      getAllDuplicateBiometricLogs, getUsersExitReportsCheck} = require("../controller/modules/biometric/biometricattalog");
 biometricRoute.route("/biometricattlogs").get(getAllattLog);
 biometricRoute.route("/duplicatebiometriclogs").post(getAllDuplicateBiometricLogs);
-biometricRoute.route("/biometricuserattendancereport").post(getUsersAttendanceReports);
 biometricRoute.route("/biometricuserattendancereportcheck").post(getUsersAttendanceReportsCheck);
-biometricRoute.route("/biometricunmatchedusersattendancereport").post(getUnmatchedUsersAttendanceReports);
 biometricRoute.route("/biometricunmatchedusersattendancereportcheck").post(getUnmatchedUsersAttendanceReportsCheck);
 biometricRoute.route("/biometricvisitorsattendancereportcheck").post(getBiometricVisitorsAttendanceReport);
-biometricRoute.route("/biometricexitreport").post(getUsersExitReports);
 biometricRoute.route("/biometricexitreportcheck").post(getUsersExitReportsCheck);
-biometricRoute.route("/biometricbranchwiseexitreport").post(getUsersBranchWiseExitReports);
 biometricRoute.route("/biometricbranchwiseexitreportcheck").post(getUsersBranchWiseExitReportsCheck);
-biometricRoute.route("/biometricnonentrybranchwiselist").post(getUsersNonEntryBranchWiseList);
 biometricRoute.route("/biometricnonentrybranchwiselistcheck").post(getUsersNonEntryBranchWiseListCheck);
-biometricRoute.route("/biometricuserattendancetotalhoursreport").post(getUsersAttendanceTotalHoursReports);
 biometricRoute.route("/biometricuserattendancetotalhoursreportcheck").post(getUsersAttendanceTotalHoursReportsCheck);
-biometricRoute.route("/biometricusersteamattendancereport").post(getUsersTeamHierarchyAttendanceReports);
 biometricRoute.route("/biometricusersteamattendancereportcheck").post(getUsersTeamHierarchyAttendanceReportsCheck);
 biometricRoute.route("/biometricattlog/new").post(addAttLog);
-biometricRoute.route("/overallbiometricusersattendance").post(getOverallBiometricUsersAttendance);
+// biometricRoute.route("/overallbiometricusersattendance").post(getOverallBiometricUsersAttendance);
 
 const { getAllDeviceinfo, addDeviceinfo, getDeviceinfoFromSite } = require("../controller/modules/biometric/getdeviceinfo");
 biometricRoute.route("/getbiometricdeviceinfo").get(getAllDeviceinfo);

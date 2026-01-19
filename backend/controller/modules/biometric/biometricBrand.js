@@ -219,7 +219,8 @@ const deviceIpAddress = await BiometricDeviceManagement.findOne({biometricserial
   }
   else if (biometricDeviceManagement?.brandname === "Bowee") {
     if (!["Enable", "Disable", "Edit", "Delete"]?.includes(command)) {
-      isSuccess = await getCommandBoweeBiometric(command, biometricDeviceManagement?.biometricUserIDC, deviceURL);
+      // isSuccess = await getCommandBoweeBiometric(command, biometricDeviceManagement?.biometricUserIDC, deviceURL);
+      isSuccess = await getCommandBoweeBiometricGlobal(command, biometricDeviceManagement?.biometricserialno, deviceURL);
     }
     else if (command === "Delete") {
       isSuccess = await deleteSingleBoweeUser(biometricDeviceManagement?.biometricUserIDC, deviceURL);
@@ -318,6 +319,22 @@ const getCommandBoweeBiometric = async (command, device, deviceURL) => {
   const result = await sendCommandToBoweeDevice(commandSend, deviceURL);
   return result;
 };
+const getCommandBoweeBiometricGlobal = async (command, device, deviceURL) => {
+  let remoteAction = "";
+
+  if (command === "Door Open") remoteAction = "DOOR_OPEN";
+  else if (command === "Remote Normal Open") remoteAction = "DOOR_KEEP_OPEN";
+  else if (command === "Remote Door Closing") remoteAction = "DOOR_CLOSE";
+  else if (command === "Remote Locking") remoteAction = "DOOR_LOCK";
+  else if (command === "Unlock") remoteAction = "DOOR_UNLOCK";
+  else if (command === "Turn Off Alarm") remoteAction = "CLOSE_ALARM";
+  else if (command === "Device Restart") remoteAction = "RESTART";
+  else if (command === "Reset") remoteAction = "FACTORY_RESET";
+
+  // now you push into queue / send to device
+  return await sendCommandToBoweeDevice(remoteAction,device, deviceURL);
+};
+
 
 const getCommandForDeviceAI = async (command, exeCommand) => {
   let commandSend = {};

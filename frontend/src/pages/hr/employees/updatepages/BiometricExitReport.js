@@ -719,7 +719,7 @@ function BiometricExitReport() {
                 workmode: valueWorkMode,
                 type: filterState?.type
             });
-            // console.log(response?.data, "attendance")
+            console.log(response?.data, "attendance")
             setExitReportArray(response?.data?.filteredData?.map((data, index) => ({ ...data, serialNumber: index + 1 })));
             setLoader(false);
 

@@ -13,6 +13,7 @@ const BiometricDeviceManagement = require("../model/modules/BiometricDeviceManag
 const nodemailer = require("nodemailer");
 const path = require("path");
 const Biouploaduserinfo = require("../model/modules/biometric/uploaduserinfo");
+const BoweeDeviceCommandQueue = require("../model/modules/biometric/BoweeDeviceCommandQueue");
 const BiometricPairedDevicesGrouping = require("../model/modules/biometric/BiometricPairedDevicesGroupingModel");
 
 const performLogin = async (url) => {
@@ -176,26 +177,44 @@ function addNewUserToDevice(peopleObj, photoPath, token, deviceurl) {
 }
 
 // Remote Commands from Biometric Remote Control UI page
-exports.sendCommandToBoweeDevice = async (command, url) => {
+exports.sendCommandToBoweeDevice = async (command, device, url) => {
   try {
-    const token = await performLogin(url);
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: "Token not received",
-      });
-    }
-    const response = await axios.post(`${url}/api/Device/Remote`, command, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+    console.log(command, device, url);
+
+    const filter = {
+      deviceSn: device,
+      commandType: "REMOTE",
+      remoteAction: command,
+      status: "EXECUTED",
+    };
+
+    const update = {
+      $set: {
+        deviceSn: device,
+        commandType: "REMOTE",
+        remoteAction: command,
+        status: "PENDING",
       },
-    });
-    return response?.status === 200;
+    };
+
+    const options = {
+      new: true,      // return updated doc
+      upsert: true,   // if not found, create new
+    };
+
+    const result = await BoweeDeviceCommandQueue.findOneAndUpdate(
+      filter,
+      update,
+      options
+    );
+
+    return true;
   } catch (error) {
+    console.error("sendCommandToBoweeDevice error:", error);
     return false;
   }
 };
+
 
 // Delete the user from HRMS to the DEVICE
 exports.deleteSingleBoweeUser = async (userid, url) => {

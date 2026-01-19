@@ -268,13 +268,39 @@ exports.uploadIdentifyRecord = [
   }),
 ];
 
+function isPhotoPath(photoImage) {
+  if (!photoImage) return false;
+
+  // multer saved path usually starts like this
+  if (typeof photoImage === "string" && photoImage.startsWith("/uploads/")) {
+    return true; // ✅ it's a path
+  }
+
+  return false; // ❌ not a path (so base64 or something else)
+}
+
+function pathToBase64Only(photoPath) {
+  // photoPath example: /uploads/biometric/FC-8245H25047289/2.jpg
+
+  // Convert to absolute path (because fs needs full path)
+  const absolutePath = path.join(process.cwd(), photoPath);
+
+  // Read file buffer
+  const fileBuffer = fs.readFileSync(absolutePath);
+
+  // Convert buffer to base64 string
+  const base64Only = fileBuffer.toString("base64");
+
+  return base64Only; // ✅ same as base64Image.split("base64,")[1]
+}
+
 function buildPhotoFields(base64Image) {
   if (!base64Image) {
     return {
       Photo: "",
     };
   }
-
+  const isPath = isPhotoPath(base64Image);
   const cleanBase64 = base64Image.includes("base64,")
     ? base64Image.split("base64,")[1]
     : base64Image;
@@ -282,14 +308,14 @@ function buildPhotoFields(base64Image) {
   const buffer = Buffer.from(cleanBase64, "base64");
 
   return {
-    Photo: cleanBase64, // ✅ RAW BASE64 ONLY
+    Photo: isPath ? pathToBase64Only(base64Image) : cleanBase64, // ✅ RAW BASE64 ONLY
   };
 }
 
 function buildUserDetails(users) {
   return users.map((user) => {
     console.log(user.photoImage ? true : false);
-    const photoFields = buildPhotoFields(user.photoImage);
+    const photoFields = buildPhotoFields(user.photoImage, user?.photoPath);
 
     return {
       UserID: user.biometricUserIDC,
@@ -385,10 +411,6 @@ exports.pushPeople = [
     const photoFile = files.find((f) => f.fieldname === "Photo");
 
     let detailJson = null;
-
-    /* =========================
-       Decode Detail (gzip JSON)
-    ========================= */
     if (detailFile) {
       try {
         const decoded = await new Promise((resolve, reject) => {
@@ -417,10 +439,6 @@ exports.pushPeople = [
       : null;
 
     let userDoc = null;
-
-    /* =========================
-       PREPARE PHOTO META (ONCE)
-    ========================= */
     let photoMeta = null;
 
     if (photoFile?.buffer) {
@@ -430,10 +448,6 @@ exports.pushPeople = [
         photoFile,
       });
     }
-
-    /* =========================
-       PUSH TYPE HANDLING
-    ========================= */
     switch (pushType) {
       /* -------- ADD -------- */
       case 1:
@@ -511,9 +525,6 @@ exports.pushPeople = [
         });
     }
 
-    /* =========================
-       APPLY PHOTO META TO ALL
-    ========================= */
     if (photoMeta && userDoc) {
       // 🔹 Update photo reference in biouploaduserinfo
       await Biouploaduserinfo.updateOne(userFilter, {
@@ -525,15 +536,11 @@ exports.pushPeople = [
 
       console.log("🧩 imagePath synced into biouploaduserinfo");
     }
-
-    /* =========================
-       ACK DEVICE
-    ========================= */
     return res.status(200).json({ Success: 1 });
   }),
 ];
 
-exports.DeletePeopleList = async (req, res) => {
+exports.DeletePeopleList =catchAsyncErrors( async (req, res, next) => {
   try {
     const { SN } = req.body;
     console.log("Hitted Delete People");
@@ -577,14 +584,14 @@ exports.DeletePeopleList = async (req, res) => {
       Message: "Server error",
     });
   }
-};
+});
 
 // Edge case
 
 /*
 1. check if the PhotPath variable has value , if not update
 2. run daily to store if any photoPath is not available
-need to run to get the latest userID
-need to cconvert into base64 while sending back as edit
-maintain an variable to create /update and delete
+3.need to run to get the latest userID
+4.need to cconvert into base64 while sending back as edit
+5.maintain an variable to create /update and delete
 */
