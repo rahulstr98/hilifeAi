@@ -206,9 +206,9 @@ console.log("hitted")
             branch: deviceDetails?.devicebranch,
             floor: { $in: deviceDetails?.devicefloor },
             isElevator: true,
-            model: "Bowee",
+            brand: "Bowee",
           },
-          { _id: 0, biometricassignedip: 1 }
+          { _id: 0, biometricserialno: 1 }
         ),
 
         AssignElevatorPort.find(
@@ -221,77 +221,104 @@ console.log("hitted")
         ),
       ]);
 
-      console.log(users?.length ,biometricDevices?.length , elevatorPorts?.length)
-      if (users?.length && biometricDevices?.length && elevatorPorts?.length) {
-        const portString = elevatorPorts.map((p) => p.elevatorPort).join(",");
+      console.log(users?.length ,biometricDevices?.length , elevatorPorts?.length);
+const usernames = users?.map(u => u.username)?.toString() || "";
+const devices = biometricDevices?.map(d => d.biometricserialnumber)?.toString() || "";
+const ports = elevatorPorts?.map(p => p.elevatorPort)?.toString() || "";
 
-        /* -------------------- COMMON BIOMETRIC PROCESSOR -------------------- */
-        const processBiometric = async (users, devices, port, actionFn) => {
-          const cache = new Map();
+const finalArray = usernames.flatMap(staffNameC =>
+  devices.map(cloudIDC => ({
+    staffNameC,
+    cloudIDC,
+    elevatorPorts: ports,
+  }))
+);
 
-          for (const user of users) {
-            for (const device of devices) {
-              const payload = {
-                username: user.username,
-                assignedip: `http://${device.biometricassignedip}`,
-                portnumber: port,
-              };
+if (finalArray.length > 0) {
+  const bulkOps = finalArray.map(({ staffNameC, cloudIDC, elevatorPorts }) => ({
+    updateOne: {
+      filter: { staffNameC, cloudIDC },
+      update: { $set: { elevatorPorts } },
+      upsert: false,
+    },
+  }));
 
-              const cacheKey = `${payload.assignedip}|${payload.username}`;
+  const result = await Biouploaduserinfo.bulkWrite(bulkOps);
+  console.log("Updated elevatorPorts successfully:", result);
+}
 
-              let biometricUser;
-              if (cache.has(cacheKey)) {
-                biometricUser = cache.get(cacheKey);
-              } else {
-                biometricUser = await getUserListByName(
-                  payload.assignedip,
-                  payload.username
-                );
-                cache.set(cacheKey, biometricUser);
-              }
 
-              if (biometricUser) {
-                await actionFn(payload, biometricUser);
-              }
-            }
-          }
-        };
 
-        /* -------------------- ADD / UPDATE FLOORS -------------------- */
-        await processBiometric(
-          users,
-          biometricDevices,
-          portString,
-          EditBoweeFloorDetailsInBiometric
-        );
+      // if (users?.length && biometricDevices?.length && elevatorPorts?.length) {
+      //   const portString = elevatorPorts.map((p) => p.elevatorPort).join(",");
 
-        /* -------------------- DELETE FLOORS / USERS -------------------- */
-        if (deviceDetails?.deleteemployee?.length > 0) {
-          console.log(deviceDetails?.deleteemployee , "deviceDetails?.deleteemployee")
-          const deleteUsers = await User.find(
-            { companyname: { $in: deviceDetails.deleteemployee } },
-            { _id: 0, username: 1 }
-          );
+      //   /* -------------------- COMMON BIOMETRIC PROCESSOR -------------------- */
+      //   const processBiometric = async (users, devices, port, actionFn) => {
+      //     const cache = new Map();
 
-          let deleteDevices = biometricDevices;
-          let deletePorts = portString;
-          await processBiometric(
-            deleteUsers,
-            deleteDevices,
-            deletePorts,
-            DeleteBoweeFloorDetailsInBiometric
-          );
-        }
+      //     for (const user of users) {
+      //       for (const device of devices) {
+      //         const payload = {
+      //           username: user.username,
+      //           assignedip: `http://${device.biometricassignedip}`,
+      //           portnumber: port,
+      //         };
 
-        return res.status(200).json({
-          message: "Biometric floor access updated successfully",
-          summary: {
-            usersCount: users.length,
-            devicesCount: biometricDevices.length,
-            ports: portString,
-          },
-        });
-      }
+      //         const cacheKey = `${payload.assignedip}|${payload.username}`;
+
+      //         let biometricUser;
+      //         if (cache.has(cacheKey)) {
+      //           biometricUser = cache.get(cacheKey);
+      //         } else {
+      //           biometricUser = await getUserListByName(
+      //             payload.assignedip,
+      //             payload.username
+      //           );
+      //           cache.set(cacheKey, biometricUser);
+      //         }
+
+      //         if (biometricUser) {
+      //           await actionFn(payload, biometricUser);
+      //         }
+      //       }
+      //     }
+      //   };
+
+      //   /* -------------------- ADD / UPDATE FLOORS -------------------- */
+      //   await processBiometric(
+      //     users,
+      //     biometricDevices,
+      //     portString,
+      //     EditBoweeFloorDetailsInBiometric
+      //   );
+
+      //   /* -------------------- DELETE FLOORS / USERS -------------------- */
+      //   if (deviceDetails?.deleteemployee?.length > 0) {
+      //     console.log(deviceDetails?.deleteemployee , "deviceDetails?.deleteemployee")
+      //     const deleteUsers = await User.find(
+      //       { companyname: { $in: deviceDetails.deleteemployee } },
+      //       { _id: 0, username: 1 }
+      //     );
+
+      //     let deleteDevices = biometricDevices;
+      //     let deletePorts = portString;
+      //     await processBiometric(
+      //       deleteUsers,
+      //       deleteDevices,
+      //       deletePorts,
+      //       DeleteBoweeFloorDetailsInBiometric
+      //     );
+      //   }
+
+      //   return res.status(200).json({
+      //     message: "Biometric floor access updated successfully",
+      //     summary: {
+      //       usersCount: users.length,
+      //       devicesCount: biometricDevices.length,
+      //       ports: portString,
+      //     },
+      //   });
+      // }
     } catch (err) {
       console.error(err);
       return next(new ErrorHandler("Records not found!", 500));

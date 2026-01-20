@@ -55,7 +55,8 @@ const BiometricVisitorAddition = async ({
   visitoremail,
   visitorcontactnumber,
   page ,
-  pagedetails
+  pagedetails,
+  cardNum
 }) => {
   // const { auth } = useContext(AuthContext);
   try {
@@ -78,7 +79,9 @@ const BiometricVisitorAddition = async ({
       visitoremail,
       visitorcontactnumber,
         page ,
-  pagedetails
+  pagedetails,
+  cardNum,
+  deviceBrand:"Bowee"
     });
 
     console.log("Visitor added:", visitorAdd.data);

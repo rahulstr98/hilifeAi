@@ -1259,6 +1259,9 @@ exports.addNewVisitorToDeviceGlobal = catchAsyncErrors(async (req, res, next) =>
             visitorid: req.body.visitorid,
             visitorpage: req.body.page,
             visitorpagedetails: req.body.pagedetails,
+            cardNum: req.body.cardNum,
+            deviceBrand: req.body.deviceBrand,
+            datastatus:"create"
           },
         },
         upsert: true,

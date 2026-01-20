@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -46,6 +46,7 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { menuItems } from '../../../components/menuItemsList';
 import { PhotoCamera as PhotoCameraIcon } from '@mui/icons-material';
 import DocumentScannerComponent from '../recruitment/DocumentScannerComponent.js';
+import MergeImageComponent from '../recruitment/MergeImageComponent.js';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { BASE_URL } from '../../../services/Authservice';
 import mammoth from 'mammoth';
@@ -83,20 +84,25 @@ import AlertDialog from '../../../components/Alert';
 import MessageAlert from '../../../components/MessageAlert';
 import ExistingProfileVisitor from '../../interactors/visitors/ExistingProfileVisitor';
 import Webcamimage from '../../../components/webCamWithDuplicate';
-import { religionOptions, address_type, permanent_address_type, personal_prefix, landmark_and_positional_prefix, candidate_educational_upload_status, experience_document_type } from '../../../components/Componentkeyword';
+import { religionOptions, address_type, permanent_address_type, personal_prefix, handleRestrictedWords, landmark_and_positional_prefix, candidate_educational_upload_status, experience_document_type } from '../../../components/Componentkeyword';
 import FullAddressCard from '../../../components/FullAddressCard.js';
 import { ConfirmationPopup, DeleteConfirmation } from '../../../components/DeleteConfirmation';
 import PincodeButton from '../../../components/PincodeButton.js';
 import { getPincodeDetails } from '../../../components/getPincodeDetails';
-import BiometricForm from '../employees/BiometricForm.js';
+import SignatureSection from '../employees/SignatureSection.js';
 import HiConnectComponentCreate from '../employees/HiConnectComponentCreate.js';
+import LdapComponentCreate from '../employees/LdapComponentCreate.js';
 import uploadEmployeeDocuments from '../../../components/CommonMulterFunction.js';
 import { AUTH } from '../../../services/Authservice';
 import SalaryTable from '../recruitment/SalaryTable.js';
 import salaryTableFunction from '../../../components/SalaryTableFunction.js';
 // const { generatePassword,validatePassword } = require("../../../components/passwordGenerator");
 import { validatePassword } from '../../../components/passwordGenerator';
-import imageCompression from "browser-image-compression";
+import imageCompression from 'browser-image-compression';
+import debounce from 'lodash.debounce';
+import CropIcon from '@mui/icons-material/Crop';
+import TransportLogComponent from '../employees/TransportLogComponent.js';
+import { TransportLogUpdateFirst, TransportLogCreate, fetchUserLogsAndSetRestrictions, validateTransportData } from '../employees/TransportLogService.js';
 
 function calculateLuminance(hex) {
   const r = parseInt(hex?.slice(1, 3), 16);
@@ -111,6 +117,8 @@ function calculateLuminance(hex) {
 }
 
 function InternEdit() {
+  const [signatureData, setSignatureData] = useState(null);
+  const [signatureID, setSignatureID] = useState(null);
   const [salaryTableDataManual, setSalaryTableDataManual] = useState({
     salaryfixed: false,
     salarystatus: 'With Salary',
@@ -155,7 +163,16 @@ function InternEdit() {
       },
     ],
   });
+  const [createLdap, setCreateLdap] = useState({
+    createldapaccount: false,
+    ldapEmail: '',
+    ldapOU: '',
 
+    ldapDN: '',
+    ldapSAMAccountName: '',
+    ldapUserPrincipalName: '',
+    ldapObjectGUID: '',
+  });
   const backPage = useNavigate();
   const [popup, setPopup] = useState({
     open: false,
@@ -395,7 +412,7 @@ function InternEdit() {
   const [CheckedBiometric, setCheckedBiometric] = useState(false);
   const [CheckedBiometricAdded, setCheckedBiometricAdded] = useState(false);
 
-  const [BiometricPostDevice, setBiometricPostDevice] = useState("");
+  const [BiometricPostDevice, setBiometricPostDevice] = useState('');
   const [BioPostCheckDevice, setBioPostCheckDevice] = useState(false);
   const [BioOldUserCheck, setBioOldUserCheck] = useState(false);
   const [loadingBiometric, setLoadingBiometric] = useState(false);
@@ -411,8 +428,6 @@ function InternEdit() {
   const [BioUserDataActions, setBioUserDataActions] = useState({});
   const [UnmatchedUserData, setUnmatchedUserData] = useState({});
   const [deviceUserNameAddedList, setDeviceUserNameAddedList] = useState([]);
-
-
 
   const handleResumeUpload = (event) => {
     const resume = event.target.files;
@@ -497,6 +512,7 @@ function InternEdit() {
       handleClickOpenPopupMalert();
     } else {
       setLoadingBiometric(true);
+      console.log(deviceDetails?.brand, 'deviceDetails?.brand');
       if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)) {
         setLoadingBiometric(false);
         fetchUsersAvailability(deviceDetails, biometricDevicename);
@@ -525,7 +541,7 @@ function InternEdit() {
   };
 
   const fetchUsersAvailability = async (device, biometricdevicename) => {
-    console.log(device, biometricdevicename, "Device Name")
+    console.log(device, biometricdevicename, 'Device Name');
     try {
       if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan']?.includes(device.brand)) {
         const [res, response] = await Promise.all([
@@ -550,7 +566,7 @@ function InternEdit() {
         }
       } else if (device.brand === 'Bowee') {
         const [bowee, response] = await Promise.all([
-          axios.post(SERVICE.BOWER_BIOMETRIC_NEW_USERID, { biometricdevicename: biometricdevicename }, { headers: { Authorization: `Bearer ${auth.APIToken}` } }),
+          axios.post(SERVICE.BOWER_BIOMETRIC_NEW_USERID_GLOBAL, { biometricdevicename: biometricdevicename }, { headers: { Authorization: `Bearer ${auth.APIToken}` } }),
           axios.post(
             SERVICE.BIOMETRIC_USER_DUPLICATE_CHECK,
             {
@@ -577,23 +593,25 @@ function InternEdit() {
         ]);
 
         let duplicateCheck = response?.data?.individualuser;
-        console.log(response?.data?.individualuser, "response?.data?.individualuser")
+        console.log(response?.data?.individualuser, 'response?.data?.individualuser');
         setBioIndivUserCheck(duplicateCheck);
         if (res?.data?.alldeviceinfo) {
           setBiometricId(Number(res?.data?.alldeviceinfo));
         }
       }
 
-      let biolist = await axios.post(SERVICE.BIOUSER_ADDED_LIST_TABLE, {
-        username: enableLoginName ? third : employee.username
-      }, {
-        headers: { Authorization: `Bearer ${auth.APIToken}` }
-      });
-      setDeviceUserNameAddedList(biolist?.data?.alluploaduserinfo)
-
-
+      let biolist = await axios.post(
+        SERVICE.BIOUSER_ADDED_LIST_TABLE,
+        {
+          username: enableLoginName ? third : employee.username,
+        },
+        {
+          headers: { Authorization: `Bearer ${auth.APIToken}` },
+        }
+      );
+      setDeviceUserNameAddedList(biolist?.data?.alluploaduserinfo);
     } catch (err) {
-      console.log(err, "err")
+      console.log(err, 'err');
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
@@ -620,13 +638,11 @@ function InternEdit() {
       setPopupContentMalert('Currently Not is Use');
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-    else if (["Bowee"]?.includes(deviceDetails.brand) && !documentFiles) {
-      setPopupContentMalert("Please Add Profile Image");
-      setPopupSeverityMalert("warning");
+    } else if (['Bowee']?.includes(deviceDetails.brand) && !documentFiles) {
+      setPopupContentMalert('Please Add Profile Image');
+      setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
-    }
-    else if (BioIndivUserCheck) {
+    } else if (BioIndivUserCheck) {
       setPopupContentMalert('User Already Added');
       setPopupSeverityMalert('info');
       handleClickOpenPopupMalert();
@@ -714,6 +730,7 @@ function InternEdit() {
             biometricUserIDC: BiometricId,
             cloudIDC: deviceDetails.biometricserialno,
             dataupload: 'new',
+            deviceBrand: deviceDetails.brand,
             downloadedFaceTemplateN: deviceDetails.brand === 'Bio-Socket' && documentFiles?.data ? 1 : 0,
             downloadedFingerTemplateN: 0,
             fingerCountN: 0,
@@ -761,6 +778,7 @@ function InternEdit() {
         cloudIDC: biometricDevicename,
         datastatus: 'new',
         dataupload: 'new',
+        deviceBrand: deviceDetails.brand,
         downloadedFaceTemplateN: 0,
         downloadedFingerTemplateN: 0,
         fingerCountN: 0,
@@ -793,31 +811,13 @@ function InternEdit() {
   const handleNewUserAddBowee = async () => {
     try {
 
-
-      const PeopleJson = {
-        UserID: String(BiometricId),
-        Name: enableLoginName ? String(third) : employee?.username,
-        Job: 'Staff',
-        AccessType: biometricrole === 'User' ? 0 : biometricrole === 'Administrator' ? 1 : 2,
-        OpenTimes: 65535,
-        Photo: documentFiles?.data,
-      };
-
-      const response = await axios.post(
-        SERVICE.BOWER_BIOMETRIC_NEW_USER_ADD,
-
-        {
-          headers: { Authorization: `Bearer ${auth.APIToken}` },
-          PeopleJson: PeopleJson,
-          biometricdevicename: deviceDetails.biometricserialno,
-        }
-      );
-      if (response.data?.success) {
         let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
           headers: { Authorization: `Bearer ${auth.APIToken}` },
           biometricUserIDC: BiometricId,
           cloudIDC: deviceDetails.biometricserialno,
           dataupload: 'new',
+          datastatus:'create',
+          deviceBrand: deviceDetails.brand,
           downloadedFaceTemplateN: deviceDetails.brand === 'Bowee' && documentFiles?.data ? 1 : 0,
           downloadedFingerTemplateN: 0,
           fingerCountN: 0,
@@ -827,9 +827,9 @@ function InternEdit() {
           pwdc: '',
           staffNameC: enableLoginName ? String(third) : employee?.username,
           companyname: employee?.biometricname,
+          photoImage:documentFiles?.data,
         });
         setCheckedBiometricAdded(true);
-      }
       setPopupContentMalert('Biometric Data Added');
       setPopupSeverityMalert('success');
       handleClickOpenPopupMalert();
@@ -849,15 +849,13 @@ function InternEdit() {
 
       setBiometricId(0);
       setBioPostCheckDevice(true);
-
-        } catch (err) {
+    } catch (err) {
       console.log(err, 'err');
-       setCheckedBiometricAdded(false);
+      setCheckedBiometricAdded(false);
       if (!err?.response?.data?.success) setPopupContentMalert(err?.response?.data?.message);
       setPopupSeverityMalert('warning');
       handleClickOpenPopupMalert();
     }
-
   };
   const handleCommitUserBiometric = async (e) => {
     e.preventDefault();
@@ -886,8 +884,8 @@ function InternEdit() {
     let base64Data = profileImage;
 
     // 1. If it has "data:image/..." prefix, extract only the base64 part
-    if (profileImage.includes(",")) {
-      base64Data = profileImage.split(",")[1];
+    if (profileImage.includes(',')) {
+      base64Data = profileImage.split(',')[1];
     }
 
     // 2. Convert base64 -> Blob (for compression)
@@ -897,7 +895,7 @@ function InternEdit() {
       byteNumbers[i] = byteCharacters.charCodeAt(i);
     }
     const byteArray = new Uint8Array(byteNumbers);
-    const blob = new Blob([byteArray], { type: "image/png" }); // adjust type if needed
+    const blob = new Blob([byteArray], { type: 'image/png' }); // adjust type if needed
 
     // 3. Compress image using browser-image-compression
     const options = {
@@ -913,7 +911,7 @@ function InternEdit() {
 
     // 5. Convert compressed Blob back to base64 (if you need to send it to backend)
     const compressedBase64 = await imageCompression.getDataUrlFromFile(compressedBlob);
-    const compressedBase64Data = compressedBase64.split(",")[1]; // remove prefix
+    const compressedBase64Data = compressedBase64.split(',')[1]; // remove prefix
 
     // 6. Save in state
     setdocumentFiles({
@@ -921,11 +919,8 @@ function InternEdit() {
       preview: previewUrl,
       data: compressedBase64Data, // store compressed base64 data
     });
-    setLoading(false)
-    console.log(
-      "Compressed size (KB):",
-      Math.round(compressedBlob.size / 1024)
-    );
+    setLoading(false);
+    console.log('Compressed size (KB):', Math.round(compressedBlob.size / 1024));
   }
   const handleClickOpenPopupMalert = () => {
     // setUpdateLoader(false);
@@ -1402,25 +1397,25 @@ function InternEdit() {
             // Check if "1st Week" is in valueCateWeeks and map days1 if true
             ...(valueCateWeeks.includes('1st Week')
               ? days1.map((day, index) => ({
-                day,
-                daycount: index + 1,
-                week: '1st Week', // Replacing week1 with "1st Week"
-                shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
-                shiftgrouping: !valueCate.includes(day) ? employee?.shiftgrouping : '',
-                shifttiming: !valueCate.includes(day) ? employee?.shifttiming : '',
-              }))
+                  day,
+                  daycount: index + 1,
+                  week: '1st Week', // Replacing week1 with "1st Week"
+                  shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
+                  shiftgrouping: !valueCate.includes(day) ? employee?.shiftgrouping : '',
+                  shifttiming: !valueCate.includes(day) ? employee?.shifttiming : '',
+                }))
               : []), // Return an empty array if "1st Week" is not in valueCateWeeks
 
             // Check if "2nd Week" is in valueCateWeeks and map days2 if true
             ...(valueCateWeeks.includes('2nd Week')
               ? days2.map((day, index) => ({
-                day,
-                daycount: index + 8,
-                week: '2nd Week', // Replacing week2 with "2nd Week"
-                shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
-                shiftgrouping: !valueCate.includes(day) ? employee?.shiftgrouping : '',
-                shifttiming: !valueCate.includes(day) ? employee?.shifttiming : '',
-              }))
+                  day,
+                  daycount: index + 8,
+                  week: '2nd Week', // Replacing week2 with "2nd Week"
+                  shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
+                  shiftgrouping: !valueCate.includes(day) ? employee?.shiftgrouping : '',
+                  shifttiming: !valueCate.includes(day) ? employee?.shifttiming : '',
+                }))
               : []), // Return an empty array if "2nd Week" is not in valueCateWeeks
           ];
 
@@ -1620,6 +1615,7 @@ function InternEdit() {
       let ansGet = todo.shiftgrouping;
       let answerFirst = ansGet?.split('_')[0];
       let answerSecond = ansGet?.split('_')[1];
+      let boardingShift = await fetchBoardingShift([selectedCompany], [selectedBranch], [selectedUnit], [selectedTeam], [employee?.department], [selectedDesignation], [companycaps, 'ALL']);
 
       let res = await axios.get(SERVICE.GETALLSHIFTGROUPS, {
         headers: {
@@ -1628,16 +1624,13 @@ function InternEdit() {
       });
       const shiftGroup = res?.data?.shiftgroupings.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
 
-      const options =
-        shiftGroup?.length > 0
-          ? shiftGroup
-            .flatMap((data) => data.shift)
-            .map((u) => ({
-              ...u,
-              label: u,
-              value: u,
-            }))
-          : [];
+      const shiftFlat = shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
+      const filteredShifts = shiftFlat.filter((shift) => boardingShift.includes(shift));
+
+      const options = filteredShifts.map((shift) => ({
+        label: shift,
+        value: shift,
+      }));
 
       return options;
     };
@@ -1679,6 +1672,7 @@ function InternEdit() {
     gender: '',
     maritalstatus: '',
     dom: '',
+    spousename: '',
     dob: '',
     bloodgroup: '',
     religion: '',
@@ -1700,6 +1694,14 @@ function InternEdit() {
     pdoorno: '',
     pstreet: '',
     parea: '',
+    pbuildingapartmentname: '',
+    paddressone: '',
+    paddresstwo: '',
+    paddressthree: '',
+    caddressone: '',
+    caddresstwo: '',
+    caddressthree: '',
+    cbuildingapartmentname: '',
     plandmark: '',
     ptaluk: '',
     ppost: '',
@@ -1760,7 +1762,10 @@ function InternEdit() {
     subcategoryedu: 'Please Select Sub Category',
     specialization: 'Please Select Specialization',
   });
-
+  const salsettingsRef = useRef(employee?.salarysettings);
+  useEffect(() => {
+    salsettingsRef.current = employee?.salarysettings;
+  }, [employee?.salarysettings]);
   const [ShiftOptions, setShiftOptions] = useState([]);
   const [ShiftGroupingOptions, setShiftGroupingOptions] = useState([]);
   const [allUsersLoginName, setAllUsersLoginName] = useState([]);
@@ -1814,9 +1819,9 @@ function InternEdit() {
       }));
       let doc = data_set?.documenttodo?.length
         ? data_set?.documenttodo?.map((data) => ({
-          label: data,
-          value: data,
-        }))
+            label: data,
+            value: data,
+          }))
         : [];
       setEducationDocuments(
         doc.map((type) => ({
@@ -1873,9 +1878,9 @@ function InternEdit() {
       let result =
         data_set?.length > 0
           ? data_set[0].specilizationgrp.map((data) => ({
-            label: data.label,
-            value: data.label,
-          }))
+              label: data.label,
+              value: data.label,
+            }))
           : [];
 
       setEducationsOpt(result);
@@ -1980,7 +1985,7 @@ function InternEdit() {
     }));
   };
   const [showCamera, setShowCamera] = useState(false);
-  const [onSendFileFn, setOnSendFileFn] = useState(() => () => { });
+  const [onSendFileFn, setOnSendFileFn] = useState(() => () => {});
   const [showCameraDialog, setShowCameraDialog] = useState(false);
   const handleOpenCamera = (uploadHandler) => {
     setShowCamera(true);
@@ -2262,12 +2267,12 @@ function InternEdit() {
 
     let grosstotal = findSalDetails
       ? Number(findSalDetails.basic) +
-      Number(findSalDetails.hra) +
-      Number(findSalDetails.conveyance) +
-      Number(findSalDetails.medicalallowance) +
-      Number(findSalDetails.productionallowance) +
-      // + Number(findSalDetails.productionallowancetwo)
-      Number(findSalDetails.otherallowance)
+        Number(findSalDetails.hra) +
+        Number(findSalDetails.conveyance) +
+        Number(findSalDetails.medicalallowance) +
+        Number(findSalDetails.productionallowance) +
+        // + Number(findSalDetails.productionallowancetwo)
+        Number(findSalDetails.otherallowance)
       : '';
     let salTab = {
       salaryfixed: true,
@@ -2441,12 +2446,12 @@ function InternEdit() {
 
     let grosstotal = findSalDetails
       ? Number(findSalDetails.basic) +
-      Number(findSalDetails.hra) +
-      Number(findSalDetails.conveyance) +
-      Number(findSalDetails.medicalallowance) +
-      Number(findSalDetails.productionallowance) +
-      // + Number(findSalDetails.productionallowancetwo)
-      Number(findSalDetails.otherallowance)
+        Number(findSalDetails.hra) +
+        Number(findSalDetails.conveyance) +
+        Number(findSalDetails.medicalallowance) +
+        Number(findSalDetails.productionallowance) +
+        // + Number(findSalDetails.productionallowancetwo)
+        Number(findSalDetails.otherallowance)
       : '';
 
     let salTab = {
@@ -2753,10 +2758,10 @@ function InternEdit() {
       // console.log(res?.data?.suser?.attendancemode, 'att mode');
       let isThere = res?.data?.suser?.attendancemode
         ? res?.data?.suser?.attendancemode?.map((data) => ({
-          ...data,
-          label: data,
-          value: data,
-        }))
+            ...data,
+            label: data,
+            value: data,
+          }))
         : [];
       setSelectedAttMode(isThere);
       setValueAttMode(res?.data?.suser?.attendancemode ? res?.data?.suser?.attendancemode.map((data) => data) : []);
@@ -2873,22 +2878,22 @@ function InternEdit() {
       setWorkstationTodoList((prev) =>
         matches
           ? [
-            {
-              workstation: matches?.[1]?.trim() + '(' + matches?.[2]?.trim() + ')', // G-HRA(TTS-TRICHY-Ground Floor)
-              shortname: matches?.[3],
-              type: 'Primary',
-            },
-          ]
+              {
+                workstation: matches?.[1]?.trim() + '(' + matches?.[2]?.trim() + ')', // G-HRA(TTS-TRICHY-Ground Floor)
+                shortname: matches?.[3],
+                type: 'Primary',
+              },
+            ]
           : []
       );
       let secondaryWorkstation = Array.isArray(boardFirstLog?.workstation)
         ? boardFirstLog?.workstation
-          ?.filter((item) => item !== boardFirstLog?.workstation[0])
-          .map((x) => ({
-            ...x,
-            label: x,
-            value: x,
-          }))
+            ?.filter((item) => item !== boardFirstLog?.workstation[0])
+            .map((x) => ({
+              ...x,
+              label: x,
+              value: x,
+            }))
         : [];
       let foundDataNew = secondaryWorkstation?.map((item) => {
         let getData = allWorkStationOpt?.find((data) => data.value === item.value);
@@ -2956,8 +2961,50 @@ function InternEdit() {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
+  const fetchBoardingShift = async (company, branch, unit, team, department, designation, employee) => {
+    try {
+      //         let companyMap = accessbranch?.map(d => d?.company) || [];
+      // let branchMap = accessbranch?.map(d => d?.branch) || [];
+      // let unitMap   = accessbranch?.map(d => d?.unit)   || [];
 
-  const ShiftDropdwonsSecond = async (e) => {
+      // let company = [...companyMap, isUserRoleAccess?.company].filter(Boolean);
+      // let branch  = [...branchMap, isUserRoleAccess?.branch].filter(Boolean);
+      // let unit    = [...unitMap,   isUserRoleAccess?.unit].filter(Boolean);
+      // let employee    = [isUserRoleAccess?.companyname,"ALL"].filter(Boolean);
+      let res_status = await axios.post(SERVICE.ALL_BOARDING_SHIFT, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        // assignbranch: accessbranch,
+        company,
+        branch,
+        unit,
+        // role: isUserRoleAccess?.role || [],
+        team,
+        department,
+        designation,
+        employee,
+      });
+
+      const resdata = res_status?.data?.boardingshift || [];
+
+      // Extract all shifts from all objects, flatten into a single array, and remove duplicates
+      const allShifts = [
+        ...new Set(
+          resdata
+            .flatMap((item) => item.shift || []) // flatten all shift arrays
+            .filter(Boolean) // remove null/undefined/empty values
+        ),
+      ];
+
+      return allShifts;
+    } catch (err) {
+      console.log(err);
+      // handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      return [];
+    }
+  };
+  const ShiftDropdwonsSecondDefault = async (e, boardingShift) => {
     try {
       let ansGet = e;
       let answerFirst = ansGet?.split('_')[0];
@@ -2971,13 +3018,54 @@ function InternEdit() {
       const shiftGroup = res?.data?.shiftgroupings.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
       const shiftFlat = shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
 
-      setShifts(
-        shiftFlat.map((data) => ({
-          ...data,
-          label: data,
-          value: data,
-        }))
-      );
+      const filteredShifts = shiftFlat.filter((shift) => boardingShift.includes(shift));
+      const options = filteredShifts.map((shift) => ({
+        label: shift,
+        value: shift,
+      }));
+
+      setShifts(options);
+      // setShifts(
+      //   shiftFlat.map((data) => ({
+      //     ...data,
+      //     label: data,
+      //     value: data,
+      //   }))
+      // );
+    } catch (err) {
+      console.log(err);
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+    }
+  };
+  const ShiftDropdwonsSecond = async (e) => {
+    try {
+      let boardingShift = await fetchBoardingShift([selectedCompany], [selectedBranch], [selectedUnit], [selectedTeam], [employee?.department], [selectedDesignation], [companycaps, 'ALL']);
+      let ansGet = e;
+      let answerFirst = ansGet?.split('_')[0];
+      let answerSecond = ansGet?.split('_')[1];
+
+      let res = await axios.get(SERVICE.GETALLSHIFTGROUPS, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+      });
+      const shiftGroup = res?.data?.shiftgroupings.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
+      const shiftFlat = shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
+
+      const filteredShifts = shiftFlat.filter((shift) => boardingShift.includes(shift));
+      const options = filteredShifts.map((shift) => ({
+        label: shift,
+        value: shift,
+      }));
+
+      setShifts(options);
+      // setShifts(
+      //   shiftFlat.map((data) => ({
+      //     ...data,
+      //     label: data,
+      //     value: data,
+      //   }))
+      // );
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
@@ -3072,6 +3160,10 @@ function InternEdit() {
         const primaryItem = prev?.find((item) => item?.type === 'Primary');
         return primaryItem ? [primaryItem, ...result] : [...result];
       });
+    } else {
+      setPopupContentMalert(`Work Station Exceeds System Count (${maxSelections || 0})`);
+      setPopupSeverityMalert('info');
+      handleClickOpenPopupMalert();
     }
   };
   // company multi select
@@ -3611,7 +3703,7 @@ function InternEdit() {
     const imageToCompress = croppedImage || employee?.profileimage;
     // Run only if profileImage exists and we haven't already set documentFiles
     if (imageToCompress && !documentFiles) {
-      handleProfileImage(imageToCompress, "ProfilePhoto");
+      handleProfileImage(imageToCompress, 'ProfilePhoto');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [croppedImage, employee?.profileimage]);
@@ -4008,12 +4100,12 @@ function InternEdit() {
   };
   const [deleteMessage, setDeleteMessage] = useState('');
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [deleteFunction, setDeleteFunction] = useState(() => () => { });
+  const [deleteFunction, setDeleteFunction] = useState(() => () => {});
   const handleClickOpenDelete = () => {
     setIsDeleteOpen(true);
   };
   const handleClickCloseDelete = () => {
-    setDeleteFunction(() => () => { });
+    setDeleteFunction(() => () => {});
     setDeleteMessage('');
     setIsDeleteOpen(false);
   };
@@ -4141,7 +4233,7 @@ function InternEdit() {
         department: employee?.department,
         team: getingOlddatas?.boardingLog?.length === 1 ? selectedTeam : getingOlddatas?.team,
         companyname: getingOlddatas?.companyname,
-      }
+      };
       let res = await axios.post(SERVICE.HIERARCHY_PROCESSALOOT_TEAM_RELATION, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
@@ -4152,7 +4244,7 @@ function InternEdit() {
         user: userData,
         desiggroup: designationGrpName,
       });
-      const oldData = (res?.data?.olddata?.length > 0) ? res?.data?.olddata : [];
+      const oldData = res?.data?.olddata?.length > 0 ? res?.data?.olddata : [];
       const newDataAll = res?.data?.newdata[0]?.all?.length > 0 ? getUniqueData(res?.data?.newdata[0]?.all) : [];
       const newDataRemaining = res?.data?.newdata[0]?.team?.length > 0 ? getUniqueData(res?.data?.newdata[0]?.team) : [];
       const newDataAllSupervisor = res?.data?.supData?.length > 0 ? getUniqueData(res?.data?.supData) : [];
@@ -4365,14 +4457,210 @@ function InternEdit() {
 
     return months[monthNum] || '';
   }
-  const fetchHandlerEdit = async () => {
+  const initialSettings = [
+    { name: 'Basic', type: 'percent', notes: 'Mandatory for PF, ESI, Bonus', value: 0 },
+    { name: 'HRA', type: 'percentBasic', value: 0, notes: '40% in non-metro' },
+    { name: 'Conveyance', type: 'fixed', fixed: 1600, percent: 5, notes: 'Tax-exempt ₹1,600/month', value: 0 },
+    { name: 'Medical Allowance', type: 'fixed', fixed: 1250, percent: 5, notes: 'Tax-free up to ₹15,000/year', value: 0 },
+    { name: 'Production Allowance', type: 'percent', notes: 'Industry-specific', value: 0 },
+
+    { name: 'Production Allowance 2', type: 'percent', notes: '', value: 0 },
+    { name: 'Shift Allowance', type: 'percent', notes: '', value: 0 },
+
+    { name: 'Special Allowance', type: '', notes: 'Remainder', value: 0 },
+  ];
+  const [settings, setSettings] = useState(initialSettings);
+  const [dummySalary, setDummySalary] = useState(10000);
+  useEffect(() => {
+    setDummySalary(salaryTableData?.grossmonthsalary || 10000);
+  }, [salaryTableData?.grossmonthsalary]);
+  const allocationPriority = [
+    'Basic',
+    'HRA',
+    'Production Allowance',
+    // "Production Allowance 2",
+    'Conveyance',
+    'Medical Allowance',
+    'Shift Allowance',
+    'Special Allowance',
+  ];
+
+  const calculateBreakup = () => {
+    let remaining = dummySalary;
+
+    // Sort priority items first
+    const calcSettings = [...settings].sort((a, b) => {
+      const indexA = allocationPriority.indexOf(a.name);
+      const indexB = allocationPriority.indexOf(b.name);
+
+      return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+    });
+
+    // Pre-calc Basic
+    const basicItem = calcSettings.find((d) => d.name === 'Basic');
+    const basicAmount = basicItem?.type === 'percent' ? (dummySalary * basicItem.value) / 100 : basicItem?.value || 0;
+
+    const result = [];
+    let total = 0; // only for priority items
+
+    calcSettings.forEach((item) => {
+      let amount = 0;
+
+      if (allocationPriority.includes(item.name)) {
+        // Priority items → calculate from dummySalary
+        if (item.name === 'Special Allowance') {
+          amount = result.filter((t) => t.name !== 'Special Allowance').every((d) => d.amount === 0) ? 0 : remaining > 0 ? remaining : 0;
+        } else {
+          if (item.type === 'fixed') {
+            amount = Math.min(item.value, remaining);
+          } else if (item.type === 'percent') {
+            amount = Math.min((dummySalary * item.value) / 100, remaining);
+          } else if (item.type === 'percentBasic') {
+            amount = Math.min((basicAmount * item.value) / 100, remaining);
+          }
+        }
+
+        amount = Math.round(amount);
+        remaining -= amount;
+        total += amount; // ✅ only add priority items to total
+      } else {
+        // Non-priority items → show value, but don’t touch total/remaining
+        if (item.type === 'fixed') {
+          amount = item.value;
+        } else if (item.type === 'percent') {
+          amount = (dummySalary * item.value) / 100;
+        } else if (item.type === 'percentBasic') {
+          amount = (basicAmount * item.value) / 100;
+        }
+        amount = Math.round(amount);
+      }
+
+      result.push({ ...item, amount });
+    });
+
+    // Return both breakup and total (priority only)
+    return settings.map((s) => result.find((r) => r.name === s.name));
+  };
+  const breakupData = calculateBreakup();
+  // console.log(breakupData, 'breakupData');
+  const [dummySalaryManual, setDummySalaryManual] = useState(10000);
+  useEffect(() => {
+    setDummySalaryManual(salaryTableDataManual?.grossmonthsalary || 10000);
+  }, [salaryTableDataManual?.grossmonthsalary]);
+  const calculateBreakupManual = (dummySalaryManual, settings) => {
+    let remaining = dummySalaryManual;
+
+    // Sort priority items first
+    const calcSettings = [...settings].sort((a, b) => {
+      const indexA = allocationPriority.indexOf(a.name);
+      const indexB = allocationPriority.indexOf(b.name);
+
+      return (indexA === -1 ? Infinity : indexA) - (indexB === -1 ? Infinity : indexB);
+    });
+
+    // Pre-calc Basic
+    const basicItem = calcSettings.find((d) => d.name === 'Basic');
+    const basicAmount = basicItem?.type === 'percent' ? (dummySalaryManual * basicItem.value) / 100 : basicItem?.value || 0;
+
+    const result = [];
+    let total = 0; // only for priority items
+
+    calcSettings.forEach((item) => {
+      let amount = 0;
+
+      if (allocationPriority.includes(item.name)) {
+        // Priority items → calculate from dummySalaryManual
+        if (item.name === 'Special Allowance') {
+          amount = result.filter((t) => t.name !== 'Special Allowance').every((d) => d.amount === 0) ? 0 : remaining > 0 ? remaining : 0;
+        } else {
+          if (item.type === 'fixed') {
+            amount = Math.min(item.value, remaining);
+          } else if (item.type === 'percent') {
+            amount = Math.min((dummySalaryManual * item.value) / 100, remaining);
+          } else if (item.type === 'percentBasic') {
+            amount = Math.min((basicAmount * item.value) / 100, remaining);
+          }
+        }
+
+        amount = Math.round(amount);
+        remaining -= amount;
+        total += amount; // ✅ only add priority items to total
+      } else {
+        // Non-priority items → show value, but don’t touch total/remaining
+        if (item.type === 'fixed') {
+          amount = item.value;
+        } else if (item.type === 'percent') {
+          amount = (dummySalaryManual * item.value) / 100;
+        } else if (item.type === 'percentBasic') {
+          amount = (basicAmount * item.value) / 100;
+        }
+        amount = Math.round(amount);
+      }
+
+      result.push({ ...item, amount });
+    });
+
+    // Return both breakup and total (priority only)
+    return settings.map((s) => result.find((r) => r.name === s.name));
+  };
+  const breakupDataManual = calculateBreakupManual(dummySalaryManual, settings);
+  const fetchAllGroup = async () => {
     try {
-      let response = await axios.get(`${SERVICE.USER_SINGLE}/${id}`, {
+      let res_grp = await axios.get(SERVICE.SALARY_CONTROL_SETTINGS, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
+      if (res_grp?.data?.salarycontrol) {
+        setSettings(res_grp?.data?.salarycontrol.data);
+        // setLastid(res_grp?.data?.salarycontrol._id);
+      }
+    } catch (err) {
+      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+    }
+  };
+  useEffect(() => {
+    fetchAllGroup();
+  }, []);
+  const settingsRef = useRef(settings);
 
+  // keep ref updated when settings change
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
+  const [transportData, setTransportData] = useState({
+    startDate: '',
+    transportName: '',
+    transportShortName: '',
+    remarks: '',
+  });
+  const [transportupload, setTransportUpload] = useState([]);
+  const [userTransportLogs, setUserTransportLogs] = useState([]);
+  const [userTransportLogsDetails, setUserTransportLogsDetails] = useState({});
+  const [transportFirstLogData, setTransportFirstLogData] = useState({});
+  const [startDateLimit, setStartDateLimit] = useState(null);
+  const fetchHandlerEdit = async () => {
+    try {
+      const [response, resSign] = await Promise.all([
+        axios.get(`${SERVICE.USER_SINGLE}/${id}`, {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        }),
+        axios.post(SERVICE.GETSIGNATURES, {
+          commonsignatureid: id,
+        }),
+      ]);
+      let availedData = Object.keys(resSign?.data)?.length;
+
+      if (availedData != 0) {
+        let profile = resSign?.data?.semployeesignature?.signatureimage || null;
+        setSignatureData(profile);
+        setSignatureID(resSign?.data?.semployeesignature?._id || null);
+      } else {
+        setSignatureData(null);
+        setSignatureID(null);
+      }
       setOldFirstLastName({
         firstname: response?.data?.suser?.firstname,
         lastname: response?.data?.suser?.lastname,
@@ -4395,9 +4683,9 @@ function InternEdit() {
         email: response?.data?.suser?.rocketchatemail ?? '',
         roles: response?.data?.suser?.rocketchatroles
           ? response?.data?.suser?.rocketchatroles?.map((data) => ({
-            label: data,
-            value: data,
-          }))
+              label: data,
+              value: data,
+            }))
           : [],
       });
 
@@ -4406,10 +4694,27 @@ function InternEdit() {
         hiconnectemail: response?.data?.suser?.hiconnectemail ?? '',
         hiconnectroles: response?.data?.suser?.hiconnectroles
           ? response?.data?.suser?.hiconnectroles?.map((data) => ({
-            label: data,
-            value: data,
-          }))
+              label: data,
+              value: data,
+            }))
           : [],
+      });
+
+      setCreateLdap({
+        createldapaccount: response?.data?.suser?.ldapDN ? true : false,
+
+        ldapEmail: response?.data?.suser?.ldapEmail || '',
+        ldapOU: response?.data?.suser?.ldapOU?.ouName || '',
+        ldapOUObjectGUID: response?.data?.suser?.ldapOU?.objectGUID || '',
+
+        ldapPrimaryGroup: response?.data?.suser?.ldapGroup?.length > 0 ? response?.data?.suser?.ldapGroup?.find((item) => item?.primary === true)?.groupName : '',
+
+        ldapPrimaryGroupObjectGUID: response?.data?.suser?.ldapGroup?.length > 0 ? response?.data?.suser?.ldapGroup?.find((item) => item?.primary === true)?.objectGUID : '',
+
+        ldapDN: response?.data?.suser?.ldapDN || '',
+        ldapSAMAccountName: response?.data?.suser?.ldapSAMAccountName || '',
+        ldapUserPrincipalName: response?.data?.suser?.ldapUserPrincipalName || '',
+        ldapObjectGUID: response?.data?.suser?.ldapObjectGUID || '',
       });
       setOldNames({
         firstname: response?.data?.suser?.firstname,
@@ -4422,9 +4727,9 @@ function InternEdit() {
       setBankTodo(
         response?.data?.suser?.bankdetails?.length > 0
           ? response?.data?.suser?.bankdetails?.map((data) => ({
-            ...data,
-            accountstatus: data?.accountstatus ?? 'In-Active',
-          }))
+              ...data,
+              accountstatus: data?.accountstatus ?? 'In-Active',
+            }))
           : []
       );
       const resprocesstime = response?.data?.suser.processlog[0]?.time?.split(':');
@@ -4443,7 +4748,16 @@ function InternEdit() {
       });
       fetchSuperVisorDropdowns(response?.data?.suser?.boardingLog[0]?.team, response?.data?.suser);
       fetchAccessibleDetails(response?.data?.suser.companyname, response?.data?.suser.empcode);
-
+      await fetchUserLogsAndSetRestrictions({
+        userId: id,
+        auth,
+        setTransportObject: setUserTransportLogsDetails,
+        setTransportLogArray: setUserTransportLogs,
+        setStartDate: setStartDateLimit,
+        setFormData: setTransportData,
+        setUploadedFiles: setTransportUpload,
+        setFirstLogData: setTransportFirstLogData,
+      });
       let responsenew = await axios.post(SERVICE.EMPLOYEEDOCUMENT_SINGLEWITHALLBYCOMMONID, {
         commonid: id,
       });
@@ -4454,7 +4768,7 @@ function InternEdit() {
       setoldSalaryData(responsenewsal?.data?.salarydata?.salarytable || []);
       setoldSalaryId(responsenewsal?.data?.salarydata?._id || '');
 
-      let findSalDetails = responsenewsal?.data?.salarydata?.salarytable?.length > 0 ? responsenewsal?.data?.salarydata?.salarytable[responsenewsal?.data?.salarydata?.salarytable?.length - 1] : {};
+      let findSalDetails = responsenewsal?.data?.salarydata?.salarytable?.length > 0 ? responsenewsal?.data?.salarydata?.salarytable[0] : {};
       console.log(responsenewsal?.data?.salarydata, 'responsenewsal?.data?.salarydata');
       let salTab = {
         salaryfixed: responsenewsal?.data?.salarydata ? true : false,
@@ -4479,7 +4793,7 @@ function InternEdit() {
         ...prev,
         ...salTab,
       }));
-      setSalaryOption(responsenewsal?.data?.salarydata ? responsenewsal?.data?.salarydata?.salaryoption : 'Experience Based');
+      setSalaryOption(findSalDetails ? findSalDetails?.salaryoption : 'Experience Based');
       let expLog = response?.data?.suser?.assignExpLog?.length > 0 ? response?.data?.suser?.assignExpLog[0] : {};
       setSalarysetupForm({
         mode: String(expLog?.expmode || ''),
@@ -4554,14 +4868,15 @@ function InternEdit() {
       setHierarchyall(res?.data?.hirerarchi);
       let allusers = allUsersData?.filter((item) => allDesignations?.includes(item.designation) && item.companyname != response?.data?.suser?.companyname);
 
-      const fitleredUsers = [
-        ...allUsersData?.map((d) => ({
-          // ...d,
-          label: d?.companyname,
-          value: d?.companyname,
-          designation: d?.designation,
-        })),
-      ];
+      const fitleredUsers =
+        allUsersData && allUsersData?.length > 0
+          ? allUsersData?.map((d) => ({
+              // ...d,
+              label: d.companyname,
+              value: d.companyname,
+              designation: d?.designation,
+            }))
+          : [];
 
       setUsers(fitleredUsers);
       let req_designation = await axios.get(SERVICE.DESIGNATION, {
@@ -4612,6 +4927,17 @@ function InternEdit() {
       setSelectedStatep(statep);
       setSelectedCityp(cityp);
       setEmployee(savedEmployee);
+      let boardingShift = await fetchBoardingShift(
+        [boardFirstLog?.company || ''],
+        [boardFirstLog?.branch || ''],
+        [boardFirstLog?.unit || ''],
+        [boardFirstLog?.team || ''],
+        [response?.data?.suser?.departmentlog[0]?.department || ''],
+        [response?.data?.suser?.designationlog[0]?.designation || ''],
+        [response?.data?.suser?.companyname || '', 'ALL']
+      );
+
+      await ShiftDropdwonsSecondDefault(boardFirstLog?.shiftgrouping || '', boardingShift);
       ShiftDropdwonsSecond(response?.data?.suser?.boardingLog[0]?.shiftgrouping);
       setEnableLoginName(response?.data?.suser?.usernameautogenerate);
       fetchEditareaNames(
@@ -4638,22 +4964,19 @@ function InternEdit() {
             ?.filter((data) => !data?.preview)
             ?.map((item) => {
               const matchedDesig = desig.find((d) => d.value === item.candidatefilename);
-              if (matchedDesig) {
-                return {
-                  ...item,
-                  indexid: uuidv4(),
-                  pagemode: matchedDesig.pagemode || [],
-                  pagetype: matchedDesig.pagetype || '',
-                  shortname: matchedDesig.shortname || '',
-                  size: matchedDesig.size || '',
-                  sizeunit: matchedDesig.sizeunit || '',
-                  type: matchedDesig.type || [],
-                  category: matchedDesig?.category || '',
-                  subcategory: matchedDesig?.subcategory || '',
-                };
-              }
-              // If no match, return the original item
-              return item;
+
+              return {
+                ...item,
+                indexid: uuidv4(),
+                pagemode: matchedDesig?.pagemode || [],
+                pagetype: matchedDesig?.pagetype || '',
+                shortname: matchedDesig?.shortname || '',
+                size: matchedDesig?.size || '',
+                sizeunit: matchedDesig?.sizeunit || '',
+                type: matchedDesig?.type || [],
+                category: matchedDesig?.category || '',
+                subcategory: matchedDesig?.subcategory || '',
+              };
             })
         );
       }
@@ -4765,21 +5088,36 @@ function InternEdit() {
       setSelectedOptionsCate(
         Array.isArray(response?.data?.suser?.boardingLog[0]?.weekoff)
           ? response?.data?.suser?.boardingLog[0]?.weekoff?.map((x) => ({
-            ...x,
-            label: x,
-            value: x,
-          }))
+              ...x,
+              label: x,
+              value: x,
+            }))
           : []
       );
       let isProd = false;
       let attOptions = attModeOptions?.map((data) => data?.value);
+      let salarysettings = [];
       if (response?.data?.suser?.department) {
         let deptsingle = await fetchDepartmentSingle(response?.data?.suser?.department);
         isProd = deptsingle?.production;
         attOptions = deptsingle?.singleDept?.attendancemode || attModeOptions?.map((data) => data?.value);
+        salarysettings = deptsingle?.singleDept?.salarysettings || [];
       }
+      setCroppedImage(savedEmployee?.profileimage || null);
+      changeBase2File(savedEmployee?.profileimage, setImage);
       setEmployee({
         ...savedEmployee,
+        salarysettings,
+        ldapDN: savedEmployee?.ldapDN || '',
+        spousename: savedEmployee?.spousename || '',
+        pbuildingapartmentname: savedEmployee?.pbuildingapartmentname || '',
+        paddressone: savedEmployee?.paddressone || '',
+        paddresstwo: savedEmployee?.paddresstwo || '',
+        paddressthree: savedEmployee?.paddressthree || '',
+        caddressone: savedEmployee?.caddressone || '',
+        caddresstwo: savedEmployee?.caddresstwo || '',
+        caddressthree: savedEmployee?.caddressthree || '',
+        cbuildingapartmentname: savedEmployee?.cbuildingapartmentname || '',
         attOptions,
         paddresstype: savedEmployee?.paddresstype ? savedEmployee?.paddresstype : '',
         ppersonalprefix: savedEmployee?.ppersonalprefix ? savedEmployee?.ppersonalprefix : '',
@@ -5081,8 +5419,20 @@ function InternEdit() {
     };
     setFiles((prevTodos) => [...prevTodos, newTodocheck]);
   };
-  const handleCandidateUploadForIndex = async (event, index) => {
-    const selectedFiles = Array.from(event.target.files);
+  const handleCandidateUploadForIndex = async (eventOrFile, index) => {
+    let selectedFiles = [];
+
+    // Case 1: event from <input type="file" />
+    if (eventOrFile?.target?.files) {
+      selectedFiles = Array.from(eventOrFile.target.files);
+    }
+    // Case 2: direct File (merged image)
+    else if (eventOrFile instanceof File) {
+      selectedFiles = [eventOrFile];
+    } else {
+      return;
+    }
+
     if (!selectedFiles.length) return;
 
     const todo = files[index];
@@ -5212,11 +5562,11 @@ function InternEdit() {
       });
       setQualinames(
         req.data.qualificationdetails?.length > 0 &&
-        req.data.qualificationdetails.map((d) => ({
-          ...d,
-          label: d.qualiname,
-          value: d.qualiname,
-        }))
+          req.data.qualificationdetails.map((d) => ({
+            ...d,
+            label: d.qualiname,
+            value: d.qualiname,
+          }))
       );
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -5252,10 +5602,10 @@ function InternEdit() {
       setSkillSet(
         req.data.skillsets?.length > 0
           ? req.data.skillsets.map((d) => ({
-            ...d,
-            label: d.name,
-            value: d.name,
-          }))
+              ...d,
+              label: d.name,
+              value: d.name,
+            }))
           : []
       );
     } catch (err) {
@@ -5294,6 +5644,8 @@ function InternEdit() {
       profileimage: '',
       faceDescriptor: [],
     });
+    setCroppedImage(null);
+    setImage('');
     setShowDupProfileVIsitor([]);
     handleCloseerrpop();
   };
@@ -5405,7 +5757,7 @@ function InternEdit() {
       img.src = base64;
     });
   };
-
+  const [profileChanged, setProfileChanged] = useState(false);
   async function handleChangeImage(e) {
     setBtnUpload(true); // Enable loader when the process starts
     const maxFileSize = 1 * 1024 * 1024; // 1MB in bytes
@@ -5459,7 +5811,9 @@ function InternEdit() {
               profileimage: String(resizedBase64),
               faceDescriptor: Array.from(faceDescriptor),
             });
-
+            setCroppedImage(resizedBase64);
+            changeBase2File(resizedBase64, setImage);
+            setProfileChanged(true);
             if (response?.data?.matchfound) {
               setShowDupProfileVIsitor(response?.data?.matchedData);
               handleClickOpenerrpop();
@@ -5515,6 +5869,7 @@ function InternEdit() {
     }
     const croppedImageData = cropperRef.current.cropper.getCroppedCanvas().toDataURL();
     setCroppedImage(croppedImageData);
+
     setSelectedFile(null);
     // setGetImg(null);
     // handleChangeImage()
@@ -5533,13 +5888,32 @@ function InternEdit() {
     const blob = new Blob([uint8Array], { type: 'image/png' });
     setImage(blob);
   };
+  const changeBase2File = (base64imagedata, setState) => {
+    if (!base64imagedata) return;
 
+    // Convert the cropped image to a Blob (which is the image file format) before sending
+    const base64Data = base64imagedata.split(',')[1]; // Get base64 data (without the prefix)
+    const binaryData = atob(base64Data); // Decode base64 data
+    const arrayBuffer = new ArrayBuffer(binaryData.length);
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    // Fill the array buffer with the decoded binary data
+    for (let i = 0; i < binaryData.length; i++) {
+      uint8Array[i] = binaryData.charCodeAt(i);
+    }
+
+    // Create a Blob from the binary data
+    const blob = new Blob([uint8Array], { type: 'image/png' });
+    setState(blob);
+  };
   const handleClearImage = () => {
     setFile(null);
     setGetImg(null);
     setSelectedFile(null);
     setCroppedImage(null);
+    setImage('');
     setEmployee({ ...employee, profileimage: '', faceDescriptor: [] });
+    setCroppedImage(null);
   };
   const handleWebcamImage = () => {
     setwebFile(null);
@@ -5582,11 +5956,11 @@ function InternEdit() {
       });
       setFloorNames(
         req.data.floors?.length > 0 &&
-        req.data.floors.map((d) => ({
-          ...d,
-          label: d.name,
-          value: d.name,
-        }))
+          req.data.floors.map((d) => ({
+            ...d,
+            label: d.name,
+            value: d.name,
+          }))
       );
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -5627,6 +6001,55 @@ function InternEdit() {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
+  useEffect(() => {
+    fetchLimit();
+  }, []);
+  const [limitArray, setLimitArray] = useState([]);
+  const getExperienceLimit = ({ limits = [], company, branch, unit, team, employee, process }) => {
+    if (!Array.isArray(limits) || limits.length === 0) return null;
+
+    // 1️⃣ Individual priority
+    const individualMatch = limits.find((item) => item?.type === 'Individual' && item?.company?.includes(company) && item?.branch?.includes(branch) && item?.unit?.includes(unit) && item?.team?.includes(team) && item?.employee?.includes(employee));
+
+    if (individualMatch?.limit) {
+      return Number(individualMatch.limit);
+    }
+
+    // 2️⃣ Process priority
+    const processMatch = limits.find((item) => item?.type === 'Process' && item?.company?.includes(company) && item?.branch?.includes(branch) && item?.process?.includes(process));
+
+    if (processMatch?.limit) {
+      return Number(processMatch.limit);
+    }
+
+    // 3️⃣ No limit
+    return null;
+  };
+
+  const fetchLimit = async () => {
+    try {
+      let response = await axios.get(`${SERVICE.GET_ATTENDANCE_CONTROL_CRITERIA}`, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+      });
+
+      console.log('FULL RESPONSE:', response.data);
+
+      const attendanceList = response?.data?.attendancecontrolcriteria;
+
+      if (Array.isArray(attendanceList) && attendanceList.length > 0) {
+        const limitarr = attendanceList[0].experiencefixlimittodos || [];
+        console.log('EXTRACTED LIMIT:', limitarr);
+        setLimitArray(limitarr);
+      } else {
+        console.log('attendancecontrolcriteria is empty');
+      }
+    } catch (error) {
+      console.error('Error loading Limit Value:', error);
+      handleApiError(error, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+    }
+  };
 
   // Departments Dropdowns
   const fetchDepartments = async () => {
@@ -5639,12 +6062,13 @@ function InternEdit() {
       let filteredDepartments = req?.data?.departmentdetails?.filter((obj) => obj.deptname.toLowerCase().includes('intern'));
       setDepartment(
         filteredDepartments?.length > 0 &&
-        filteredDepartments?.map((d) => ({
-          ...d,
-          label: d.deptname,
-          value: d.deptname,
-        }))
+          filteredDepartments?.map((d) => ({
+            ...d,
+            label: d.deptname,
+            value: d.deptname,
+          }))
       );
+      return filteredDepartments;
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
@@ -5665,6 +6089,7 @@ function InternEdit() {
   };
 
   const fetchBiometricUser = async (devicename, username, profileimage) => {
+    console.log(devicename, username, 'req?.data');
     try {
       let req = await axios.post(SERVICE.BIOMETRIC_EDIT_USER_CHECK, {
         headers: {
@@ -5674,6 +6099,7 @@ function InternEdit() {
         devicename: devicename,
       });
       setBioOldUserCheck(req?.data?.individualuser);
+      console.log(req?.data, 'req?.data');
       if (req?.data?.individualuser) {
         let user = req?.data?.individualuser;
 
@@ -5684,7 +6110,7 @@ function InternEdit() {
         setBiometricrole(user?.privilegeC);
         setBiometricUsername(user?.staffNameC);
         setBiometricId(Number(user?.biometricUserIDC));
-        setDeviceDetails(req?.data?.devicedetails);
+
         setUnmatchedUserData(user);
         setAddBiometricData(true);
         let brandName = req?.data?.devicedetails ? req?.data?.devicedetails?.brand : '';
@@ -5695,6 +6121,7 @@ function InternEdit() {
           brandname: brandName,
         });
       }
+      setDeviceDetails(req?.data?.devicedetails);
     } catch (err) {
       console.log(err);
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -5708,6 +6135,8 @@ function InternEdit() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
         privilegeC: String(biometricrole),
+        dataupload:"new",
+        datastatus:"edit",
         updatedby: [
           ...updateby,
           {
@@ -5727,16 +6156,17 @@ function InternEdit() {
           deviceCommandN: '5',
           datastatus: 'new',
         });
-      } else if (res?.data?.success && ['Bowee']?.includes(BioUserDataActions?.brandname)) {
-        let res = await axios.post(SERVICE.BIOMETRIC_COMMAND_EXECUTION, {
-          headers: {
-            Authorization: `Bearer ${auth.APIToken}`,
-          },
-          biometricDeviceManagement: BioUserDataActions,
-          command: 'Edit',
-          role: String(biometricrole),
-        });
-      }
+      } 
+      // else if (res?.data?.success && ['Bowee']?.includes(BioUserDataActions?.brandname)) {
+      //   let res = await axios.post(SERVICE.BIOMETRIC_COMMAND_EXECUTION, {
+      //     headers: {
+      //       Authorization: `Bearer ${auth.APIToken}`,
+      //     },
+      //     biometricDeviceManagement: BioUserDataActions,
+      //     command: 'Edit',
+      //     role: String(biometricrole),
+      //   });
+      // }
       setPopupContent('Updated Successfully');
       setPopupSeverity('success');
       handleClickOpenPopup();
@@ -5775,11 +6205,11 @@ function InternEdit() {
       });
       setShiftTiming(
         req.data.shifts?.length > 0 &&
-        req.data.shifts.map((d) => ({
-          ...d,
-          label: d.name,
-          value: d.name,
-        }))
+          req.data.shifts.map((d) => ({
+            ...d,
+            label: d.name,
+            value: d.name,
+          }))
       );
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -5856,6 +6286,7 @@ function InternEdit() {
       company: user?.company,
       branch: user?.branch,
       unit: user?.unit,
+      department: user?.department,
     });
 
     const resultUsers = res?.data?.result?.length > 0 ? res?.data?.result[0]?.result?.supervisorchoose?.filter((data) => data !== user?.companyname) : [];
@@ -5893,6 +6324,8 @@ function InternEdit() {
 
   useEffect(() => {
     setEmployee((prev) => ({ ...prev, profileimage: getImg }));
+    setCroppedImage(getImg);
+    changeBase2File(getImg, setImage);
   }, [getImg]);
   const webcamOpen = () => {
     setIsWebcamOpen(true);
@@ -5902,6 +6335,8 @@ function InternEdit() {
   };
   const closeWebCam = () => {
     setEmployee((prev) => ({ ...prev, profileimage: '', faceDescriptor: [] }));
+    setCroppedImage(null);
+    setImage('');
     setGetImg(null);
   };
   const webcamDataStore = () => {
@@ -6071,10 +6506,10 @@ function InternEdit() {
       setInternCourseNames(
         req.data.internCourses?.length > 0
           ? req.data.internCourses?.map((d) => ({
-            ...d,
-            label: d.name,
-            value: d.name,
-          }))
+              ...d,
+              label: d.name,
+              value: d.name,
+            }))
           : []
       );
     } catch (err) {
@@ -6089,12 +6524,29 @@ function InternEdit() {
     setSelectedUnit('');
     setSelectedTeam('');
     setAreaNames([]);
-    setEmployee({ ...employee, floor: '', area: '' });
+    setEmployee({
+      ...employee,
+      floor: '',
+      area: '',
+      shifttype: 'Please Select Shift Type',
+      shiftgrouping: 'Please Select Shift Grouping',
+      shifttiming: 'Please Select Shift',
+    });
+    setShifts([]);
+    setTodo([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
     setPrimaryWorkStation('Please Select Primary Work Station');
     setPrimaryWorkStationLabel('Please Select Primary Work Station');
     setSelectedOptionsWorkStation([]);
     setValueWorkStation([]);
     setWorkstationTodoList([]);
+    setAssignExperience((prev) => ({
+      ...prev,
+      assignExpvalue: '0',
+    }));
   };
 
   useEffect(() => {
@@ -6116,12 +6568,29 @@ function InternEdit() {
     setSelectedUnit('');
     setSelectedTeam('');
     setAreaNames([]);
-    setEmployee({ ...employee, floor: '', area: '' });
+    setEmployee({
+      ...employee,
+      floor: '',
+      area: '',
+      shifttype: 'Please Select Shift Type',
+      shiftgrouping: 'Please Select Shift Grouping',
+      shifttiming: 'Please Select Shift',
+    });
+    setTodo([]);
+    setShifts([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
     setPrimaryWorkStation('Please Select Primary Work Station');
     setPrimaryWorkStationLabel('Please Select Primary Work Station');
     setSelectedOptionsWorkStation([]);
     setValueWorkStation([]);
     setWorkstationTodoList([]);
+    setAssignExperience((prev) => ({
+      ...prev,
+      assignExpvalue: '0',
+    }));
   };
 
   const handleUnitChange = (event) => {
@@ -6135,6 +6604,22 @@ function InternEdit() {
     setSelectedOptionsWorkStation([]);
     setValueWorkStation([]);
     setWorkstationTodoList([]);
+    setEmployee({
+      ...employee,
+      shifttype: 'Please Select Shift Type',
+      shiftgrouping: 'Please Select Shift Grouping',
+      shifttiming: 'Please Select Shift',
+    });
+    setTodo([]);
+    setShifts([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
+    setAssignExperience((prev) => ({
+      ...prev,
+      assignExpvalue: '0',
+    }));
   };
 
   const handleTeamChange = (event) => {
@@ -6146,10 +6631,30 @@ function InternEdit() {
     // checkHierarchyName(selectedTeam, "Team");
     fetchSuperVisorChangingHierarchy(selectedTeam, 'Team');
     fetchReportingToUserHierarchy(selectedTeam, 'Team');
-    fetchSuperVisorDropdowns(selectedTeam, oldUserCompanyname);
+
+    const user = {
+      company: selectedCompany,
+      branch: selectedBranch,
+      unit: selectedUnit,
+      department: employee?.department,
+    };
+    fetchSuperVisorDropdowns(selectedTeam, user);
     setEmployee((prev) => ({
       ...prev,
       reportingto: '',
+      shifttype: 'Please Select Shift Type',
+      shiftgrouping: 'Please Select Shift Grouping',
+      shifttiming: 'Please Select Shift',
+    }));
+    setTodo([]);
+    setShifts([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
+    setAssignExperience((prev) => ({
+      ...prev,
+      assignExpvalue: '0',
     }));
   };
 
@@ -6210,7 +6715,17 @@ function InternEdit() {
     setEmployee((prev) => ({
       ...prev,
       employeecount: count,
+      shifttype: 'Please Select Shift Type',
+      shiftgrouping: 'Please Select Shift Grouping',
+      shifttiming: 'Please Select Shift',
     }));
+
+    setTodo([]);
+    setShifts([]);
+    setValueCate([]);
+    setSelectedOptionsCate([]);
+    setValueCateWeeks([]);
+    setSelectedOptionsCateWeeks([]);
 
     setMaxSelections(maxWfhSelections + Number(count));
 
@@ -6761,47 +7276,85 @@ function InternEdit() {
     setLoading(true);
     let workStationInput = await allotWorkStation();
     // departmentlog details
-    let salarytable =
-      salaryOption === 'Experience Based'
-        ? [
-          ...oldSalaryData,
-          {
-            movetolive: false,
-            onboardas: 'Internship',
-            salarystatus: salaryTableData?.salarystatus || '',
-            basic: salaryTableData?.basic || 0,
-            hra: salaryTableData?.hra || 0,
-            conveyance: salaryTableData?.conveyance || 0,
-            medicalallowance: salaryTableData?.medicalallowance || 0,
-            productionallowance: salaryTableData?.productionallowance || 0,
-            shiftallowance: salaryTableData?.shiftallowance || 0,
-            grossmonthsalary: salaryTableData?.grossmonthsalary || 0,
-            annualgrossctc: salaryTableData?.annualgrossctc || 0,
-            otherallowance: salaryTableData?.otherallowance || 0,
-            performanceincentive: salaryTableData?.performanceincentive || 0,
+    const salarysettings = employee?.salarysettings || [];
 
-            file: tableImage || null,
-          },
-        ]
-        : [
-          ...oldSalaryData,
-          {
-            movetolive: false,
-            onboardas: 'Internship',
-            salarystatus: salaryTableData?.salarystatus || '',
-            basic: salaryTableDataManual?.basic || 0,
-            hra: salaryTableDataManual?.hra || 0,
-            conveyance: salaryTableDataManual?.conveyance || 0,
-            medicalallowance: salaryTableDataManual?.medicalallowance || 0,
-            productionallowance: salaryTableDataManual?.productionallowance || 0,
-            shiftallowance: salaryTableDataManual?.shiftallowance || 0,
-            grossmonthsalary: salaryTableDataManual?.grossmonthsalary || 0,
-            annualgrossctc: salaryTableDataManual?.annualgrossctc || 0,
-            otherallowance: salaryTableDataManual?.otherallowance || 0,
-            performanceincentive: salaryTableDataManual?.performanceincentive || 0,
-            file: tableImageManual || null,
-          },
-        ];
+    const allComponents = ['Basic', 'HRA', 'Conveyance', 'Medical Allowance', 'Production Allowance', 'Shift Allowance', 'Performance Incentive', 'Special Allowance'];
+
+    // 🧮 Helper to get amount from breakupData
+    const getAmount = (name, dataArray) => Number(dataArray?.find((data) => data?.name === name)?.amount || 0);
+
+    // 🧩 Function to calculate salary data (works for both Experience & Manual)
+    const calculateSalaryData = (breakupData, salaryTableData, tableImage) => {
+      const selectedComponents = salarysettings.length ? salarysettings.filter((name) => allComponents.includes(name)) : allComponents;
+
+      let visibleComponents = {};
+      let remainingTotal = 0;
+
+      for (const name of allComponents) {
+        const amount = getAmount(name, breakupData);
+        if (selectedComponents.includes(name)) {
+          visibleComponents[name] = amount;
+        } else {
+          remainingTotal += amount;
+        }
+      }
+
+      // Add remaining to Special Allowance
+      visibleComponents['Special Allowance'] = (visibleComponents['Special Allowance'] || 0) + remainingTotal;
+
+      const {
+        ['Basic']: basic = 0,
+        ['HRA']: hra = 0,
+        ['Conveyance']: conveyance = 0,
+        ['Medical Allowance']: medicalallowance = 0,
+        ['Production Allowance']: productionallowance = 0,
+        ['Shift Allowance']: shiftallowance = 0,
+        ['Performance Incentive']: performanceincentive = 0,
+        ['Special Allowance']: otherallowance = 0,
+      } = visibleComponents;
+
+      const grossmonthsalary = basic + hra + conveyance + medicalallowance + productionallowance + shiftallowance + performanceincentive + otherallowance;
+
+      const annualgrossctc = grossmonthsalary * 12;
+
+      return {
+        movetolive: false,
+        onboardas: 'Internship',
+        salarystatus: salaryTableData?.salarystatus || '',
+        basic,
+        hra,
+        conveyance,
+        medicalallowance,
+        productionallowance,
+        shiftallowance,
+        performanceincentive,
+        otherallowance,
+        grossmonthsalary,
+        annualgrossctc,
+        // file: tableImage || null,
+        salaryoption: salaryOption || '',
+      };
+    };
+
+    // 🧠 Final salary table (dynamic based on option)
+    const calculatedData = salaryOption === 'Experience Based' ? calculateSalaryData(breakupData, salaryTableData, tableImage) : calculateSalaryData(breakupDataManual, salaryTableDataManual, tableImageManual);
+
+    // add salaryoption field
+    calculatedData.salaryoption = salaryOption;
+
+    // 🧠 Final salary table
+    let salarytable = [];
+
+    if (oldSalaryData.length > 0) {
+      // merge with existing 0th index
+      salarytable = [
+        { ...oldSalaryData[0], ...calculatedData },
+        ...oldSalaryData.slice(1), // keep remaining items
+      ];
+    } else {
+      // if no old data, just add new data
+      salarytable = [calculatedData];
+    }
     const changeddptlog1st = departmentLog?.slice(0, 1);
     const changedptlogwiout1st = departmentLog?.slice(1);
     let primaryWork = ['please select primary workstation', 'select primary workstation', '', undefined, 'please select primary work station', 'select primary work station', 'primary workstation', 'primary work station', null].includes((primaryWorkStation || '').toLowerCase())
@@ -6825,22 +7378,22 @@ function InternEdit() {
     const finaldot = [
       ...(departmentLog?.length > 0
         ? [
-          {
-            ...departmentLog[0], // Spread the original object to maintain immutability
-            userid: String(employee?.wordcheck === true ? employeecodenew : employee?.empcode),
-            logeditedby: [],
-            updateddatetime: String(new Date()),
-            updatedusername: String(isUserRoleAccess.companyname),
-            username: String(companycaps),
-            department: String(employee?.department),
-            startdate: String(employee?.doj),
-            companyname: String(selectedCompany),
-            branch: String(selectedBranch),
-            unit: String(selectedUnit),
-            team: String(selectedTeam),
-            status: Boolean(employee?.statuss),
-          },
-        ]
+            {
+              ...departmentLog[0], // Spread the original object to maintain immutability
+              userid: String(employee?.wordcheck === true ? employeecodenew : employee?.empcode),
+              logeditedby: [],
+              updateddatetime: String(new Date()),
+              updatedusername: String(isUserRoleAccess.companyname),
+              username: String(companycaps),
+              department: String(employee?.department),
+              startdate: String(employee?.doj),
+              companyname: String(selectedCompany),
+              branch: String(selectedBranch),
+              unit: String(selectedUnit),
+              team: String(selectedTeam),
+              status: Boolean(employee?.statuss),
+            },
+          ]
         : []),
       ...departmentLog?.slice(1),
     ];
@@ -6851,21 +7404,21 @@ function InternEdit() {
     const finaldesignationlog = [
       ...(designationLog?.length > 0
         ? [
-          {
-            ...designationLog[0], // Spread the original object to maintain immutability
-            logeditedby: [],
-            updateddatetime: String(new Date()),
-            updatedusername: String(isUserRoleAccess.companyname),
-            designation: String(selectedDesignation),
-            username: String(companycaps),
-            companyname: String(selectedCompany),
-            startdate: String(employee?.doj),
-            time: String(getCurrentTime()),
-            branch: String(selectedBranch),
-            unit: String(selectedUnit),
-            team: String(selectedTeam),
-          },
-        ]
+            {
+              ...designationLog[0], // Spread the original object to maintain immutability
+              logeditedby: [],
+              updateddatetime: String(new Date()),
+              updatedusername: String(isUserRoleAccess.companyname),
+              designation: String(selectedDesignation),
+              username: String(companycaps),
+              companyname: String(selectedCompany),
+              startdate: String(employee?.doj),
+              time: String(getCurrentTime()),
+              branch: String(selectedBranch),
+              unit: String(selectedUnit),
+              team: String(selectedTeam),
+            },
+          ]
         : []),
       ...designationLog?.slice(1), // Append the rest of the array as is
     ];
@@ -6876,47 +7429,47 @@ function InternEdit() {
     const finalboardinglog = [
       ...(boardingLog?.length > 0
         ? [
-          {
-            ...boardingLog[0], // Spread the original object to maintain immutability
-            username: companycaps,
-            startdate: String(employee?.doj),
-            time: moment().format('HH:mm'),
-            company: String(selectedCompany),
-            branch: String(selectedBranch),
-            unit: String(selectedUnit),
-            team: String(selectedTeam),
-            floor: String(employee?.floor),
-            area: String(employee?.area),
-            workmode: String(employee?.workmode),
-            workstationofficestatus: Boolean(employee?.ifoffice),
-            workstationinput: String(employee?.workmode === 'Remote' || employee?.ifoffice ? workStationInput : ''),
-            // workstation:
-            //   employee?.workmode !== "Remote"
-            //     ? valueWorkStation?.length === 0
-            //       ? primaryWorkStation
-            //       : [primaryWorkStation, ...valueWorkStation]
-            //     : [primaryWorkStation, ...valueWorkStation],
-            workstation: finalWorkStation,
-            workstationshortname: shortnameArray,
-            shifttype: String(employee?.shifttype),
-            shifttiming: String(employee?.shifttiming),
-            shiftgrouping: String(employee?.shiftgrouping),
-            weekoff: [...valueCate],
-            todo: employee?.shifttype === 'Standard' ? [] : [...todo],
-            logeditedby: [],
-            updateddatetime: String(new Date()),
-            updatedusername: String(isUserRoleAccess.companyname),
-            logcreation: String('user'),
-            ischangecompany: true,
-            ischangebranch: true,
-            ischangeunit: true,
-            ischangeteam: true,
-            ischangefloor: true,
-            ischangearea: true,
-            ischangeworkstation: true,
-            ischangeworkmode: true,
-          },
-        ]
+            {
+              ...boardingLog[0], // Spread the original object to maintain immutability
+              username: companycaps,
+              startdate: String(employee?.doj),
+              time: moment().format('HH:mm'),
+              company: String(selectedCompany),
+              branch: String(selectedBranch),
+              unit: String(selectedUnit),
+              team: String(selectedTeam),
+              floor: String(employee?.floor),
+              area: String(employee?.area),
+              workmode: String(employee?.workmode),
+              workstationofficestatus: Boolean(employee?.ifoffice),
+              workstationinput: String(employee?.workmode === 'Remote' || employee?.ifoffice ? workStationInput : ''),
+              // workstation:
+              //   employee?.workmode !== "Remote"
+              //     ? valueWorkStation?.length === 0
+              //       ? primaryWorkStation
+              //       : [primaryWorkStation, ...valueWorkStation]
+              //     : [primaryWorkStation, ...valueWorkStation],
+              workstation: finalWorkStation,
+              workstationshortname: shortnameArray,
+              shifttype: String(employee?.shifttype),
+              shifttiming: String(employee?.shifttiming),
+              shiftgrouping: String(employee?.shiftgrouping),
+              weekoff: [...valueCate],
+              todo: employee?.shifttype === 'Standard' ? [] : [...todo],
+              logeditedby: [],
+              updateddatetime: String(new Date()),
+              updatedusername: String(isUserRoleAccess.companyname),
+              logcreation: String('user'),
+              ischangecompany: true,
+              ischangebranch: true,
+              ischangeunit: true,
+              ischangeteam: true,
+              ischangefloor: true,
+              ischangearea: true,
+              ischangeworkstation: true,
+              ischangeworkmode: true,
+            },
+          ]
         : []),
       ...boardingLog?.slice(1),
     ];
@@ -6927,25 +7480,25 @@ function InternEdit() {
     const finalprocesslog = [
       ...(processLog?.length > 0
         ? [
-          {
-            ...processLog[0], // Spread the original object to maintain immutability
-            company: String(selectedCompany),
-            branch: String(selectedBranch),
-            unit: String(selectedUnit),
-            team: String(selectedTeam),
-            // process: String(loginNotAllot.process === '' || loginNotAllot.process == undefined ? '' : loginNotAllot.process),
-            process: salaryOption === 'Experience Based' ? String(loginNotAllot?.process || '') : String(salarySetUpForm?.salarycode || ''),
-            processduration: String(loginNotAllot.processduration === '' || loginNotAllot.processduration == undefined ? '' : loginNotAllot.processduration),
-            processtype: String(loginNotAllot.processtype === '' || loginNotAllot.processtype == undefined ? '' : loginNotAllot.processtype),
+            {
+              ...processLog[0], // Spread the original object to maintain immutability
+              company: String(selectedCompany),
+              branch: String(selectedBranch),
+              unit: String(selectedUnit),
+              team: String(selectedTeam),
+              // process: String(loginNotAllot.process === '' || loginNotAllot.process == undefined ? '' : loginNotAllot.process),
+              process: salaryOption === 'Experience Based' ? String(loginNotAllot?.process || '') : String(salarySetUpForm?.salarycode || ''),
+              processduration: String(loginNotAllot.processduration === '' || loginNotAllot.processduration == undefined ? '' : loginNotAllot.processduration),
+              processtype: String(loginNotAllot.processtype === '' || loginNotAllot.processtype == undefined ? '' : loginNotAllot.processtype),
 
-            date: String(employee?.doj),
-            time: `${loginNotAllot.time}:${loginNotAllot?.timemins}`,
-            empname: String(companycaps),
-            logeditedby: [],
-            updateddatetime: String(new Date()),
-            updatedusername: String(isUserRoleAccess.companyname),
-          },
-        ]
+              date: String(employee?.doj),
+              time: `${loginNotAllot.time}:${loginNotAllot?.timemins}`,
+              empname: String(companycaps),
+              logeditedby: [],
+              updateddatetime: String(new Date()),
+              updatedusername: String(isUserRoleAccess.companyname),
+            },
+          ]
         : []),
       ...processLog?.slice(1),
     ];
@@ -6954,22 +7507,62 @@ function InternEdit() {
     const changedassignexplog1st = employee?.assignExpLog?.slice(0, 1);
     const changeassignexplogwiout1st = employee?.assignExpLog?.slice(1);
     const finalassignexplog = [
-      ...(employee?.assignExpLog.length > 0
-        ? [
-          {
-            ...employee?.assignExpLog[0], // Spread the original object to maintain immutability
-            // expmode: String(assignExperience.assignExpMode),
-            // expval: String(assignExperience.assignExpvalue),
-
-            // endexp: String(assignExperience.assignEndExpvalue),
-            // endexpdate: assignExperience.assignEndExpvalue === 'Yes' ? String(assignExperience.assignEndExpDate) : '',
-            // endtar: String(assignExperience.assignEndTarvalue),
-            // endtardate: assignExperience.assignEndTarvalue === 'Yes' ? String(assignExperience.assignEndTarDate) : '',
-            // updatedate: String(assignExperience.updatedate),
+      salaryOption === 'Experience Based'
+        ? {
+            ...employee?.assignExpLog[0],
             date: String(employee?.doj),
 
+            // expmode: salarySetUpForm.mode,
+            // salarycode: salarySetUpForm.salarycode,
+            // endexp: 'No',
+            // endexpdate: '',
+            // endtar: 'No',
+            // endtardate: '',
+            // basic: String(formValue?.basic || ''),
+            // hra: String(formValue?.hra || ''),
+            // conveyance: String(formValue?.conveyance || ''),
+            // gross: String(formValue?.gross || ''),
+            // medicalallowance: String(formValue?.medicalallowance || ''),
+            // productionallowance: String(formValue?.productionallowance || ''),
+            // otherallowance: String(formValue?.otherallowance || ''),
+            // productionallowancetwo: String(formValue?.productionallowancetwo || ''),
+            // pfdeduction: Boolean(formValue?.pfdeduction || ''),
+            // esideduction: Boolean(formValue?.esideduction || ''),
+            // ctc: String(Ctc || ''),
+            // updatedate: String(formValue?.startDate || ''),
+            // updatename: String(companycaps || ''),
+            // // date: String(new Date()),
+            // startmonth: String(formValue?.startmonth || ''),
+            // endmonth: String(''),
+            // startyear: String(formValue?.startyear || ''),
+            // endyear: String(''),
+
+            expmode: String(assignExperience?.assignExpMode),
+            expval: String(assignExperience?.assignExpvalue || '0'),
+
+            endexp: String(assignExperience?.assignEndExpvalue),
+            endexpdate: assignExperience?.assignEndExpvalue === 'Yes' ? String(assignExperience?.assignEndExpDate) : '',
+            endtar: String(assignExperience?.assignEndTarvalue),
+            endtardate: assignExperience?.assignEndTarvalue === 'Yes' ? String(assignExperience?.assignEndTarDate) : '',
+            updatedate: String(assignExperience?.updatedate),
+            type: String(''),
+            updatename: String(''),
+            salarycode: String(''),
+            basic: String('0'),
+            hra: String('0'),
+            conveyance: String('0'),
+            gross: String('0'),
+            medicalallowance: String('0'),
+            productionallowance: String('0'),
+            otherallowance: String('0'),
+            productionallowancetwo: String('0'),
+            pfdeduction: false,
+            esideduction: false,
+            ctc: String(''),
+          }
+        : {
             expmode: salarySetUpForm.mode,
-            salarycode: salarySetUpForm.salarycode,
+            salarycode: salarySetUpForm.salarycode === 'Please Select Salary Code' ? '' : salarySetUpForm.salarycode,
             endexp: 'No',
             endexpdate: '',
             endtar: 'No',
@@ -6987,14 +7580,12 @@ function InternEdit() {
             ctc: String(Ctc || ''),
             updatedate: String(formValue?.startDate || ''),
             updatename: String(companycaps || ''),
-            // date: String(new Date()),
             startmonth: String(formValue?.startmonth || ''),
             endmonth: String(''),
             startyear: String(formValue?.startyear || ''),
             endyear: String(''),
+            date: String(employee?.doj),
           },
-        ]
-        : []),
       ...employee?.assignExpLog.slice(1),
     ];
     try {
@@ -7069,7 +7660,7 @@ function InternEdit() {
           },
           assignExpLog: finalassignexplog,
           assignExpMode: String(assignExperience.assignExpMode),
-          assignExpvalue: String(assignExperience.assignExpvalue),
+          assignExpvalue: String(assignExperience.assignExpvalue || 0),
           endexp: String(assignExperience.assignEndExpvalue),
           endexpdate: assignExperience.assignEndExpvalue === 'Yes' ? String(assignExperience.assignEndExpDate) : '',
           endtar: String(assignExperience.assignEndTarvalue),
@@ -7126,6 +7717,7 @@ function InternEdit() {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
+        accessby: isUserRoleAccess.companyname || '',
         username: finalusername,
         usernameautogenerate: Boolean(enableLoginName),
         firstname: String(employee?.firstname),
@@ -7138,6 +7730,7 @@ function InternEdit() {
         gender: String(employee?.gender),
         maritalstatus: String(employee?.maritalstatus),
         dom: String(employee?.dom),
+        spousename: String(employee?.spousename || ''),
         dob: String(employee?.dob),
         bloodgroup: String(employee?.bloodgroup),
         religion: String(employee?.religion),
@@ -7185,7 +7778,11 @@ function InternEdit() {
         cdistrict: !employee?.samesprmnt ? String(employee?.cdistrict || '') : String(employee?.pdistrict || ''),
         pdoorno: String(employee?.pdoorno),
         pstreet: String(employee?.pstreet),
-        parea: String(employee?.parea),
+        parea: employee?.parea ? String(employee.parea) : employee?.pgenerateviapincode ? employee?.pvillageorcity : selectedCityp?.name,
+        ppost: String(employee?.ppost || ''),
+        ptaluk: String(employee?.ptaluk || ''),
+        cpost: !employee.samesprmnt ? String(employee?.cpost || '') : String(employee?.ppost || ''),
+        ctaluk: !employee.samesprmnt ? String(employee?.ctaluk || '') : String(employee?.ptaluk || ''),
         plandmark: String(employee?.plandmark),
         ptaluk: String(employee?.ptaluk),
         ppost: String(employee?.ppost),
@@ -7194,6 +7791,15 @@ function InternEdit() {
         pstate: String(employee?.pstate),
         pcity: String(employee?.pcity),
         samesprmnt: Boolean(employee?.samesprmnt),
+        pbuildingapartmentname: String(employee?.pbuildingapartmentname || ''),
+        paddressone: String(employee?.paddressone || ''),
+        paddresstwo: String(employee?.paddresstwo || ''),
+        paddressthree: String(employee?.paddressthree || ''),
+
+        caddressone: !employee.samesprmnt ? String(employee?.caddressone || '') : String(employee?.paddressone || ''),
+        caddresstwo: !employee.samesprmnt ? String(employee?.caddresstwo || '') : String(employee?.paddresstwo || ''),
+        caddressthree: !employee.samesprmnt ? String(employee?.caddressthree || '') : String(employee?.paddressthree || ''),
+        cbuildingapartmentname: !employee.samesprmnt ? String(employee?.cbuildingapartmentname || '') : String(employee?.pbuildingapartmentname || ''),
         designationlog: finaldesignationlog,
         departmentlog: finaldot,
         boardingLog: finalboardinglog,
@@ -7202,7 +7808,7 @@ function InternEdit() {
         process: finalprocesslog?.length > 1 ? String(loginNotAllot?.process || '') : String(employee?.process || ''),
         cdoorno: String(!employee?.samesprmnt ? employee?.cdoorno : employee?.pdoorno),
         cstreet: String(!employee?.samesprmnt ? employee?.cstreet : employee?.pstreet),
-        carea: String(!employee?.samesprmnt ? employee?.carea : employee?.parea),
+        carea: employee.samesprmnt ? (employee?.parea ? String(employee.parea) : employee?.pgenerateviapincode ? employee?.pvillageorcity : selectedCityp?.name) : employee?.carea ? String(employee.carea) : employee?.cgenerateviapincode ? employee?.cvillageorcity : selectedCityc?.name,
         clandmark: String(!employee?.samesprmnt ? employee?.clandmark : employee?.plandmark),
         ctaluk: String(!employee?.samesprmnt ? employee?.ctaluk : employee?.ptaluk),
         cpost: String(!employee?.samesprmnt ? employee?.cpost : employee?.ppost),
@@ -7227,7 +7833,8 @@ function InternEdit() {
         rocketchatroles: createRocketChat?.create ? createRocketChat?.roles?.map((data) => data?.value) : [],
         rocketchatteamid: employee?.rocketchatteamid || [],
         rocketchatchannelid: employee?.rocketchatchannelid || [],
-
+        ldapEmail: createLdap?.ldapEmail || '',
+        ldapDN: createLdap?.ldapDN || '',
         hiconnectemail: createHiConnect?.hiconnectemail,
         hiconnectid: employee?.hiconnectid || '',
         hiconnectroles: createHiConnect?.createhiconnect ? createHiConnect?.hiconnectroles?.map((data) => data?.value) : [],
@@ -7280,6 +7887,42 @@ function InternEdit() {
           rocketchatshift,
         });
       }
+      if (!employee?.ldapDN && createLdap?.createldapaccount) {
+        await axios.post(
+          `${SERVICE.CREATE_LDAP_CONNECT_ACCOUNT_IN_EDIT}`,
+          {
+            createldapaccount: Boolean(createLdap?.createldapaccount),
+            ldapEmail: String(createLdap?.createldapaccount ? createLdap?.ldapEmail : ''),
+            ldapOU: createLdap?.createldapaccount ? createLdap?.ldapOU : '',
+            userAccountControl: createLdap?.userAccountControl || '512',
+            passwordBehaviour: createLdap?.passwordBehaviour || '',
+            companyname: companycaps,
+            password: String(employee?.originalpassword),
+            originalpassword: String(employee?.originalpassword),
+            username: finalusername,
+            firstname: String(employee?.firstname),
+            dob: String(employee?.dob),
+            lastname: String(employee?.lastname),
+            callingname: String(employee?.callingname?.toUpperCase()),
+            employeeid: id,
+            company: selectedCompany,
+            branch: selectedBranch,
+            unit: selectedUnit,
+            team: selectedTeam,
+            department: String(employee?.department),
+            designation: String(selectedDesignation),
+            process: finalprocesslog?.length > 1 ? String(loginNotAllot?.process || '') : String(employee?.process || ''),
+            workmode: String(employee?.workmode),
+            rocketchatshiftgrouping,
+            rocketchatshift,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${auth.APIToken}`,
+            },
+          }
+        );
+      }
       if (!employee?.hiconnectid && createHiConnect?.createhiconnect) {
         await axios.post(`${SERVICE.CREATE_HICONNECT_USER_INEDIT}`, {
           headers: {
@@ -7307,11 +7950,34 @@ function InternEdit() {
           rocketchatshift,
         });
       }
+
+      if (signatureData && !signatureID) {
+        await axios.post(SERVICE.EMPLOYEESIGNATURE_CREATE, {
+          commonsignatureid: employees_data?.data?.user?._id,
+          signatureimage: signatureData,
+          addedby: [
+            {
+              name: String(isUserRoleAccess.companyname),
+              date: String(new Date()),
+            },
+          ],
+        });
+      }
+      if (signatureID) {
+        await axios.put(`${SERVICE.EMPLOYEESIGNATURE_SINGLE}/${signatureID}`, {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          signatureimage: signatureData || '',
+        });
+      }
       const validTodos = getValidTodos(files, categoryDocument);
       if (documentID !== '') {
         const employeeDocuments = await uploadEmployeeDocuments({
           empcode: String(employee?.wordcheck === true ? employeecodenew : employee?.empcode),
           commonid: id,
+          accessby: isUserRoleAccess.companyname || '',
+          profilechanged: profileChanged || false,
           companyname: String(companycaps),
           type: 'Internship',
           // files: files?.filter((data) => data?.file), // assuming it's already [{ file, data, name, remark }]
@@ -7344,6 +8010,8 @@ function InternEdit() {
         const employeeDocuments = await uploadEmployeeDocuments({
           empcode: String(employee?.wordcheck === true ? employeecodenew : employee?.empcode),
           commonid: String(employees_data?.data?.user?._id),
+          accessby: isUserRoleAccess.companyname || '',
+          profilechanged: profileChanged || false,
           companyname: String(companycaps),
           type: 'Internship',
           files: validTodos, // assuming it's already [{ file, data, name, remark }]
@@ -7406,7 +8074,27 @@ function InternEdit() {
           deletedFileNames: [],
         });
       }
-
+      if (transportFirstLogData?._id && userTransportLogsDetails?._id) {
+        const transportpayload = {
+          auth,
+          formData: transportData,
+          isUserRoleAccess,
+          uploadedFiles: transportupload,
+          transportLogId: userTransportLogsDetails?._id || null,
+          transportFirstLogId: transportFirstLogData?._id || null,
+          transportFirstLog: transportFirstLogData || {},
+        };
+        const transportLogUpdation = await TransportLogUpdateFirst(transportpayload);
+      } else {
+        const transportpayload = {
+          auth,
+          formData: transportData,
+          employeeid: String(employees_data?.data?.user?._id),
+          isUserRoleAccess,
+          uploadedFiles: transportupload,
+        };
+        const transportLogCreation = await TransportLogCreate(transportpayload);
+      }
       // let employeeDocuments = await axios.put(`${SERVICE.EMPLOYEEDOCUMENT_SINGLE}/${documentID}`, {
       //   profileimage: String(final),
       //   files: [...files],
@@ -7604,7 +8292,17 @@ function InternEdit() {
           if (primaryDep?.length > 0) {
             const uniqueEntries = primaryDep?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -7644,7 +8342,17 @@ function InternEdit() {
           if (secondaryDep?.length > 0) {
             const uniqueEntries = secondaryDep?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -7684,7 +8392,17 @@ function InternEdit() {
           if (tertiary?.length > 0) {
             const uniqueEntries = tertiary?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -7724,7 +8442,17 @@ function InternEdit() {
           if (primaryDepAll?.length > 0) {
             const uniqueEntries = primaryDepAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -7764,7 +8492,17 @@ function InternEdit() {
           if (secondaryDepAll?.length > 0) {
             const uniqueEntries = secondaryDepAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -7804,7 +8542,17 @@ function InternEdit() {
           if (tertiaryAll?.length > 0) {
             const uniqueEntries = tertiaryAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -7842,7 +8590,9 @@ function InternEdit() {
             );
           }
           if (primaryWithoutDep?.length > 0) {
-            const uniqueEntries = primaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = primaryWithoutDep?.filter(
+              (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -7879,7 +8629,9 @@ function InternEdit() {
             );
           }
           if (secondaryWithoutDep?.length > 0) {
-            const uniqueEntries = secondaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = secondaryWithoutDep?.filter(
+              (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -7916,7 +8668,9 @@ function InternEdit() {
             );
           }
           if (tertiaryWithoutDep?.length > 0) {
-            const uniqueEntries = tertiaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = tertiaryWithoutDep?.filter(
+              (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -8016,7 +8770,17 @@ function InternEdit() {
           if (primaryDep?.length > 0) {
             const uniqueEntries = primaryDep?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -8056,7 +8820,17 @@ function InternEdit() {
           if (secondaryDep?.length > 0) {
             const uniqueEntries = secondaryDep?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -8096,7 +8870,17 @@ function InternEdit() {
           if (tertiary?.length > 0) {
             const uniqueEntries = tertiary?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -8136,7 +8920,17 @@ function InternEdit() {
           if (primaryDepAll?.length > 0) {
             const uniqueEntries = primaryDepAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -8176,7 +8970,17 @@ function InternEdit() {
           if (secondaryDepAll?.length > 0) {
             const uniqueEntries = secondaryDepAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -8216,7 +9020,17 @@ function InternEdit() {
           if (tertiaryAll?.length > 0) {
             const uniqueEntries = tertiaryAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                )
             );
 
             let answer = uniqueEntries?.map(
@@ -8254,7 +9068,9 @@ function InternEdit() {
             );
           }
           if (primaryWithoutDep?.length > 0) {
-            const uniqueEntries = primaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = primaryWithoutDep?.filter(
+              (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -8291,7 +9107,9 @@ function InternEdit() {
             );
           }
           if (secondaryWithoutDep?.length > 0) {
-            const uniqueEntries = secondaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = secondaryWithoutDep?.filter(
+              (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -8328,7 +9146,9 @@ function InternEdit() {
             );
           }
           if (tertiaryWithoutDep?.length > 0) {
-            const uniqueEntries = tertiaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = tertiaryWithoutDep?.filter(
+              (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -8598,47 +9418,85 @@ function InternEdit() {
   const sendRequestpwd = async () => {
     setLoading(true);
     let workStationInput = await allotWorkStation();
-    let salarytable =
-      salaryOption === 'Experience Based'
-        ? [
-          ...oldSalaryData,
-          {
-            movetolive: false,
-            onboardas: 'Internship',
-            salarystatus: salaryTableData?.salarystatus || '',
-            basic: salaryTableData?.basic || 0,
-            hra: salaryTableData?.hra || 0,
-            conveyance: salaryTableData?.conveyance || 0,
-            medicalallowance: salaryTableData?.medicalallowance || 0,
-            productionallowance: salaryTableData?.productionallowance || 0,
-            shiftallowance: salaryTableData?.shiftallowance || 0,
-            grossmonthsalary: salaryTableData?.grossmonthsalary || 0,
-            annualgrossctc: salaryTableData?.annualgrossctc || 0,
-            otherallowance: salaryTableData?.otherallowance || 0,
-            performanceincentive: salaryTableData?.performanceincentive || 0,
+    const salarysettings = employee?.salarysettings || [];
 
-            file: tableImage || null,
-          },
-        ]
-        : [
-          ...oldSalaryData,
-          {
-            movetolive: false,
-            onboardas: 'Internship',
-            salarystatus: salaryTableData?.salarystatus || '',
-            basic: salaryTableDataManual?.basic || 0,
-            hra: salaryTableDataManual?.hra || 0,
-            conveyance: salaryTableDataManual?.conveyance || 0,
-            medicalallowance: salaryTableDataManual?.medicalallowance || 0,
-            productionallowance: salaryTableDataManual?.productionallowance || 0,
-            shiftallowance: salaryTableDataManual?.shiftallowance || 0,
-            grossmonthsalary: salaryTableDataManual?.grossmonthsalary || 0,
-            annualgrossctc: salaryTableDataManual?.annualgrossctc || 0,
-            otherallowance: salaryTableDataManual?.otherallowance || 0,
-            performanceincentive: salaryTableDataManual?.performanceincentive || 0,
-            file: tableImageManual || null,
-          },
-        ];
+    const allComponents = ['Basic', 'HRA', 'Conveyance', 'Medical Allowance', 'Production Allowance', 'Shift Allowance', 'Performance Incentive', 'Special Allowance'];
+
+    // 🧮 Helper to get amount from breakupData
+    const getAmount = (name, dataArray) => Number(dataArray?.find((data) => data?.name === name)?.amount || 0);
+
+    // 🧩 Function to calculate salary data (works for both Experience & Manual)
+    const calculateSalaryData = (breakupData, salaryTableData, tableImage) => {
+      const selectedComponents = salarysettings.length ? salarysettings.filter((name) => allComponents.includes(name)) : allComponents;
+
+      let visibleComponents = {};
+      let remainingTotal = 0;
+
+      for (const name of allComponents) {
+        const amount = getAmount(name, breakupData);
+        if (selectedComponents.includes(name)) {
+          visibleComponents[name] = amount;
+        } else {
+          remainingTotal += amount;
+        }
+      }
+
+      // Add remaining to Special Allowance
+      visibleComponents['Special Allowance'] = (visibleComponents['Special Allowance'] || 0) + remainingTotal;
+
+      const {
+        ['Basic']: basic = 0,
+        ['HRA']: hra = 0,
+        ['Conveyance']: conveyance = 0,
+        ['Medical Allowance']: medicalallowance = 0,
+        ['Production Allowance']: productionallowance = 0,
+        ['Shift Allowance']: shiftallowance = 0,
+        ['Performance Incentive']: performanceincentive = 0,
+        ['Special Allowance']: otherallowance = 0,
+      } = visibleComponents;
+
+      const grossmonthsalary = basic + hra + conveyance + medicalallowance + productionallowance + shiftallowance + performanceincentive + otherallowance;
+
+      const annualgrossctc = grossmonthsalary * 12;
+
+      return {
+        movetolive: false,
+        onboardas: 'Internship',
+        salarystatus: salaryTableData?.salarystatus || '',
+        basic,
+        hra,
+        conveyance,
+        medicalallowance,
+        productionallowance,
+        shiftallowance,
+        performanceincentive,
+        otherallowance,
+        grossmonthsalary,
+        annualgrossctc,
+        // file: tableImage || null,
+        salaryoption: salaryOption || '',
+      };
+    };
+
+    // 🧠 Final salary table (dynamic based on option)
+    const calculatedData = salaryOption === 'Experience Based' ? calculateSalaryData(breakupData, salaryTableData, tableImage) : calculateSalaryData(breakupDataManual, salaryTableDataManual, tableImageManual);
+
+    // add salaryoption field
+    calculatedData.salaryoption = salaryOption;
+
+    // 🧠 Final salary table
+    let salarytable = [];
+
+    if (oldSalaryData.length > 0) {
+      // merge with existing 0th index
+      salarytable = [
+        { ...oldSalaryData[0], ...calculatedData },
+        ...oldSalaryData.slice(1), // keep remaining items
+      ];
+    } else {
+      // if no old data, just add new data
+      salarytable = [calculatedData];
+    }
     // departmentlog details
     const changeddptlog1st = departmentLog?.slice(0, 1);
     const changedptlogwiout1st = departmentLog?.slice(1);
@@ -8663,22 +9521,22 @@ function InternEdit() {
     const finaldot = [
       ...(departmentLog?.length > 0
         ? [
-          {
-            ...departmentLog[0], // Spread the original object to maintain immutability
-            userid: String(employee?.wordcheck === true ? employeecodenew : employee?.empcode),
-            logeditedby: [],
-            updateddatetime: String(new Date()),
-            updatedusername: String(isUserRoleAccess.companyname),
-            username: String(companycaps),
-            department: String(employee?.department),
-            startdate: String(employee?.doj),
-            companyname: String(selectedCompany),
-            branch: String(selectedBranch),
-            unit: String(selectedUnit),
-            team: String(selectedTeam),
-            status: Boolean(employee?.statuss),
-          },
-        ]
+            {
+              ...departmentLog[0], // Spread the original object to maintain immutability
+              userid: String(employee?.wordcheck === true ? employeecodenew : employee?.empcode),
+              logeditedby: [],
+              updateddatetime: String(new Date()),
+              updatedusername: String(isUserRoleAccess.companyname),
+              username: String(companycaps),
+              department: String(employee?.department),
+              startdate: String(employee?.doj),
+              companyname: String(selectedCompany),
+              branch: String(selectedBranch),
+              unit: String(selectedUnit),
+              team: String(selectedTeam),
+              status: Boolean(employee?.statuss),
+            },
+          ]
         : []),
       ...departmentLog?.slice(1),
     ];
@@ -8689,21 +9547,21 @@ function InternEdit() {
     const finaldesignationlog = [
       ...(designationLog?.length > 0
         ? [
-          {
-            ...designationLog[0], // Spread the original object to maintain immutability
-            logeditedby: [],
-            updateddatetime: String(new Date()),
-            updatedusername: String(isUserRoleAccess.companyname),
-            designation: String(selectedDesignation),
-            username: String(companycaps),
-            companyname: String(selectedCompany),
-            startdate: String(employee?.doj),
-            time: String(getCurrentTime()),
-            branch: String(selectedBranch),
-            unit: String(selectedUnit),
-            team: String(selectedTeam),
-          },
-        ]
+            {
+              ...designationLog[0], // Spread the original object to maintain immutability
+              logeditedby: [],
+              updateddatetime: String(new Date()),
+              updatedusername: String(isUserRoleAccess.companyname),
+              designation: String(selectedDesignation),
+              username: String(companycaps),
+              companyname: String(selectedCompany),
+              startdate: String(employee?.doj),
+              time: String(getCurrentTime()),
+              branch: String(selectedBranch),
+              unit: String(selectedUnit),
+              team: String(selectedTeam),
+            },
+          ]
         : []),
       ...designationLog?.slice(1), // Append the rest of the array as is
     ];
@@ -8715,47 +9573,47 @@ function InternEdit() {
     const finalboardinglog = [
       ...(boardingLog?.length > 0
         ? [
-          {
-            ...boardingLog[0], // Spread the original object to maintain immutability
-            username: companycaps,
-            startdate: String(employee?.doj),
-            time: moment().format('HH:mm'),
-            company: String(selectedCompany),
-            branch: String(selectedBranch),
-            unit: String(selectedUnit),
-            team: String(selectedTeam),
-            floor: String(employee?.floor),
-            area: String(employee?.area),
-            workmode: String(employee?.workmode),
-            workstationofficestatus: Boolean(employee?.ifoffice),
-            workstationinput: String(employee?.workmode === 'Remote' || employee?.ifoffice ? workStationInput : ''),
-            // workstation:
-            //   employee?.workmode !== "Remote"
-            //     ? valueWorkStation?.length === 0
-            //       ? primaryWorkStation
-            //       : [primaryWorkStation, ...valueWorkStation]
-            //     : [primaryWorkStation, ...valueWorkStation],
-            workstation: finalWorkStation,
-            workstationshortname: shortnameArray,
-            shifttype: String(employee?.shifttype),
-            shifttiming: String(employee?.shifttiming),
-            shiftgrouping: String(employee?.shiftgrouping),
-            weekoff: [...valueCate],
-            todo: employee?.shifttype === 'Standard' ? [] : [...todo],
-            logeditedby: [],
-            updateddatetime: String(new Date()),
-            updatedusername: String(isUserRoleAccess.companyname),
-            logcreation: String('user'),
-            ischangecompany: true,
-            ischangebranch: true,
-            ischangeunit: true,
-            ischangeteam: true,
-            ischangefloor: true,
-            ischangearea: true,
-            ischangeworkstation: true,
-            ischangeworkmode: true,
-          },
-        ]
+            {
+              ...boardingLog[0], // Spread the original object to maintain immutability
+              username: companycaps,
+              startdate: String(employee?.doj),
+              time: moment().format('HH:mm'),
+              company: String(selectedCompany),
+              branch: String(selectedBranch),
+              unit: String(selectedUnit),
+              team: String(selectedTeam),
+              floor: String(employee?.floor),
+              area: String(employee?.area),
+              workmode: String(employee?.workmode),
+              workstationofficestatus: Boolean(employee?.ifoffice),
+              workstationinput: String(employee?.workmode === 'Remote' || employee?.ifoffice ? workStationInput : ''),
+              // workstation:
+              //   employee?.workmode !== "Remote"
+              //     ? valueWorkStation?.length === 0
+              //       ? primaryWorkStation
+              //       : [primaryWorkStation, ...valueWorkStation]
+              //     : [primaryWorkStation, ...valueWorkStation],
+              workstation: finalWorkStation,
+              workstationshortname: shortnameArray,
+              shifttype: String(employee?.shifttype),
+              shifttiming: String(employee?.shifttiming),
+              shiftgrouping: String(employee?.shiftgrouping),
+              weekoff: [...valueCate],
+              todo: employee?.shifttype === 'Standard' ? [] : [...todo],
+              logeditedby: [],
+              updateddatetime: String(new Date()),
+              updatedusername: String(isUserRoleAccess.companyname),
+              logcreation: String('user'),
+              ischangecompany: true,
+              ischangebranch: true,
+              ischangeunit: true,
+              ischangeteam: true,
+              ischangefloor: true,
+              ischangearea: true,
+              ischangeworkstation: true,
+              ischangeworkmode: true,
+            },
+          ]
         : []),
       ...boardingLog?.slice(1),
     ];
@@ -8766,25 +9624,25 @@ function InternEdit() {
     const finalprocesslog = [
       ...(processLog?.length > 0
         ? [
-          {
-            ...processLog[0], // Spread the original object to maintain immutability
-            company: String(selectedCompany),
-            branch: String(selectedBranch),
-            unit: String(selectedUnit),
-            team: String(selectedTeam),
-            // process: String(loginNotAllot.process === '' || loginNotAllot.process == undefined ? '' : loginNotAllot.process),
-            process: salaryOption === 'Experience Based' ? String(loginNotAllot?.process || '') : String(salarySetUpForm?.salarycode || ''),
-            processduration: String(loginNotAllot.processduration === '' || loginNotAllot.processduration == undefined ? '' : loginNotAllot.processduration),
-            processtype: String(loginNotAllot.processtype === '' || loginNotAllot.processtype == undefined ? '' : loginNotAllot.processtype),
+            {
+              ...processLog[0], // Spread the original object to maintain immutability
+              company: String(selectedCompany),
+              branch: String(selectedBranch),
+              unit: String(selectedUnit),
+              team: String(selectedTeam),
+              // process: String(loginNotAllot.process === '' || loginNotAllot.process == undefined ? '' : loginNotAllot.process),
+              process: salaryOption === 'Experience Based' ? String(loginNotAllot?.process || '') : String(salarySetUpForm?.salarycode || ''),
+              processduration: String(loginNotAllot.processduration === '' || loginNotAllot.processduration == undefined ? '' : loginNotAllot.processduration),
+              processtype: String(loginNotAllot.processtype === '' || loginNotAllot.processtype == undefined ? '' : loginNotAllot.processtype),
 
-            date: String(employee?.doj),
-            time: `${loginNotAllot.time}:${loginNotAllot?.timemins}`,
-            empname: String(companycaps),
-            logeditedby: [],
-            updateddatetime: String(new Date()),
-            updatedusername: String(isUserRoleAccess.companyname),
-          },
-        ]
+              date: String(employee?.doj),
+              time: `${loginNotAllot.time}:${loginNotAllot?.timemins}`,
+              empname: String(companycaps),
+              logeditedby: [],
+              updateddatetime: String(new Date()),
+              updatedusername: String(isUserRoleAccess.companyname),
+            },
+          ]
         : []),
       ...processLog?.slice(1),
     ];
@@ -8793,22 +9651,62 @@ function InternEdit() {
     const changedassignexplog1st = employee?.assignExpLog?.slice(0, 1);
     const changeassignexplogwiout1st = employee?.assignExpLog?.slice(1);
     const finalassignexplog = [
-      ...(employee?.assignExpLog.length > 0
-        ? [
-          {
-            ...employee?.assignExpLog[0], // Spread the original object to maintain immutability
-            // expmode: String(assignExperience.assignExpMode),
-            // expval: String(assignExperience.assignExpvalue),
-
-            // endexp: String(assignExperience.assignEndExpvalue),
-            // endexpdate: assignExperience.assignEndExpvalue === 'Yes' ? String(assignExperience.assignEndExpDate) : '',
-            // endtar: String(assignExperience.assignEndTarvalue),
-            // endtardate: assignExperience.assignEndTarvalue === 'Yes' ? String(assignExperience.assignEndTarDate) : '',
-            // updatedate: String(assignExperience.updatedate),
+      salaryOption === 'Experience Based'
+        ? {
+            ...employee?.assignExpLog[0],
             date: String(employee?.doj),
 
+            // expmode: salarySetUpForm.mode,
+            // salarycode: salarySetUpForm.salarycode,
+            // endexp: 'No',
+            // endexpdate: '',
+            // endtar: 'No',
+            // endtardate: '',
+            // basic: String(formValue?.basic || ''),
+            // hra: String(formValue?.hra || ''),
+            // conveyance: String(formValue?.conveyance || ''),
+            // gross: String(formValue?.gross || ''),
+            // medicalallowance: String(formValue?.medicalallowance || ''),
+            // productionallowance: String(formValue?.productionallowance || ''),
+            // otherallowance: String(formValue?.otherallowance || ''),
+            // productionallowancetwo: String(formValue?.productionallowancetwo || ''),
+            // pfdeduction: Boolean(formValue?.pfdeduction || ''),
+            // esideduction: Boolean(formValue?.esideduction || ''),
+            // ctc: String(Ctc || ''),
+            // updatedate: String(formValue?.startDate || ''),
+            // updatename: String(companycaps || ''),
+            // // date: String(new Date()),
+            // startmonth: String(formValue?.startmonth || ''),
+            // endmonth: String(''),
+            // startyear: String(formValue?.startyear || ''),
+            // endyear: String(''),
+
+            expmode: String(assignExperience?.assignExpMode),
+            expval: String(assignExperience?.assignExpvalue || '0'),
+
+            endexp: String(assignExperience?.assignEndExpvalue),
+            endexpdate: assignExperience?.assignEndExpvalue === 'Yes' ? String(assignExperience?.assignEndExpDate) : '',
+            endtar: String(assignExperience?.assignEndTarvalue),
+            endtardate: assignExperience?.assignEndTarvalue === 'Yes' ? String(assignExperience?.assignEndTarDate) : '',
+            updatedate: String(assignExperience?.updatedate),
+            type: String(''),
+            updatename: String(companycaps || ''),
+            salarycode: String(''),
+            basic: String('0'),
+            hra: String('0'),
+            conveyance: String('0'),
+            gross: String('0'),
+            medicalallowance: String('0'),
+            productionallowance: String('0'),
+            otherallowance: String('0'),
+            productionallowancetwo: String('0'),
+            pfdeduction: false,
+            esideduction: false,
+            ctc: String(''),
+          }
+        : {
             expmode: salarySetUpForm.mode,
-            salarycode: salarySetUpForm.salarycode,
+            salarycode: salarySetUpForm.salarycode === 'Please Select Salary Code' ? '' : salarySetUpForm.salarycode,
             endexp: 'No',
             endexpdate: '',
             endtar: 'No',
@@ -8826,14 +9724,12 @@ function InternEdit() {
             ctc: String(Ctc || ''),
             updatedate: String(formValue?.startDate || ''),
             updatename: String(companycaps || ''),
-            // date: String(new Date()),
             startmonth: String(formValue?.startmonth || ''),
             endmonth: String(''),
             startyear: String(formValue?.startyear || ''),
             endyear: String(''),
+            date: String(employee?.doj),
           },
-        ]
-        : []),
       ...employee?.assignExpLog.slice(1),
     ];
     try {
@@ -8908,7 +9804,7 @@ function InternEdit() {
           },
           assignExpLog: finalassignexplog,
           assignExpMode: String(assignExperience.assignExpMode),
-          assignExpvalue: String(assignExperience.assignExpvalue),
+          assignExpvalue: String(assignExperience.assignExpvalue || 0),
           endexp: String(assignExperience.assignEndExpvalue),
           endexpdate: assignExperience.assignEndExpvalue === 'Yes' ? String(assignExperience.assignEndExpDate) : '',
           endtar: String(assignExperience.assignEndTarvalue),
@@ -8957,6 +9853,7 @@ function InternEdit() {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
+        accessby: isUserRoleAccess.companyname || '',
         username: finalusername,
         usernameautogenerate: Boolean(enableLoginName),
         firstname: String(employee?.firstname),
@@ -8970,6 +9867,7 @@ function InternEdit() {
         gender: String(employee?.gender),
         maritalstatus: String(employee?.maritalstatus),
         dom: String(employee?.dom),
+        spousename: String(employee?.spousename || ''),
         dob: String(employee?.dob),
         bloodgroup: String(employee?.bloodgroup),
         religion: String(employee?.religion),
@@ -8996,7 +9894,11 @@ function InternEdit() {
         companyname: companycaps,
         pdoorno: String(employee?.pdoorno),
         pstreet: String(employee?.pstreet),
-        parea: String(employee?.parea),
+        parea: employee?.parea ? String(employee.parea) : employee?.pgenerateviapincode ? employee?.pvillageorcity : selectedCityp?.name,
+        ppost: String(employee?.ppost || ''),
+        ptaluk: String(employee?.ptaluk || ''),
+        cpost: !employee.samesprmnt ? String(employee?.cpost || '') : String(employee?.ppost || ''),
+        ctaluk: !employee.samesprmnt ? String(employee?.ctaluk || '') : String(employee?.ptaluk || ''),
         plandmark: String(employee?.plandmark),
         ptaluk: String(employee?.ptaluk),
         ppost: String(employee?.ppost),
@@ -9021,6 +9923,15 @@ function InternEdit() {
         pstate: String(employee?.pstate),
         pcity: String(employee?.pcity),
         samesprmnt: Boolean(employee?.samesprmnt),
+        pbuildingapartmentname: String(employee?.pbuildingapartmentname || ''),
+        paddressone: String(employee?.paddressone || ''),
+        paddresstwo: String(employee?.paddresstwo || ''),
+        paddressthree: String(employee?.paddressthree || ''),
+
+        caddressone: !employee.samesprmnt ? String(employee?.caddressone || '') : String(employee?.paddressone || ''),
+        caddresstwo: !employee.samesprmnt ? String(employee?.caddresstwo || '') : String(employee?.paddresstwo || ''),
+        caddressthree: !employee.samesprmnt ? String(employee?.caddressthree || '') : String(employee?.paddressthree || ''),
+        cbuildingapartmentname: !employee.samesprmnt ? String(employee?.cbuildingapartmentname || '') : String(employee?.pbuildingapartmentname || ''),
         designationlog: finaldesignationlog,
         departmentlog: finaldot,
         boardingLog: finalboardinglog,
@@ -9029,7 +9940,7 @@ function InternEdit() {
         process: finalprocesslog?.length > 1 ? String(loginNotAllot?.process || '') : String(employee?.process || ''),
         cdoorno: String(!employee?.samesprmnt ? employee?.cdoorno : employee?.pdoorno),
         cstreet: String(!employee?.samesprmnt ? employee?.cstreet : employee?.pstreet),
-        carea: String(!employee?.samesprmnt ? employee?.carea : employee?.parea),
+        carea: employee.samesprmnt ? (employee?.parea ? String(employee.parea) : employee?.pgenerateviapincode ? employee?.pvillageorcity : selectedCityp?.name) : employee?.carea ? String(employee.carea) : employee?.cgenerateviapincode ? employee?.cvillageorcity : selectedCityc?.name,
         clandmark: String(!employee?.samesprmnt ? employee?.clandmark : employee?.plandmark),
         ctaluk: String(!employee?.samesprmnt ? employee?.ctaluk : employee?.ptaluk),
         cpost: String(!employee?.samesprmnt ? employee?.cpost : employee?.ppost),
@@ -9055,7 +9966,8 @@ function InternEdit() {
         rocketchatroles: createRocketChat?.create ? createRocketChat?.roles?.map((data) => data?.value) : [],
         rocketchatteamid: employee?.rocketchatteamid || [],
         rocketchatchannelid: employee?.rocketchatchannelid || [],
-
+        ldapEmail: createLdap?.ldapEmail || '',
+        ldapDN: createLdap?.ldapDN || '',
         hiconnectemail: createHiConnect?.hiconnectemail,
         hiconnectid: employee?.hiconnectid || '',
         hiconnectroles: createHiConnect?.createhiconnect ? createHiConnect?.hiconnectroles?.map((data) => data?.value) : [],
@@ -9133,12 +10045,69 @@ function InternEdit() {
           rocketchatshift,
         });
       }
-
+      if (!employee?.ldapDN && createLdap?.createldapaccount) {
+        await axios.post(
+          `${SERVICE.CREATE_LDAP_CONNECT_ACCOUNT_IN_EDIT}`,
+          {
+            createldapaccount: Boolean(createLdap?.createldapaccount),
+            ldapEmail: String(createLdap?.createldapaccount ? createLdap?.ldapEmail : ''),
+            ldapOU: createLdap?.createldapaccount ? createLdap?.ldapOU : '',
+            userAccountControl: createLdap?.userAccountControl || '512',
+            passwordBehaviour: createLdap?.passwordBehaviour || '',
+            companyname: companycaps,
+            password: String(employee?.originalpassword),
+            originalpassword: String(employee?.originalpassword),
+            username: finalusername,
+            firstname: String(employee?.firstname),
+            dob: String(employee?.dob),
+            lastname: String(employee?.lastname),
+            callingname: String(employee?.callingname?.toUpperCase()),
+            employeeid: id,
+            company: selectedCompany,
+            branch: selectedBranch,
+            unit: selectedUnit,
+            team: selectedTeam,
+            department: String(employee?.department),
+            designation: String(selectedDesignation),
+            process: finalprocesslog?.length > 1 ? String(loginNotAllot?.process || '') : String(employee?.process || ''),
+            workmode: String(employee?.workmode),
+            rocketchatshiftgrouping,
+            rocketchatshift,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${auth.APIToken}`,
+            },
+          }
+        );
+      }
+      if (signatureData && !signatureID) {
+        await axios.post(SERVICE.EMPLOYEESIGNATURE_CREATE, {
+          commonsignatureid: employees_data?.data?.user?._id,
+          signatureimage: signatureData,
+          addedby: [
+            {
+              name: String(isUserRoleAccess.companyname),
+              date: String(new Date()),
+            },
+          ],
+        });
+      }
+      if (signatureID) {
+        await axios.put(`${SERVICE.EMPLOYEESIGNATURE_SINGLE}/${signatureID}`, {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          signatureimage: signatureData || '',
+        });
+      }
       const validTodos = getValidTodos(files, categoryDocument);
       if (documentID !== '') {
         const employeeDocuments = await uploadEmployeeDocuments({
           empcode: String(employee?.wordcheck === true ? employeecodenew : employee?.empcode),
           commonid: id,
+          accessby: isUserRoleAccess.companyname || '',
+          profilechanged: profileChanged || false,
           companyname: String(companycaps),
           type: 'Internship',
           // files: files?.filter((data) => data?.file), // assuming it's already [{ file, data, name, remark }]
@@ -9171,6 +10140,8 @@ function InternEdit() {
         const employeeDocuments = await uploadEmployeeDocuments({
           empcode: String(employee?.wordcheck === true ? employeecodenew : employee?.empcode),
           commonid: String(employees_data?.data?.user?._id),
+          accessby: isUserRoleAccess.companyname || '',
+          profilechanged: profileChanged || false,
           companyname: String(companycaps),
           type: 'Internship',
           files: validTodos, // assuming it's already [{ file, data, name, remark }]
@@ -9232,6 +10203,27 @@ function InternEdit() {
           updateId: null,
           deletedFileNames: [],
         });
+      }
+      if (transportFirstLogData?._id && userTransportLogsDetails?._id) {
+        const transportpayload = {
+          auth,
+          formData: transportData,
+          isUserRoleAccess,
+          uploadedFiles: transportupload,
+          transportLogId: userTransportLogsDetails?._id || null,
+          transportFirstLogId: transportFirstLogData?._id || null,
+          transportFirstLog: transportFirstLogData || {},
+        };
+        const transportLogUpdation = await TransportLogUpdateFirst(transportpayload);
+      } else {
+        const transportpayload = {
+          auth,
+          formData: transportData,
+          employeeid: String(employees_data?.data?.user?._id),
+          isUserRoleAccess,
+          uploadedFiles: transportupload,
+        };
+        const transportLogCreation = await TransportLogCreate(transportpayload);
       }
       // let employeeDocuments = await axios.put(`${SERVICE.EMPLOYEEDOCUMENT_SINGLE}/${documentID}`, {
       //   profileimage: String(final),
@@ -9482,9 +10474,7 @@ function InternEdit() {
       //     }
       //   }
 
-
       if (finaldesignationlog?.length === 1 || finaldot?.length === 1) {
-
         if (identifySuperVisor) {
           // Changing the old Supervisor to to new Group
           if (newUpdatingData?.length > 0) {
@@ -9518,7 +10508,17 @@ function InternEdit() {
             if (primaryDep?.length > 0) {
               const uniqueEntries = primaryDep?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -9558,7 +10558,17 @@ function InternEdit() {
             if (secondaryDep?.length > 0) {
               const uniqueEntries = secondaryDep?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -9598,7 +10608,17 @@ function InternEdit() {
             if (tertiary?.length > 0) {
               const uniqueEntries = tertiary?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -9638,7 +10658,17 @@ function InternEdit() {
             if (primaryDepAll?.length > 0) {
               const uniqueEntries = primaryDepAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -9678,7 +10708,17 @@ function InternEdit() {
             if (secondaryDepAll?.length > 0) {
               const uniqueEntries = secondaryDepAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -9718,7 +10758,17 @@ function InternEdit() {
             if (tertiaryAll?.length > 0) {
               const uniqueEntries = tertiaryAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -9756,9 +10806,9 @@ function InternEdit() {
               );
             }
             if (primaryWithoutDep?.length > 0) {
-              const uniqueEntries = primaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department
-                && t.designationgroup === item.designationgroup
-                && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = primaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -9795,10 +10845,9 @@ function InternEdit() {
               );
             }
             if (secondaryWithoutDep?.length > 0) {
-              const uniqueEntries = secondaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) =>
-                t.department === item.department
-                && t.designationgroup === item.designationgroup
-                && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = secondaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -9835,10 +10884,9 @@ function InternEdit() {
               );
             }
             if (tertiaryWithoutDep?.length > 0) {
-              const uniqueEntries = tertiaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) =>
-                t.department === item.department
-                && t.designationgroup === item.designationgroup
-                && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = tertiaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -9938,8 +10986,17 @@ function InternEdit() {
             if (primaryDep?.length > 0) {
               const uniqueEntries = primaryDep?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company
-                    && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -9979,9 +11036,17 @@ function InternEdit() {
             if (secondaryDep?.length > 0) {
               const uniqueEntries = secondaryDep?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company
-                    && t.designationgroup === item.designationgroup
-                    && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -10021,7 +11086,17 @@ function InternEdit() {
             if (tertiary?.length > 0) {
               const uniqueEntries = tertiary?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -10061,7 +11136,17 @@ function InternEdit() {
             if (primaryDepAll?.length > 0) {
               const uniqueEntries = primaryDepAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -10101,7 +11186,17 @@ function InternEdit() {
             if (secondaryDepAll?.length > 0) {
               const uniqueEntries = secondaryDepAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -10141,9 +11236,17 @@ function InternEdit() {
             if (tertiaryAll?.length > 0) {
               const uniqueEntries = tertiaryAll?.filter(
                 (item, index, self) =>
-                  index === self.findIndex((t) => t.company === item.company
-                    && t.designationgroup === item.designationgroup
-                    && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                  index ===
+                  self.findIndex(
+                    (t) =>
+                      t.company === item.company &&
+                      t.designationgroup === item.designationgroup &&
+                      t.branch === item.branch &&
+                      t.unit === item.unit &&
+                      t.team === item.team &&
+                      t.supervisorchoose?.length === item.supervisorchoose?.length &&
+                      t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))
+                  )
               );
 
               let answer = uniqueEntries?.map(
@@ -10181,9 +11284,9 @@ function InternEdit() {
               );
             }
             if (primaryWithoutDep?.length > 0) {
-              const uniqueEntries = primaryWithoutDep?.filter((item, index, self) =>
-                index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup
-                  && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = primaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -10220,8 +11323,9 @@ function InternEdit() {
               );
             }
             if (secondaryWithoutDep?.length > 0) {
-              const uniqueEntries = secondaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) =>
-                t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = secondaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -10258,10 +11362,9 @@ function InternEdit() {
               );
             }
             if (tertiaryWithoutDep?.length > 0) {
-              const uniqueEntries = tertiaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) =>
-                t.department === item.department
-                && t.designationgroup === item.designationgroup
-                && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+              const uniqueEntries = tertiaryWithoutDep?.filter(
+                (item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+              );
 
               let answer = uniqueEntries?.map(
                 async (data) =>
@@ -10299,11 +11402,9 @@ function InternEdit() {
             }
           }
         }
-
       }
 
       if (finalboardinglog?.length === 1) {
-
         // Deleting the Old Data of TEAM MATCHED
         if (oldTeamData?.length > 0) {
           let ans = oldTeamData?.map((data) => {
@@ -10539,7 +11640,10 @@ function InternEdit() {
         newErrors.dom = <Typography style={{ color: 'red' }}>DOM must be required</Typography>;
         missingFields.push('Date of Marriage ');
       }
-
+      if (employee?.maritalstatus === 'Married' && (!employee?.spousename || employee?.spousename === '')) {
+        newErrors.spousename = <Typography style={{ color: 'red' }}>Spouse Name must be required</Typography>;
+        missingFields.push('Spouse Name ');
+      }
       if (employee?.contactfamily !== '' && employee?.contactfamily?.length !== 10) {
         newErrors.contactfamily = <Typography style={{ color: 'red' }}>Contact(Family) no must be 10 digits required</Typography>;
         missingFields.push('Enter valid Contact(Family) No');
@@ -10552,7 +11656,21 @@ function InternEdit() {
         newErrors.contactpersonal = <Typography style={{ color: 'red' }}>Contact(personal) no must be 10 digits required</Typography>;
         missingFields.push('Enter valid Contact(personal)');
       }
+      const normalize = (val) => val?.toString().trim();
 
+      const personal = normalize(employee?.contactpersonal);
+      const family = normalize(employee?.contactfamily);
+      const emergency = normalize(employee?.emergencyno);
+
+      if (personal && family && personal === family) {
+        newErrors.contactfamily = <Typography color="error">Contact (Family) and Contact (Personal) cannot be the same</Typography>;
+        missingFields.push('Contact Family');
+      }
+
+      if (personal && emergency && personal === emergency) {
+        newErrors.emergencyno = <Typography color="error">Contact (Personal) and Emergency No cannot be the same</Typography>;
+        missingFields.push('Emergency No');
+      }
       if (employee?.panno !== '' && employee?.panno?.length !== 10) {
         newErrors.panno = <Typography style={{ color: 'red' }}>Pan No must be 10 digits required</Typography>;
       }
@@ -10697,6 +11815,9 @@ function InternEdit() {
     if (employee?.maritalstatus === 'Married' && !employee?.dom) {
       newErrors.dom = <Typography style={{ color: 'red' }}>DOM must be required</Typography>;
     }
+    if (employee?.maritalstatus === 'Married' && (!employee?.spousename || employee?.spousename === '')) {
+      newErrors.spousename = <Typography style={{ color: 'red' }}>Spouse Name must be required</Typography>;
+    }
     if (employee?.emergencyno !== '' && employee?.emergencyno?.length != 10) {
       newErrors.emergencyno = <Typography style={{ color: 'red' }}>Emergency no must be 10 digits required</Typography>;
     }
@@ -10712,6 +11833,21 @@ function InternEdit() {
     }
     if (employee?.contactpersonal !== '' && employee?.contactpersonal?.length !== 10) {
       newErrors.contactpersonal = <Typography style={{ color: 'red' }}>Contact(personal) no must be 10 digits required</Typography>;
+    }
+    const normalize = (val) => val?.toString().trim();
+
+    const personal = normalize(employee?.contactpersonal);
+    const family = normalize(employee?.contactfamily);
+    const emergency = normalize(employee?.emergencyno);
+
+    if (personal && family && personal === family) {
+      newErrors.contactfamily = <Typography color="error">Contact (Family) and Contact (Personal) cannot be the same</Typography>;
+      // missingFields.push('Contact Family');
+    }
+
+    if (personal && emergency && personal === emergency) {
+      newErrors.emergencyno = <Typography color="error">Contact (Personal) and Emergency No cannot be the same</Typography>;
+      // missingFields.push('Emergency No');
     }
     if (employee?.panno !== '' && employee?.panno?.length !== 10) {
       newErrors.panno = <Typography style={{ color: 'red' }}>Pan No no must be 10 digits required</Typography>;
@@ -10842,7 +11978,9 @@ function InternEdit() {
       !employee?.plandmark ||
       !employee?.pdoorno ||
       !employee?.pstreet ||
-      !employee?.parea ||
+      !employee?.ppost ||
+      !employee?.ptaluk ||
+      // !employee?.parea ||
       !employee?.ppincode ||
       !employee?.pgpscoordination ||
       (!employee?.pgenerateviapincode && !selectedCityp?.name) ||
@@ -10865,7 +12003,9 @@ function InternEdit() {
         !employee?.clandmark ||
         !employee?.cdoorno ||
         !employee?.cstreet ||
-        !employee?.carea ||
+        !employee?.cpost ||
+        !employee?.ctaluk ||
+        // !employee?.carea ||
         !employee?.cpincode ||
         !employee?.cgpscoordination ||
         (!employee?.cgenerateviapincode && !selectedCityc?.name) ||
@@ -10877,7 +12017,16 @@ function InternEdit() {
       // setPopupSeverityMalert('info');
       // handleClickOpenPopupMalert();
     }
-
+    const { errors: transportErrors, missingFields } = validateTransportData({
+      transportData,
+      transportupload,
+      startDateLimit,
+      userTransportLogs,
+      transportFirstLogData,
+      collectMissingFields: true, // 👈 want popup list
+    });
+    Object.assign(newErrors, transportErrors);
+    missingFieldstwo.push(...missingFields);
     setErrors(newErrors);
     if (missingFieldstwo.length > 0) {
       setPopupContentMalert(`Please fill all fields in: ${missingFieldstwo.join(', ')}`);
@@ -11262,6 +12411,10 @@ function InternEdit() {
       newErrorsLog.hiconnectroles = <Typography style={{ color: 'red' }}>Please Select Role</Typography>;
       missingFieldsthree.push('Hi Connect Role');
     }
+    if (createLdap?.createldapaccount && createLdap?.ldapEmail === '') {
+      newErrorsLog.ldapEmail = <Typography style={{ color: 'red' }}>Please Select LDAP Email</Typography>;
+      missingFieldsthree.push('LDAP Email');
+    }
     // setAccessibleErrors(newErrorsLog);
     // If there are missing fields, show an alert with the list of them
     if (missingFieldsthree.length > 0) {
@@ -11313,7 +12466,9 @@ function InternEdit() {
       !employee?.plandmark ||
       !employee?.pdoorno ||
       !employee?.pstreet ||
-      !employee?.parea ||
+      !employee?.ppost ||
+      !employee?.ptaluk ||
+      // !employee?.parea ||
       !employee?.ppincode ||
       !employee?.pgpscoordination ||
       (!employee?.pgenerateviapincode && !selectedCityp?.name) ||
@@ -11336,7 +12491,9 @@ function InternEdit() {
         !employee?.clandmark ||
         !employee?.cdoorno ||
         !employee?.cstreet ||
-        !employee?.carea ||
+        !employee?.cpost ||
+        !employee?.ctaluk ||
+        // !employee?.carea ||
         !employee?.cpincode ||
         !employee?.cgpscoordination ||
         (!employee?.cgenerateviapincode && !selectedCityc?.name) ||
@@ -11348,7 +12505,16 @@ function InternEdit() {
       // setPopupSeverityMalert('info');
       // handleClickOpenPopupMalert();
     }
-
+    const { errors: transportErrors, missingFields } = validateTransportData({
+      transportData,
+      transportupload,
+      startDateLimit,
+      userTransportLogs,
+      transportFirstLogData,
+      collectMissingFields: true, // 👈 want popup list
+    });
+    Object.assign(newErrorsLog, transportErrors);
+    missingFieldsthree.push(...missingFields);
     // Check the validity of field1
     if (!assignExperience.updatedate) {
       newErrorsLog.updatedate = <Typography style={{ color: 'red' }}>Please Select Date</Typography>;
@@ -11738,6 +12904,10 @@ function InternEdit() {
       newErrorsLog.hiconnectroles = <Typography style={{ color: 'red' }}>Please Select Role</Typography>;
       // missingFieldsthree.push('Hi Connect Role');
     }
+    if (createLdap?.createldapaccount && createLdap?.ldapEmail === '') {
+      newErrorsLog.ldapEmail = <Typography style={{ color: 'red' }}>Please Select LDAP Email</Typography>;
+      // missingFieldsthree.push('LDAP Email');
+    }
     const accessibleTodoexists = accessibleTodo.some((obj, index, arr) => arr.findIndex((item) => item.fromcompany === obj.fromcompany && item.frombranch === obj.frombranch && item.fromunit === obj.fromunit) !== index);
     if (accessibleTodo?.length === 0) {
       setPopupContentMalert('Please Add Accessible Company/Branch/Unit.!');
@@ -11868,6 +13038,10 @@ function InternEdit() {
       newErrors.dom = <Typography style={{ color: 'red' }}>DOM must be required</Typography>;
       missingFields.push('Date of Marriage ');
     }
+    if (employee?.maritalstatus === 'Married' && (!employee?.spousename || employee?.spousename === '')) {
+      newErrors.spousename = <Typography style={{ color: 'red' }}>Spouse Name must be required</Typography>;
+      missingFields.push('Spouse Name ');
+    }
     if (employee?.emergencyno !== '' && employee?.emergencyno?.length != 10) {
       newErrors.emergencyno = <Typography style={{ color: 'red' }}>Emergency no must be 10 digits required</Typography>;
       missingFields.push('Enter valid Emergency No');
@@ -11887,6 +13061,21 @@ function InternEdit() {
     if (employee?.contactpersonal !== '' && employee?.contactpersonal?.length !== 10) {
       newErrors.contactpersonal = <Typography style={{ color: 'red' }}>Contact(personal) no must be 10 digits required</Typography>;
       missingFields.push('Enter valid Contact(personal)');
+    }
+    const normalize = (val) => val?.toString().trim();
+
+    const personal = normalize(employee?.contactpersonal);
+    const family = normalize(employee?.contactfamily);
+    const emergency = normalize(employee?.emergencyno);
+
+    if (personal && family && personal === family) {
+      newErrors.contactfamily = <Typography color="error">Contact (Family) and Contact (Personal) cannot be the same</Typography>;
+      missingFields.push('Contact Family');
+    }
+
+    if (personal && emergency && personal === emergency) {
+      newErrors.emergencyno = <Typography color="error">Contact (Personal) and Emergency No cannot be the same</Typography>;
+      missingFields.push('Emergency No');
     }
     if (employee?.panno !== '' && employee?.panno?.length !== 10) {
       newErrors.panno = <Typography style={{ color: 'red' }}>Pan No no must be 10 digits required</Typography>;
@@ -12304,6 +13493,7 @@ function InternEdit() {
                               setEmployee({
                                 ...employee,
                                 prefix: e.target.value,
+                                gender: e.target.value === 'Mr' ? 'Male' : 'Female',
                               });
                             }}
                           >
@@ -12339,6 +13529,10 @@ function InternEdit() {
                                 callingname: cname?.toUpperCase(),
                                 firstname: cleanString(e.target.value.toUpperCase()),
                               });
+                              setCreateLdap((prev) => ({
+                                ...prev,
+                                ldapEmail: '',
+                              }));
                             }}
                           />
                         </FormControl>
@@ -12373,6 +13567,10 @@ function InternEdit() {
                             ...employee,
                             lastname: cleanString(e.target.value.toUpperCase()),
                           });
+                          setCreateLdap((prev) => ({
+                            ...prev,
+                            ldapEmail: '',
+                          }));
                         }}
                       />
                     </FormControl>
@@ -12473,7 +13671,7 @@ function InternEdit() {
                               value: employee?.gender === '' || employee?.gender == undefined ? 'Select Gender' : employee?.gender,
                             }}
                             onChange={(e) => {
-                              setEmployee({ ...employee, gender: e.value });
+                              setEmployee({ ...employee, gender: e.value, presourcename: '', cresourcename: '', ppersonalprefix: '', cpersonalprefix: '' });
                             }}
                           />
                         </FormControl>
@@ -12497,33 +13695,56 @@ function InternEdit() {
                                 ...employee,
                                 maritalstatus: e.value,
                                 dom: '',
+                                spousename: '',
                               });
                             }}
                           />
                         </FormControl>
                       </Grid>
                       {employee?.maritalstatus === 'Married' && (
-                        <Grid item md={4} sm={6} xs={12}>
-                          <FormControl fullWidth size="small">
-                            <Typography>
-                              Date Of Marriage<b style={{ color: 'red' }}>*</b>
-                            </Typography>
-                            <OutlinedInput
-                              id="component-outlined"
-                              value={employee?.dom}
-                              onChange={(e) => {
-                                setEmployee({
-                                  ...employee,
-                                  dom: e.target.value,
-                                });
-                              }}
-                              type="date"
-                              size="small"
-                              name="dom"
-                            />
-                          </FormControl>
-                          {errors.dom && <div>{errors.dom}</div>}
-                        </Grid>
+                        <>
+                          <Grid item md={4} sm={6} xs={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>
+                                Date Of Marriage<b style={{ color: 'red' }}>*</b>
+                              </Typography>
+                              <OutlinedInput
+                                id="component-outlined"
+                                value={employee?.dom}
+                                onChange={(e) => {
+                                  setEmployee({
+                                    ...employee,
+                                    dom: e.target.value,
+                                  });
+                                }}
+                                type="date"
+                                size="small"
+                                name="dom"
+                              />
+                            </FormControl>
+                            {errors.dom && <div>{errors.dom}</div>}
+                          </Grid>
+                          <Grid item md={4} sm={6} xs={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>
+                                Spouse Name<b style={{ color: 'red' }}>*</b>
+                              </Typography>
+                              <OutlinedInput
+                                id="component-outlined"
+                                type="text"
+                                placeholder="Spouse Name"
+                                value={employee?.spousename}
+                                onChange={(e) => {
+                                  setEmployee({
+                                    ...employee,
+                                    spousename: e.target.value,
+                                  });
+                                }}
+                              />
+                            </FormControl>
+                            {errors.spousename && <div>{errors.spousename}</div>}
+                          </Grid>
+                        </>
                       )}
                       <Grid item md={2.7} sm={6} xs={12}>
                         <FormControl fullWidth size="small">
@@ -12819,151 +14040,191 @@ function InternEdit() {
                     </Grid>
                   </Grid>
                   <Grid item lg={3} md={3} sm={12} xs={12}>
-                    <InputLabel sx={{ m: 1 }}>
-                      Profile Image<b style={{ color: 'red' }}>*</b>
-                    </InputLabel>
+                    <Grid
+                      container
+                      direction="column"
+                      alignItems="center"
+                      spacing={2}
+                      sx={{
+                        borderRadius: 2,
+                        p: 1,
+                        overflow: 'hidden', // 🔹 ensures nothing leaks out
+                        width: '100%',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <Grid item sx={{ width: '100%', textAlign: 'center' }}>
+                        <InputLabel sx={{ m: 1 }}>
+                          Profile Image<b style={{ color: 'red' }}>*</b>
+                        </InputLabel>
 
-                    {croppedImage && (
-                      <>
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: '10px',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <img
-                            style={{
-                              height: 120,
-                              borderRadius: '8px', // Rounded corners for the image
-                              boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow for the image
-                              objectFit: 'cover', // Ensure the image covers the area without distortion
-                            }}
-                            src={croppedImage}
-                            alt="Cropped"
-                          />
-
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: '10px',
-                            }}
-                          >
-                            {/* Color Picker */}
+                        {croppedImage && (
+                          <>
                             <div
                               style={{
                                 display: 'flex',
+                                gap: '10px',
                                 alignItems: 'center',
-                                gap: '5px',
                               }}
                             >
-                              <Typography
-                                variant="body1"
+                              <img
                                 style={{
-                                  color: '#555',
-                                  fontSize: '10px',
+                                  height: 120,
+                                  borderRadius: '8px', // Rounded corners for the image
+                                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Subtle shadow for the image
+                                  objectFit: 'cover', // Ensure the image covers the area without distortion
+                                }}
+                                src={croppedImage}
+                                alt="Cropped"
+                              />
+
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                  gap: '10px',
                                 }}
                               >
-                                BG Color
-                              </Typography>
-                              <input
-                                type="color"
-                                value={color}
-                                onChange={handleColorChange}
-                                style={{
-                                  width: '30px',
-                                  height: '30px',
-                                  border: 'none',
-                                  cursor: 'pointer',
-                                  borderRadius: '5px',
-                                }}
-                              />
-                            </div>
+                                {/* Color Picker */}
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body1"
+                                    style={{
+                                      color: '#555',
+                                      fontSize: '10px',
+                                    }}
+                                  >
+                                    BG Color
+                                  </Typography>
+                                  <input
+                                    type="color"
+                                    value={color}
+                                    onChange={handleColorChange}
+                                    style={{
+                                      width: '30px',
+                                      height: '30px',
+                                      border: 'none',
+                                      cursor: 'pointer',
+                                      borderRadius: '5px',
+                                    }}
+                                  />
+                                </div>
 
-                            {/* Submit Button */}
-                            <LoadingButton
-                              onClick={handleSubmit}
-                              loading={bgbtn}
-                              variant="contained"
-                              color="primary"
-                              endIcon={<FormatColorFillIcon />}
-                              sx={{
-                                padding: '10px 10px',
-                                fontSize: '8px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                borderRadius: '5px',
-                                color: isLightColor ? 'black' : 'white',
-                                fontWeight: '600',
-                                backgroundColor: color, // Dynamically set the background color
-                                '&:hover': {
-                                  backgroundColor: `${color}90`, // Slightly transparent on hover for a nice effect
-                                },
-                                ...buttonStyles?.buttonsubmit,
-                                border: '1px solid  black',
-                              }}
-                            ></LoadingButton>
-                          </div>
-                        </div>
-                      </>
-                    )}
-                    <div>
-                      {employee?.profileimage && !croppedImage ? (
-                        <>
-                          <Cropper style={{ height: 120, width: '100%' }} aspectRatio={1 / 1} src={employee?.profileimage} ref={cropperRef} />
-                          <Box
-                            sx={{
-                              display: 'flex',
-                              marginTop: '10px',
-                              gap: '10px',
-                            }}
-                          >
-                            <Box>
-                              <Typography sx={userStyle.uploadbtn} onClick={handleCrop}>
-                                Crop Image
-                              </Typography>
-                            </Box>
-                            <Box>
-                              <Button variant="outlined" sx={userStyle.btncancel} onClick={handleClearImage}>
-                                Clear
-                              </Button>
-                            </Box>
-                          </Box>
-                        </>
-                      ) : (
-                        <>
-                          {!employee?.profileimage && (
-                            <Grid container sx={{ display: 'flex' }}>
-                              <Grid item md={6} sm={6}>
-                                <section>
-                                  <LoadingButton component="label" variant="contained" loading={btnUpload} sx={buttonStyles?.buttonsubmit}>
-                                    Upload
-                                    <input type="file" id="profileimage" name="file" accept="image/*" hidden onChange={handleChangeImage} />
-                                    <br />
-                                  </LoadingButton>
-                                </section>
-                              </Grid>
-                              <Grid item md={6} sm={6}>
-                                <Button onClick={showWebcam} variant="contained" sx={userStyle.uploadbtn}>
-                                  <CameraAltIcon />
-                                </Button>
-                              </Grid>
-                            </Grid>
-                          )}
-                          {employee?.profileimage && (
+                                {/* Submit Button */}
+                                <LoadingButton
+                                  onClick={handleSubmit}
+                                  loading={bgbtn}
+                                  variant="contained"
+                                  color="primary"
+                                  endIcon={<FormatColorFillIcon />}
+                                  sx={{
+                                    padding: '10px 10px',
+                                    fontSize: '8px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    borderRadius: '5px',
+                                    color: isLightColor ? 'black' : 'white',
+                                    fontWeight: '600',
+                                    backgroundColor: color, // Dynamically set the background color
+                                    '&:hover': {
+                                      backgroundColor: `${color}90`, // Slightly transparent on hover for a nice effect
+                                    },
+                                    border: '1px solid  black',
+                                    ...buttonStyles?.buttonsubmit,
+                                  }}
+                                ></LoadingButton>
+                              </div>
+                            </div>
+                          </>
+                        )}
+                        <div>
+                          {employee?.profileimage && !croppedImage ? (
                             <>
-                              <Grid item md={4} sm={4}>
-                                <Button variant="outlined" sx={userStyle.btncancel} onClick={handleClearImage}>
-                                  Clear
-                                </Button>
-                              </Grid>
+                              <Cropper style={{ height: 120, width: '100%' }} aspectRatio={1 / 1} src={employee?.profileimage} ref={cropperRef} />
+                              <Box
+                                sx={{
+                                  display: 'flex',
+                                  marginTop: '10px',
+                                  gap: '10px',
+                                }}
+                              >
+                                <Box>
+                                  <Typography sx={userStyle.uploadbtn} onClick={handleCrop}>
+                                    Crop Image
+                                  </Typography>
+                                </Box>
+                                <Box>
+                                  <Button
+                                    variant="outlined"
+                                    sx={userStyle.btncancel}
+                                    onClick={() => {
+                                      setCroppedImage(employee?.profileimage);
+                                    }}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </Box>
+                              </Box>
+                            </>
+                          ) : (
+                            <>
+                              {!employee?.profileimage && (
+                                <Grid container sx={{ display: 'flex' }}>
+                                  <Grid item md={6} sm={6}>
+                                    <section>
+                                      <LoadingButton component="label" variant="contained" loading={btnUpload} sx={buttonStyles.buttonsubmit}>
+                                        Upload
+                                        <input type="file" id="profileimage" name="file" accept="image/*" hidden onChange={handleChangeImage} />
+                                        <br />
+                                      </LoadingButton>
+                                    </section>
+                                  </Grid>
+                                  <Grid item md={6} sm={6}>
+                                    <Button onClick={showWebcam} variant="contained" sx={userStyle.uploadbtn}>
+                                      <CameraAltIcon />
+                                    </Button>
+                                  </Grid>
+                                </Grid>
+                              )}
+                              {employee?.profileimage && (
+                                <>
+                                  <Box
+                                    sx={{
+                                      display: 'flex',
+                                      marginTop: '10px',
+                                      gap: '10px',
+                                    }}
+                                  >
+                                    {croppedImage && (
+                                      <Box>
+                                        <Typography sx={userStyle.uploadbtn} onClick={() => setCroppedImage(null)}>
+                                          Enable Crop
+                                        </Typography>
+                                      </Box>
+                                    )}
+                                    <Box>
+                                      <Button variant="outlined" sx={userStyle.btncancel} onClick={handleClearImage}>
+                                        Clear
+                                      </Button>
+                                    </Box>
+                                  </Box>
+                                </>
+                              )}
                             </>
                           )}
-                        </>
-                      )}
-                    </div>
+                        </div>
+                      </Grid>
+                      <Grid item sx={{ width: '100%', textAlign: 'center' }}>
+                        <SignatureSection signatureData={signatureData} setSignatureData={setSignatureData} />
+                      </Grid>
+                    </Grid>
                   </Grid>
                 </Grid>
               </>
@@ -13495,6 +14756,7 @@ function InternEdit() {
                             assignEndExpDate: '',
                             assignEndTarDate: '',
                             assignExpMode: 'Auto Increment',
+                            assignExpvalue: '0',
                           }));
                           setnewstate(!newstate);
                           setLoginNotAllot({
@@ -13523,6 +14785,27 @@ function InternEdit() {
                     {errorsLog.doj && <div>{errorsLog.doj}</div>}
                   </FormControl>
                 </Grid>
+
+                <Grid item xs={12} md={4} sm={12}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Company <b style={{ color: 'red' }}>*</b>
+                    </Typography>
+                    <Selects
+                      options={companies?.map((data) => ({
+                        label: data.name,
+                        value: data.name,
+                      }))}
+                      styles={colourStyles}
+                      value={{
+                        label: selectedCompany === '' || selectedCompany == undefined ? 'Please Select Company' : selectedCompany,
+                        value: selectedCompany === '' || selectedCompany == undefined ? 'Please Select Company' : selectedCompany,
+                      }}
+                      onChange={handleCompanyChange}
+                    />
+                  </FormControl>
+                  {errorsLog.company && <div>{errorsLog.company}</div>}
+                </Grid>
                 <Grid item md={4} sm={12} xs={12}>
                   <FormControl fullWidth size="small">
                     <Typography>Company Email</Typography>
@@ -13547,27 +14830,6 @@ function InternEdit() {
                   </FormControl>
                   {errorsLog.companyemail && <div>{errorsLog.companyemail}</div>}
                 </Grid>
-                <Grid item xs={12} md={4} sm={12}>
-                  <FormControl fullWidth size="small">
-                    <Typography>
-                      Company <b style={{ color: 'red' }}>*</b>
-                    </Typography>
-                    <Selects
-                      options={companies?.map((data) => ({
-                        label: data.name,
-                        value: data.name,
-                      }))}
-                      styles={colourStyles}
-                      value={{
-                        label: selectedCompany === '' || selectedCompany == undefined ? 'Please Select Company' : selectedCompany,
-                        value: selectedCompany === '' || selectedCompany == undefined ? 'Please Select Company' : selectedCompany,
-                      }}
-                      onChange={handleCompanyChange}
-                    />
-                  </FormControl>
-                  {errorsLog.company && <div>{errorsLog.company}</div>}
-                </Grid>
-
                 <Grid item md={4} sm={12} xs={12}>
                   <FormControl fullWidth size="small">
                     <Typography>
@@ -13628,12 +14890,23 @@ function InternEdit() {
                         fetchDptDesignation(e.value);
                         setEmployee({
                           ...employee,
+                          salarysettings: e?.salarysettings || [],
                           department: e.value,
                           prod: e.prod,
                           attOptions: e.attendancemode || attModeOptions?.map((data) => data?.value),
                           employeecount: '0',
                           reportingto: '',
+                          shifttype: 'Please Select Shift Type',
+                          shiftgrouping: 'Please Select Shift Grouping',
+                          shifttiming: 'Please Select Shift',
                         });
+
+                        setTodo([]);
+                        setShifts([]);
+                        setValueCate([]);
+                        setSelectedOptionsCate([]);
+                        setValueCateWeeks([]);
+                        setSelectedOptionsCateWeeks([]);
                         setSelectedAttMode([]);
                         setValueAttMode([]);
                         setMaxSelections(maxWfhSelections + 0);
@@ -15569,15 +16842,18 @@ function InternEdit() {
                       options={
                         allHierarchy && reportingtonames?.length > 0
                           ? reportingtonames?.map((row) => ({
-                            label: row,
-                            value: row,
-                          }))
-                          : allUsersData
-                            ?.filter((data) => data?.role?.includes('Manager') && data?.company === selectedCompany && data?.branch === selectedBranch && data?.unit === selectedUnit && data?.team === selectedTeam)
-                            ?.map((row) => ({
-                              label: row?.companyname,
-                              value: row?.companyname,
+                              label: row,
+                              value: row,
                             }))
+                          : allUsersData
+                              ?.filter(
+                                (data) => data?.role?.includes('Manager')
+                                // && data?.company === selectedCompany && data?.branch === selectedBranch && data?.unit === selectedUnit && data?.team === selectedTeam
+                              )
+                              ?.map((row) => ({
+                                label: row?.companyname,
+                                value: row?.companyname,
+                              }))
                       }
                       value={{
                         label: employee?.reportingto === '' || employee?.reportingto == undefined ? 'Please Select Reporting To' : employee?.reportingto,
@@ -15697,50 +16973,50 @@ function InternEdit() {
                             setPrimaryKeyShortname(`${shortname},`);
                             setKeyShortname('');
                           }}
-                        // menuPortalTarget={document.body}
-                        // styles={{
-                        //   menuPortal: (base) => ({ ...base, zIndex: 1500 }),
-                        // }}
-                        // formatOptionLabel={(data) => {
-                        //   let value = data?.label;
-                        //   if (!value) {
-                        //     value = 'Please Select Primary Work Station';
-                        //   }
-                        //   // Extract text before and within parentheses
-                        //   const bracketIndex = value?.indexOf('(');
-                        //   const label = bracketIndex > -1 ? value?.slice(0, bracketIndex) : value;
-                        //   const bracketContent = bracketIndex > -1 ? value?.slice(bracketIndex) : '';
+                          // menuPortalTarget={document.body}
+                          // styles={{
+                          //   menuPortal: (base) => ({ ...base, zIndex: 1500 }),
+                          // }}
+                          // formatOptionLabel={(data) => {
+                          //   let value = data?.label;
+                          //   if (!value) {
+                          //     value = 'Please Select Primary Work Station';
+                          //   }
+                          //   // Extract text before and within parentheses
+                          //   const bracketIndex = value?.indexOf('(');
+                          //   const label = bracketIndex > -1 ? value?.slice(0, bracketIndex) : value;
+                          //   const bracketContent = bracketIndex > -1 ? value?.slice(bracketIndex) : '';
 
-                        //   // const bracketIndex = value.indexOf('(');
-                        //   // const bracketContent = bracketIndex > -1 ? value?.slice(bracketIndex) : "";
+                          //   // const bracketIndex = value.indexOf('(');
+                          //   // const bracketContent = bracketIndex > -1 ? value?.slice(bracketIndex) : "";
 
-                        //   // Check if there's a second set of parentheses
-                        //   const secondBracketMatch = bracketContent?.match(/\(([^)]+)\)\(([^)]+)\)/);
+                          //   // Check if there's a second set of parentheses
+                          //   const secondBracketMatch = bracketContent?.match(/\(([^)]+)\)\(([^)]+)\)/);
 
-                        //   const hasSecondBracket = secondBracketMatch !== null;
+                          //   const hasSecondBracket = secondBracketMatch !== null;
 
-                        //   let firstBracketContent;
-                        //   let secondBracketContent;
-                        //   if (hasSecondBracket) {
-                        //     firstBracketContent = secondBracketMatch[1]; // Content of the first set of parentheses
-                        //     secondBracketContent = secondBracketMatch[2]; // Content of the second set of parentheses
-                        //   }
+                          //   let firstBracketContent;
+                          //   let secondBracketContent;
+                          //   if (hasSecondBracket) {
+                          //     firstBracketContent = secondBracketMatch[1]; // Content of the first set of parentheses
+                          //     secondBracketContent = secondBracketMatch[2]; // Content of the second set of parentheses
+                          //   }
 
-                        //   return (
-                        //     <div>
-                        //       <span>{label}</span>
+                          //   return (
+                          //     <div>
+                          //       <span>{label}</span>
 
-                        //       {hasSecondBracket ? (
-                        //         <>
-                        //           <span>{`(${firstBracketContent})`}</span>
-                        //           <span style={{ color: 'green' }}>{`(${secondBracketContent})`}</span>
-                        //         </>
-                        //       ) : (
-                        //         <span>{bracketContent}</span>
-                        //       )}
-                        //     </div>
-                        //   );
-                        // }}
+                          //       {hasSecondBracket ? (
+                          //         <>
+                          //           <span>{`(${firstBracketContent})`}</span>
+                          //           <span style={{ color: 'green' }}>{`(${secondBracketContent})`}</span>
+                          //         </>
+                          //       ) : (
+                          //         <span>{bracketContent}</span>
+                          //       )}
+                          //     </div>
+                          //   );
+                          // }}
                         />
                       </FormControl>
                       {errorsLog.workstation && <div>{errorsLog.workstation}</div>}
@@ -15759,7 +17035,7 @@ function InternEdit() {
                           onChange={handleEmployeesChange}
                           valueRenderer={customValueRendererEmployees}
                           disabled={maxSelections === 0 || Number(maxSelections) < 0}
-                        // disabled={maxSelections === 0 || Number(maxSelections) < 1 || primaryWorkStation === 'Please Select Primary Work Station' || primaryWorkStation === '' || !primaryWorkStation}
+                          // disabled={maxSelections === 0 || Number(maxSelections) < 1 || primaryWorkStation === 'Please Select Primary Work Station' || primaryWorkStation === '' || !primaryWorkStation}
                         />
                       </FormControl>
                       {errorsLog.workstation && <div>{errorsLog.workstation}</div>}
@@ -15821,7 +17097,7 @@ function InternEdit() {
                       minRows={5}
                       readOnly
                       value={workstationTodoList?.length > 0 ? workstationTodoList?.map((data) => data?.shortname)?.join(',') : ''}
-                    // value={keyPrimaryShortname + keyShortname}
+                      // value={keyPrimaryShortname + keyShortname}
                     />
                   </FormControl>
                 </Grid>
@@ -16043,7 +17319,7 @@ function InternEdit() {
                     <FormControl fullWidth size="small">
                       <Typography>Personal Prefix</Typography>
                       <Selects
-                        options={personal_prefix}
+                        options={employee?.gender !== '' && employee?.gender ? personal_prefix?.filter((data) => data?.key?.includes(employee?.gender)) : personal_prefix}
                         styles={colourStyles}
                         value={{
                           label: employee?.ppersonalprefix === '' ? 'Please Select Personal Prefix' : employee?.ppersonalprefix,
@@ -16058,6 +17334,12 @@ function InternEdit() {
                               presourcename = employee.fathername;
                             } else if (employee?.mothername && employee?.mothername.trim() !== '') {
                               presourcename = employee.mothername;
+                            } else {
+                              presourcename = '';
+                            }
+                          } else if (['W/O - Wife Of'].includes(e.value)) {
+                            if (employee?.spousename && employee?.spousename.trim() !== '') {
+                              presourcename = employee.spousename;
                             } else {
                               presourcename = '';
                             }
@@ -16299,7 +17581,40 @@ function InternEdit() {
                       </FormControl>
                     </Grid>
                   )}
-
+                  <Grid item md={3} sm={12} xs={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>Post</Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Post"
+                        value={employee?.ppost}
+                        onChange={(e) => {
+                          setEmployee({
+                            ...employee,
+                            ppost: e.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} sm={12} xs={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>Taluk</Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Taluk"
+                        value={employee?.ptaluk}
+                        onChange={(e) => {
+                          setEmployee({
+                            ...employee,
+                            ptaluk: e.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
                   <Grid item md={3} sm={12} xs={12}>
                     <FormControl fullWidth size="small">
                       <Typography>GPS Coordination</Typography>
@@ -16347,6 +17662,9 @@ function InternEdit() {
                             plandmark: e.target.value,
                           });
                         }}
+                        onBlur={(e) => {
+                          handleRestrictedWords(e.target.value, (cleanedValue) => setEmployee({ ...employee, plandmark: cleanedValue }), 'Landmark', setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+                        }}
                       />
                     </FormControl>
                   </Grid>
@@ -16364,6 +17682,23 @@ function InternEdit() {
                       />
                     </FormControl>
                   </Grid>
+                  <Grid item md={3} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>Building/Apartment Name</Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        value={employee.pbuildingapartmentname}
+                        placeholder="Please Enter Building/Apartment Name"
+                        onChange={(e) => {
+                          setEmployee({
+                            ...employee,
+                            pbuildingapartmentname: e.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
                   <Grid item md={3} sm={12} xs={12}>
                     <FormControl fullWidth size="small">
                       <Typography>Street/Road Name</Typography>
@@ -16374,6 +17709,58 @@ function InternEdit() {
                         value={employee?.pstreet}
                         onChange={(e) => {
                           setEmployee({ ...employee, pstreet: e.target.value });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item md={3} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>Address 1</Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        value={employee.paddressone}
+                        placeholder="Please Enter Address 1"
+                        onChange={(e) => {
+                          setEmployee({
+                            ...employee,
+                            paddressone: e.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>Address 2</Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        value={employee.paddresstwo}
+                        placeholder="Please Enter Address 2"
+                        onChange={(e) => {
+                          setEmployee({
+                            ...employee,
+                            paddresstwo: e.target.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>Address 3</Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        value={employee.paddressthree}
+                        placeholder="Please Enter Address 3"
+                        onChange={(e) => {
+                          setEmployee({
+                            ...employee,
+                            paddressthree: e.target.value,
+                          });
                         }}
                       />
                     </FormControl>
@@ -16457,7 +17844,7 @@ function InternEdit() {
                       <FormControl fullWidth size="small">
                         <Typography>Personal Prefix</Typography>
                         <Selects
-                          options={personal_prefix}
+                          options={employee?.gender !== '' && employee?.gender ? personal_prefix?.filter((data) => data?.key?.includes(employee?.gender)) : personal_prefix}
                           styles={colourStyles}
                           value={{
                             label: employee?.cpersonalprefix === '' ? 'Please Select Personal Prefix' : employee?.cpersonalprefix,
@@ -16472,6 +17859,12 @@ function InternEdit() {
                                 cresourcename = employee.fathername;
                               } else if (employee?.mothername && employee?.mothername.trim() !== '') {
                                 cresourcename = employee.mothername;
+                              } else {
+                                cresourcename = '';
+                              }
+                            } else if (['W/O - Wife Of'].includes(e.value)) {
+                              if (employee?.spousename && employee?.spousename.trim() !== '') {
+                                cresourcename = employee.spousename;
                               } else {
                                 cresourcename = '';
                               }
@@ -16711,6 +18104,40 @@ function InternEdit() {
                     )}
                     <Grid item md={3} sm={12} xs={12}>
                       <FormControl fullWidth size="small">
+                        <Typography>Post</Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          placeholder="Post"
+                          value={employee?.cpost}
+                          onChange={(e) => {
+                            setEmployee({
+                              ...employee,
+                              cpost: e.target.value,
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={3} sm={12} xs={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>Taluk</Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          placeholder="Taluk"
+                          value={employee?.ctaluk}
+                          onChange={(e) => {
+                            setEmployee({
+                              ...employee,
+                              ctaluk: e.target.value,
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={3} sm={12} xs={12}>
+                      <FormControl fullWidth size="small">
                         <Typography>GPS Coordination</Typography>
                         <OutlinedInput
                           id="component-outlined"
@@ -16756,6 +18183,9 @@ function InternEdit() {
                               clandmark: e.target.value,
                             });
                           }}
+                          onBlur={(e) => {
+                            handleRestrictedWords(e.target.value, (cleanedValue) => setEmployee({ ...employee, clandmark: cleanedValue }), 'Landmark', setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+                          }}
                         />
                       </FormControl>
                     </Grid>
@@ -16776,6 +18206,23 @@ function InternEdit() {
                         />
                       </FormControl>
                     </Grid>
+                    <Grid item md={3} xs={12} sm={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>Building/Apartment Name</Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          value={employee.cbuildingapartmentname}
+                          placeholder="Please Enter Building/Apartment Name"
+                          onChange={(e) => {
+                            setEmployee({
+                              ...employee,
+                              cbuildingapartmentname: e.target.value,
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
                     <Grid item md={3} sm={12} xs={12}>
                       <FormControl fullWidth size="small">
                         <Typography>Street/Road Name</Typography>
@@ -16788,6 +18235,58 @@ function InternEdit() {
                             setEmployee({
                               ...employee,
                               cstreet: e.target.value,
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item md={3} xs={12} sm={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>Address 1</Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          value={employee.caddressone}
+                          placeholder="Please Enter Address 1"
+                          onChange={(e) => {
+                            setEmployee({
+                              ...employee,
+                              caddressone: e.target.value,
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={3} xs={12} sm={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>Address 2</Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          value={employee.caddresstwo}
+                          placeholder="Please Enter Address 2"
+                          onChange={(e) => {
+                            setEmployee({
+                              ...employee,
+                              caddresstwo: e.target.value,
+                            });
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={3} xs={12} sm={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>Address 3</Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          value={employee.caddressthree}
+                          placeholder="Please Enter Address 3"
+                          onChange={(e) => {
+                            setEmployee({
+                              ...employee,
+                              caddressthree: e.target.value,
                             });
                           }}
                         />
@@ -16916,7 +18415,18 @@ function InternEdit() {
                         </FormControl>
                       </Grid>
                     )}
-
+                    <Grid item md={3} sm={12} xs={12}>
+                      <FormControl size="small" fullWidth>
+                        <Typography>Post</Typography>
+                        <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={employee?.ppost} />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={3} sm={12} xs={12}>
+                      <FormControl size="small" fullWidth>
+                        <Typography>Taluk</Typography>
+                        <OutlinedInput id="component-outlined" type="text" sx={userStyle.input} readOnly value={employee?.ptaluk} />
+                      </FormControl>
+                    </Grid>
                     <Grid item md={3} sm={12} xs={12}>
                       <FormControl size="small" fullWidth>
                         <Typography>GPS Coordination</Typography>
@@ -16944,8 +18454,33 @@ function InternEdit() {
                     </Grid>
                     <Grid item md={3} sm={12} xs={12}>
                       <FormControl fullWidth size="small">
+                        <Typography>Building/Apartment Name</Typography>
+                        <OutlinedInput id="component-outlined" type="text" placeholder="Building/Apartment Name" value={employee?.pbuildingapartmentname} readOnly />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={3} sm={12} xs={12}>
+                      <FormControl fullWidth size="small">
                         <Typography>Street/Road Name</Typography>
                         <OutlinedInput id="component-outlined" type="text" placeholder="Street/Road Name" value={employee?.pstreet} readOnly />
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item md={3} sm={12} xs={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>Address 1</Typography>
+                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 1" value={employee?.paddressone} readOnly />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={3} sm={12} xs={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>Address 2</Typography>
+                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 2" value={employee?.paddresstwo} readOnly />
+                      </FormControl>
+                    </Grid>
+                    <Grid item md={3} sm={12} xs={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>Address 3</Typography>
+                        <OutlinedInput id="component-outlined" type="text" placeholder="Address 3" value={employee?.paddressthree} readOnly />
                       </FormControl>
                     </Grid>
                     <Grid item md={3} sm={12} xs={12}>
@@ -16954,7 +18489,6 @@ function InternEdit() {
                         <OutlinedInput id="component-outlined" type="text" placeholder="Locality/Area Name" value={employee?.parea} readOnly />
                       </FormControl>
                     </Grid>
-
                     {/* <Grid item md={3} sm={12} xs={12}>
                                                                                 <FormControl fullWidth size="small">
                                                                                   <Typography>Taluk</Typography>
@@ -16971,6 +18505,22 @@ function InternEdit() {
                 </>
               )}
             </Box>
+            <br />
+            <TransportLogComponent
+              formData={transportData}
+              setFormData={setTransportData}
+              from="edit"
+              employeeid={id || null}
+              employeeDetails={employee}
+              uploadedFiles={transportupload}
+              setUploadedFiles={setTransportUpload}
+              userTransportLogs={userTransportLogs}
+              setUserTransportLogs={setUserTransportLogs}
+              userTransportLogsDetails={userTransportLogsDetails}
+              setUserTransportLogsDetails={setUserTransportLogsDetails}
+              errors={errors}
+              minStartDate={startDateLimit}
+            />
           </Grid>
 
           <Grid item md={1} xs={12} sm={12} container justifyContent={{ xs: 'center', md: 'flex-end' }} alignItems="center">
@@ -17291,9 +18841,9 @@ function InternEdit() {
                             options={
                               masterFieldValues?.eduInstitutions?.length > 0
                                 ? masterFieldValues?.eduInstitutions?.map((data) => ({
-                                  label: data,
-                                  value: data,
-                                }))
+                                    label: data,
+                                    value: data,
+                                  }))
                                 : []
                             }
                             placeholder="Please Select"
@@ -17384,7 +18934,7 @@ function InternEdit() {
                             <Button variant="contained" color="secondary" size="small" onClick={() => handleOpenCamera((file) => handleEducationFilesUploadIndex(file, index))} startIcon={<PhotoCameraIcon />}>
                               Scan
                             </Button>
-
+                            <MergeImageComponent key={index} indexMain={index} onUploadMerged={(file, index) => handleEducationFilesUploadIndex(file, index)} />
                             {doc?.file && (
                               <>
                                 <Typography
@@ -17507,10 +19057,10 @@ function InternEdit() {
                             {todo?.verificationdetails?.length === 0 || !todo?.verificationdetails
                               ? 'Not Verified'
                               : todo?.verificationdetails?.length > 0 && todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.verified
-                                ? 'Verified'
-                                : todo?.verificationdetails?.length > 0 && !todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.verified
-                                  ? `Rejected - ${todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.reason || ''}`
-                                  : ''}{' '}
+                              ? 'Verified'
+                              : todo?.verificationdetails?.length > 0 && !todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.verified
+                              ? `Rejected - ${todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.reason || ''}`
+                              : ''}{' '}
                             {todo.filename && (
                               <IconButton onClick={() => renderFilePreviewMulterUploaded(todo)} size="small" color="primary">
                                 <VisibilityOutlinedIcon />
@@ -17724,9 +19274,9 @@ function InternEdit() {
                             options={
                               masterFieldValues?.addInstitutions?.length > 0
                                 ? masterFieldValues?.addInstitutions?.map((data) => ({
-                                  label: data,
-                                  value: data,
-                                }))
+                                    label: data,
+                                    value: data,
+                                  }))
                                 : []
                             }
                             placeholder="Please Select"
@@ -17836,7 +19386,7 @@ function InternEdit() {
                       <Button variant="contained" color="secondary" size="small" onClick={() => handleOpenCamera((file) => handleAdditionalFilesUploadIndex(file))} startIcon={<PhotoCameraIcon />}>
                         Scan
                       </Button>
-
+                      <MergeImageComponent key={0} indexMain={0} onUploadMerged={(file) => handleAdditionalFilesUploadIndex(file)} />
                       {additionalQualificationDocuments?.file && (
                         <>
                           <Typography
@@ -17901,7 +19451,7 @@ function InternEdit() {
                 <Table
                   aria-label="simple table"
                   id="branch"
-                // ref={tableRef}
+                  // ref={tableRef}
                 >
                   <TableHead sx={{ fontWeight: '600' }}>
                     <StyledTableRow>
@@ -17969,10 +19519,10 @@ function InternEdit() {
                             {addtodo?.verificationdetails?.length === 0 || !addtodo?.verificationdetails
                               ? 'Not Verified'
                               : addtodo?.verificationdetails?.length > 0 && addtodo?.verificationdetails[addtodo?.verificationdetails?.length - 1]?.verified
-                                ? 'Verified'
-                                : addtodo?.verificationdetails?.length > 0 && !addtodo?.verificationdetails[addtodo?.verificationdetails?.length - 1]?.verified
-                                  ? `Rejected - ${addtodo?.verificationdetails[addtodo?.verificationdetails?.length - 1]?.reason || ''}`
-                                  : ''}{' '}
+                              ? 'Verified'
+                              : addtodo?.verificationdetails?.length > 0 && !addtodo?.verificationdetails[addtodo?.verificationdetails?.length - 1]?.verified
+                              ? `Rejected - ${addtodo?.verificationdetails[addtodo?.verificationdetails?.length - 1]?.reason || ''}`
+                              : ''}{' '}
                             {addtodo.filename && (
                               <IconButton onClick={() => renderFilePreviewMulterUploaded(addtodo)} size="small" color="primary">
                                 <VisibilityOutlinedIcon />
@@ -18010,9 +19560,9 @@ function InternEdit() {
                             options={
                               masterFieldValues?.empNames?.length > 0
                                 ? masterFieldValues?.empNames?.map((data) => ({
-                                  label: data,
-                                  value: data,
-                                }))
+                                    label: data,
+                                    value: data,
+                                  }))
                                 : []
                             }
                             placeholder="Please Select"
@@ -18064,9 +19614,9 @@ function InternEdit() {
                             options={
                               masterFieldValues?.designations?.length > 0
                                 ? masterFieldValues?.designations?.map((data) => ({
-                                  label: data,
-                                  value: data,
-                                }))
+                                    label: data,
+                                    value: data,
+                                  }))
                                 : []
                             }
                             placeholder="Please Select"
@@ -18128,9 +19678,9 @@ function InternEdit() {
                             options={
                               masterFieldValues?.duties?.length > 0
                                 ? masterFieldValues?.duties?.map((data) => ({
-                                  label: data,
-                                  value: data,
-                                }))
+                                    label: data,
+                                    value: data,
+                                  }))
                                 : []
                             }
                             placeholder="Please Select"
@@ -18173,9 +19723,9 @@ function InternEdit() {
                             options={
                               masterFieldValues?.reasons?.length > 0
                                 ? masterFieldValues?.reasons?.map((data) => ({
-                                  label: data,
-                                  value: data,
-                                }))
+                                    label: data,
+                                    value: data,
+                                  }))
                                 : []
                             }
                             placeholder="Please Select"
@@ -18330,7 +19880,7 @@ function InternEdit() {
                             <Button variant="contained" color="secondary" size="small" onClick={() => handleOpenCamera((file) => handleExperienceFilesUploadIndex(file, index))} startIcon={<PhotoCameraIcon />}>
                               Scan
                             </Button>
-
+                            <MergeImageComponent key={index} indexMain={index} onUploadMerged={(file, index) => handleExperienceFilesUploadIndex(file, index)} />
                             {doc?.file && (
                               <>
                                 <Typography variant="body2" sx={{ maxWidth: 160, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -18377,7 +19927,7 @@ function InternEdit() {
                 <Table
                   aria-label="simple table"
                   id="branch"
-                // ref={tableRef}
+                  // ref={tableRef}
                 >
                   <TableHead sx={{ fontWeight: '600' }}>
                     <StyledTableRow>
@@ -18455,10 +20005,10 @@ function InternEdit() {
                             {todo?.verificationdetails?.length === 0 || !todo?.verificationdetails
                               ? 'Not Verified'
                               : todo?.verificationdetails?.length > 0 && todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.verified
-                                ? 'Verified'
-                                : todo?.verificationdetails?.length > 0 && !todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.verified
-                                  ? `Rejected - ${todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.reason || ''}`
-                                  : ''}{' '}
+                              ? 'Verified'
+                              : todo?.verificationdetails?.length > 0 && !todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.verified
+                              ? `Rejected - ${todo?.verificationdetails[todo?.verificationdetails?.length - 1]?.reason || ''}`
+                              : ''}{' '}
                             {todo.filename && (
                               <IconButton onClick={() => renderFilePreviewMulterUploaded(todo)} size="small" color="primary">
                                 <VisibilityOutlinedIcon />
@@ -18834,10 +20384,10 @@ function InternEdit() {
       const biometricDevice =
         answer?.length > 0
           ? answer?.map((data) => ({
-            ...data,
-            label: data?.biometricserialno,
-            value: data?.biometricserialno,
-          }))
+              ...data,
+              label: data?.biometricserialno,
+              value: data?.biometricserialno,
+            }))
           : [];
       // console.log(response?.data, answer, 'Data');
       setBiometricDeviceOptions(biometricDevice);
@@ -19002,36 +20552,115 @@ function InternEdit() {
     startyear: '',
   });
   //change form
+
   const handleChangeGross = (e) => {
     const regex = /^[0-9]+$/; // Only allows positive integers
     const inputValue = e.target.value;
+
     if (regex.test(inputValue) || inputValue === '') {
-      setFormValue({
-        ...formValue,
-        gross: inputValue,
-        basic: '',
-        hra: '',
-        conveyance: '',
-        medicalallowance: '',
-        productionallowance: '',
-        productionallowancetwo: '',
-        otherallowance: '',
-      });
-      setSalaryTableDataManual((prev) => ({
-        ...prev,
-        basic: 0,
-        hra: 0,
-        conveyance: 0,
-        medicalallowance: 0,
-        productionallowance: 0,
-        otherallowance: 0,
-        performanceincentive: 0,
-        shiftallowance: 0,
-        grossmonthsalary: Number(inputValue) || 0,
-        annualgrossctc: 12 * inputValue || 0,
-      }));
+      // Just update the gross value immediately
+      setFormValue((prev) => ({ ...prev, gross: inputValue }));
+
+      // Debounced calculation (runs after typing stops)
+      debouncedCalculate(inputValue);
     }
   };
+
+  const nameToKeyMap = {
+    Basic: 'basic',
+    HRA: 'hra',
+    Conveyance: 'conveyance',
+    'Medical Allowance': 'medicalallowance',
+    'Production Allowance': 'productionallowance',
+    'Production Allowance 2': 'productionallowancetwo',
+    'Shift Allowance': 'shiftallowance',
+    'Special Allowance': 'otherallowance',
+  };
+
+  const debouncedCalculate = useCallback(
+    debounce((inputValue) => {
+      const breakupDataManual = calculateBreakupManual(inputValue, settingsRef.current);
+
+      const salarysettings = salsettingsRef.current || [];
+
+      // All known salary component names
+      const allComponents = [
+        'Basic',
+        'HRA',
+        'Conveyance',
+        'Medical Allowance',
+        'Production Allowance',
+        // "Production Allowance 2",
+        'Shift Allowance',
+        'Special Allowance',
+      ];
+
+      // Helper: find amount for a name
+      const getAmount = (name) => Number(breakupDataManual?.find((d) => d?.name === name)?.amount || 0);
+
+      // Filter to include only components in salarysettings
+      const selectedComponents = salarysettings.length ? salarysettings.filter((n) => allComponents.includes(n)) : allComponents;
+
+      // Compute visible + remaining totals
+      let visibleComponents = {};
+      let remainingTotal = 0;
+
+      for (const name of allComponents) {
+        const amount = getAmount(name);
+        if (selectedComponents.includes(name)) {
+          visibleComponents[name] = amount;
+        } else {
+          remainingTotal += amount;
+        }
+      }
+
+      // Add leftover components into “Special Allowance”
+      visibleComponents['Special Allowance'] = (visibleComponents['Special Allowance'] || 0) + remainingTotal;
+
+      // Extract fields safely
+      const {
+        ['Basic']: basic = 0,
+        ['HRA']: hra = 0,
+        ['Conveyance']: conveyance = 0,
+        ['Medical Allowance']: medicalallowance = 0,
+        ['Production Allowance']: productionallowance = 0,
+        ['Production Allowance 2']: productionallowancetwo = 0,
+        ['Shift Allowance']: shiftallowance = 0,
+        ['Special Allowance']: otherallowance = 0,
+      } = visibleComponents;
+
+      // Update form values
+      setFormValue((prev) => ({
+        ...prev,
+        gross: inputValue,
+        basic: String(basic),
+        hra: String(hra),
+        conveyance: String(conveyance),
+        medicalallowance: String(medicalallowance),
+        productionallowance: String(productionallowance),
+        productionallowancetwo: String(productionallowancetwo),
+        shiftallowance: String(shiftallowance),
+        otherallowance: String(otherallowance),
+      }));
+
+      // Update salary table
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        basic,
+        hra,
+        conveyance,
+        medicalallowance,
+        productionallowance,
+        productionallowancetwo,
+        shiftallowance,
+        otherallowance,
+        performanceincentive: 0,
+        grossmonthsalary: Number(inputValue) || 0,
+        annualgrossctc: (Number(inputValue) || 0) * 12,
+      }));
+    }, 300),
+    []
+  );
 
   //change form
   const handleChangeBasic = (e) => {
@@ -19232,12 +20861,12 @@ function InternEdit() {
       setFormValue(OptSlab[0]);
       setCtc(
         OptSlab[0].basic +
-        OptSlab[0].hra +
-        OptSlab[0].conveyance +
-        OptSlab[0].medicalallowance +
-        OptSlab[0].productionallowance +
-        // + OptSlab[0].productionallowancetwo
-        OptSlab[0].otherallowance
+          OptSlab[0].hra +
+          OptSlab[0].conveyance +
+          OptSlab[0].medicalallowance +
+          OptSlab[0].productionallowance +
+          // + OptSlab[0].productionallowancetwo
+          OptSlab[0].otherallowance
       );
     } catch (err) {
       handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
@@ -19883,18 +21512,26 @@ function InternEdit() {
                           salaryFixed={salaryTableData?.salaryfixed || false}
                           salaryStatus={salaryTableData?.salarystatus || ''}
                           expectedSalary={salaryTableData?.expectedsalary || ''}
-                          basic={salaryTableData?.basic || 0}
-                          hra={salaryTableData?.hra || 0}
-                          conveyance={salaryTableData?.conveyance || 0}
-                          medicalallowance={salaryTableData?.medicalallowance || 0}
-                          productionallowance={salaryTableData?.productionallowance || 0}
-                          otherallowance={salaryTableData?.otherallowance || 0}
+                          basic={Number(breakupData?.find((data) => data?.name === 'Basic')?.amount || 0)}
+                          hra={Number(breakupData?.find((data) => data?.name === 'HRA')?.amount || 0)}
+                          conveyance={Number(breakupData?.find((data) => data?.name === 'Conveyance')?.amount || 0)}
+                          medicalallowance={Number(breakupData?.find((data) => data?.name === 'Medical Allowance')?.amount || 0)}
+                          productionallowance={Number(breakupData?.find((data) => data?.name === 'Production Allowance')?.amount || 0)}
+                          otherallowance={Number(breakupData?.find((data) => data?.name === 'Special Allowance')?.amount || 0)}
+                          shiftallowance={Number(breakupData?.find((data) => data?.name === 'Shift Allowance')?.amount || 0)}
+                          // basic={salaryTableData?.basic || 0}
+                          // hra={salaryTableData?.hra || 0}
+                          // conveyance={salaryTableData?.conveyance || 0}
+                          // medicalallowance={salaryTableData?.medicalallowance || 0}
+                          // productionallowance={salaryTableData?.productionallowance || 0}
+                          // otherallowance={salaryTableData?.otherallowance || 0}
+                          // shiftallowance={salaryTableData?.shiftallowance || 0}
                           performanceincentive={salaryTableData?.performanceincentive || 0}
-                          shiftallowance={salaryTableData?.shiftallowance || 0}
                           grossmonthsalary={salaryTableData?.grossmonthsalary || 0}
                           annualgrossctc={salaryTableData?.annualgrossctc || 0}
                           onImageGenerated={(img) => setTableImage(img)}
                           generateImage={true}
+                          salarysettings={employee?.salarysettings || []}
                         />
                       </div>
                     </div>
@@ -20009,22 +21646,56 @@ function InternEdit() {
                               disabled={assignExperience.assignExpMode === 'Auto Increment'}
                               value={assignExperience.assignExpvalue}
                               onChange={(e) => {
+                                let val = e.target.value.replace(/\D/g, ''); // only digits
+
+                                // allow clearing
+                                if (val === '') {
+                                  setAssignExperience({
+                                    ...assignExperience,
+                                    assignExpvalue: '0', // default show 0
+                                  });
+                                  return;
+                                }
+
+                                // prevent typing leading zeros like "00", "01"
+                                if (assignExperience.assignExpvalue === '0' && val.length > 1) {
+                                  val = val.replace(/^0+/, ''); // remove leading zeros
+                                }
+
+                                let num = Number(val);
+
+                                const dynamicLimit = getExperienceLimit({
+                                  limits: limitArray,
+                                  company: selectedCompany,
+                                  branch: selectedBranch,
+                                  unit: selectedUnit,
+                                  team: selectedTeam,
+                                  employee: companycaps,
+                                  process: loginNotAllot?.process,
+                                });
+
+                                // ⛔ Apply limit only if found
+                                if (dynamicLimit !== null && num > dynamicLimit) {
+                                  return;
+                                }
+
+                                setAssignExperience({
+                                  ...assignExperience,
+                                  assignExpvalue: val, // keep as string
+                                });
+
                                 handleSalaryfix(
                                   loginNotAllot.process,
                                   assignExperience.updatedate,
                                   employee?.doj,
                                   assignExperience.assignExpMode,
-                                  e.target.value,
+                                  val,
                                   assignExperience.assignEndExpvalue,
                                   assignExperience.assignEndExpDate,
                                   assignExperience.assignEndTarvalue,
                                   assignExperience.assignEndTarDate,
                                   employee?.department
                                 );
-                                setAssignExperience({
-                                  ...assignExperience,
-                                  assignExpvalue: e.target.value,
-                                });
                               }}
                             />
                           </FormControl>
@@ -20046,12 +21717,12 @@ function InternEdit() {
                           label: assignExperience.assignEndExp,
                           value: assignExperience.assignEndExp,
                         }}
-                      // onChange={(e) => {
-                      //   setAssignExperience({
-                      //     ...assignExperience,
-                      //     assignEndExp: e.value,
-                      //   });
-                      // }}
+                        // onChange={(e) => {
+                        //   setAssignExperience({
+                        //     ...assignExperience,
+                        //     assignEndExp: e.value,
+                        //   });
+                        // }}
                       />
                     </FormControl>
                   </Grid>
@@ -20175,14 +21846,14 @@ function InternEdit() {
                           label: assignExperience.assignEndTar,
                           value: assignExperience.assignEndTar,
                         }}
-                      // onChange={(e) => {
-                      //   setAssignExperience({
-                      //     ...assignExperience,
-                      //     assignExpMode: e.value,
-                      //     assignExpvalue: "Please Select Value (In Months)",
-                      //     assignExpDate: "",
-                      //   });
-                      // }}
+                        // onChange={(e) => {
+                        //   setAssignExperience({
+                        //     ...assignExperience,
+                        //     assignExpMode: e.value,
+                        //     assignExpvalue: "Please Select Value (In Months)",
+                        //     assignExpDate: "",
+                        //   });
+                        // }}
                       />
                     </FormControl>
                   </Grid>
@@ -20358,18 +22029,27 @@ function InternEdit() {
                             salaryFixed={salaryTableData?.salaryfixed || false}
                             salaryStatus={salaryTableData?.salarystatus || ''}
                             expectedSalary={salaryTableData?.expectedsalary || ''}
-                            basic={salaryTableDataManual?.basic || 0}
-                            hra={salaryTableDataManual?.hra || 0}
-                            conveyance={salaryTableDataManual?.conveyance || 0}
-                            medicalallowance={salaryTableDataManual?.medicalallowance || 0}
-                            productionallowance={salaryTableDataManual?.productionallowance || 0}
-                            otherallowance={salaryTableDataManual?.otherallowance || 0}
+                            basic={Number(breakupDataManual?.find((data) => data?.name === 'Basic')?.amount || 0)}
+                            hra={Number(breakupDataManual?.find((data) => data?.name === 'HRA')?.amount || 0)}
+                            conveyance={Number(breakupDataManual?.find((data) => data?.name === 'Conveyance')?.amount || 0)}
+                            medicalallowance={Number(breakupDataManual?.find((data) => data?.name === 'Medical Allowance')?.amount || 0)}
+                            productionallowance={Number(breakupDataManual?.find((data) => data?.name === 'Production Allowance')?.amount || 0)}
+                            otherallowance={Number(breakupDataManual?.find((data) => data?.name === 'Special Allowance')?.amount || 0)}
+                            shiftallowance={Number(breakupDataManual?.find((data) => data?.name === 'Shift Allowance')?.amount || 0)}
+                            // basic={salaryTableDataManual?.basic || 0}
+                            // hra={salaryTableDataManual?.hra || 0}
+                            // conveyance={salaryTableDataManual?.conveyance || 0}
+                            // medicalallowance={salaryTableDataManual?.medicalallowance || 0}
+                            // productionallowance={salaryTableDataManual?.productionallowance || 0}
+                            // otherallowance={salaryTableDataManual?.otherallowance || 0}
+                            // shiftallowance={salaryTableDataManual?.shiftallowance || 0}
+
                             performanceincentive={salaryTableDataManual?.performanceincentive || 0}
-                            shiftallowance={salaryTableDataManual?.shiftallowance || 0}
                             grossmonthsalary={salaryTableDataManual?.grossmonthsalary || 0}
                             annualgrossctc={salaryTableDataManual?.annualgrossctc || 0}
                             onImageGenerated={(img) => setTableImageManual(img)}
                             generateImage={true}
+                            salarysettings={employee?.salarysettings || []}
                           />
                         </div>
                       </div>
@@ -20457,46 +22137,46 @@ function InternEdit() {
                               mondatefilter[1] === '12'
                                 ? 'December'
                                 : mondatefilter[1] === '11'
-                                  ? 'November'
-                                  : mondatefilter[1] === '10'
-                                    ? 'October'
-                                    : mondatefilter[1] === '09'
-                                      ? 'September'
-                                      : mondatefilter[1] === '9'
-                                        ? 'September'
-                                        : mondatefilter[1] === '08'
-                                          ? 'August'
-                                          : mondatefilter[1] === '8'
-                                            ? 'August'
-                                            : mondatefilter[1] === '07'
-                                              ? 'July'
-                                              : mondatefilter[1] === '7'
-                                                ? 'July'
-                                                : mondatefilter[1] === '06'
-                                                  ? 'June'
-                                                  : mondatefilter[1] === '6'
-                                                    ? 'June'
-                                                    : mondatefilter[1] === '05'
-                                                      ? 'May'
-                                                      : mondatefilter[1] === '5'
-                                                        ? 'May'
-                                                        : mondatefilter[1] === '04'
-                                                          ? 'April'
-                                                          : mondatefilter[1] === '4'
-                                                            ? 'April'
-                                                            : mondatefilter[1] === '03'
-                                                              ? 'March'
-                                                              : mondatefilter[1] === '3'
-                                                                ? 'March'
-                                                                : mondatefilter[1] === '02'
-                                                                  ? 'February'
-                                                                  : mondatefilter[1] === '2'
-                                                                    ? 'February'
-                                                                    : mondatefilter[1] === '01'
-                                                                      ? 'January'
-                                                                      : mondatefilter[1] === '1'
-                                                                        ? 'January'
-                                                                        : '';
+                                ? 'November'
+                                : mondatefilter[1] === '10'
+                                ? 'October'
+                                : mondatefilter[1] === '09'
+                                ? 'September'
+                                : mondatefilter[1] === '9'
+                                ? 'September'
+                                : mondatefilter[1] === '08'
+                                ? 'August'
+                                : mondatefilter[1] === '8'
+                                ? 'August'
+                                : mondatefilter[1] === '07'
+                                ? 'July'
+                                : mondatefilter[1] === '7'
+                                ? 'July'
+                                : mondatefilter[1] === '06'
+                                ? 'June'
+                                : mondatefilter[1] === '6'
+                                ? 'June'
+                                : mondatefilter[1] === '05'
+                                ? 'May'
+                                : mondatefilter[1] === '5'
+                                ? 'May'
+                                : mondatefilter[1] === '04'
+                                ? 'April'
+                                : mondatefilter[1] === '4'
+                                ? 'April'
+                                : mondatefilter[1] === '03'
+                                ? 'March'
+                                : mondatefilter[1] === '3'
+                                ? 'March'
+                                : mondatefilter[1] === '02'
+                                ? 'February'
+                                : mondatefilter[1] === '2'
+                                ? 'February'
+                                : mondatefilter[1] === '01'
+                                ? 'January'
+                                : mondatefilter[1] === '1'
+                                ? 'January'
+                                : '';
                             setFormValue({
                               ...formValue,
                               startmonthlabel: getmonth,
@@ -20573,49 +22253,17 @@ function InternEdit() {
                       </FormControl>
                       {salarySetUpForm.mode === 'Manual' && accessibleErrors.grosssalary && <div>{accessibleErrors.grosssalary}</div>}
                     </Grid>
-
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>Basic</Typography>
-                        <OutlinedInput id="component-outlined" type="text" disabled={salarySetUpForm.mode === 'Auto'} placeholder="Please Enter Basic" value={formValue.basic} onChange={handleChangeBasic} />
-                      </FormControl>
-                    </Grid>
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>HRA</Typography>
-                        <OutlinedInput id="component-outlined" type="text" disabled={salarySetUpForm.mode === 'Auto'} placeholder="Please Enter HRA" value={formValue.hra} onChange={handleChangeHra} />
-                      </FormControl>
-                    </Grid>
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>Conveyance</Typography>
-                        <OutlinedInput id="component-outlined" type="text" disabled={salarySetUpForm.mode === 'Auto'} placeholder="Please Enter Conveyance" value={formValue.conveyance} onChange={handleChangeConveyance} />
-                      </FormControl>
-                    </Grid>
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>Medical Allowance</Typography>
-                        <OutlinedInput id="component-outlined" type="text" disabled={salarySetUpForm.mode === 'Auto'} placeholder="Please Enter Medical Allowance" value={formValue.medicalallowance} onChange={handleChangeMedAllow} />
-                      </FormControl>
-                    </Grid>
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>Production Allowance</Typography>
-                        <OutlinedInput id="component-outlined" type="text" disabled={salarySetUpForm.mode === 'Auto'} placeholder="Please Enter Production Allowance" value={formValue.productionallowance} onChange={handleChangeProdAllow} />
-                      </FormControl>
-                    </Grid>
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>Production Allowance 2</Typography>
-                        <OutlinedInput id="component-outlined" type="text" disabled={salarySetUpForm.mode === 'Auto'} placeholder="Please Enter Production Allowance 2" value={formValue.productionallowancetwo} onChange={handleChangeProdAllowtwo} />
-                      </FormControl>
-                    </Grid>
-                    <Grid item md={3} xs={12} sm={12}>
-                      <FormControl fullWidth size="small">
-                        <Typography>Other Allowance</Typography>
-                        <OutlinedInput id="component-outlined" type="text" disabled={salarySetUpForm.mode === 'Auto'} placeholder="Please Enter Other Allowance" value={formValue.otherallowance} onChange={handleChangeOtherAllow} />
-                      </FormControl>
-                    </Grid>
+                    {(employee?.salarysettings?.length ? employee.salarysettings : ['Basic', 'HRA', 'Conveyance', 'Medical Allowance', 'Production Allowance', 'Production Allowance 2', 'Shift Allowance', 'Special Allowance']).map((name) => {
+                      const key = nameToKeyMap[name] || name.toLowerCase().replace(/\s+/g, '');
+                      return (
+                        <Grid item md={3} xs={12} sm={12} key={name}>
+                          <FormControl fullWidth size="small">
+                            <Typography>{name}</Typography>
+                            <OutlinedInput type="text" disabled={salarySetUpForm.mode === 'Auto'} readOnly placeholder={`Please Enter ${name}`} value={formValue[key] || ''} />
+                          </FormControl>
+                        </Grid>
+                      );
+                    })}
 
                     <Grid item md={3} xs={12} sm={12}></Grid>
                     <Grid item md={3} xs={12} sm={12}>
@@ -20711,6 +22359,10 @@ function InternEdit() {
                             ...loginNotAllot,
                             process: e.value,
                           });
+                          setAssignExperience((prev) => ({
+                            ...prev,
+                            assignExpvalue: '0',
+                          }));
                           setnewstate(!newstate);
                         }}
                       />
@@ -20821,9 +22473,9 @@ function InternEdit() {
                         type="text"
                         // placeholder="Please Enter IFSC Code"
                         value={overallgrosstotal}
-                      // onChange={(e) => {
-                      //   setEmployee({ ...employee, ifsccode: e.target.value });
-                      // }}
+                        // onChange={(e) => {
+                        //   setEmployee({ ...employee, ifsccode: e.target.value });
+                        // }}
                       />
                     </FormControl>
                   </Grid>
@@ -20835,9 +22487,9 @@ function InternEdit() {
                         type="text"
                         // placeholder="Please Enter IFSC Code"
                         value={modeexperience}
-                      // onChange={(e) => {
-                      //   setEmployee({ ...employee, ifsccode: e.target.value });
-                      // }}
+                        // onChange={(e) => {
+                        //   setEmployee({ ...employee, ifsccode: e.target.value });
+                        // }}
                       />
                     </FormControl>
                   </Grid>
@@ -20849,9 +22501,9 @@ function InternEdit() {
                         type="text"
                         // placeholder="Please Enter IFSC Code"
                         value={targetexperience}
-                      // onChange={(e) => {
-                      //   setEmployee({ ...employee, ifsccode: e.target.value });
-                      // }}
+                        // onChange={(e) => {
+                        //   setEmployee({ ...employee, ifsccode: e.target.value });
+                        // }}
                       />
                     </FormControl>
                   </Grid>
@@ -20863,9 +22515,9 @@ function InternEdit() {
                         type="text"
                         // placeholder="Please Enter IFSC Code"
                         value={targetpts}
-                      // onChange={(e) => {
-                      //   setEmployee({ ...employee, ifsccode: e.target.value });
-                      // }}
+                        // onChange={(e) => {
+                        //   setEmployee({ ...employee, ifsccode: e.target.value });
+                        // }}
                       />
                     </FormControl>
                   </Grid>
@@ -21340,9 +22992,9 @@ function InternEdit() {
                           options={
                             employee?.companyemail?.split(',')?.length > 0
                               ? employee?.companyemail?.split(',')?.map((data) => ({
-                                label: data,
-                                value: data,
-                              }))
+                                  label: data,
+                                  value: data,
+                                }))
                               : []
                           }
                           placeholder="Please Select Email"
@@ -21383,6 +23035,9 @@ function InternEdit() {
             </Box>
             <br />
             <HiConnectComponentCreate value={createHiConnect} setValue={setCreateHiConnect} employeeEmails={employee?.companyemail} errors={errorsLog} employee={employee} from="edit" />
+            <br />
+            <LdapComponentCreate value={createLdap} setValue={setCreateLdap} employeeEmails={employee?.companyemail} errors={errorsLog} employee={{ ...employee, company: selectedCompany, branch: selectedBranch, unit: selectedUnit }} from="edit" />
+            <br />
           </Grid>
 
           <Grid item md={1} xs={12} sm={12} container justifyContent={{ xs: 'center', md: 'flex-end' }} alignItems="center">
@@ -21691,7 +23346,7 @@ function InternEdit() {
                         </Grid>
                       )}
 
-                      {deviceUserNameAddedList?.length > 0 &&
+                      {deviceUserNameAddedList?.length > 0 && (
                         <TableContainer component={Paper}>
                           <Typography variant="h6" sx={{ p: 2 }}>
                             Device User List
@@ -21699,10 +23354,18 @@ function InternEdit() {
                           <Table>
                             <TableHead>
                               <TableRow>
-                                <TableCell><b>Cloud ID</b></TableCell>
-                                <TableCell><b>Staff Name</b></TableCell>
-                                <TableCell><b>Biometric User ID</b></TableCell>
-                                <TableCell><b>Privilege</b></TableCell>
+                                <TableCell>
+                                  <b>Cloud ID</b>
+                                </TableCell>
+                                <TableCell>
+                                  <b>Staff Name</b>
+                                </TableCell>
+                                <TableCell>
+                                  <b>Biometric User ID</b>
+                                </TableCell>
+                                <TableCell>
+                                  <b>Privilege</b>
+                                </TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -21716,7 +23379,8 @@ function InternEdit() {
                               ))}
                             </TableBody>
                           </Table>
-                        </TableContainer>}
+                        </TableContainer>
+                      )}
                     </>
                   )}
                 </Grid>

@@ -42,6 +42,10 @@ const uploaduserinfoSchema = new Schema({
     type: String,
     required: false,
   },
+  deviceBrand: {
+    type: String,
+    required: false,
+  },
   status: {
     type: String,
     required: false,
@@ -107,6 +111,14 @@ const uploaduserinfoSchema = new Schema({
     required: false,
   },
   PhotoMD5: {
+    type: String,
+    required: false,
+  },
+  cardNum: {
+    type: String,
+    required: false,
+  },
+  elevatorAccess: {
     type: String,
     required: false,
   },

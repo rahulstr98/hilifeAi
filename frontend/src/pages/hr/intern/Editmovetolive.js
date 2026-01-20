@@ -1,18 +1,18 @@
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CloseIcon from '@mui/icons-material/Close';
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import FirstPageIcon from '@mui/icons-material/FirstPage';
-import LastPageIcon from '@mui/icons-material/LastPage';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import LoadingButton from '@mui/lab/LoadingButton';
-import AlertDialog from '../../../components/Alert';
-import MessageAlert from '../../../components/MessageAlert';
-import * as faceapi from 'face-api.js';
-import CheckCircle from '@mui/icons-material/CheckCircle';
-import { Visibility, Delete } from '@mui/icons-material';
+import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import CloseIcon from "@mui/icons-material/Close";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import FirstPageIcon from "@mui/icons-material/FirstPage";
+import LastPageIcon from "@mui/icons-material/LastPage";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import LoadingButton from "@mui/lab/LoadingButton";
+import AlertDialog from "../../../components/Alert";
+import MessageAlert from "../../../components/MessageAlert";
+import * as faceapi from "face-api.js";
+import CheckCircle from "@mui/icons-material/CheckCircle";
+import { Visibility, Delete } from "@mui/icons-material";
 import {
   Backdrop,
   Box,
@@ -45,45 +45,55 @@ import {
   Table,
   TableHead,
   TableBody,
-} from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
-import { styled } from '@mui/system';
-import axios from '../../../axiosInstance';
-import 'cropperjs/dist/cropper.css';
-import 'jspdf-autotable';
-import debounce from 'lodash.debounce';
-import moment from 'moment-timezone';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { FaArrowAltCircleRight, FaEdit, FaPlus } from 'react-icons/fa';
-import 'react-image-crop/dist/ReactCrop.css';
-import { ThreeDots } from 'react-loader-spinner';
-import { MultiSelect } from 'react-multi-select-component';
-import Resizable from 'react-resizable';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import Selects from 'react-select';
-import { handleApiError } from '../../../components/Errorhandling';
-import Headtitle from '../../../components/Headtitle';
-import StyledDataGrid from '../../../components/TableStyle';
-import { AuthContext, UserRoleAccessContext } from '../../../context/Appcontext';
-import { userStyle } from '../../../pageStyle';
-import { SERVICE } from '../../../services/Baseservice';
-import '../employees/MultistepForm.css';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { religionOptions } from '../../../components/Componentkeyword';
-import { ConfirmationPopup } from '../../../components/DeleteConfirmation';
-import HiConnectComponentCreate from '../employees/HiConnectComponentCreate.js';
-import SalaryTable from '../recruitment/SalaryTable.js';
-import salaryTableFunction from '../../../components/SalaryTableFunction.js';
+} from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import { styled } from "@mui/system";
+import axios from "../../../axiosInstance";
+import "cropperjs/dist/cropper.css";
+import "jspdf-autotable";
+import debounce from "lodash.debounce";
+import moment from "moment-timezone";
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+} from "react";
+import { FaArrowAltCircleRight, FaEdit, FaPlus } from "react-icons/fa";
+import "react-image-crop/dist/ReactCrop.css";
+import { ThreeDots } from "react-loader-spinner";
+import { MultiSelect } from "react-multi-select-component";
+import Resizable from "react-resizable";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import Selects from "react-select";
+import { handleApiError } from "../../../components/Errorhandling";
+import Headtitle from "../../../components/Headtitle";
+import StyledDataGrid from "../../../components/TableStyle";
+import {
+  AuthContext,
+  UserRoleAccessContext,
+} from "../../../context/Appcontext";
+import { userStyle } from "../../../pageStyle";
+import { SERVICE } from "../../../services/Baseservice";
+import "../employees/MultistepForm.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { religionOptions } from "../../../components/Componentkeyword";
+import { ConfirmationPopup } from "../../../components/DeleteConfirmation";
+import HiConnectComponentCreate from "../employees/HiConnectComponentCreate.js";
+import LdapComponentCreate from "../employees/LdapComponentCreate.js";
+import SalaryTable from "../recruitment/SalaryTable.js";
+import salaryTableFunction from "../../../components/SalaryTableFunction.js";
 import imageCompression from "browser-image-compression";
 
 function EditMovietolive() {
   const [salaryTableDataManual, setSalaryTableDataManual] = useState({
     salaryfixed: false,
-    salarystatus: 'With Salary',
-    expectedsalary: '',
+    salarystatus: "With Salary",
+    expectedsalary: "",
     basic: 0,
     hra: 0,
     conveyance: 0,
@@ -97,91 +107,92 @@ function EditMovietolive() {
   });
   const [employee, setEmployee] = useState({
     wordcheck: false,
-    type: 'Please Select Type',
-    salaryrange: 'Please Select Salary Range',
-    amountvalue: '',
-    from: '',
-    to: '',
-    prefix: 'Mr',
-    firstname: '',
-    lastname: '',
-    legalname: '',
-    fathername: '',
-    mothername: '',
-    gender: '',
-    maritalstatus: '',
-    dom: '',
-    dob: '',
-    bloodgroup: '',
-    profileimage: '',
-    location: '',
-    email: '',
-    contactpersonal: '',
-    contactfamily: '',
-    emergencyno: '',
-    doj: '',
-    dot: '',
-    name: '',
-    contactno: '',
-    details: '',
-    username: '',
-    password: '',
-    companyname: '',
-    pdoorno: '',
-    pstreet: '',
-    parea: '',
-    plandmark: '',
-    ptaluk: '',
-    ppost: '',
-    ppincode: '',
-    pcountry: '',
-    pstate: '',
-    pcity: '',
-    cdoorno: '',
-    cstreet: '',
-    carea: '',
-    clandmark: '',
-    ctaluk: '',
-    cpost: '',
-    cpincode: '',
-    ccountry: '',
-    cstate: '',
-    ccity: '',
-    branch: '',
-    workstation: '',
-    weekoff: '',
-    unit: '',
-    floor: '',
-    department: '',
-    team: '',
-    designation: '',
-    shifttiming: '',
-    reportingto: '',
-    empcode: '',
-    remark: '',
-    aadhar: '',
-    panno: '',
-    draft: '',
-    intStartDate: '',
-    intEndDate: '',
-    intCourse: '',
-    bankname: 'ICICI BANK LTD',
-    workmode: 'Please Select Work Mode',
-    bankbranchname: '',
-    accountholdername: '',
-    accountnumber: '',
-    ifsccode: '',
+    type: "Please Select Type",
+    salaryrange: "Please Select Salary Range",
+    amountvalue: "",
+    from: "",
+    to: "",
+    prefix: "Mr",
+    firstname: "",
+    lastname: "",
+    legalname: "",
+    fathername: "",
+    mothername: "",
+    gender: "",
+    maritalstatus: "",
+    dom: "",
+    dob: "",
+    bloodgroup: "",
+    profileimage: "",
+    location: "",
+    email: "",
+    contactpersonal: "",
+    contactfamily: "",
+    emergencyno: "",
+    doj: "",
+    dot: "",
+    name: "",
+    contactno: "",
+    details: "",
+    username: "",
+    password: "",
+    companyname: "",
+    pdoorno: "",
+    pstreet: "",
+    parea: "",
+    plandmark: "",
+    ptaluk: "",
+    ppost: "",
+    createdomainemail: false,
+    ppincode: "",
+    pcountry: "",
+    pstate: "",
+    pcity: "",
+    cdoorno: "",
+    cstreet: "",
+    carea: "",
+    clandmark: "",
+    ctaluk: "",
+    cpost: "",
+    cpincode: "",
+    ccountry: "",
+    cstate: "",
+    ccity: "",
+    branch: "",
+    workstation: "",
+    weekoff: "",
+    unit: "",
+    floor: "",
+    department: "",
+    team: "",
+    designation: "",
+    shifttiming: "",
+    reportingto: "",
+    empcode: "",
+    remark: "",
+    aadhar: "",
+    panno: "",
+    draft: "",
+    intStartDate: "",
+    intEndDate: "",
+    intCourse: "",
+    bankname: "ICICI BANK LTD",
+    workmode: "Please Select Work Mode",
+    bankbranchname: "",
+    accountholdername: "",
+    accountnumber: "",
+    ifsccode: "",
 
-    categoryedu: 'Please Select Category',
-    subcategoryedu: 'Please Select Sub Category',
-    specialization: 'Please Select Specialization',
+    categoryedu: "Please Select Category",
+    subcategoryedu: "Please Select Sub Category",
+    specialization: "Please Select Specialization",
   });
   const [tableImage, setTableImage] = useState(null);
   const [tableImageManual, setTableImageManual] = useState(null);
   const [salaryTableData, setSalaryTableData] = useState({
     salaryfixed: false,
-    salarystatus: 'With Salary',
-    expectedsalary: '',
+    salarystatus: "With Salary",
+    expectedsalary: "",
     basic: 0,
     hra: 0,
     conveyance: 0,
@@ -195,18 +206,28 @@ function EditMovietolive() {
   });
   const [createHiConnect, setCreateHiConnect] = useState({
     createhiconnect: false,
-    hiconnectemail: '',
+    hiconnectemail: "",
     hiconnectroles: [
       {
-        label: 'channel_user',
-        value: 'channel_user',
+        label: "channel_user",
+        value: "channel_user",
       },
     ],
+  });
+  const [createLdap, setCreateLdap] = useState({
+    createldapaccount: false,
+    ldapEmail: "",
+    ldapOU: "",
+
+    ldapDN: "",
+    ldapSAMAccountName: "",
+    ldapUserPrincipalName: "",
+    ldapObjectGUID: "",
   });
   const backPage = useNavigate();
   const [popup, setPopup] = useState({
     open: false,
-    action: '',
+    action: "",
   });
 
   const handleOpenConfirmationPopup = (action) => {
@@ -217,31 +238,30 @@ function EditMovietolive() {
   };
 
   const [workstationTodoList, setWorkstationTodoList] = useState([]);
-  const [keyPrimaryShortname, setPrimaryKeyShortname] = useState('');
-  const [keyShortname, setKeyShortname] = useState('');
+  const [keyPrimaryShortname, setPrimaryKeyShortname] = useState("");
+  const [keyShortname, setKeyShortname] = useState("");
 
   const handleCloseConfirmationPopup = () => {
-    setPopup({ open: false, action: '' });
+    setPopup({ open: false, action: "" });
   };
 
   const handleConfirm = (e) => {
     handleCloseConfirmationPopup();
-    if (popup.action === 'submit') {
+    if (popup.action === "submit") {
       handleButtonClick(e);
-    } else if (popup.action === 'draft') {
+    } else if (popup.action === "draft") {
       // handleDraftSubmit(e);
-    } else if (popup.action === 'cancel') {
-      backPage('/internlist');
+    } else if (popup.action === "cancel") {
+      backPage("/internlist");
     }
   };
-  const [oldUserCompanyname, setOldUserCompanyname] = useState('');
+  const [oldUserCompanyname, setOldUserCompanyname] = useState("");
   const [openPopupMalert, setOpenPopupMalert] = useState(false);
-  const [popupContentMalert, setPopupContentMalert] = useState('');
-  const [popupSeverityMalert, setPopupSeverityMalert] = useState('');
-
+  const [popupContentMalert, setPopupContentMalert] = useState("");
+  const [popupSeverityMalert, setPopupSeverityMalert] = useState("");
 
   // BioMetric Usage Details
-  const [deviceOnlineStatus, setDeviceOnlineStatus] = useState('');
+  const [deviceOnlineStatus, setDeviceOnlineStatus] = useState("");
   const [CheckedBiometric, setCheckedBiometric] = useState(false);
   const [CheckedBiometricAdded, setCheckedBiometricAdded] = useState(false);
   const [BiometricPostDevice, setBiometricPostDevice] = useState("");
@@ -250,35 +270,43 @@ function EditMovietolive() {
   const [loadingBiometric, setLoadingBiometric] = useState(false);
   const [addBiometricData, setAddBiometricData] = useState(false);
   const [BiometricId, setBiometricId] = useState(0);
-  const [deviceDetails, setDeviceDetails] = useState('');
-  const [biometricDevicename, setBiometricDevicename] = useState('Please Select Device');
-  const [biometricrole, setBiometricrole] = useState('Please Select Role');
-  const [biometricUsername, setBiometricUsername] = useState('');
+  const [deviceDetails, setDeviceDetails] = useState("");
+  const [biometricDevicename, setBiometricDevicename] = useState(
+    "Please Select Device",
+  );
+  const [biometricrole, setBiometricrole] = useState("Please Select Role");
+  const [biometricUsername, setBiometricUsername] = useState("");
   const [BioIndivUserCheck, setBioIndivUserCheck] = useState(false);
   const [BioEditUserCheck, setBioEditUserCheck] = useState(false);
-  const [documentFiles, setdocumentFiles] = useState('');
+  const [documentFiles, setdocumentFiles] = useState("");
   const [BioUserDataActions, setBioUserDataActions] = useState({});
   const [UnmatchedUserData, setUnmatchedUserData] = useState({});
   const [BiometricDeviceOptions, setBiometricDeviceOptions] = useState([]);
   const [deviceUserNameAddedList, setDeviceUserNameAddedList] = useState([]);
 
-
   const fetchBiometricDevices = async (accessibletodo) => {
-    console.log(accessibletodo, 'accessibletodo')
+    console.log(accessibletodo, "accessibletodo");
     try {
       let response = await axios.get(SERVICE.ALL_BIOMETRICDEVICEMANAGEMENT, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      const answer = response?.data?.biometricdevicemanagement?.filter((data) => accessibletodo?.some((item) => data?.company === item?.company && data?.branch === item?.branch && data?.unit === item?.unit));
+      const answer = response?.data?.biometricdevicemanagement?.filter((data) =>
+        accessibletodo?.some(
+          (item) =>
+            data?.company === item?.company &&
+            data?.branch === item?.branch &&
+            data?.unit === item?.unit,
+        ),
+      );
       const biometricDevice =
         answer?.length > 0
           ? answer?.map((data) => ({
-            ...data,
-            label: data?.biometricserialno,
-            value: data?.biometricserialno,
-          }))
+              ...data,
+              label: data?.biometricserialno,
+              value: data?.biometricserialno,
+            }))
           : [];
       // console.log(response?.data, answer, 'Data');
       setBiometricDeviceOptions(biometricDevice);
@@ -290,7 +318,12 @@ function EditMovietolive() {
         // setPopupSeverityMalert("error");
         // handleClickOpenPopupMalert();
       } else {
-        handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+        handleApiError(
+          err,
+          setPopupContentMalert,
+          setPopupSeverityMalert,
+          handleClickOpenPopupMalert,
+        );
       }
     }
   };
@@ -299,24 +332,23 @@ function EditMovietolive() {
   //   fetchBiometricDevices();
   // }, [accessibleTodo]);
 
-
   const handleResumeUpload = (event) => {
     const resume = event.target.files;
-    const allowedExtensions = ['png'];
+    const allowedExtensions = ["png"];
     const file = resume[0];
-    const fileExtension = file?.name?.split('.').pop().toLowerCase();
+    const fileExtension = file?.name?.split(".").pop().toLowerCase();
     const preview = URL.createObjectURL(file);
     const maxFileSize = 150 * 1024;
 
     if (!allowedExtensions.includes(fileExtension)) {
-      setPopupContentMalert('Please upload a valid PNG file.');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Please upload a valid PNG file.");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
     if (file.size > maxFileSize) {
-      setPopupContentMalert('Image file size must be less than 150 KB.');
-      setPopupSeverityMalert('warning');
+      setPopupContentMalert("Image file size must be less than 150 KB.");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
       return;
     }
@@ -324,7 +356,7 @@ function EditMovietolive() {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      const base64String = reader.result.split(',')[1]; // Extract base64
+      const base64String = reader.result.split(",")[1]; // Extract base64
       setdocumentFiles({
         name: file.name,
         preview: preview,
@@ -335,28 +367,41 @@ function EditMovietolive() {
 
   const handleDeviceStatus = async (e) => {
     try {
-      let response = await axios.post(SERVICE.BIOMETRIC_PARTICULAR_DEVICE_STATUS, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
+      let response = await axios.post(
+        SERVICE.BIOMETRIC_PARTICULAR_DEVICE_STATUS,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          cloudIDC: e,
+          date: new Date(),
         },
-        cloudIDC: e,
-        date: new Date(),
-      });
+      );
 
       setDeviceOnlineStatus(response?.data?.deviceonlinestatus);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const fetchBioInfoStatus = async (biometricdevicename) => {
     try {
       await axios.post(SERVICE.BIOMETRIC_GET_SEND_COMMAND, {
         headers: { Authorization: `Bearer ${auth.APIToken}` },
-        deviceCommandN: '2',
+        deviceCommandN: "2",
         CloudIDC: biometricdevicename,
       });
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const fetchUsersDeleteData = async () => {
@@ -367,22 +412,34 @@ function EditMovietolive() {
         biometricUserIDC: BiometricId,
         staffNameC: getingOlddatas?.username,
         privilegeC: biometricrole,
-        dataupload: 'new',
+        dataupload: "new",
       });
       setBioEditUserCheck(true);
     } catch (err) {
-      console.log(err, 'err');
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      console.log(err, "err");
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const handleBiometricActionClick = () => {
-    if (!biometricDevicename || biometricDevicename === 'Please Select Device') {
-      setPopupContentMalert('Please Select Device Name.!');
-      setPopupSeverityMalert('info');
+    if (
+      !biometricDevicename ||
+      biometricDevicename === "Please Select Device"
+    ) {
+      setPopupContentMalert("Please Select Device Name.!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
       setLoadingBiometric(true);
-      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)) {
+      if (
+        ["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(
+          deviceDetails?.brand,
+        )
+      ) {
         setLoadingBiometric(false);
         fetchUsersAvailability(deviceDetails, biometricDevicename);
       } else {
@@ -396,23 +453,31 @@ function EditMovietolive() {
   const handleBioEditOldData = (e) => {
     e.preventDefault();
     setLoadingBiometric(true);
-    if (!['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)) {
+    if (
+      !["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(
+        deviceDetails?.brand,
+      )
+    ) {
       fetchUsersDeleteData(BioOldUserCheck?.cloudIDC);
-    } else if (['Bowee']?.includes(deviceDetails.brand)) {
+    } else if (["Bowee"]?.includes(deviceDetails.brand)) {
       sendEditRequestRole();
     }
     setTimeout(() => {
       setLoadingBiometric(false);
-      setPopupContentMalert('Updated Biometric Data Successfully!');
-      setPopupSeverityMalert('success');
+      setPopupContentMalert("Updated Biometric Data Successfully!");
+      setPopupSeverityMalert("success");
       handleClickOpenPopupMalert();
     }, 15000);
   };
 
   const fetchUsersAvailability = async (device, biometricdevicename) => {
-    console.log(device, biometricdevicename, "Device Name")
+    console.log(device, biometricdevicename, "Device Name");
     try {
-      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan']?.includes(device.brand)) {
+      if (
+        ["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan"]?.includes(
+          device.brand,
+        )
+      ) {
         const [res, response] = await Promise.all([
           axios.post(SERVICE.BIOMETRIC_USER_ID_CHECK, {
             headers: { Authorization: `Bearer ${auth.APIToken}` },
@@ -424,7 +489,7 @@ function EditMovietolive() {
               cloudIDC: biometricdevicename,
               staffNameC: enableLoginName ? String(third) : employee?.username,
             },
-            { headers: { Authorization: `Bearer ${auth.APIToken}` } }
+            { headers: { Authorization: `Bearer ${auth.APIToken}` } },
           ),
         ]);
 
@@ -433,16 +498,20 @@ function EditMovietolive() {
         if (res?.data?.alldeviceinfo) {
           setBiometricId(Number(res?.data?.alldeviceinfo));
         }
-      } else if (device.brand === 'Bowee') {
+      } else if (device.brand === "Bowee") {
         const [bowee, response] = await Promise.all([
-          axios.post(SERVICE.BOWER_BIOMETRIC_NEW_USERID, { biometricdevicename: biometricdevicename }, { headers: { Authorization: `Bearer ${auth.APIToken}` } }),
+          axios.post(
+            SERVICE.BOWER_BIOMETRIC_NEW_USERID_GLOBAL,
+            { biometricdevicename: biometricdevicename },
+            { headers: { Authorization: `Bearer ${auth.APIToken}` } },
+          ),
           axios.post(
             SERVICE.BIOMETRIC_USER_DUPLICATE_CHECK,
             {
               cloudIDC: biometricdevicename,
               staffNameC: enableLoginName ? String(third) : employee?.username,
             },
-            { headers: { Authorization: `Bearer ${auth.APIToken}` } }
+            { headers: { Authorization: `Bearer ${auth.APIToken}` } },
           ),
         ]);
         let duplicateCheck = bowee?.data?.NewUserID;
@@ -450,81 +519,109 @@ function EditMovietolive() {
         setBioIndivUserCheck(response?.data?.individualuser);
       } else {
         const [res, response] = await Promise.all([
-          axios.post(SERVICE.BIOMETRIC_GET_DEVICE_INFO_STATUS, { cloudIDC: biometricdevicename }, { headers: { Authorization: `Bearer ${auth.APIToken}` } }),
+          axios.post(
+            SERVICE.BIOMETRIC_GET_DEVICE_INFO_STATUS,
+            { cloudIDC: biometricdevicename },
+            { headers: { Authorization: `Bearer ${auth.APIToken}` } },
+          ),
           axios.post(
             SERVICE.BIOMETRIC_USER_DUPLICATE_CHECK,
             {
               cloudIDC: biometricdevicename,
               staffNameC: enableLoginName ? String(third) : employee?.username,
             },
-            { headers: { Authorization: `Bearer ${auth.APIToken}` } }
+            { headers: { Authorization: `Bearer ${auth.APIToken}` } },
           ),
         ]);
 
-        let biolist = await axios.post(SERVICE.BIOUSER_ADDED_LIST_TABLE, {
-          username: enableLoginName ? third : employee.username
-        }, {
-          headers: { Authorization: `Bearer ${auth.APIToken}` }
-        });
-        setDeviceUserNameAddedList(biolist?.data?.alluploaduserinfo)
+        let biolist = await axios.post(
+          SERVICE.BIOUSER_ADDED_LIST_TABLE,
+          {
+            username: enableLoginName ? third : employee.username,
+          },
+          {
+            headers: { Authorization: `Bearer ${auth.APIToken}` },
+          },
+        );
+        setDeviceUserNameAddedList(biolist?.data?.alluploaduserinfo);
 
         let duplicateCheck = response?.data?.individualuser;
-        console.log(response?.data?.individualuser, "response?.data?.individualuser")
+        console.log(
+          response?.data?.individualuser,
+          "response?.data?.individualuser",
+        );
         setBioIndivUserCheck(duplicateCheck);
         if (res?.data?.alldeviceinfo) {
           setBiometricId(Number(res?.data?.alldeviceinfo));
         }
       }
 
-      let biolist = await axios.post(SERVICE.BIOUSER_ADDED_LIST_TABLE, {
-        username: enableLoginName ? third : employee.username
-      }, {
-        headers: { Authorization: `Bearer ${auth.APIToken}` }
-      });
-      setDeviceUserNameAddedList(biolist?.data?.alluploaduserinfo)
-
+      let biolist = await axios.post(
+        SERVICE.BIOUSER_ADDED_LIST_TABLE,
+        {
+          username: enableLoginName ? third : employee.username,
+        },
+        {
+          headers: { Authorization: `Bearer ${auth.APIToken}` },
+        },
+      );
+      setDeviceUserNameAddedList(biolist?.data?.alluploaduserinfo);
     } catch (err) {
-      console.log(err, "err")
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      console.log(err, "err");
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const handleSubmitBioCheck = (e) => {
     e.preventDefault();
 
-    if (!biometricDevicename || biometricDevicename === 'Please Select Device') {
-      setPopupContentMalert('Please Select Device Name.!');
-      setPopupSeverityMalert('info');
+    if (
+      !biometricDevicename ||
+      biometricDevicename === "Please Select Device"
+    ) {
+      setPopupContentMalert("Please Select Device Name.!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (!BiometricId || BiometricId <= 0) {
-      setPopupContentMalert('Check Availability Status to get UserID!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Check Availability Status to get UserID!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (!biometricrole || biometricrole === 'Please Select Role') {
-      setPopupContentMalert('Please Select Biometric User Role!');
-      setPopupSeverityMalert('info');
+    } else if (!biometricrole || biometricrole === "Please Select Role") {
+      setPopupContentMalert("Please Select Biometric User Role!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (deviceDetails?.brand === 'Bio-Socket' && biometricrole === 'Administrator' && !documentFiles) {
-      setPopupContentMalert('Please Add Face Image');
-      setPopupSeverityMalert('warning');
+    } else if (
+      deviceDetails?.brand === "Bio-Socket" &&
+      biometricrole === "Administrator" &&
+      !documentFiles
+    ) {
+      setPopupContentMalert("Please Add Face Image");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (deviceDetails?.brand === 'Bowee-Chandichan') {
-      setPopupContentMalert('Currently Not is Use');
-      setPopupSeverityMalert('warning');
+    } else if (deviceDetails?.brand === "Bowee-Chandichan") {
+      setPopupContentMalert("Currently Not is Use");
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    }
-    else if (["Bowee"]?.includes(deviceDetails.brand) && !documentFiles) {
+    } else if (["Bowee"]?.includes(deviceDetails.brand) && !documentFiles) {
       setPopupContentMalert("Please Add Profile Image");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    }
-    else if (BioIndivUserCheck) {
-      setPopupContentMalert('User Already Added');
-      setPopupSeverityMalert('info');
+    } else if (BioIndivUserCheck) {
+      setPopupContentMalert("User Already Added");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
-      if (['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan']?.includes(deviceDetails.brand)) {
+      if (
+        ["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan"]?.includes(
+          deviceDetails.brand,
+        )
+      ) {
         handleAddNewBiometricDevices();
-      } else if (['Bowee']?.includes(deviceDetails.brand)) {
+      } else if (["Bowee"]?.includes(deviceDetails.brand)) {
         handleNewUserAddBowee();
       } else {
         addUserInBioMetric();
@@ -535,7 +632,7 @@ function EditMovietolive() {
     try {
       if (deviceDetails) {
         let brand1CommandAddUser = {
-          cmd: 'setusername',
+          cmd: "setusername",
           count: 50,
           record: [
             {
@@ -545,103 +642,129 @@ function EditMovietolive() {
           ],
         };
         let brand1CommandImage = {
-          cmd: 'setuserinfo',
+          cmd: "setuserinfo",
           enrollid: BiometricId,
           name: enableLoginName ? String(third) : employee?.username,
           backupnum: 50,
-          admin: biometricrole === 'User' ? 0 : 1,
+          admin: biometricrole === "User" ? 0 : 1,
           record: documentFiles?.data,
         };
         const futureDate = new Date();
         futureDate.setFullYear(futureDate.getFullYear() + 100);
         const isoString = futureDate.toISOString();
         const brand2Command = {
-          pass: '',
+          pass: "",
           accNo: BiometricId,
           opType: 1,
           isManager: 0,
-          password: '',
+          password: "",
           cardSN: deviceDetails?.biometricserialno,
           endExpDate: isoString,
           timeGroup: 0,
           name: enableLoginName ? String(third) : employee?.username,
           faceId1: 0,
           dept: 1,
-          faceImage1: '',
+          faceImage1: "",
           dept: 1,
         };
         const brand3Command = {
-          agentNo: '82391038574',
-          charset: 'UTF-8',
+          agentNo: "82391038574",
+          charset: "UTF-8",
           content: {
             employeeDetailBeanList: [
               {
                 employeeId: BiometricId,
-                employeeName: enableLoginName ? String(third) : employee?.username,
-                employeeIc: '456465465465',
-                employeePhotoWay: 'path',
+                employeeName: enableLoginName
+                  ? String(third)
+                  : employee?.username,
+                employeeIc: "456465465465",
+                employeePhotoWay: "path",
                 employeePhoto: documentFiles?.data,
               },
             ],
             deviceSn: deviceDetails?.biometricserialno,
           },
           deviceSn: deviceDetails?.biometricserialno,
-          interType: '32001',
-          requestId: '7864874687489789',
-          sign: 'sfdsfdsfds',
-          signType: 'RSA',
-          version: '1.0.0',
+          interType: "32001",
+          requestId: "7864874687489789",
+          sign: "sfdsfdsfds",
+          signType: "RSA",
+          version: "1.0.0",
         };
-        let finalCommand = deviceDetails.brand === 'Bio-Socket' ? brand1CommandAddUser : deviceDetails.brand === 'Bowee-Witzee' ? brand2Command : deviceDetails.brand === 'Bowee-Chandichan' ? brand3Command : '';
+        let finalCommand =
+          deviceDetails.brand === "Bio-Socket"
+            ? brand1CommandAddUser
+            : deviceDetails.brand === "Bowee-Witzee"
+              ? brand2Command
+              : deviceDetails.brand === "Bowee-Chandichan"
+                ? brand3Command
+                : "";
         let res = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD_NEW, {
           headers: { Authorization: `Bearer ${auth.APIToken}` },
           command: finalCommand,
           brand: deviceDetails.brand,
           brand1: brand1CommandImage,
         });
-        if (deviceDetails?.brand === 'Bio-Socket' ? res?.data?.alldeviceinfo?.result : deviceDetails?.brand === 'Bowee-Witzee' ? res?.data?.alldeviceinfo : false) {
+        if (
+          deviceDetails?.brand === "Bio-Socket"
+            ? res?.data?.alldeviceinfo?.result
+            : deviceDetails?.brand === "Bowee-Witzee"
+              ? res?.data?.alldeviceinfo
+              : false
+        ) {
           let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
             headers: { Authorization: `Bearer ${auth.APIToken}` },
             biometricUserIDC: BiometricId,
             cloudIDC: deviceDetails.biometricserialno,
-            dataupload: 'new',
-            downloadedFaceTemplateN: deviceDetails.brand === 'Bio-Socket' && documentFiles?.data ? 1 : 0,
+            dataupload: "new",
+            downloadedFaceTemplateN:
+              deviceDetails.brand === "Bio-Socket" && documentFiles?.data
+                ? 1
+                : 0,
             downloadedFingerTemplateN: 0,
             fingerCountN: 0,
-            isEnabledC: 'Yes',
-            isFaceEnrolledC: deviceDetails.brand === 'Bio-Socket' && documentFiles?.data ? 'Yes' : 'No',
+            isEnabledC: "Yes",
+            isFaceEnrolledC:
+              deviceDetails.brand === "Bio-Socket" && documentFiles?.data
+                ? "Yes"
+                : "No",
             privilegeC: biometricrole,
-            pwdc: '',
+            pwdc: "",
             staffNameC: enableLoginName ? String(third) : employee?.username,
             companyname: employee?.biometricname,
           });
         }
 
-        setPopupContentMalert('Biometric Data Added');
-        setPopupSeverityMalert('success');
+        setPopupContentMalert("Biometric Data Added");
+        setPopupSeverityMalert("success");
         handleClickOpenPopupMalert();
         setBiometricPostDevice({
           biometricUserIDC: BiometricId,
           cloudIDC: employee?.biometricdevicename,
-          devicetype: 'notboxtel',
+          devicetype: "notboxtel",
         });
-        setDeviceDetails('');
+        setDeviceDetails("");
 
         setEmployee((prev) => ({
           ...prev,
-          biometricdevicename: 'Please Select Device',
-          biometricrole: 'Please Select Role',
+          biometricdevicename: "Please Select Device",
+          biometricrole: "Please Select Role",
         }));
 
         setBiometricId(0);
         setBioPostCheckDevice(true);
       } else {
-        setPopupContentMalert('Choose the Device Name Properly..!!');
-        setPopupSeverityMalert('warning');
+        setPopupContentMalert("Choose the Device Name Properly..!!");
+        setPopupSeverityMalert("warning");
         handleClickOpenPopupMalert();
       }
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const addUserInBioMetric = async () => {
@@ -650,19 +773,19 @@ function EditMovietolive() {
         headers: { Authorization: `Bearer ${auth.APIToken}` },
         biometricUserIDC: BiometricId,
         cloudIDC: biometricDevicename,
-        datastatus: 'new',
-        dataupload: 'new',
+        datastatus: "new",
+        dataupload: "new",
         downloadedFaceTemplateN: 0,
         downloadedFingerTemplateN: 0,
         fingerCountN: 0,
-        isEnabledC: 'Yes',
-        isFaceEnrolledC: 'No',
+        isEnabledC: "Yes",
+        isFaceEnrolledC: "No",
         privilegeC: biometricrole,
-        pwdc: '',
+        pwdc: "",
         staffNameC: enableLoginName ? String(third) : employee?.username,
       });
-      setPopupContentMalert('Biometric Data Added!');
-      setPopupSeverityMalert('success');
+      setPopupContentMalert("Biometric Data Added!");
+      setPopupSeverityMalert("success");
       handleClickOpenPopupMalert();
       setBiometricPostDevice({
         biometricUserIDC: BiometricId,
@@ -671,80 +794,89 @@ function EditMovietolive() {
 
       setEmployee((prev) => ({
         ...prev,
-        biometricdevicename: 'Please Select Device',
-        biometricrole: 'Please Select Role',
+        biometricdevicename: "Please Select Device",
+        biometricrole: "Please Select Role",
       }));
 
       setBiometricId(0);
       setBioPostCheckDevice(true);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const handleNewUserAddBowee = async () => {
-    const PeopleJson = {
-      UserID: String(BiometricId),
-      Name: enableLoginName ? String(third) : employee?.username,
-      Job: 'Staff',
-      AccessType: biometricrole === 'User' ? 0 : biometricrole === 'Administrator' ? 1 : 2,
-      OpenTimes: 65535,
-      Photo: documentFiles?.data,
-    };
+    // const PeopleJson = {
+    //   UserID: String(BiometricId),
+    //   Name: enableLoginName ? String(third) : employee?.username,
+    //   Job: 'Staff',
+    //   AccessType: biometricrole === 'User' ? 0 : biometricrole === 'Administrator' ? 1 : 2,
+    //   OpenTimes: 65535,
+    //   Photo: documentFiles?.data,
+    // };
     try {
-      const response = await axios.post(
-        SERVICE.BOWER_BIOMETRIC_NEW_USER_ADD,
+      // const response = await axios.post(
+      //   SERVICE.BOWER_BIOMETRIC_NEW_USER_ADD,
 
-        {
-          headers: { Authorization: `Bearer ${auth.APIToken}` },
-          PeopleJson: PeopleJson,
-          biometricdevicename: deviceDetails.biometricserialno,
-        }
-      );
-      if (response.data?.success) {
-        let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
-          headers: { Authorization: `Bearer ${auth.APIToken}` },
-          biometricUserIDC: BiometricId,
-          cloudIDC: deviceDetails.biometricserialno,
-          dataupload: 'new',
-          downloadedFaceTemplateN: deviceDetails.brand === 'Bowee' && documentFiles?.data ? 1 : 0,
-          downloadedFingerTemplateN: 0,
-          fingerCountN: 0,
-          isEnabledC: 'Yes',
-          isFaceEnrolledC: deviceDetails.brand === 'Bowee' && documentFiles?.data ? 'Yes' : 'No',
-          privilegeC: biometricrole,
-          pwdc: '',
-          staffNameC: enableLoginName ? String(third) : employee?.username,
-          companyname: employee?.biometricname,
-        });
-        setCheckedBiometricAdded(true);
-      }
-      setPopupContentMalert('Biometric Data Added');
-      setPopupSeverityMalert('success');
+      //   {
+      //     headers: { Authorization: `Bearer ${auth.APIToken}` },
+      //     PeopleJson: PeopleJson,
+      //     biometricdevicename: deviceDetails.biometricserialno,
+      //   }
+      // );
+      // if (response.data?.success) {
+      let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
+        headers: { Authorization: `Bearer ${auth.APIToken}` },
+        biometricUserIDC: BiometricId,
+        cloudIDC: deviceDetails.biometricserialno,
+        dataupload: "new",
+        datastatus: "create",
+        downloadedFaceTemplateN:
+          deviceDetails.brand === "Bowee" && documentFiles?.data ? 1 : 0,
+        downloadedFingerTemplateN: 0,
+        fingerCountN: 0,
+        isEnabledC: "Yes",
+        isFaceEnrolledC:
+          deviceDetails.brand === "Bowee" && documentFiles?.data ? "Yes" : "No",
+        privilegeC: biometricrole,
+        pwdc: "",
+        staffNameC: enableLoginName ? String(third) : employee?.username,
+        companyname: employee?.biometricname,
+        photoImage: documentFiles?.data,
+      });
+      setCheckedBiometricAdded(true);
+      // }
+      setPopupContentMalert("Biometric Data Added");
+      setPopupSeverityMalert("success");
       handleClickOpenPopupMalert();
       // setAddBiometricData(true)
       setBiometricPostDevice({
         biometricUserIDC: BiometricId,
         cloudIDC: employee?.biometricdevicename,
-        devicetype: 'notboxtel',
+        devicetype: "notboxtel",
       });
-      setDeviceDetails('');
+      setDeviceDetails("");
 
       setEmployee((prev) => ({
         ...prev,
-        biometricdevicename: 'Please Select Device',
-        biometricrole: 'Please Select Role',
+        biometricdevicename: "Please Select Device",
+        biometricrole: "Please Select Role",
       }));
 
       setBiometricId(0);
       setBioPostCheckDevice(true);
     } catch (err) {
-      console.log(err, 'err');
+      console.log(err, "err");
       setCheckedBiometricAdded(false);
-      if (!err?.response?.data?.success) setPopupContentMalert(err?.response?.data?.message);
-      setPopupSeverityMalert('warning');
+      if (!err?.response?.data?.success)
+        setPopupContentMalert(err?.response?.data?.message);
+      setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     }
-
   };
   const handleCommitUserBiometric = async (e) => {
     e.preventDefault();
@@ -755,14 +887,18 @@ function EditMovietolive() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-          biometricUserIDC: BiometricId ? BiometricId : BiometricPostDevice?.biometricUserIDC,
-          CloudIDC: biometricDevicename ? biometricDevicename : BiometricPostDevice.cloudIDC,
-          deviceCommandN: '5',
+          biometricUserIDC: BiometricId
+            ? BiometricId
+            : BiometricPostDevice?.biometricUserIDC,
+          CloudIDC: biometricDevicename
+            ? biometricDevicename
+            : BiometricPostDevice.cloudIDC,
+          deviceCommandN: "5",
         });
         // console.log(res?.data, 'res?.data');
       }
     } catch (err) {
-      console.log(err, 'Error in Intern Edit Biometric');
+      console.log(err, "Error in Intern Edit Biometric");
       // handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
     }
   };
@@ -776,6 +912,7 @@ function EditMovietolive() {
         devicename: devicename,
       });
       setBioOldUserCheck(req?.data?.individualuser);
+      setDeviceDetails(req?.data?.devicedetails);
       if (req?.data?.individualuser) {
         let user = req?.data?.individualuser;
 
@@ -786,12 +923,14 @@ function EditMovietolive() {
         setBiometricrole(user?.privilegeC);
         setBiometricUsername(user?.staffNameC);
         setBiometricId(Number(user?.biometricUserIDC));
-        setDeviceDetails(req?.data?.devicedetails);
+
         setUnmatchedUserData(user);
         setAddBiometricData(true);
-        let brandName = req?.data?.devicedetails ? req?.data?.devicedetails?.brand : '';
+        let brandName = req?.data?.devicedetails
+          ? req?.data?.devicedetails?.brand
+          : "";
         setBioUserDataActions({
-          deviceCommandN: '5',
+          deviceCommandN: "5",
           CloudIDC: user.cloudIDC,
           biometricUserIDC: user?.biometricUserIDC,
           brandname: brandName,
@@ -799,52 +938,75 @@ function EditMovietolive() {
       }
     } catch (err) {
       console.log(err);
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const sendEditRequestRole = async () => {
     try {
-      let res = await axios.put(`${SERVICE.BIOMETRIC_EDIT_UNMATCHED_USER_DATA}/${UnmatchedUserData?._id}`, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
+      let res = await axios.put(
+        `${SERVICE.BIOMETRIC_EDIT_UNMATCHED_USER_DATA}/${UnmatchedUserData?._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          privilegeC: String(biometricrole),
+          dataupload: "new",
+          datastatus: "edit",
+          // updatedby: [
+          //   ...updateby,
+          //   {
+          //     name: String(isUserRoleAccess.companyname),
+          //     date: String(new Date()),
+          //   },
+          // ],
         },
-        privilegeC: String(biometricrole),
-        // updatedby: [
-        //   ...updateby,
-        //   {
-        //     name: String(isUserRoleAccess.companyname),
-        //     date: String(new Date()),
-        //   },
-        // ],
-      });
+      );
 
-      if (res?.data?.success && !['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(BioUserDataActions?.brandname)) {
+      if (
+        res?.data?.success &&
+        !["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(
+          BioUserDataActions?.brandname,
+        )
+      ) {
         let res = await axios.post(SERVICE.BIOMETRIC_GET_SEND_COMMAND, {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
           CloudIDC: BioUserDataActions?.CloudIDC,
           biometricUserIDC: BioUserDataActions?.biometricUserIDC,
-          deviceCommandN: '5',
-          datastatus: 'new',
+          deviceCommandN: "5",
+          datastatus: "new",
         });
-      } else if (res?.data?.success && ['Bowee']?.includes(BioUserDataActions?.brandname)) {
+      } else if (
+        res?.data?.success &&
+        ["Bowee"]?.includes(BioUserDataActions?.brandname)
+      ) {
         let res = await axios.post(SERVICE.BIOMETRIC_COMMAND_EXECUTION, {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
           biometricDeviceManagement: BioUserDataActions,
-          command: 'Edit',
+          command: "Edit",
           role: String(biometricrole),
         });
       }
-      setPopupContent('Updated Successfully');
-      setPopupSeverity('success');
+      setPopupContent("Updated Successfully");
+      setPopupSeverity("success");
       handleClickOpenPopup();
-      setBiometricUsername('');
+      setBiometricUsername("");
       // sendRequest();
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -880,7 +1042,8 @@ function EditMovietolive() {
     const previewUrl = URL.createObjectURL(compressedBlob);
 
     // 5. Convert compressed Blob back to base64 (if you need to send it to backend)
-    const compressedBase64 = await imageCompression.getDataUrlFromFile(compressedBlob);
+    const compressedBase64 =
+      await imageCompression.getDataUrlFromFile(compressedBlob);
     const compressedBase64Data = compressedBase64.split(",")[1]; // remove prefix
 
     // 6. Save in state
@@ -889,10 +1052,10 @@ function EditMovietolive() {
       preview: previewUrl,
       data: compressedBase64Data, // store compressed base64 data
     });
-    setLoading(false)
+    setLoading(false);
     console.log(
       "Compressed size (KB):",
-      Math.round(compressedBlob.size / 1024)
+      Math.round(compressedBlob.size / 1024),
     );
   }
 
@@ -905,8 +1068,8 @@ function EditMovietolive() {
     setOpenPopupMalert(false);
   };
   const [openPopup, setOpenPopup] = useState(false);
-  const [popupContent, setPopupContent] = useState('');
-  const [popupSeverity, setPopupSeverity] = useState('');
+  const [popupContent, setPopupContent] = useState("");
+  const [popupSeverity, setPopupSeverity] = useState("");
   const handleClickOpenPopup = () => {
     // setUpdateLoader(false);
     setOpenPopup(true);
@@ -917,49 +1080,56 @@ function EditMovietolive() {
   };
 
   const [boardingDetails, setBoardingDetails] = useState({
-    status: 'Please Select Status',
+    status: "Please Select Status",
     attOptions: [],
-    company: 'Please Select Company',
-    branch: 'Please Select Branch',
-    unit: 'Please Select Unit',
-    floor: 'Please Select Floor',
-    area: 'Please Select Area',
-    department: 'Please Select Department',
-    team: 'Please Select Team',
-    designation: 'Please Select Designation',
-    shifttype: 'Please Select Shift Type',
-    shiftmode: 'Please Select Shift Mode',
-    shiftgrouping: 'Please Select Shift Grouping',
-    shifttiming: 'Please Select Shift',
-    reportingto: 'Please Select Reporting To',
-    workmode: 'Please Select Work Mode',
+    company: "Please Select Company",
+    branch: "Please Select Branch",
+    unit: "Please Select Unit",
+    floor: "Please Select Floor",
+    area: "Please Select Area",
+    department: "Please Select Department",
+    team: "Please Select Team",
+    designation: "Please Select Designation",
+    shifttype: "Please Select Shift Type",
+    shiftmode: "Please Select Shift Mode",
+    shiftgrouping: "Please Select Shift Grouping",
+    shifttiming: "Please Select Shift",
+    reportingto: "Please Select Reporting To",
+    workmode: "Please Select Work Mode",
+    createdomainemail: false,
   });
 
   const { auth } = useContext(AuthContext);
-  const { isUserRoleAccess, alldesignation, allUsersData, buttonStyles, workStationSystemName } = useContext(UserRoleAccessContext);
+  const {
+    isUserRoleAccess,
+    alldesignation,
+    allUsersData,
+    buttonStyles,
+    workStationSystemName,
+  } = useContext(UserRoleAccessContext);
   const [step, setStep] = useState(1);
   const id = useParams().id;
 
   const [shifts, setShifts] = useState([]);
   const ShiftModeOptions = [
-    { label: 'Shift', value: 'Shift' },
-    { label: 'Week Off', value: 'Week Off' },
+    { label: "Shift", value: "Shift" },
+    { label: "Week Off", value: "Week Off" },
   ];
 
   const Typeoptions = [
-    { label: 'Amount Wise', value: 'Amount Wise' },
-    { label: 'Process Wise', value: 'Process Wise' },
+    { label: "Amount Wise", value: "Amount Wise" },
+    { label: "Process Wise", value: "Process Wise" },
   ];
 
   const salaryrangeoptions = [
-    { label: 'Less Than', value: 'Less Than' },
-    { label: 'Greater Than', value: 'Greater Than' },
-    { label: 'Between', value: 'Between' },
-    { label: 'Exact', value: 'Exact' },
+    { label: "Less Than", value: "Less Than" },
+    { label: "Greater Than", value: "Greater Than" },
+    { label: "Between", value: "Between" },
+    { label: "Exact", value: "Exact" },
   ];
 
   const [isErrorOpenNew, setIsErrorOpenNew] = useState(false);
-  const [showAlertNew, setShowAlertNew] = useState('');
+  const [showAlertNew, setShowAlertNew] = useState("");
   const handleClickOpenerrNew = () => {
     setIsErrorOpenNew(true);
     setLoading(false);
@@ -968,7 +1138,7 @@ function EditMovietolive() {
   const handleCloseerrNew = () => {
     setIsErrorOpenNew(false);
 
-    backPage('/internlist');
+    backPage("/internlist");
   };
 
   const [isArea, setIsArea] = useState(false);
@@ -981,10 +1151,10 @@ function EditMovietolive() {
     return numbers ? numbers.map(Number) : [];
   };
 
-  const [searchQueryManage, setSearchQueryManage] = useState('');
+  const [searchQueryManage, setSearchQueryManage] = useState("");
 
-  const [copiedData, setCopiedData] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [copiedData, setCopiedData] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleSelectionChange = (newSelection) => {
     setSelectedRows(newSelection.selectionModel);
@@ -1004,11 +1174,11 @@ function EditMovietolive() {
   };
   const handleCloseManageColumns = () => {
     setManageColumnsOpen(false);
-    setSearchQueryManage('');
+    setSearchQueryManage("");
   };
 
   const open = Boolean(anchorEl);
-  const idopen = open ? 'simple-popover' : undefined;
+  const idopen = open ? "simple-popover" : undefined;
 
   // Styles for the resizable column
   const ResizableColumn = styled(Resizable)`
@@ -1024,9 +1194,9 @@ function EditMovietolive() {
 
   const getRowClassName = (params) => {
     if (selectedRows.includes(params.row.id)) {
-      return 'custom-id-row'; // This is the custom class for rows with item.tat === 'ago'
+      return "custom-id-row"; // This is the custom class for rows with item.tat === 'ago'
     }
-    return ''; // Return an empty string for other rows
+    return ""; // Return an empty string for other rows
   };
 
   // Show All Columns & Manage Columns
@@ -1041,10 +1211,12 @@ function EditMovietolive() {
     actions: true,
   };
 
-  const [columnVisibility, setColumnVisibility] = useState(initialColumnVisibility);
+  const [columnVisibility, setColumnVisibility] = useState(
+    initialColumnVisibility,
+  );
 
   const extractText = (str) => {
-    return str.replace(/\d+/g, '');
+    return str.replace(/\d+/g, "");
   };
 
   //table entries ..,.
@@ -1080,11 +1252,17 @@ function EditMovietolive() {
 
   const LoadingBackdrop = ({ open }) => {
     return (
-      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
+      <Backdrop
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
         <div className="pulsating-circle">
           <CircularProgress color="inherit" className="loading-spinner" />
         </div>
-        <Typography variant="h6" sx={{ marginLeft: 2, color: '#fff', fontWeight: 'bold' }}>
+        <Typography
+          variant="h6"
+          sx={{ marginLeft: 2, color: "#fff", fontWeight: "bold" }}
+        >
           Please Wait...
         </Typography>
       </Backdrop>
@@ -1092,11 +1270,11 @@ function EditMovietolive() {
   };
 
   const [mailDetails, setMailDetails] = useState({
-    username: '',
-    quota: '1000',
-    originalpassword: '',
-    companyname: '',
-    companyemail: '',
+    username: "",
+    quota: "1000",
+    originalpassword: "",
+    companyname: "",
+    companyemail: "",
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -1106,20 +1284,28 @@ function EditMovietolive() {
     setSearchQuery(event.target.value);
   };
   // Split the search query into individual terms
-  const searchTerms = searchQuery.toLowerCase().split(' ');
+  const searchTerms = searchQuery.toLowerCase().split(" ");
   // Modify the filtering logic to check each term
   const filteredDatas = items?.filter((item) => {
-    return searchTerms.every((term) => Object.values(item).join(' ').toLowerCase().includes(term));
+    return searchTerms.every((term) =>
+      Object.values(item).join(" ").toLowerCase().includes(term),
+    );
   });
 
-  const filteredData = filteredDatas?.slice((page - 1) * pageSize, page * pageSize);
+  const filteredData = filteredDatas?.slice(
+    (page - 1) * pageSize,
+    page * pageSize,
+  );
 
   const totalPages = Math.ceil(filteredDatas.length / pageSize);
 
   const visiblePages = Math.min(totalPages, 3);
 
   const firstVisiblePage = Math.max(1, page - 1);
-  const lastVisiblePage = Math.min(firstVisiblePage + visiblePages - 1, totalPages);
+  const lastVisiblePage = Math.min(
+    firstVisiblePage + visiblePages - 1,
+    totalPages,
+  );
 
   const pageNumbers = [];
 
@@ -1139,61 +1325,66 @@ function EditMovietolive() {
 
   const columnDataTable = [
     {
-      field: 'serialNumber',
-      headerName: 'SNo',
+      field: "serialNumber",
+      headerName: "SNo",
       flex: 0,
       width: 90,
       hide: !columnVisibility.serialNumber,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'totalValue',
-      headerName: 'Salary Amount',
+      field: "totalValue",
+      headerName: "Salary Amount",
       flex: 0,
       width: 100,
       hide: !columnVisibility.totalValue,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'experience',
-      headerName: 'Experience',
+      field: "experience",
+      headerName: "Experience",
       flex: 0,
       width: 200,
       hide: !columnVisibility.experience,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'salarycode',
-      headerName: 'Process Code',
+      field: "salarycode",
+      headerName: "Process Code",
       flex: 0,
       width: 200,
       hide: !columnVisibility.salarycode,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
     {
-      field: 'targetpoints',
-      headerName: 'Target Points',
+      field: "targetpoints",
+      headerName: "Target Points",
       flex: 0,
       width: 200,
       hide: !columnVisibility.targetpoints,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
     },
 
     {
-      field: 'statusallot',
-      headerName: 'Status',
+      field: "statusallot",
+      headerName: "Status",
       flex: 0,
       width: 250,
-      minHeight: '40px !important',
+      minHeight: "40px !important",
       sortable: false,
       hide: !columnVisibility.statusallot,
-      headerClassName: 'bold-header',
+      headerClassName: "bold-header",
       renderCell: (params) => (
-        <Grid sx={{ display: 'flex' }}>
+        <Grid sx={{ display: "flex" }}>
           <Button
             variant="contained"
             onClick={() => {
-              getCodesalary(params.row.totalValue, params.row.code, params.row.experience, params.row.targetpoints);
+              getCodesalary(
+                params.row.totalValue,
+                params.row.code,
+                params.row.experience,
+                params.row.targetpoints,
+              );
             }}
           >
             Allot
@@ -1231,7 +1422,9 @@ function EditMovietolive() {
   };
 
   // // Function to filter columns based on search query
-  const filteredColumns = columnDataTable.filter((column) => column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase()));
+  const filteredColumns = columnDataTable.filter((column) =>
+    column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase()),
+  );
 
   // Manage Columns functionality
   const toggleColumnVisibility = (field) => {
@@ -1245,9 +1438,9 @@ function EditMovietolive() {
   const manageColumnsContent = (
     <Box
       style={{
-        padding: '10px',
-        minWidth: '325px',
-        '& .MuiDialogContent-root': { padding: '10px 0' },
+        padding: "10px",
+        minWidth: "325px",
+        "& .MuiDialogContent-root": { padding: "10px 0" },
       }}
     >
       <Typography variant="h6">Manage Columns</Typography>
@@ -1255,7 +1448,7 @@ function EditMovietolive() {
         aria-label="close"
         onClick={handleCloseManageColumns}
         sx={{
-          position: 'absolute',
+          position: "absolute",
           right: 8,
           top: 8,
           color: (theme) => theme.palette.grey[500],
@@ -1263,20 +1456,38 @@ function EditMovietolive() {
       >
         <CloseIcon />
       </IconButton>
-      <Box sx={{ position: 'relative', margin: '10px' }}>
-        <TextField label="Find column" variant="standard" fullWidth value={searchQueryManage} onChange={(e) => setSearchQueryManage(e.target.value)} sx={{ marginBottom: 5, position: 'absolute' }} />
+      <Box sx={{ position: "relative", margin: "10px" }}>
+        <TextField
+          label="Find column"
+          variant="standard"
+          fullWidth
+          value={searchQueryManage}
+          onChange={(e) => setSearchQueryManage(e.target.value)}
+          sx={{ marginBottom: 5, position: "absolute" }}
+        />
       </Box>
       <br />
       <br />
-      <DialogContent sx={{ minWidth: 'auto', height: '200px', position: 'relative' }}>
-        <List sx={{ overflow: 'auto', height: '100%' }}>
+      <DialogContent
+        sx={{ minWidth: "auto", height: "200px", position: "relative" }}
+      >
+        <List sx={{ overflow: "auto", height: "100%" }}>
           {filteredColumns.map((column) => (
             <ListItem key={column.field}>
               <ListItemText
-                sx={{ display: 'flex' }}
-                primary={<Switch sx={{ marginTop: '-5px' }} size="small" checked={columnVisibility[column.field]} onChange={() => toggleColumnVisibility(column.field)} />}
-                secondary={column.field === 'checkbox' ? 'Checkbox' : column.headerName}
-              // secondary={column.headerName }
+                sx={{ display: "flex" }}
+                primary={
+                  <Switch
+                    sx={{ marginTop: "-5px" }}
+                    size="small"
+                    checked={columnVisibility[column.field]}
+                    onChange={() => toggleColumnVisibility(column.field)}
+                  />
+                }
+                secondary={
+                  column.field === "checkbox" ? "Checkbox" : column.headerName
+                }
+                // secondary={column.headerName }
               />
             </ListItem>
           ))}
@@ -1285,7 +1496,11 @@ function EditMovietolive() {
       <DialogActions>
         <Grid container>
           <Grid item md={4}>
-            <Button variant="text" sx={{ textTransform: 'none' }} onClick={() => setColumnVisibility(initialColumnVisibility)}>
+            <Button
+              variant="text"
+              sx={{ textTransform: "none" }}
+              onClick={() => setColumnVisibility(initialColumnVisibility)}
+            >
               Show All
             </Button>
           </Grid>
@@ -1293,7 +1508,7 @@ function EditMovietolive() {
           <Grid item md={4}>
             <Button
               variant="text"
-              sx={{ textTransform: 'none' }}
+              sx={{ textTransform: "none" }}
               onClick={() => {
                 const newColumnVisibility = {};
                 columnDataTable.forEach((column) => {
@@ -1316,20 +1531,20 @@ function EditMovietolive() {
     setIsEditOpen(true);
   };
   const handleCloseModEdit = (e, reason) => {
-    if (reason && reason === 'backdropClick') return;
+    if (reason && reason === "backdropClick") return;
     setEmployee({
       ...employee,
-      type: 'Please Select Type',
-      salaryrange: 'Please Select Salary Range',
-      amountvalue: '',
-      from: '',
-      to: '',
+      type: "Please Select Type",
+      salaryrange: "Please Select Salary Range",
+      amountvalue: "",
+      from: "",
+      to: "",
     });
 
     setIsArea(false);
     setLoginNotAllot({
       ...loginNotAllot,
-      process: 'Please Select Process',
+      process: "Please Select Process",
     });
 
     setSalaryFix([]);
@@ -1337,14 +1552,14 @@ function EditMovietolive() {
   };
 
   const handleCloseModEditAllot = (e, reason) => {
-    if (reason && reason === 'backdropClick') return;
+    if (reason && reason === "backdropClick") return;
     setEmployee({
       ...employee,
-      type: 'Please Select Type',
-      salaryrange: 'Please Select Salary Range',
-      amountvalue: '',
-      from: '',
-      to: '',
+      type: "Please Select Type",
+      salaryrange: "Please Select Salary Range",
+      amountvalue: "",
+      from: "",
+      to: "",
     });
     setIsArea(false);
     setSalaryFix([]);
@@ -1352,44 +1567,53 @@ function EditMovietolive() {
   };
 
   const [assignExperience, setAssignExperience] = useState({
-    assignExpMode: 'Auto Increment',
+    assignExpMode: "Auto Increment",
     assignExpvalue: 0,
-    assignEndExpDate: '',
-    assignEndTarDate: '',
-    assignEndExp: 'Exp Stop',
-    assignEndExpvalue: 'No',
-    assignEndTar: 'Target Stop',
-    assignEndTarvalue: 'No',
-    updatedate: '',
-    assignTartype: 'Department Month Set',
-    assignExptype: 'Department Month Set',
-    grosssalary: '',
-    modeexperience: '',
-    targetexperience: '',
-    endexp: '',
-    endexpdate: '',
-    endtar: '',
-    endtardate: '',
-    updatedate: '',
+    assignEndExpDate: "",
+    assignEndTarDate: "",
+    assignEndExp: "Exp Stop",
+    assignEndExpvalue: "No",
+    assignEndTar: "Target Stop",
+    assignEndTarvalue: "No",
+    updatedate: "",
+    assignTartype: "Department Month Set",
+    assignExptype: "Department Month Set",
+    grosssalary: "",
+    modeexperience: "",
+    targetexperience: "",
+    endexp: "",
+    endexpdate: "",
+    endtar: "",
+    endtardate: "",
+    updatedate: "",
   });
 
-  const [selectedBranchCode, setSelectedBranchCode] = useState('');
-  const [selectedUnitCode, setSelectedUnitCode] = useState('');
+  const [selectedBranchCode, setSelectedBranchCode] = useState("");
+  const [selectedUnitCode, setSelectedUnitCode] = useState("");
 
   // Process allot add  details
 
   const [loginNotAllot, setLoginNotAllot] = useState({
-    process: 'Please Select Process',
-    processtype: 'Primary',
-    processduration: 'Full',
+    process: "Please Select Process",
+    processtype: "Primary",
+    processduration: "Full",
 
-    time: 'Hrs',
-    timemins: 'Mins',
+    time: "Hrs",
+    timemins: "Mins",
   });
 
   useEffect(() => {
     workStationAutoGenerate();
-  }, [boardingDetails?.company, boardingDetails?.branch, boardingDetails?.unit, boardingDetails.workmode, boardingDetails?.username, boardingDetails?.ifoffice, selectedBranchCode, selectedUnitCode]);
+  }, [
+    boardingDetails?.company,
+    boardingDetails?.branch,
+    boardingDetails?.unit,
+    boardingDetails.workmode,
+    boardingDetails?.username,
+    boardingDetails?.ifoffice,
+    selectedBranchCode,
+    selectedUnitCode,
+  ]);
 
   const workStationAutoGenerate = async () => {
     try {
@@ -1398,7 +1622,9 @@ function EditMovietolive() {
         .filter(
           (item) =>
             // item?.workmode !== "Internship" &&
-            item.company === boardingDetails?.company && item.branch === boardingDetails?.branch && item.unit === boardingDetails?.unit
+            item.company === boardingDetails?.company &&
+            item.branch === boardingDetails?.branch &&
+            item.unit === boardingDetails?.unit,
         )
         ?.filter((item) => /_[0-9]+_/.test(item?.workstationinput));
 
@@ -1407,16 +1633,16 @@ function EditMovietolive() {
       } else {
         let highestWorkstation = lastworkstation.reduce(
           (max, item) => {
-            const num = parseInt(item.workstationinput.split('_')[1]);
+            const num = parseInt(item.workstationinput.split("_")[1]);
             return num > max.num ? { num, item } : max;
           },
-          { num: 0, item: null }
+          { num: 0, item: null },
         ).num;
 
-        lastwscode = highestWorkstation.toString().padStart(2, '0');
+        lastwscode = highestWorkstation.toString().padStart(2, "0");
       }
 
-      let autoWorkStation = `W${selectedBranchCode?.toUpperCase()}${selectedUnitCode?.toUpperCase()}_${lastwscode === 0 ? '01' : (Number(lastwscode) + 1).toString().padStart(2, '0')}_${boardingDetails?.username?.toUpperCase()}`;
+      let autoWorkStation = `W${selectedBranchCode?.toUpperCase()}${selectedUnitCode?.toUpperCase()}_${lastwscode === 0 ? "01" : (Number(lastwscode) + 1).toString().padStart(2, "0")}_${boardingDetails?.username?.toUpperCase()}`;
 
       if (
         workStationInputOldDatas?.company === boardingDetails?.company &&
@@ -1425,31 +1651,55 @@ function EditMovietolive() {
         //  &&
         // workStationInputOldDatas?.workmode === boardingDetails.workmode
       ) {
-        setPrimaryWorkStationInput(workStationInputOldDatas?.workstationinput === '' || workStationInputOldDatas?.workstationinput == undefined ? autoWorkStation : workStationInputOldDatas?.workstationinput);
+        console.log(
+          workStationInputOldDatas?.workstationinput === "" ||
+            workStationInputOldDatas?.workstationinput == undefined
+            ? autoWorkStation
+            : workStationInputOldDatas?.workstationinput,
+          "workStationInputOldDatas",
+        );
+        setPrimaryWorkStationInput(
+          workStationInputOldDatas?.workstationinput === "" ||
+            workStationInputOldDatas?.workstationinput == undefined
+            ? autoWorkStation
+            : workStationInputOldDatas?.workstationinput,
+        );
       } else {
+        console.log(autoWorkStation, "autoWorkStation");
         setPrimaryWorkStationInput(autoWorkStation);
       }
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
-  const [primaryWorkStationInput, setPrimaryWorkStationInput] = useState('');
+  const [primaryWorkStationInput, setPrimaryWorkStationInput] = useState("");
   const [newstate, setnewstate] = useState(false);
 
   const [workStationOpt, setWorkStationOpt] = useState([]);
   const [filteredWorkStation, setFilteredWorkStation] = useState([]);
-  const [primaryWorkStation, setPrimaryWorkStation] = useState('Please Select Primary Work Station');
-  const [primaryWorkStationLabel, setPrimaryWorkStationLabel] = useState('Please Select Primary Work Station');
-  const [selectedWorkStation, setSelectedWorkStation] = useState('');
-  const [selectedOptionsWorkStation, setSelectedOptionsWorkStation] = useState([]);
+  const [primaryWorkStation, setPrimaryWorkStation] = useState(
+    "Please Select Primary Work Station",
+  );
+  const [primaryWorkStationLabel, setPrimaryWorkStationLabel] = useState(
+    "Please Select Primary Work Station",
+  );
+  const [selectedWorkStation, setSelectedWorkStation] = useState("");
+  const [selectedOptionsWorkStation, setSelectedOptionsWorkStation] = useState(
+    [],
+  );
   const [allWorkStationOpt, setAllWorkStationOpt] = useState([]);
   const [enableWorkstation, setEnableWorkstation] = useState(false);
   const [enableLoginName, setEnableLoginName] = useState(true);
   const [valueWorkStation, setValueWorkStation] = useState([]);
   const [empcodelimited, setEmpCodeLimited] = useState([]);
   const [overllsettings, setOverallsettings] = useState([]);
-  const [employeecodenew, setEmployeecodenew] = useState('');
+  const [employeecodenew, setEmployeecodenew] = useState("");
   const [checkcode, setCheckcode] = useState(false);
 
   const [loading, setLoading] = useState(false);
@@ -1458,7 +1708,7 @@ function EditMovietolive() {
   const timer = useRef();
   const [userUpdate, setUserUpdate] = useState([]);
   const [empsettings, setEmpsettings] = useState(false);
-  const [branchCodeGen, setBranchCodeGen] = useState('');
+  const [branchCodeGen, setBranchCodeGen] = useState("");
   // let branchCodeGen = "";
   const [overllsettingsDefault, setOverallsettingsDefault] = useState({});
   const [empCode, setEmpCode] = useState([]);
@@ -1470,52 +1720,67 @@ function EditMovietolive() {
   const [finderrorindexshift, setFinderrorindexshift] = useState([]);
 
   const deleteTodo = (todo) => {
-    if (todo?.type === 'Primary') {
-      setPrimaryWorkStation('Please Select Primary Work Station');
-      setPrimaryWorkStationLabel('Please Select Primary Work Station');
-      setPrimaryKeyShortname('');
+    if (todo?.type === "Primary") {
+      setPrimaryWorkStation("Please Select Primary Work Station");
+      setPrimaryWorkStationLabel("Please Select Primary Work Station");
+      setPrimaryKeyShortname("");
       // setKeyShortname('');
       // setWorkstationTodoList([]);
       // setSelectedOptionsWorkStation([]);
-      setWorkstationTodoList((prev) => prev.filter((item) => item?.shortname !== todo?.shortname));
-      setSelectedOptionsWorkStation((prev) => prev.filter((item) => item?.value !== todo?.workstation));
-      setValueWorkStation((prev) => prev.filter((item) => item !== todo?.workstation));
+      setWorkstationTodoList((prev) =>
+        prev.filter((item) => item?.shortname !== todo?.shortname),
+      );
+      setSelectedOptionsWorkStation((prev) =>
+        prev.filter((item) => item?.value !== todo?.workstation),
+      );
+      setValueWorkStation((prev) =>
+        prev.filter((item) => item !== todo?.workstation),
+      );
       setKeyShortname((prev) =>
         prev
-          ?.split(',')
+          ?.split(",")
           .filter((item) => item?.trim() !== todo?.shortname)
-          .join(',')
+          .join(","),
       );
     } else {
-      setWorkstationTodoList((prev) => prev.filter((item) => item?.shortname !== todo?.shortname));
-      setSelectedOptionsWorkStation((prev) => prev.filter((item) => item?.value !== todo?.workstation));
-      setValueWorkStation((prev) => prev.filter((item) => item !== todo?.workstation));
+      setWorkstationTodoList((prev) =>
+        prev.filter((item) => item?.shortname !== todo?.shortname),
+      );
+      setSelectedOptionsWorkStation((prev) =>
+        prev.filter((item) => item?.value !== todo?.workstation),
+      );
+      setValueWorkStation((prev) =>
+        prev.filter((item) => item !== todo?.workstation),
+      );
       setKeyShortname((prev) =>
         prev
-          ?.split(',')
+          ?.split(",")
           .filter((item) => item?.trim() !== todo?.shortname)
-          .join(',')
+          .join(","),
       );
     }
   };
 
   //state and method to show current date onload
   let today = new Date();
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0");
   var yyyy = today.getFullYear();
-  let formattedDate = yyyy + '-' + mm + '-' + dd;
-  var hourss = today.getHours() < 10 ? '0' + today.getHours() : today.getHours();
-  var minutess = today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes;
-  var secondss = today.getSeconds() < 10 ? '0' + today.getSeconds() : today.getSeconds;
-  var time = hourss + ':' + minutess + ':' + secondss;
+  let formattedDate = yyyy + "-" + mm + "-" + dd;
+  var hourss =
+    today.getHours() < 10 ? "0" + today.getHours() : today.getHours();
+  var minutess =
+    today.getMinutes() < 10 ? "0" + today.getMinutes() : today.getMinutes;
+  var secondss =
+    today.getSeconds() < 10 ? "0" + today.getSeconds() : today.getSeconds;
+  var time = hourss + ":" + minutess + ":" + secondss;
 
   const ShiftTypeOptions = [
-    { label: 'Standard', value: 'Standard' },
-    { label: 'Daily', value: 'Daily' },
-    { label: '1 Week Rotation (2 Weeks)', value: '1 Week Rotation' },
-    { label: '2 Week Rotation (Monthly)', value: '2 Week Rotation' },
-    { label: '1 Month Rotation (2 Month)', value: '1 Month Rotation' },
+    { label: "Standard", value: "Standard" },
+    { label: "Daily", value: "Daily" },
+    { label: "1 Week Rotation (2 Weeks)", value: "1 Week Rotation" },
+    { label: "2 Week Rotation (Monthly)", value: "2 Week Rotation" },
+    { label: "1 Month Rotation (2 Month)", value: "1 Month Rotation" },
   ];
 
   const [todo, setTodo] = useState([]);
@@ -1690,17 +1955,37 @@ function EditMovietolive() {
   //   }
   // };
 
-  const weekoptions2weeks = ['1st Week', '2nd Week'];
-  const weekoptions1month = ['1st Week', '2nd Week', '3rd Week', '4th Week', '5th Week', '6th Week'];
-  const weekoptions2months = ['1st Week', '2nd Week', '3rd Week', '4th Week', '5th Week', '6th Week', '7th Week', '8th Week', '9th Week', '10th Week', '11th Week', '12th Week'];
+  const weekoptions2weeks = ["1st Week", "2nd Week"];
+  const weekoptions1month = [
+    "1st Week",
+    "2nd Week",
+    "3rd Week",
+    "4th Week",
+    "5th Week",
+    "6th Week",
+  ];
+  const weekoptions2months = [
+    "1st Week",
+    "2nd Week",
+    "3rd Week",
+    "4th Week",
+    "5th Week",
+    "6th Week",
+    "7th Week",
+    "8th Week",
+    "9th Week",
+    "10th Week",
+    "11th Week",
+    "12th Week",
+  ];
 
   // for attendance mode
   const attModeOptions = [
-    { label: 'Domain', value: 'Domain' },
-    { label: 'Hrms-Self', value: 'Hrms-Self' },
-    { label: 'Hrms-Manual', value: 'Hrms-Manual' },
-    { label: 'Biometric', value: 'Biometric' },
-    { label: 'Production', value: 'Production' },
+    { label: "Domain", value: "Domain" },
+    { label: "Hrms-Self", value: "Hrms-Self" },
+    { label: "Hrms-Manual", value: "Hrms-Manual" },
+    { label: "Biometric", value: "Biometric" },
+    { label: "Production", value: "Production" },
   ];
 
   const [selectedAttMode, setSelectedAttMode] = useState([]);
@@ -1711,115 +1996,155 @@ function EditMovietolive() {
     setValueAttMode(
       options.map((a, index) => {
         return a.value;
-      })
+      }),
     );
   };
 
   const customValueRendererAttMode = (valueCompany, _attmode) => {
-    return valueCompany?.length ? valueCompany.map(({ label }) => label)?.join(', ') : 'Please Select Attendance Mode';
+    return valueCompany?.length
+      ? valueCompany.map(({ label }) => label)?.join(", ")
+      : "Please Select Attendance Mode";
   };
 
   const [selectedOptionsCateWeeks, setSelectedOptionsCateWeeks] = useState([]);
-  let [valueCateWeeks, setValueCateWeeks] = useState('');
+  let [valueCateWeeks, setValueCateWeeks] = useState("");
 
   const handleWeeksChange = (options) => {
     setValueCateWeeks(
       options.map((a, index) => {
         return a.value;
-      })
+      }),
     );
     setSelectedOptionsCateWeeks(options);
   };
 
   const customValueRendererCateWeeks = (valueCate, _days) => {
-    return valueCate.length ? valueCate.map(({ label }) => label).join(', ') : 'Please Select Weeks';
+    return valueCate.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please Select Weeks";
   };
 
   const handleAddTodo = () => {
-    if (boardingDetails.shifttype === 'Please Select Shift Type') {
-      setPopupContentMalert('Please Select Shift Type!');
-      setPopupSeverityMalert('info');
+    if (boardingDetails.shifttype === "Please Select Shift Type") {
+      setPopupContentMalert("Please Select Shift Type!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return; // Stop further processing if validation fails
     } else {
-      if (boardingDetails.shifttype === 'Daily') {
-        if (boardingDetails.shiftgrouping === 'Please Select Shift Grouping') {
-          setPopupContentMalert('Please Select Shift Grouping!');
-          setPopupSeverityMalert('info');
+      if (boardingDetails.shifttype === "Daily") {
+        if (boardingDetails.shiftgrouping === "Please Select Shift Grouping") {
+          setPopupContentMalert("Please Select Shift Grouping!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
-        } else if (boardingDetails.shifttiming === 'Please Select Shift') {
-          setPopupContentMalert('Please Select Shift!');
-          setPopupSeverityMalert('info');
+        } else if (boardingDetails.shifttiming === "Please Select Shift") {
+          setPopupContentMalert("Please Select Shift!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else if (selectedOptionsCate.length === 0) {
-          setPopupContentMalert('Please Select Week Off!');
-          setPopupSeverityMalert('info');
+          setPopupContentMalert("Please Select Week Off!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else {
-          const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-          const week = '1st Week';
+          const days = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ];
+          const week = "1st Week";
           const newTodoList = days.map((day, index) => ({
             day,
             daycount: index + 1,
             week,
-            shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
-            shiftgrouping: !valueCate.includes(day) ? boardingDetails.shiftgrouping : '',
-            shifttiming: !valueCate.includes(day) ? boardingDetails.shifttiming : '',
+            shiftmode: valueCate.includes(day) ? "Week Off" : "Shift",
+            shiftgrouping: !valueCate.includes(day)
+              ? boardingDetails.shiftgrouping
+              : "",
+            shifttiming: !valueCate.includes(day)
+              ? boardingDetails.shifttiming
+              : "",
           }));
           setTodo(newTodoList);
         }
       }
 
-      if (boardingDetails.shifttype === '1 Week Rotation') {
-        if (boardingDetails.shiftgrouping === 'Please Select Shift Grouping') {
-          setPopupContentMalert('Please Select Shift Grouping!');
-          setPopupSeverityMalert('info');
+      if (boardingDetails.shifttype === "1 Week Rotation") {
+        if (boardingDetails.shiftgrouping === "Please Select Shift Grouping") {
+          setPopupContentMalert("Please Select Shift Grouping!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
-        } else if (boardingDetails.shifttiming === 'Please Select Shift') {
-          setPopupContentMalert('Please Select Shift!');
-          setPopupSeverityMalert('info');
+        } else if (boardingDetails.shifttiming === "Please Select Shift") {
+          setPopupContentMalert("Please Select Shift!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else if (valueCateWeeks.length === 0) {
-          setPopupContentMalert('Please Select Weeks!');
-          setPopupSeverityMalert('info');
+          setPopupContentMalert("Please Select Weeks!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else if (selectedOptionsCate.length === 0) {
-          setPopupContentMalert('Please Select Week Off!');
-          setPopupSeverityMalert('info');
+          setPopupContentMalert("Please Select Week Off!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else {
-          const days1 = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-          const days2 = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+          const days1 = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ];
+          const days2 = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ];
           const newTodoList = [
             // Check if "1st Week" is in valueCateWeeks and map days1 if true
-            ...(valueCateWeeks.includes('1st Week')
+            ...(valueCateWeeks.includes("1st Week")
               ? days1.map((day, index) => ({
-                day,
-                daycount: index + 1,
-                week: '1st Week', // Replacing week1 with "1st Week"
-                shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
-                shiftgrouping: !valueCate.includes(day) ? boardingDetails.shiftgrouping : '',
-                shifttiming: !valueCate.includes(day) ? boardingDetails.shifttiming : '',
-              }))
+                  day,
+                  daycount: index + 1,
+                  week: "1st Week", // Replacing week1 with "1st Week"
+                  shiftmode: valueCate.includes(day) ? "Week Off" : "Shift",
+                  shiftgrouping: !valueCate.includes(day)
+                    ? boardingDetails.shiftgrouping
+                    : "",
+                  shifttiming: !valueCate.includes(day)
+                    ? boardingDetails.shifttiming
+                    : "",
+                }))
               : []), // Return an empty array if "1st Week" is not in valueCateWeeks
 
             // Check if "2nd Week" is in valueCateWeeks and map days2 if true
-            ...(valueCateWeeks.includes('2nd Week')
+            ...(valueCateWeeks.includes("2nd Week")
               ? days2.map((day, index) => ({
-                day,
-                daycount: index + 8,
-                week: '2nd Week', // Replacing week2 with "2nd Week"
-                shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
-                shiftgrouping: !valueCate.includes(day) ? boardingDetails.shiftgrouping : '',
-                shifttiming: !valueCate.includes(day) ? boardingDetails.shifttiming : '',
-              }))
+                  day,
+                  daycount: index + 8,
+                  week: "2nd Week", // Replacing week2 with "2nd Week"
+                  shiftmode: valueCate.includes(day) ? "Week Off" : "Shift",
+                  shiftgrouping: !valueCate.includes(day)
+                    ? boardingDetails.shiftgrouping
+                    : "",
+                  shifttiming: !valueCate.includes(day)
+                    ? boardingDetails.shifttiming
+                    : "",
+                }))
               : []), // Return an empty array if "2nd Week" is not in valueCateWeeks
           ];
 
@@ -1829,30 +2154,38 @@ function EditMovietolive() {
         }
       }
 
-      if (boardingDetails.shifttype === '2 Week Rotation') {
-        if (boardingDetails.shiftgrouping === 'Please Select Shift Grouping') {
-          setPopupContentMalert('Please Select Shift Grouping!');
-          setPopupSeverityMalert('info');
+      if (boardingDetails.shifttype === "2 Week Rotation") {
+        if (boardingDetails.shiftgrouping === "Please Select Shift Grouping") {
+          setPopupContentMalert("Please Select Shift Grouping!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
-        } else if (boardingDetails.shifttiming === 'Please Select Shift') {
-          setPopupContentMalert('Please Select Shift!');
-          setPopupSeverityMalert('info');
+        } else if (boardingDetails.shifttiming === "Please Select Shift") {
+          setPopupContentMalert("Please Select Shift!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else if (valueCateWeeks.length === 0) {
-          setPopupContentMalert('Please Select Weeks!');
-          setPopupSeverityMalert('info');
+          setPopupContentMalert("Please Select Weeks!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else if (selectedOptionsCate.length === 0) {
-          setPopupContentMalert('Please Select Week Off!');
-          setPopupSeverityMalert('info');
+          setPopupContentMalert("Please Select Week Off!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else {
           const daysInMonth = valueCateWeeks?.length * 7;
-          const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+          const days = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ];
           const weeks = [...valueCateWeeks]; // You may need to adjust this based on the actual month
 
           let todoList = [];
@@ -1868,9 +2201,13 @@ function EditMovietolive() {
               day,
               daycount: currentDayCount,
               week,
-              shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
-              shiftgrouping: !valueCate.includes(day) ? boardingDetails.shiftgrouping : '',
-              shifttiming: !valueCate.includes(day) ? boardingDetails.shifttiming : '',
+              shiftmode: valueCate.includes(day) ? "Week Off" : "Shift",
+              shiftgrouping: !valueCate.includes(day)
+                ? boardingDetails.shiftgrouping
+                : "",
+              shifttiming: !valueCate.includes(day)
+                ? boardingDetails.shifttiming
+                : "",
             });
 
             currentDayIndex = (currentDayIndex + 1) % 7;
@@ -1885,30 +2222,38 @@ function EditMovietolive() {
         }
       }
 
-      if (boardingDetails.shifttype === '1 Month Rotation') {
-        if (boardingDetails.shiftgrouping === 'Please Select Shift Grouping') {
-          setPopupContentMalert('Please Select Shift Grouping!');
-          setPopupSeverityMalert('info');
+      if (boardingDetails.shifttype === "1 Month Rotation") {
+        if (boardingDetails.shiftgrouping === "Please Select Shift Grouping") {
+          setPopupContentMalert("Please Select Shift Grouping!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
-        } else if (boardingDetails.shifttiming === 'Please Select Shift') {
-          setPopupContentMalert('Please Select Shift!');
-          setPopupSeverityMalert('info');
+        } else if (boardingDetails.shifttiming === "Please Select Shift") {
+          setPopupContentMalert("Please Select Shift!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else if (valueCateWeeks.length === 0) {
-          setPopupContentMalert('Please Select Weeks!');
-          setPopupSeverityMalert('info');
+          setPopupContentMalert("Please Select Weeks!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else if (selectedOptionsCate.length === 0) {
-          setPopupContentMalert('Please Select Week Off!');
-          setPopupSeverityMalert('info');
+          setPopupContentMalert("Please Select Week Off!");
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           return; // Stop further processing if validation fails
         } else {
           const daysInMonth = valueCateWeeks?.length * 7;
-          const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+          const days = [
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+            "Sunday",
+          ];
           const weeks = [...valueCateWeeks]; // You may need to adjust this based on the actual month
 
           let todoList = [];
@@ -1924,9 +2269,13 @@ function EditMovietolive() {
               day,
               daycount: currentDayCount,
               week,
-              shiftmode: valueCate.includes(day) ? 'Week Off' : 'Shift',
-              shiftgrouping: !valueCate.includes(day) ? boardingDetails.shiftgrouping : '',
-              shifttiming: !valueCate.includes(day) ? boardingDetails.shifttiming : '',
+              shiftmode: valueCate.includes(day) ? "Week Off" : "Shift",
+              shiftgrouping: !valueCate.includes(day)
+                ? boardingDetails.shiftgrouping
+                : "",
+              shifttiming: !valueCate.includes(day)
+                ? boardingDetails.shifttiming
+                : "",
             });
 
             currentDayIndex = (currentDayIndex + 1) % 7;
@@ -1969,14 +2318,14 @@ function EditMovietolive() {
 
   function multiInputs(referenceIndex, reference, inputvalue) {
     // Update isSubCategory state
-    if (reference === 'shiftmode') {
+    if (reference === "shiftmode") {
       let updatedShiftMode = todo?.map((value, index) => {
         if (referenceIndex === index) {
           return {
             ...value,
             shiftmode: inputvalue,
-            shiftgrouping: 'Please Select Shift Grouping',
-            shifttiming: 'Please Select Shift',
+            shiftgrouping: "Please Select Shift Grouping",
+            shifttiming: "Please Select Shift",
           };
         } else {
           return value;
@@ -1986,13 +2335,13 @@ function EditMovietolive() {
     }
 
     // Update isSubCategory state
-    if (reference === 'shiftgrouping') {
+    if (reference === "shiftgrouping") {
       let updatedShiftGroup = todo?.map((value, index) => {
         if (referenceIndex === index) {
           return {
             ...value,
             shiftgrouping: inputvalue,
-            shifttiming: 'Please Select Shift',
+            shifttiming: "Please Select Shift",
           };
         } else {
           return value;
@@ -2002,7 +2351,7 @@ function EditMovietolive() {
     }
 
     // Update isSubCategory state
-    if (reference === 'shifttiming') {
+    if (reference === "shifttiming") {
       let updatedShiftTime = todo?.map((value, index) => {
         if (referenceIndex === index) {
           return { ...value, shifttiming: inputvalue };
@@ -2014,29 +2363,46 @@ function EditMovietolive() {
     }
   }
 
-  const AsyncShiftTimingSelects = ({ todo, index, auth, multiInputs, colourStyles }) => {
+  const AsyncShiftTimingSelects = ({
+    todo,
+    index,
+    auth,
+    multiInputs,
+    colourStyles,
+  }) => {
     const fetchShiftTimings = async () => {
       let ansGet = todo.shiftgrouping;
-      let answerFirst = ansGet?.split('_')[0];
-      let answerSecond = ansGet?.split('_')[1];
-
+      let answerFirst = ansGet?.split("_")[0];
+      let answerSecond = ansGet?.split("_")[1];
+      let boardingShift = await fetchBoardingShift(
+        [boardingDetails?.company],
+        [boardingDetails?.branch],
+        [boardingDetails?.unit],
+        [boardingDetails?.team],
+        [boardingDetails?.department],
+        [boardingDetails?.designation],
+        [boardingDetails?.companyname, "ALL"],
+      );
       let res = await axios.get(SERVICE.GETALLSHIFTGROUPS, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      const shiftGroup = res?.data?.shiftgroupings.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
+      const shiftGroup = res?.data?.shiftgroupings.filter(
+        (data) =>
+          data.shiftday === answerFirst && data.shifthours === answerSecond,
+      );
 
-      const options =
-        shiftGroup?.length > 0
-          ? shiftGroup
-            .flatMap((data) => data.shift)
-            .map((u) => ({
-              ...u,
-              label: u,
-              value: u,
-            }))
-          : [];
+      const shiftFlat =
+        shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
+      const filteredShifts = shiftFlat.filter((shift) =>
+        boardingShift.includes(shift),
+      );
+
+      const options = filteredShifts.map((shift) => ({
+        label: shift,
+        value: shift,
+      }));
 
       return options;
     };
@@ -2051,32 +2417,157 @@ function EditMovietolive() {
       fetchData();
     }, [todo.shiftgrouping, auth.APIToken]);
 
-    return <Selects size="small" options={shiftTimings} styles={colourStyles} value={{ label: todo.shifttiming, value: todo.shifttiming }} onChange={(selectedOption) => multiInputs(index, 'shifttiming', selectedOption.value)} />;
+    return (
+      <Selects
+        size="small"
+        options={shiftTimings}
+        styles={colourStyles}
+        value={{ label: todo.shifttiming, value: todo.shifttiming }}
+        onChange={(selectedOption) =>
+          multiInputs(index, "shifttiming", selectedOption.value)
+        }
+      />
+    );
   };
+  const fetchBoardingShift = async (
+    company,
+    branch,
+    unit,
+    team,
+    department,
+    designation,
+    employee,
+  ) => {
+    try {
+      //         let companyMap = accessbranch?.map(d => d?.company) || [];
+      // let branchMap = accessbranch?.map(d => d?.branch) || [];
+      // let unitMap   = accessbranch?.map(d => d?.unit)   || [];
 
-  const ShiftDropdwonsSecond = async (e) => {
+      // let company = [...companyMap, isUserRoleAccess?.company].filter(Boolean);
+      // let branch  = [...branchMap, isUserRoleAccess?.branch].filter(Boolean);
+      // let unit    = [...unitMap,   isUserRoleAccess?.unit].filter(Boolean);
+      // let employee    = [isUserRoleAccess?.companyname,"ALL"].filter(Boolean);
+      let res_status = await axios.post(SERVICE.ALL_BOARDING_SHIFT, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        // assignbranch: accessbranch,
+        company,
+        branch,
+        unit,
+        // role: isUserRoleAccess?.role || [],
+        team,
+        department,
+        designation,
+        employee,
+      });
+
+      const resdata = res_status?.data?.boardingshift || [];
+
+      // Extract all shifts from all objects, flatten into a single array, and remove duplicates
+      const allShifts = [
+        ...new Set(
+          resdata
+            .flatMap((item) => item.shift || []) // flatten all shift arrays
+            .filter(Boolean), // remove null/undefined/empty values
+        ),
+      ];
+
+      return allShifts;
+    } catch (err) {
+      console.log(err);
+      // handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      return [];
+    }
+  };
+  const ShiftDropdwonsSecondDefault = async (e, boardingShift) => {
     try {
       let ansGet = e;
-      let answerFirst = ansGet?.split('_')[0];
-      let answerSecond = ansGet?.split('_')[1];
+      let answerFirst = ansGet?.split("_")[0];
+      let answerSecond = ansGet?.split("_")[1];
 
       let res = await axios.get(SERVICE.GETALLSHIFTGROUPS, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      const shiftGroup = res?.data?.shiftgroupings.filter((data) => data.shiftday === answerFirst && data.shifthours === answerSecond);
-      const shiftFlat = shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
-
-      setShifts(
-        shiftFlat.map((data) => ({
-          ...data,
-          label: data,
-          value: data,
-        }))
+      const shiftGroup = res?.data?.shiftgroupings.filter(
+        (data) =>
+          data.shiftday === answerFirst && data.shifthours === answerSecond,
       );
+      const shiftFlat =
+        shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
+
+      const filteredShifts = shiftFlat.filter((shift) =>
+        boardingShift.includes(shift),
+      );
+      const options = filteredShifts.map((shift) => ({
+        label: shift,
+        value: shift,
+      }));
+
+      setShifts(options);
+      // setShifts(
+      //   shiftFlat.map((data) => ({
+      //     ...data,
+      //     label: data,
+      //     value: data,
+      //   }))
+      // );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      console.log(err);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
+    }
+  };
+  const ShiftDropdwonsSecond = async (e) => {
+    try {
+      let boardingShift = await fetchBoardingShift(
+        [boardingDetails?.company],
+        [boardingDetails?.branch],
+        [boardingDetails?.unit],
+        [boardingDetails?.team],
+        [boardingDetails?.department],
+        [boardingDetails?.designation],
+        [boardingDetails?.companyname, "ALL"],
+      );
+
+      let ansGet = e;
+      let answerFirst = ansGet?.split("_")[0];
+      let answerSecond = ansGet?.split("_")[1];
+
+      let res = await axios.get(SERVICE.GETALLSHIFTGROUPS, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+      });
+      const shiftGroup = res?.data?.shiftgroupings.filter(
+        (data) =>
+          data.shiftday === answerFirst && data.shifthours === answerSecond,
+      );
+      const shiftFlat =
+        shiftGroup?.length > 0 ? shiftGroup?.flatMap((data) => data.shift) : [];
+
+      const filteredShifts = shiftFlat.filter((shift) =>
+        boardingShift.includes(shift),
+      );
+      const options = filteredShifts.map((shift) => ({
+        label: shift,
+        value: shift,
+      }));
+
+      setShifts(options);
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2090,12 +2581,17 @@ function EditMovietolive() {
       setShiftGroupingOptions(
         res?.data?.shiftgroupings.map((data) => ({
           ...data,
-          label: data.shiftday + '_' + data.shifthours,
-          value: data.shiftday + '_' + data.shifthours,
-        }))
+          label: data.shiftday + "_" + data.shifthours,
+          value: data.shiftday + "_" + data.shifthours,
+        })),
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2112,9 +2608,14 @@ function EditMovietolive() {
       });
       setNewval(res.data?.employeeCode);
       setPrevEmpCode(res.data?.prevEmployeeCode);
-      return res.data?.employeeCode || '';
+      return res.data?.employeeCode || "";
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2122,22 +2623,22 @@ function EditMovietolive() {
     (company, branch, branchcode, doj) => {
       EmployeeCodeAutoGenerate(company, branch, branchcode, doj);
     },
-    300 // 300ms delay
+    300, // 300ms delay
   );
 
   const [date, setDate] = useState(formattedDate);
 
   const [internStatusUpdate, setInternStatusUpdate] = useState({
-    workmode: 'Please Select Work Mode',
+    workmode: "Please Select Work Mode",
     doj: date,
-    empcode: '',
+    empcode: "",
     wordcheck: false,
   });
 
-  const [dateOfJoining, setDateOfJoining] = useState('');
-  const [dateOfTraining, setDateOfTraining] = useState('');
+  const [dateOfJoining, setDateOfJoining] = useState("");
+  const [dateOfTraining, setDateOfTraining] = useState("");
 
-  let autodate = dateOfJoining.split('-');
+  let autodate = dateOfJoining.split("-");
   let dateJoin = autodate[0]?.slice(-2) + autodate[1] + autodate[2];
 
   const [companyOption, setCompanyOption] = useState([]);
@@ -2157,7 +2658,12 @@ function EditMovietolive() {
         })),
       ]);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2168,9 +2674,19 @@ function EditMovietolive() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      setMailDetails((prev) => ({ ...prev, quota: res?.data?.overallsettings[res?.data?.overallsettings?.length - 1]?.quotainmb }));
+      setMailDetails((prev) => ({
+        ...prev,
+        quota:
+          res?.data?.overallsettings[res?.data?.overallsettings?.length - 1]
+            ?.quotainmb,
+      }));
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2188,7 +2704,10 @@ function EditMovietolive() {
       });
 
       setBranchNames(req?.data?.branch);
-      const branchCode = req?.data?.branch?.filter((item) => item.name === selectedBranch && item.company === selectedCompany);
+      const branchCode = req?.data?.branch?.filter(
+        (item) =>
+          item.name === selectedBranch && item.company === selectedCompany,
+      );
       setBranchCodeGen(branchCode[0]?.code);
       // branchCodeGen = branchCode[0]?.code
 
@@ -2203,18 +2722,31 @@ function EditMovietolive() {
       await fetchUserDatasOnChange(selectedBranch, selectedCompany);
       return branchCode[0]?.code;
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const fetchbranchNamesOnChange = async (selectedBranch, selectedCompany) => {
     try {
-      const branchCode = branchNames?.filter((item) => item.name === selectedBranch && item.company === selectedCompany);
+      const branchCode = branchNames?.filter(
+        (item) =>
+          item.name === selectedBranch && item.company === selectedCompany,
+      );
       setBranchCodeGen(branchCode[0]?.code);
       // branchCodeGen = branchCode[0]?.code
 
       setSelectedBranchCode(branchCode[0]?.code?.slice(0, 2));
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2234,7 +2766,12 @@ function EditMovietolive() {
       }));
       setUnitsOption(units);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const fetchUnitCode = async (branch, unit) => {
@@ -2245,10 +2782,17 @@ function EditMovietolive() {
         },
       });
 
-      const unitCodes = res_category.data.units.filter((item) => item.branch === branch && item?.name === unit);
+      const unitCodes = res_category.data.units.filter(
+        (item) => item.branch === branch && item?.name === unit,
+      );
       setSelectedUnitCode(unitCodes[0]?.code?.slice(0, 2));
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2269,7 +2813,12 @@ function EditMovietolive() {
 
       setTeamsOption(teams);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2288,7 +2837,12 @@ function EditMovietolive() {
         })),
       ]);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2299,9 +2853,18 @@ function EditMovietolive() {
       let res_location = await axios.get(SERVICE.AREAGROUPING, {
         headers: { Authorization: `Bearer ${auth.APIToken}` },
       });
-      setAreaOption(res_location?.data?.areagroupings?.filter((data) => data.boardingareastatus));
+      setAreaOption(
+        res_location?.data?.areagroupings?.filter(
+          (data) => data.boardingareastatus,
+        ),
+      );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2313,17 +2876,25 @@ function EditMovietolive() {
         headers: { Authorization: `Bearer ${auth.APIToken}` },
       });
 
-      let filteredDepartments = res_deptandteam?.data?.departmentdetails?.filter((obj) => !obj.deptname.toLowerCase().includes('intern'));
+      let filteredDepartments =
+        res_deptandteam?.data?.departmentdetails?.filter(
+          (obj) => !obj.deptname.toLowerCase().includes("intern"),
+        );
       setDepartmentOption(
         filteredDepartments?.length > 0 &&
-        filteredDepartments?.map((d) => ({
-          ...d,
-          label: d.deptname,
-          value: d.deptname,
-        }))
+          filteredDepartments?.map((d) => ({
+            ...d,
+            label: d.deptname,
+            value: d.deptname,
+          })),
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2340,7 +2911,12 @@ function EditMovietolive() {
       setcheckemployeelist(true);
     } catch (err) {
       setcheckemployeelist(true);
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2353,7 +2929,12 @@ function EditMovietolive() {
       });
       // setreportingtonames(req?.data?.users);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2369,10 +2950,17 @@ function EditMovietolive() {
       });
 
       let ALLusers = req?.data?.userscreate;
-      const lastThreeDigitsArray = ALLusers.map((employee) => employee?.empcode?.slice(-3));
+      const lastThreeDigitsArray = ALLusers.map((employee) =>
+        employee?.empcode?.slice(-3),
+      );
       setEmpCodeLimited(lastThreeDigitsArray);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2380,21 +2968,108 @@ function EditMovietolive() {
 
   const fetchDepartmentandesignation = async () => {
     try {
-      let res_status = await axios.get(SERVICE.DEPARTMENTANDDESIGNATIONGROUPING, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
+      let res_status = await axios.get(
+        SERVICE.DEPARTMENTANDDESIGNATIONGROUPING,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
         },
-      });
+      );
       setDesignation(
         res_status?.data?.departmentanddesignationgroupings?.map((d) => ({
           ...d,
           label: d.name || d.designation,
           value: d.name || d.designation,
-          systemcount: d?.systemcount || '',
-        }))
+          systemcount: d?.systemcount || "",
+        })),
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
+    }
+  };
+  useEffect(() => {
+    fetchLimit();
+  }, []);
+  const [limitArray, setLimitArray] = useState([]);
+  const getExperienceLimit = ({
+    limits = [],
+    company,
+    branch,
+    unit,
+    team,
+    employee,
+    process,
+  }) => {
+    if (!Array.isArray(limits) || limits.length === 0) return null;
+
+    // 1️⃣ Individual priority
+    const individualMatch = limits.find(
+      (item) =>
+        item?.type === "Individual" &&
+        item?.company?.includes(company) &&
+        item?.branch?.includes(branch) &&
+        item?.unit?.includes(unit) &&
+        item?.team?.includes(team) &&
+        item?.employee?.includes(employee),
+    );
+
+    if (individualMatch?.limit) {
+      return Number(individualMatch.limit);
+    }
+
+    // 2️⃣ Process priority
+    const processMatch = limits.find(
+      (item) =>
+        item?.type === "Process" &&
+        item?.company?.includes(company) &&
+        item?.branch?.includes(branch) &&
+        item?.process?.includes(process),
+    );
+
+    if (processMatch?.limit) {
+      return Number(processMatch.limit);
+    }
+
+    // 3️⃣ No limit
+    return null;
+  };
+
+  const fetchLimit = async () => {
+    try {
+      let response = await axios.get(
+        `${SERVICE.GET_ATTENDANCE_CONTROL_CRITERIA}`,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+        },
+      );
+
+      console.log("FULL RESPONSE:", response.data);
+
+      const attendanceList = response?.data?.attendancecontrolcriteria;
+
+      if (Array.isArray(attendanceList) && attendanceList.length > 0) {
+        const limitarr = attendanceList[0].experiencefixlimittodos || [];
+        console.log("EXTRACTED LIMIT:", limitarr);
+        setLimitArray(limitarr);
+      } else {
+        console.log("attendancecontrolcriteria is empty");
+      }
+    } catch (error) {
+      console.error("Error loading Limit Value:", error);
+      handleApiError(
+        error,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2404,9 +3079,9 @@ function EditMovietolive() {
 
   const [workStationInputOldDatas, setWorkStationInputOldDatas] = useState({});
 
-  const [oldEmpCode, setOldEmpCode] = useState('');
-  const [domainsList, setDomainsList] = useState('');
-  const [documentID, setDocumentID] = useState('');
+  const [oldEmpCode, setOldEmpCode] = useState("");
+  const [domainsList, setDomainsList] = useState("");
+  const [documentID, setDocumentID] = useState("");
   const fetchDepartmentSingle = async (department) => {
     try {
       let req = await axios.get(SERVICE.DEPARTMENT, {
@@ -2415,7 +3090,8 @@ function EditMovietolive() {
         },
       });
 
-      let singleDept = req.data.departmentdetails.find((d) => d.deptname === department) || {};
+      let singleDept =
+        req.data.departmentdetails.find((d) => d.deptname === department) || {};
       let production = singleDept?.prod || false;
 
       return {
@@ -2423,32 +3099,294 @@ function EditMovietolive() {
         singleDept,
       };
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const salaryOptions = [
-    { label: 'Experience Based', value: 'Experience Based' },
-    { label: 'Manual Salary', value: 'Manual Salary' },
+    { label: "Experience Based", value: "Experience Based" },
+    { label: "Manual Salary", value: "Manual Salary" },
   ];
-  const [salaryOption, setSalaryOption] = useState('Experience Based');
+  const [salaryOption, setSalaryOption] = useState("Experience Based");
   const [oldSalaryData, setoldSalaryData] = useState([]);
-  const [oldSalaryId, setoldSalaryId] = useState('');
+  const [oldSalaryId, setoldSalaryId] = useState("");
+
+  const initialSettings = [
+    {
+      name: "Basic",
+      type: "percent",
+      notes: "Mandatory for PF, ESI, Bonus",
+      value: 0,
+    },
+    { name: "HRA", type: "percentBasic", value: 0, notes: "40% in non-metro" },
+    {
+      name: "Conveyance",
+      type: "fixed",
+      fixed: 1600,
+      percent: 5,
+      notes: "Tax-exempt ₹1,600/month",
+      value: 0,
+    },
+    {
+      name: "Medical Allowance",
+      type: "fixed",
+      fixed: 1250,
+      percent: 5,
+      notes: "Tax-free up to ₹15,000/year",
+      value: 0,
+    },
+    {
+      name: "Production Allowance",
+      type: "percent",
+      notes: "Industry-specific",
+      value: 0,
+    },
+
+    { name: "Production Allowance 2", type: "percent", notes: "", value: 0 },
+    { name: "Shift Allowance", type: "percent", notes: "", value: 0 },
+
+    { name: "Special Allowance", type: "", notes: "Remainder", value: 0 },
+  ];
+  const [settings, setSettings] = useState(initialSettings);
+  const [dummySalary, setDummySalary] = useState(10000);
+  useEffect(() => {
+    setDummySalary(salaryTableData?.grossmonthsalary || 10000);
+  }, [salaryTableData?.grossmonthsalary]);
+  const allocationPriority = [
+    "Basic",
+    "HRA",
+    "Production Allowance",
+    // "Production Allowance 2",
+    "Conveyance",
+    "Medical Allowance",
+    "Shift Allowance",
+    "Special Allowance",
+  ];
+
+  const calculateBreakup = () => {
+    let remaining = dummySalary;
+
+    // Sort priority items first
+    const calcSettings = [...settings].sort((a, b) => {
+      const indexA = allocationPriority.indexOf(a.name);
+      const indexB = allocationPriority.indexOf(b.name);
+
+      return (
+        (indexA === -1 ? Infinity : indexA) -
+        (indexB === -1 ? Infinity : indexB)
+      );
+    });
+
+    // Pre-calc Basic
+    const basicItem = calcSettings.find((d) => d.name === "Basic");
+    const basicAmount =
+      basicItem?.type === "percent"
+        ? (dummySalary * basicItem.value) / 100
+        : basicItem?.value || 0;
+
+    const result = [];
+    let total = 0; // only for priority items
+
+    calcSettings.forEach((item) => {
+      let amount = 0;
+
+      if (allocationPriority.includes(item.name)) {
+        // Priority items → calculate from dummySalary
+        if (item.name === "Special Allowance") {
+          amount = result
+            .filter((t) => t.name !== "Special Allowance")
+            .every((d) => d.amount === 0)
+            ? 0
+            : remaining > 0
+              ? remaining
+              : 0;
+        } else {
+          if (item.type === "fixed") {
+            amount = Math.min(item.value, remaining);
+          } else if (item.type === "percent") {
+            amount = Math.min((dummySalary * item.value) / 100, remaining);
+          } else if (item.type === "percentBasic") {
+            amount = Math.min((basicAmount * item.value) / 100, remaining);
+          }
+        }
+
+        amount = Math.round(amount);
+        remaining -= amount;
+        total += amount; // ✅ only add priority items to total
+      } else {
+        // Non-priority items → show value, but don’t touch total/remaining
+        if (item.type === "fixed") {
+          amount = item.value;
+        } else if (item.type === "percent") {
+          amount = (dummySalary * item.value) / 100;
+        } else if (item.type === "percentBasic") {
+          amount = (basicAmount * item.value) / 100;
+        }
+        amount = Math.round(amount);
+      }
+
+      result.push({ ...item, amount });
+    });
+
+    // Return both breakup and total (priority only)
+    return settings.map((s) => result.find((r) => r.name === s.name));
+  };
+  const breakupData = calculateBreakup();
+  const [dummySalaryManual, setDummySalaryManual] = useState(10000);
+  useEffect(() => {
+    setDummySalaryManual(salaryTableDataManual?.grossmonthsalary || 10000);
+  }, [salaryTableDataManual?.grossmonthsalary]);
+  const calculateBreakupManual = (dummySalaryManual, settings) => {
+    let remaining = dummySalaryManual;
+
+    // Sort priority items first
+    const calcSettings = [...settings].sort((a, b) => {
+      const indexA = allocationPriority.indexOf(a.name);
+      const indexB = allocationPriority.indexOf(b.name);
+
+      return (
+        (indexA === -1 ? Infinity : indexA) -
+        (indexB === -1 ? Infinity : indexB)
+      );
+    });
+
+    // Pre-calc Basic
+    const basicItem = calcSettings.find((d) => d.name === "Basic");
+    const basicAmount =
+      basicItem?.type === "percent"
+        ? (dummySalaryManual * basicItem.value) / 100
+        : basicItem?.value || 0;
+
+    const result = [];
+    let total = 0; // only for priority items
+
+    calcSettings.forEach((item) => {
+      let amount = 0;
+
+      if (allocationPriority.includes(item.name)) {
+        // Priority items → calculate from dummySalaryManual
+        if (item.name === "Special Allowance") {
+          amount = result
+            .filter((t) => t.name !== "Special Allowance")
+            .every((d) => d.amount === 0)
+            ? 0
+            : remaining > 0
+              ? remaining
+              : 0;
+        } else {
+          if (item.type === "fixed") {
+            amount = Math.min(item.value, remaining);
+          } else if (item.type === "percent") {
+            amount = Math.min(
+              (dummySalaryManual * item.value) / 100,
+              remaining,
+            );
+          } else if (item.type === "percentBasic") {
+            amount = Math.min((basicAmount * item.value) / 100, remaining);
+          }
+        }
+
+        amount = Math.round(amount);
+        remaining -= amount;
+        total += amount; // ✅ only add priority items to total
+      } else {
+        // Non-priority items → show value, but don’t touch total/remaining
+        if (item.type === "fixed") {
+          amount = item.value;
+        } else if (item.type === "percent") {
+          amount = (dummySalaryManual * item.value) / 100;
+        } else if (item.type === "percentBasic") {
+          amount = (basicAmount * item.value) / 100;
+        }
+        amount = Math.round(amount);
+      }
+
+      result.push({ ...item, amount });
+    });
+
+    // Return both breakup and total (priority only)
+    return settings.map((s) => result.find((r) => r.name === s.name));
+  };
+  const breakupDataManual = calculateBreakupManual(dummySalaryManual, settings);
+
+  // console.log(breakupData, 'breakupData');
+  const fetchAllGroup = async () => {
+    try {
+      let res_grp = await axios.get(SERVICE.SALARY_CONTROL_SETTINGS, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+      });
+      if (res_grp?.data?.salarycontrol) {
+        setSettings(res_grp?.data?.salarycontrol.data);
+        // setLastid(res_grp?.data?.salarycontrol._id);
+      }
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
+    }
+  };
+  useEffect(() => {
+    fetchAllGroup();
+  }, []);
+  const settingsRef = useRef(settings);
+  // keep ref updated when settings change
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
+  const salsettingsRef = useRef(boardingDetails?.salarysettings);
+  useEffect(() => {
+    salsettingsRef.current = boardingDetails?.salarysettings;
+  }, [boardingDetails?.salarysettings]);
+  function getMonthName(monthStr) {
+    if (!monthStr) return "";
+
+    // Convert to number safely
+    const monthNum = parseInt(monthStr, 10);
+
+    // List of months (1-based index)
+    const months = [
+      "", // index 0 (unused)
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+
+    return months[monthNum] || "";
+  }
   const getCode = async () => {
-    console.log("Hitted")
+    console.log("Hitted");
     try {
       let res = await axios.get(`${SERVICE.USER_SINGLE}/${newId}`, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      let filtered = res?.data?.suser?.companyemail?.includes(',')
+      let filtered = res?.data?.suser?.companyemail?.includes(",")
         ? res?.data?.suser?.companyemail
-          ?.split(',')
-          .map((data) => {
-            return data.split('@')[1];
-          })
-          .join(',') // Joining with commas to return a string
-        : res?.data?.suser?.companyemail?.split('@')[1];
+            ?.split(",")
+            .map((data) => {
+              return data.split("@")[1];
+            })
+            .join(",") // Joining with commas to return a string
+        : res?.data?.suser?.companyemail?.split("@")[1];
 
       setDomainsList(filtered);
       setMailDetails((prev) => ({
@@ -2458,32 +3396,62 @@ function EditMovietolive() {
         companyname: res?.data?.suser?.companyname,
         companyemail: res?.data?.suser?.companyemail,
       }));
-      fetchAccessibleDetails(res?.data?.suser?.companyname, res?.data?.suser?.empcode)
+      fetchAccessibleDetails(
+        res?.data?.suser?.companyname,
+        res?.data?.suser?.empcode,
+      );
       setOldUserCompanyname(res?.data?.suser);
-      setEmployeecodenew(res?.data?.suser?.wordcheck ? res?.data?.suser?.empcode : '');
+      setEmployeecodenew(
+        res?.data?.suser?.wordcheck ? res?.data?.suser?.empcode : "",
+      );
       setDateOfTraining(res?.data?.suser?.dot || formattedDate);
-      setDateOfJoining('');
+      setDateOfJoining("");
       setCreateRocketChat({
         create: res?.data?.suser?.rocketchatid ? true : false,
-        email: res?.data?.suser?.rocketchatemail ?? '',
+        email: res?.data?.suser?.rocketchatemail ?? "",
         roles: res?.data?.suser?.rocketchatroles
           ? res?.data?.suser?.rocketchatroles?.map((data) => ({
-            label: data,
-            value: data,
-          }))
+              label: data,
+              value: data,
+            }))
           : [],
       });
       setCreateHiConnect({
         createhiconnect: res?.data?.suser?.hiconnectid ? true : false,
-        hiconnectemail: res?.data?.suser?.hiconnectemail ?? '',
+        hiconnectemail: res?.data?.suser?.hiconnectemail ?? "",
         hiconnectroles: res?.data?.suser?.hiconnectroles
           ? res?.data?.suser?.hiconnectroles?.map((data) => ({
-            label: data,
-            value: data,
-          }))
+              label: data,
+              value: data,
+            }))
           : [],
       });
+      setCreateLdap({
+        createldapaccount: res?.data?.suser?.ldapDN ? true : false,
 
+        ldapEmail: res?.data?.suser?.ldapEmail || "",
+        ldapOU: res?.data?.suser?.ldapOU?.ouName || "",
+        ldapOUObjectGUID: res?.data?.suser?.ldapOU?.objectGUID || "",
+
+        ldapPrimaryGroup:
+          res?.data?.suser?.ldapGroup?.length > 0
+            ? res?.data?.suser?.ldapGroup?.find(
+                (item) => item?.primary === true,
+              )?.groupName
+            : "",
+
+        ldapPrimaryGroupObjectGUID:
+          res?.data?.suser?.ldapGroup?.length > 0
+            ? res?.data?.suser?.ldapGroup?.find(
+                (item) => item?.primary === true,
+              )?.objectGUID
+            : "",
+
+        ldapDN: res?.data?.suser?.ldapDN || "",
+        ldapSAMAccountName: res?.data?.suser?.ldapSAMAccountName || "",
+        ldapUserPrincipalName: res?.data?.suser?.ldapUserPrincipalName || "",
+        ldapObjectGUID: res?.data?.suser?.ldapObjectGUID || "",
+      });
       setWorkStationInputOldDatas({
         company: res?.data?.suser?.company,
         branch: res?.data?.suser?.branch,
@@ -2492,41 +3460,69 @@ function EditMovietolive() {
         ifoffice: res?.data?.suser?.workstationofficestatus,
         workstationinput: res?.data?.suser?.workstationinput,
       });
-      let branchCodes = await fetchbranchNames(res?.data?.suser?.branch, res?.data?.suser?.company);
-      await EmployeeCodeAutoGenerate(res?.data?.suser?.company, res?.data?.suser?.branch, branchCodes, res?.data?.suser?.doj || formattedDate);
+      let branchCodes = await fetchbranchNames(
+        res?.data?.suser?.branch,
+        res?.data?.suser?.company,
+      );
+      await EmployeeCodeAutoGenerate(
+        res?.data?.suser?.company,
+        res?.data?.suser?.branch,
+        branchCodes,
+        res?.data?.suser?.doj || formattedDate,
+      );
       setOldEmpCode(res?.data?.suser?.empcode);
-      setTodo(res?.data?.suser?.boardingLog[res?.data?.suser?.boardingLog.length - 1].todo);
+      setTodo(
+        res?.data?.suser?.boardingLog[res?.data?.suser?.boardingLog.length - 1]
+          .todo,
+      );
       setoverallgrosstotal(res?.data?.suser.grosssalary);
       setModeexperience(res?.data?.suser.modeexperience);
       setTargetexperience(res?.data?.suser.targetexperience);
       setTargetpts(res?.data?.suser.targetpts);
       setLoginNotAllot(res?.data?.suser);
       setnewstate(!newstate);
-      let responsenew = await axios.post(SERVICE.EMPLOYEEDOCUMENT_SINGLEWITHALLBYCOMMONID, {
-        commonid: newId,
-      });
+      let responsenew = await axios.post(
+        SERVICE.EMPLOYEEDOCUMENT_SINGLEWITHALLBYCOMMONID,
+        {
+          commonid: newId,
+        },
+      );
 
-      setDocumentID(responsenew?.data?.semployeedocument?._id || '');
-      handleProfileImage(responsenew?.data?.semployeedocument?.profileImage, "ProfilePhoto");
+      setDocumentID(responsenew?.data?.semployeedocument?._id || "");
+      handleProfileImage(
+        responsenew?.data?.semployeedocument?.profileImage,
+        "ProfilePhoto",
+      );
       let isThere = res?.data?.suser?.attendancemode
         ? res?.data?.suser?.attendancemode?.map((data) => ({
-          ...data,
-          label: data,
-          value: data,
-        }))
+            ...data,
+            label: data,
+            value: data,
+          }))
         : [];
-      let responsenewsal = await axios.post(SERVICE.SINGLE_SALARY_DATA_BY_COMMON_ID, {
-        commonid: id,
-      });
+      let responsenewsal = await axios.post(
+        SERVICE.SINGLE_SALARY_DATA_BY_COMMON_ID,
+        {
+          commonid: id,
+        },
+      );
 
       setoldSalaryData(responsenewsal?.data?.salarydata?.salarytable || []);
       setoldSalaryId(responsenewsal?.data?.salarydata?._id || null);
-      let findSalDetails = responsenewsal?.data?.salarydata?.salarytable?.length > 0 ? responsenewsal?.data?.salarydata?.salarytable[0] : {};
-      console.log(responsenewsal?.data?.salarydata, 'responsenewsal?.data?.salarydata');
+      let findSalDetails =
+        responsenewsal?.data?.salarydata?.salarytable?.length > 0
+          ? responsenewsal?.data?.salarydata?.salarytable[
+              responsenewsal?.data?.salarydata?.salarytable?.length - 1
+            ]
+          : {};
+      console.log(
+        responsenewsal?.data?.salarydata,
+        "responsenewsal?.data?.salarydata",
+      );
       let salTab = {
         salaryfixed: responsenewsal?.data?.salarydata ? true : false,
-        salarystatus: findSalDetails?.salarystatus || 'With Salary',
-        expectedsalary: '',
+        salarystatus: findSalDetails?.salarystatus || "With Salary",
+        expectedsalary: "",
         basic: Number(findSalDetails?.basic || 0),
         hra: Number(findSalDetails?.hra || 0),
         conveyance: Number(findSalDetails?.conveyance || 0),
@@ -2546,11 +3542,75 @@ function EditMovietolive() {
         ...prev,
         ...salTab,
       }));
-      setSalaryOption(responsenewsal?.data?.salarydata ? responsenewsal?.data?.salarydata?.salaryoption : 'Experience Based');
+      let lastSalary = responsenewsal?.data?.salarydata
+        ? responsenewsal?.data?.salarydata?.salaryoption
+        : "Experience Based";
+      setSalaryOption(
+        findSalDetails ? findSalDetails?.salaryoption : "Experience Based",
+      );
+      let expLog =
+        res?.data?.suser?.assignExpLog?.length > 0
+          ? res?.data?.suser?.assignExpLog[
+              res?.data?.suser?.assignExpLog?.length - 1
+            ]
+          : {};
+      setSalarysetupForm({
+        mode: String(expLog?.expmode || "Auto"),
+        date: "",
+        empcode: "",
+        employeename: "",
+        salarycode: String(expLog?.salarycode || "Please Select Salary Code"),
+      });
+      setFormValue({
+        esideduction: Boolean(expLog?.esideduction) || false,
+        pfdeduction: Boolean(expLog?.pfdeduction) || false,
+        basic:
+          lastSalary === "Manual Salary"
+            ? String(salTab?.basic || "")
+            : String(expLog?.basic || ""),
+        hra:
+          lastSalary === "Manual Salary"
+            ? String(salTab?.hra || "")
+            : String(expLog?.hra || ""),
+        conveyance:
+          lastSalary === "Manual Salary"
+            ? String(salTab?.conveyance || "")
+            : String(expLog?.conveyance || ""),
+        gross:
+          lastSalary === "Manual Salary"
+            ? String(salTab?.grossmonthsalary || "")
+            : String(expLog?.gross || ""),
+        medicalallowance:
+          lastSalary === "Manual Salary"
+            ? String(salTab?.medicalallowance || "")
+            : String(expLog?.medicalallowance || ""),
+        productionallowance:
+          lastSalary === "Manual Salary"
+            ? String(salTab?.productionallowance || "")
+            : String(expLog?.productionallowance || ""),
+        otherallowance:
+          lastSalary === "Manual Salary"
+            ? String(salTab?.otherallowance || "")
+            : String(expLog?.otherallowance || ""),
+        productionallowancetwo:
+          lastSalary === "Manual Salary"
+            ? String(salTab?.productionallowancetwo || "")
+            : String(expLog?.productionallowancetwo || ""),
+        startDate: String(expLog?.updatedate || ""),
+        startmonth: String(expLog?.startmonth || ""),
+        startyear: String(expLog?.startyear || ""),
 
+        startmonthlabel: expLog?.startmonth
+          ? getMonthName(expLog?.startmonth)
+          : "",
+      });
       setDocumentID(responsenew?.data?.semployeedocument?._id);
       setSelectedAttMode(isThere);
-      setValueAttMode(res?.data?.suser?.attendancemode ? res?.data?.suser?.attendancemode.map((data) => data) : []);
+      setValueAttMode(
+        res?.data?.suser?.attendancemode
+          ? res?.data?.suser?.attendancemode.map((data) => data)
+          : [],
+      );
       fetchSuperVisorDropdowns(res?.data?.suser?.team, res?.data?.suser);
       if (res?.data?.suser?.assignExpLog?.lenth === 0) {
         setAssignExperience({
@@ -2560,13 +3620,52 @@ function EditMovietolive() {
       } else {
         setAssignExperience({
           ...assignExperience,
-          assignExpMode: res?.data?.suser?.assignExpLog[0]?.expmode || 'Auto Increment',
-          assignExpvalue: res?.data?.suser?.assignExpLog[0]?.expval || '0',
-          assignEndExpDate: res?.data?.suser?.assignExpLog[0]?.endexpdate !== '' ? moment(res?.data?.suser?.assignExpLog[0]?.endexpdate).format('YYYY-MM-DD') : '',
-          assignEndTarDate: res?.data?.suser?.assignExpLog[0]?.endtardate !== '' ? moment(res?.data?.suser?.assignExpLog[0]?.endtardate).format('YYYY-MM-DD') : '',
-          assignEndTarvalue: res?.data?.suser?.assignExpLog[0]?.endtar || '',
-          assignEndExpvalue: res?.data?.suser?.assignExpLog[0]?.endexp || '',
-          updatedate: res?.data?.suser?.assignExpLog[0]?.updatedate !== '' ? moment(res?.data?.suser?.assignExpLog[0]?.updatedate).format('YYYY-MM-DD') : '',
+          assignExpMode:
+            res?.data?.suser?.assignExpLog[
+              res?.data?.suser?.assignExpLog?.length - 1
+            ]?.expmode || "Auto Increment",
+          assignExpvalue:
+            res?.data?.suser?.assignExpLog[
+              res?.data?.suser?.assignExpLog?.length - 1
+            ]?.expval || "0",
+          assignEndExpDate:
+            res?.data?.suser?.assignExpLog[
+              res?.data?.suser?.assignExpLog?.length - 1
+            ]?.endexpdate !== ""
+              ? moment(
+                  res?.data?.suser?.assignExpLog[
+                    res?.data?.suser?.assignExpLog?.length - 1
+                  ]?.endexpdate,
+                ).format("YYYY-MM-DD")
+              : "",
+          assignEndTarDate:
+            res?.data?.suser?.assignExpLog[
+              res?.data?.suser?.assignExpLog?.length - 1
+            ]?.endtardate !== ""
+              ? moment(
+                  res?.data?.suser?.assignExpLog[
+                    res?.data?.suser?.assignExpLog?.length - 1
+                  ]?.endtardate,
+                ).format("YYYY-MM-DD")
+              : "",
+          assignEndTarvalue:
+            res?.data?.suser?.assignExpLog[
+              res?.data?.suser?.assignExpLog?.length - 1
+            ]?.endtar || "",
+          assignEndExpvalue:
+            res?.data?.suser?.assignExpLog[
+              res?.data?.suser?.assignExpLog?.length - 1
+            ]?.endexp || "",
+          updatedate:
+            res?.data?.suser?.assignExpLog[
+              res?.data?.suser?.assignExpLog?.length - 1
+            ]?.updatedate !== ""
+              ? moment(
+                  res?.data?.suser?.assignExpLog[
+                    res?.data?.suser?.assignExpLog?.length - 1
+                  ]?.updatedate,
+                ).format("YYYY-MM-DD")
+              : "",
         });
       }
       let req_designation = await axios.get(SERVICE.DESIGNATION, {
@@ -2574,17 +3673,23 @@ function EditMovietolive() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      const groupname = req_designation?.data?.designation?.find((data) => data.name === res?.data?.suser?.designation);
+      const groupname = req_designation?.data?.designation?.find(
+        (data) => data.name === res?.data?.suser?.designation,
+      );
 
-      setDesignationGroup(groupname ? groupname?.group : '');
+      setDesignationGroup(groupname ? groupname?.group : "");
 
       setGettingOldDatas(res?.data?.suser);
       setSelectedDesignation(res?.data?.suser?.designation);
       // fetchBiometricUser(res?.data?.suser?.username, responsenew?.data?.semployeedocument?.profileimage);
-      let designationGrpName = alldesignation?.find((data) => res?.data?.suser?.designation === data?.name)?.group;
+      let designationGrpName = alldesignation?.find(
+        (data) => res?.data?.suser?.designation === data?.name,
+      )?.group;
       setOldDesignationGroup(designationGrpName);
       setNewDesignationGroup(designationGrpName);
-      let allDesignations = alldesignation?.filter((data) => designationGrpName === data?.group)?.map((item) => item?.name);
+      let allDesignations = alldesignation
+        ?.filter((data) => designationGrpName === data?.group)
+        ?.map((item) => item?.name);
       setOldDesignation(res?.data?.suser?.designation);
       setDesignationsName(allDesignations);
       let res_DATA = await axios.get(SERVICE.HIRERARCHI, {
@@ -2606,13 +3711,21 @@ function EditMovietolive() {
       setUsers(fitleredUsers);
       let isProd = false;
       let attOptions = attModeOptions?.map((data) => data?.value);
+      let salarysettings = [];
       if (res?.data?.suser?.department) {
-        let deptsingle = await fetchDepartmentSingle(res?.data?.suser?.department);
+        let deptsingle = await fetchDepartmentSingle(
+          res?.data?.suser?.department,
+        );
         isProd = deptsingle?.production;
-        attOptions = deptsingle?.singleDept?.attendancemode || attModeOptions?.map((data) => data?.value);
+        attOptions =
+          deptsingle?.singleDept?.attendancemode ||
+          attModeOptions?.map((data) => data?.value);
+        salarysettings = deptsingle?.singleDept?.salarysettings || [];
       }
       const userdata = {
         ...boardingDetails,
+        ldapDN: res?.data?.suser?.ldapDN || "",
+        salarysettings,
         attOptions,
         company: res?.data?.suser?.company,
         companyname: res?.data?.suser?.companyname,
@@ -2620,30 +3733,52 @@ function EditMovietolive() {
         branch: res?.data?.suser?.branch,
         shifttype: res?.data?.suser?.shifttype,
         branchcode: branchCodes,
-        unit: res?.data?.suser?.unit === '' || res?.data?.suser?.unit === undefined ? 'Please Select Unit' : res?.data?.suser?.unit,
-        floor: res?.data?.suser?.floor === '' || res?.data?.suser?.floor === undefined ? 'Please Select Floor' : res?.data?.suser?.floor,
-        area: res?.data?.suser?.area === '' || res?.data?.suser?.area === undefined ? 'Please Select Area' : res?.data?.suser?.area,
-        department: 'Please Select Department',
+        unit:
+          res?.data?.suser?.unit === "" || res?.data?.suser?.unit === undefined
+            ? "Please Select Unit"
+            : res?.data?.suser?.unit,
+        floor:
+          res?.data?.suser?.floor === "" ||
+          res?.data?.suser?.floor === undefined
+            ? "Please Select Floor"
+            : res?.data?.suser?.floor,
+        area:
+          res?.data?.suser?.area === "" || res?.data?.suser?.area === undefined
+            ? "Please Select Area"
+            : res?.data?.suser?.area,
+        department: "Please Select Department",
         olddepartment: res?.data?.suser?.department,
         oldteam: res?.data?.suser?.team,
         olddesignation: res?.data?.suser?.designation,
-        team: 'Please Select Team',
-        designation: 'Please Select Designation',
-        shiftgrouping: res?.data?.suser?.shiftgrouping === '' || res?.data?.suser?.shiftgrouping === undefined ? 'Please Select Shift Grouping' : res?.data?.suser?.shiftgrouping,
-        shifttiming: res?.data?.suser?.shifttiming === '' || res?.data?.suser?.shifttiming === undefined ? 'Please Select Shift Timing' : res?.data?.suser?.shifttiming,
-        reportingto: res?.data?.suser?.reportingto === '' || res?.data?.suser?.reportingto === undefined ? 'Please Select Reporting To' : res?.data?.suser?.reportingto,
+        team: "Please Select Team",
+        designation: "Please Select Designation",
+        shiftgrouping:
+          res?.data?.suser?.shiftgrouping === "" ||
+          res?.data?.suser?.shiftgrouping === undefined
+            ? "Please Select Shift Grouping"
+            : res?.data?.suser?.shiftgrouping,
+        shifttiming:
+          res?.data?.suser?.shifttiming === "" ||
+          res?.data?.suser?.shifttiming === undefined
+            ? "Please Select Shift Timing"
+            : res?.data?.suser?.shifttiming,
+        reportingto:
+          res?.data?.suser?.reportingto === "" ||
+          res?.data?.suser?.reportingto === undefined
+            ? "Please Select Reporting To"
+            : res?.data?.suser?.reportingto,
         ifoffice: res?.data?.suser?.workstationofficestatus,
         username: res?.data?.suser?.username,
-        companyemail: res?.data?.suser?.companyemail || '',
+        companyemail: res?.data?.suser?.companyemail || "",
 
-        rocketchatid: res?.data?.suser?.rocketchatid || '',
-        rocketchatemail: res?.data?.suser?.rocketchatemail || '',
+        rocketchatid: res?.data?.suser?.rocketchatid || "",
+        rocketchatemail: res?.data?.suser?.rocketchatemail || "",
         rocketchatroles: res?.data?.suser?.rocketchatroles || [],
         rocketchatteamid: res?.data?.suser?.rocketchatteamid || [],
         rocketchatchannelid: res?.data?.suser?.rocketchatchannelid || [],
 
-        hiconnectid: res?.data?.suser?.hiconnectid || '',
-        hiconnectemail: res?.data?.suser?.hiconnectemail || '',
+        hiconnectid: res?.data?.suser?.hiconnectid || "",
+        hiconnectemail: res?.data?.suser?.hiconnectemail || "",
         hiconnectroles: res?.data?.suser?.hiconnectroles || [],
         hiconnectteamid: res?.data?.suser?.hiconnectteamid || [],
         hiconnectchannelid: res?.data?.suser?.hiconnectchannelid || [],
@@ -2651,17 +3786,37 @@ function EditMovietolive() {
         prod: isProd,
         originalpassword: res?.data?.suser?.originalpassword,
         callingname: res?.data?.suser?.callingname,
-        religion: res?.data?.suser?.religion || '',
+        religion: res?.data?.suser?.religion || "",
       };
       setBoardingDetails(userdata);
 
       await fetchUnitCode(res?.data?.suser?.branch, res?.data?.suser?.unit);
       // await fetchUserDatasOnChange(res?.data?.suser?.branch, res?.data?.suser?.company);
       // await fetchOverAllSettings(res?.data?.suser?.company, res?.data?.suser?.branch);
-      ShiftDropdwonsSecond(res?.data?.suser?.shiftgrouping);
-      setValueCate(res?.data?.suser?.boardingLog[0]?.weekoff);
+      // ShiftDropdwonsSecond(res?.data?.suser?.shiftgrouping);
+
+      let boardingShift = await fetchBoardingShift(
+        [res?.data?.suser?.company || ""],
+        [res?.data?.suser?.branch || ""],
+        [res?.data?.suser?.unit || ""],
+        [res?.data?.suser?.team || ""],
+        [res?.data?.suser?.department || ""],
+        [res?.data?.suser?.designation || ""],
+        [res?.data?.suser?.companyname || "", "ALL"],
+      );
+
+      await ShiftDropdwonsSecondDefault(
+        res?.data?.suser?.shiftgrouping || "",
+        boardingShift,
+      );
+      setValueCate(
+        res?.data?.suser?.boardingLog[res?.data?.suser?.boardingLog?.length - 1]
+          ?.weekoff,
+      );
       setSelectedOptionsCate([
-        ...res?.data?.suser?.boardingLog[0]?.weekoff.map((t) => ({
+        ...res?.data?.suser?.boardingLog[
+          res?.data?.suser?.boardingLog?.length - 1
+        ]?.weekoff.map((t) => ({
           label: t,
           value: t,
         })),
@@ -2679,12 +3834,17 @@ function EditMovietolive() {
       setIsLoading(false);
     } catch (err) {
       setIsLoading(false);
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
   const fetchAccessibleDetails = async (eployeename, employeecode) => {
-    console.log("Hitted 2")
+    console.log("Hitted 2");
     try {
       let req = await axios.post(SERVICE.GETUSERASSIGNBRANCH, {
         headers: {
@@ -2694,7 +3854,7 @@ function EditMovietolive() {
         empcode: employeecode,
       });
       let allData = req?.data?.assignbranch?.filter((item) => !item.isupdated);
-      console.log(allData, "allData")
+      console.log(allData, "allData");
       if (allData?.length > 0) {
         let seen = new Set();
         let todos = allData
@@ -2725,15 +3885,22 @@ function EditMovietolive() {
             branch: data?.branch,
             unit: data?.unit,
             employee: eployeename,
-            employeecode: String(employee?.wordcheck ? employeecodenew : employee?.empcode),
+            employeecode: String(
+              employee?.wordcheck ? employeecodenew : employee?.empcode,
+            ),
 
             id: data?._id,
             updatedby: data?.updatedby,
           }));
-        fetchBiometricDevices(todos)
+        fetchBiometricDevices(todos);
       }
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2743,9 +3910,11 @@ function EditMovietolive() {
         Authorization: `Bearer ${auth.APIToken}`,
       },
     });
-    const groupname = req_designation?.data?.designation?.find((data) => data.name === selectedDesignation);
+    const groupname = req_designation?.data?.designation?.find(
+      (data) => data.name === selectedDesignation,
+    );
     setNewDesignationGroup(groupname?.group);
-    setDesignationGroup(groupname ? groupname?.group : '');
+    setDesignationGroup(groupname ? groupname?.group : "");
   };
   useEffect(() => {
     getCode();
@@ -2775,21 +3944,19 @@ function EditMovietolive() {
     fetchOverAllSettings(boardingDetails.company, boardingDetails.branch);
   }, [boardingDetails]);
 
-
-
   const handleClear = (e) => {
     e.preventDefault();
     setEmployee({
       ...employee,
-      type: 'Please Select Type',
-      salaryrange: 'Please Select Salary Range',
-      amountvalue: '',
-      from: '',
-      to: '',
+      type: "Please Select Type",
+      salaryrange: "Please Select Salary Range",
+      amountvalue: "",
+      from: "",
+      to: "",
     });
     setLoginNotAllot({
       ...loginNotAllot,
-      process: 'Please Select Process',
+      process: "Please Select Process",
     });
     setIsArea(false);
     setSalaryFix([]);
@@ -2805,14 +3972,14 @@ function EditMovietolive() {
   const [minsOption, setMinsOption] = useState([]);
 
   const processTypes = [
-    { label: 'Primary', value: 'Primary' },
-    { label: 'Secondary', value: 'Secondary' },
-    { label: 'Tertiary', value: 'Tertiary' },
+    { label: "Primary", value: "Primary" },
+    { label: "Secondary", value: "Secondary" },
+    { label: "Tertiary", value: "Tertiary" },
   ];
 
   const processDuration = [
-    { label: 'Full', value: 'Full' },
-    { label: 'Half', value: 'Half' },
+    { label: "Full", value: "Full" },
+    { label: "Half", value: "Half" },
   ];
 
   useEffect(() => {
@@ -2825,7 +3992,7 @@ function EditMovietolive() {
     const hrsOpt = [];
     for (let i = 0; i <= 23; i++) {
       if (i < 10) {
-        i = '0' + i;
+        i = "0" + i;
       }
       hrsOpt.push({ value: i.toString(), label: i.toString() });
     }
@@ -2836,7 +4003,7 @@ function EditMovietolive() {
     const minsOpt = [];
     for (let i = 0; i <= 59; i++) {
       if (i < 10) {
-        i = '0' + i;
+        i = "0" + i;
       }
       minsOpt.push({ value: i.toString(), label: i.toString() });
     }
@@ -2856,7 +4023,7 @@ function EditMovietolive() {
         branch: boardingDetails.branch,
         salaryrange: employee?.salaryrange,
         type: employee?.type,
-        process: employee?.type == 'Amount Wise' ? '' : loginNotAllot.process,
+        process: employee?.type == "Amount Wise" ? "" : loginNotAllot.process,
         amountvalue: employee?.amountvalue,
         fromamount: employee?.from,
         toamount: employee?.to,
@@ -2865,53 +4032,77 @@ function EditMovietolive() {
       setIsArea(false);
     } catch (err) {
       setIsArea(false);
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
   const handlesalary = (e) => {
     e.preventDefault();
     try {
-      if (employee?.type === 'Please Select Type') {
-        setPopupContentMalert('Please Select Type!');
-        setPopupSeverityMalert('info');
+      if (employee?.type === "Please Select Type") {
+        setPopupContentMalert("Please Select Type!");
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
-      } else if (employee?.type === 'Amount Wise' && employee?.salaryrange === 'Please Select Salary Range') {
-        setPopupContentMalert('Please Select Salary Range!');
-        setPopupSeverityMalert('info');
+      } else if (
+        employee?.type === "Amount Wise" &&
+        employee?.salaryrange === "Please Select Salary Range"
+      ) {
+        setPopupContentMalert("Please Select Salary Range!");
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
-      } else if (employee?.type === 'Process Wise' && loginNotAllot.process === 'Please Select Process') {
-        setPopupContentMalert('Please Select Process!');
-        setPopupSeverityMalert('info');
+      } else if (
+        employee?.type === "Process Wise" &&
+        loginNotAllot.process === "Please Select Process"
+      ) {
+        setPopupContentMalert("Please Select Process!");
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
-      } else if (employee?.salaryrange === 'Between' && employee?.from === '') {
-        setPopupContentMalert('Please Enter From!');
-        setPopupSeverityMalert('info');
+      } else if (employee?.salaryrange === "Between" && employee?.from === "") {
+        setPopupContentMalert("Please Enter From!");
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
-      } else if (employee?.salaryrange === 'Between' && employee?.to === '') {
-        setPopupContentMalert('Please Enter To!');
-        setPopupSeverityMalert('info');
+      } else if (employee?.salaryrange === "Between" && employee?.to === "") {
+        setPopupContentMalert("Please Enter To!");
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
-      } else if (employee?.salaryrange === 'Between' && employee?.from >= employee?.to) {
-        setPopupContentMalert('To Amount must be greater than from!');
-        setPopupSeverityMalert('info');
+      } else if (
+        employee?.salaryrange === "Between" &&
+        employee?.from >= employee?.to
+      ) {
+        setPopupContentMalert("To Amount must be greater than from!");
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
-      } else if ((employee?.salaryrange === 'Less Than' || employee?.salaryrange === 'Greater Than' || employee?.salaryrange === 'Exact') && employee?.amountvalue === '') {
-        setPopupContentMalert('Please Enter Amount Value!');
-        setPopupSeverityMalert('info');
+      } else if (
+        (employee?.salaryrange === "Less Than" ||
+          employee?.salaryrange === "Greater Than" ||
+          employee?.salaryrange === "Exact") &&
+        employee?.amountvalue === ""
+      ) {
+        setPopupContentMalert("Please Enter Amount Value!");
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
       } else {
         SalaryFixFilter();
       }
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
   const getCodesalary = (totalValue, code, experience, targetpoints) => {
     setAssignExperience({
       ...assignExperience,
-      assignExpMode: 'Add',
+      assignExpMode: "Add",
       assignExpvalue: experience?.length > 0 ? experience[0] : 0,
     });
     setLoginNotAllot({
@@ -2926,16 +4117,24 @@ function EditMovietolive() {
 
   const processTeamDropdowns = async () => {
     try {
-      let res_freq = await axios.get(SERVICE.ALL_PROCESS_AND_TEAM_FILTER_LIMITED, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
+      let res_freq = await axios.get(
+        SERVICE.ALL_PROCESS_AND_TEAM_FILTER_LIMITED,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
         },
-      });
+      );
 
       const companyall = res_freq?.data?.processteam;
       setProcessOptions(companyall);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2952,7 +4151,12 @@ function EditMovietolive() {
       });
       setTarpoints(res_employee?.data?.targetpoints);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2965,7 +4169,12 @@ function EditMovietolive() {
       });
       setsalSlabs(res_employee?.data?.salaryslab);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -2981,22 +4190,24 @@ function EditMovietolive() {
     processTeamDropdowns();
   }, [boardingDetails.team]);
 
-  const [overallgrosstotal, setoverallgrosstotal] = useState('');
-  const [modeexperience, setModeexperience] = useState('');
-  const [targetexperience, setTargetexperience] = useState('');
-  const [targetpts, setTargetpts] = useState('');
+  const [overallgrosstotal, setoverallgrosstotal] = useState("");
+  const [modeexperience, setModeexperience] = useState("");
+  const [targetexperience, setTargetexperience] = useState("");
+  const [targetpts, setTargetpts] = useState("");
 
   useEffect(() => {
     let today1 = new Date();
-    var mm = String(today1.getMonth() + 1).padStart(2, '0');
+    var mm = String(today1.getMonth() + 1).padStart(2, "0");
     var yyyy = today1.getFullYear();
-    let curMonStartDate = yyyy + '-' + mm + '-01';
+    let curMonStartDate = yyyy + "-" + mm + "-01";
 
     let modevalue = new Date(today1) > new Date(assignExperience.updatedate);
 
     // let findexp = monthSets.find((d) => d.department === item.department);
 
-    let findexp = monthSets.find((d) => d.department === boardingDetails.department);
+    let findexp = monthSets.find(
+      (d) => d.department === boardingDetails.department,
+    );
     let findDate = findexp ? findexp.fromdate : curMonStartDate;
 
     const calculateMonthsBetweenDates = (startDate, endDate) => {
@@ -3033,112 +4244,176 @@ function EditMovietolive() {
     let differenceInMonthstar = 0;
     if (modevalue) {
       //findexp end difference yes/no
-      if (assignExperience.assignEndExpvalue === 'Yes') {
-        differenceInMonthsexp = differenceInMonthsexp < 1 ? 0 : differenceInMonthsexp;
-        differenceInMonthsexp = calculateMonthsBetweenDates(assignExperience.updatedate, assignExperience.assignEndExpDate);
-        if (assignExperience.assignEndExp === 'Add') {
+      if (assignExperience.assignEndExpvalue === "Yes") {
+        differenceInMonthsexp =
+          differenceInMonthsexp < 1 ? 0 : differenceInMonthsexp;
+        differenceInMonthsexp = calculateMonthsBetweenDates(
+          assignExperience.updatedate,
+          assignExperience.assignEndExpDate,
+        );
+        if (assignExperience.assignEndExp === "Add") {
           differenceInMonthsexp += parseInt(assignExperience.assignExpvalue);
-        } else if (assignExperience.assignEndExp === 'Minus') {
+        } else if (assignExperience.assignEndExp === "Minus") {
           differenceInMonthsexp -= parseInt(assignExperience.assignExpvalue);
-        } else if (assignExperience.assignEndExp === 'Fix') {
+        } else if (assignExperience.assignEndExp === "Fix") {
           differenceInMonthsexp = parseInt(assignExperience.assignExpvalue);
         }
       } else {
-        differenceInMonthsexp = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
-        differenceInMonthsexp = differenceInMonthsexp < 1 ? 0 : differenceInMonthsexp;
-        if (assignExperience.assignEndExp === 'Add') {
+        differenceInMonthsexp = calculateMonthsBetweenDates(
+          assignExperience.updatedate,
+          findDate,
+        );
+        differenceInMonthsexp =
+          differenceInMonthsexp < 1 ? 0 : differenceInMonthsexp;
+        if (assignExperience.assignEndExp === "Add") {
           differenceInMonthsexp += parseInt(assignExperience.assignExpvalue);
-        } else if (assignExperience.assignEndExp === 'Minus') {
+        } else if (assignExperience.assignEndExp === "Minus") {
           differenceInMonthsexp -= parseInt(assignExperience.assignExpvalue);
-        } else if (assignExperience.assignEndExp === 'Fix') {
+        } else if (assignExperience.assignEndExp === "Fix") {
           differenceInMonthsexp = parseInt(assignExperience.assignExpvalue);
         } else {
-          differenceInMonthsexp = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
+          differenceInMonthsexp = calculateMonthsBetweenDates(
+            assignExperience.updatedate,
+            findDate,
+          );
         }
       }
 
       //findtar end difference yes/no
-      if (modevalue.endtar === 'Yes') {
-        differenceInMonthstar = calculateMonthsBetweenDates(assignExperience.updatedate, assignExperience.assignEndExpvalue);
-        differenceInMonthstar = differenceInMonthstar < 1 ? 0 : differenceInMonthstar;
-        if (assignExperience.assignExpMode === 'Add') {
+      if (modevalue.endtar === "Yes") {
+        differenceInMonthstar = calculateMonthsBetweenDates(
+          assignExperience.updatedate,
+          assignExperience.assignEndExpvalue,
+        );
+        differenceInMonthstar =
+          differenceInMonthstar < 1 ? 0 : differenceInMonthstar;
+        if (assignExperience.assignExpMode === "Add") {
           differenceInMonthstar += parseInt(assignExperience.assignExpvalue);
-        } else if (assignExperience.assignExpMode === 'Minus') {
+        } else if (assignExperience.assignExpMode === "Minus") {
           differenceInMonthstar -= parseInt(assignExperience.assignExpvalue);
-        } else if (assignExperience.assignExpMode === 'Fix') {
+        } else if (assignExperience.assignExpMode === "Fix") {
           differenceInMonthstar = parseInt(assignExperience.assignExpvalue);
         }
       } else {
-        differenceInMonthstar = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
-        differenceInMonthstar = differenceInMonthstar < 1 ? 0 : differenceInMonthstar;
-        if (assignExperience.assignExpMode === 'Add') {
+        differenceInMonthstar = calculateMonthsBetweenDates(
+          assignExperience.updatedate,
+          findDate,
+        );
+        differenceInMonthstar =
+          differenceInMonthstar < 1 ? 0 : differenceInMonthstar;
+        if (assignExperience.assignExpMode === "Add") {
           differenceInMonthstar += parseInt(assignExperience.assignExpvalue);
-        } else if (assignExperience.assignExpMode === 'Minus') {
+        } else if (assignExperience.assignExpMode === "Minus") {
           differenceInMonthstar -= parseInt(assignExperience.assignExpvalue);
-        } else if (assignExperience.assignExpMode === 'Fix') {
+        } else if (assignExperience.assignExpMode === "Fix") {
           differenceInMonthstar = parseInt(assignExperience.assignExpvalue);
         } else {
           // differenceInMonths = parseInt(assignExperience.assignExpvalue);
-          differenceInMonthstar = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
+          differenceInMonthstar = calculateMonthsBetweenDates(
+            assignExperience.updatedate,
+            findDate,
+          );
         }
       }
 
-      differenceInMonths = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
+      differenceInMonths = calculateMonthsBetweenDates(
+        assignExperience.updatedate,
+        findDate,
+      );
       differenceInMonths = differenceInMonths < 1 ? 0 : differenceInMonths;
-      if (assignExperience.assignExpMode === 'Add') {
+      if (assignExperience.assignExpMode === "Add") {
         differenceInMonths += parseInt(assignExperience.assignExpvalue);
-      } else if (assignExperience.assignExpMode === 'Minus') {
+      } else if (assignExperience.assignExpMode === "Minus") {
         differenceInMonths -= parseInt(assignExperience.assignExpvalue);
-      } else if (assignExperience.assignExpMode === 'Fix') {
+      } else if (assignExperience.assignExpMode === "Fix") {
         differenceInMonths = parseInt(assignExperience.assignExpvalue);
       } else {
-        differenceInMonths = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
+        differenceInMonths = calculateMonthsBetweenDates(
+          assignExperience.updatedate,
+          findDate,
+        );
       }
     } else {
-      differenceInMonthsexp = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
-      differenceInMonthstar = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
-      differenceInMonths = calculateMonthsBetweenDates(assignExperience.updatedate, findDate);
+      differenceInMonthsexp = calculateMonthsBetweenDates(
+        assignExperience.updatedate,
+        findDate,
+      );
+      differenceInMonthstar = calculateMonthsBetweenDates(
+        assignExperience.updatedate,
+        findDate,
+      );
+      differenceInMonths = calculateMonthsBetweenDates(
+        assignExperience.updatedate,
+        findDate,
+      );
     }
 
     let getprocessCode = loginNotAllot.process;
 
-    let processexp = dateOfJoining ? getprocessCode + (differenceInMonths < 1 ? '00' : differenceInMonths <= 9 ? `0${differenceInMonths}` : differenceInMonths) : '00';
+    let processexp = dateOfJoining
+      ? getprocessCode +
+        (differenceInMonths < 1
+          ? "00"
+          : differenceInMonths <= 9
+            ? `0${differenceInMonths}`
+            : differenceInMonths)
+      : "00";
 
     // let findSalDetails = salSlabs.find((d) => d.company == boardingDetails.company && d.branch == boardingDetails.branch && d.salarycode == processexp);
 
     // let findSalDetailsTar = tarPoints.find((d) => d.company === boardingDetails.company && d.branch == boardingDetails.branch && d.processcode === processexp);
 
-    let findSalDetailsLogs = salSlabs.find((d) => d.company == boardingDetails.company && d.branch == boardingDetails.branch && d.salarycode == processexp);
-    console.log(findSalDetailsLogs, 'findSalDetailsLogs');
-    let findSalDetailsLogEntry = findSalDetailsLogs && findSalDetailsLogs?.salaryslablog ? findSalDetailsLogs.salaryslablog : [];
-    console.log(findSalDetailsLogEntry, 'findSalDetailsLogEntry');
+    let findSalDetailsLogs = salSlabs.find(
+      (d) =>
+        d.company == boardingDetails.company &&
+        d.branch == boardingDetails.branch &&
+        d.salarycode == processexp,
+    );
+    console.log(findSalDetailsLogs, "findSalDetailsLogs");
+    let findSalDetailsLogEntry =
+      findSalDetailsLogs && findSalDetailsLogs?.salaryslablog
+        ? findSalDetailsLogs.salaryslablog
+        : [];
+    console.log(findSalDetailsLogEntry, "findSalDetailsLogEntry");
 
-    let findSalDetails = findSalDetailsLogEntry.filter((d) => new Date(d.startdate) <= new Date(dateOfJoining)).sort((a, b) => new Date(b.startdate) - new Date(a.startdate))[0];
-    console.log(findSalDetails, 'findSalDetails');
+    let findSalDetails = findSalDetailsLogEntry
+      .filter((d) => new Date(d.startdate) <= new Date(dateOfJoining))
+      .sort((a, b) => new Date(b.startdate) - new Date(a.startdate))[0];
+    console.log(findSalDetails, "findSalDetails");
 
-    let findSalDetailsTarlogs = tarPoints.find((d) => d.branch === boardingDetails.branch && d.company === boardingDetails.company && d.processcode === processexp);
+    let findSalDetailsTarlogs = tarPoints.find(
+      (d) =>
+        d.branch === boardingDetails.branch &&
+        d.company === boardingDetails.company &&
+        d.processcode === processexp,
+    );
     // console.log(findSalDetailsTarlogs, tarPoints.length, "findSalDetailsTarlogs")
 
-    let findSalDetailsTarLogEntry = findSalDetailsTarlogs && findSalDetailsTarlogs?.targetpointslog ? findSalDetailsTarlogs.targetpointslog : [];
+    let findSalDetailsTarLogEntry =
+      findSalDetailsTarlogs && findSalDetailsTarlogs?.targetpointslog
+        ? findSalDetailsTarlogs.targetpointslog
+        : [];
     // console.log(findSalDetailsTarLogEntry, processexp, "findSalDetailsTarLogEntry")
-    let findSalDetailsTar = findSalDetailsTarLogEntry?.filter((d) => new Date(d.startdate) <= new Date(dateOfJoining)).sort((a, b) => new Date(b.startdate) - new Date(a.startdate))[0];
+    let findSalDetailsTar = findSalDetailsTarLogEntry
+      ?.filter((d) => new Date(d.startdate) <= new Date(dateOfJoining))
+      .sort((a, b) => new Date(b.startdate) - new Date(a.startdate))[0];
     // console.log(findSalDetailsTar, "findSalDetailsTar")
 
-    let targetpoints = findSalDetailsTar ? findSalDetailsTar.points : '';
+    let targetpoints = findSalDetailsTar ? findSalDetailsTar.points : "";
 
     let grosstotal = findSalDetails
       ? Number(findSalDetails.basic) +
-      Number(findSalDetails.hra) +
-      Number(findSalDetails.conveyance) +
-      Number(findSalDetails.medicalallowance) +
-      Number(findSalDetails.productionallowance) +
-      // + Number(findSalDetails.productionallowancetwo)
-      Number(findSalDetails.otherallowance)
-      : '';
+        Number(findSalDetails.hra) +
+        Number(findSalDetails.conveyance) +
+        Number(findSalDetails.medicalallowance) +
+        Number(findSalDetails.productionallowance) +
+        // + Number(findSalDetails.productionallowancetwo)
+        Number(findSalDetails.otherallowance)
+      : "";
     let salTab = {
       salaryfixed: true,
-      salarystatus: 'With Salary',
-      expectedsalary: '',
+      salarystatus: "With Salary",
+      expectedsalary: "",
       basic: Number(findSalDetails?.basic || 0),
       hra: Number(findSalDetails?.hra || 0),
       conveyance: Number(findSalDetails?.conveyance || 0),
@@ -3155,8 +4430,16 @@ function EditMovietolive() {
       ...prev,
       ...salTab,
     }));
-    let Modeexp = dateOfJoining ? (differenceInMonths > 0 ? differenceInMonths : 0) : '';
-    let Tarexp = dateOfJoining ? (differenceInMonthstar > 0 ? differenceInMonthstar : 0) : '';
+    let Modeexp = dateOfJoining
+      ? differenceInMonths > 0
+        ? differenceInMonths
+        : 0
+      : "";
+    let Tarexp = dateOfJoining
+      ? differenceInMonthstar > 0
+        ? differenceInMonthstar
+        : 0
+      : "";
 
     setoverallgrosstotal(grosstotal);
     setModeexperience(Modeexp);
@@ -3165,13 +4448,13 @@ function EditMovietolive() {
   }, [newstate]);
 
   const valueOpt = [
-    { label: 'Yes', value: 'Yes' },
-    { label: 'No', value: 'No' },
+    { label: "Yes", value: "Yes" },
+    { label: "No", value: "No" },
   ];
 
-  const mode = ['Auto Increment', 'Add', 'Minus', 'Fix'];
-  const modetar = ['Target Stop'];
-  const modeexp = ['Exp Stop'];
+  const mode = ["Auto Increment", "Add", "Minus", "Fix"];
+  const modetar = ["Target Stop"];
+  const modeexp = ["Exp Stop"];
 
   const modeOption = mode.map((data) => ({
     ...data,
@@ -3197,11 +4480,20 @@ function EditMovietolive() {
   const [expDateOptions, setExpDateOptions] = useState([]);
 
   useEffect(() => {
-    let foundData = expDptDates.find((item) => item.department === boardingDetails.department && new Date(dateOfJoining) >= new Date(item.fromdate) && new Date(dateOfJoining) <= new Date(item.todate));
+    let foundData = expDptDates.find(
+      (item) =>
+        item.department === boardingDetails.department &&
+        new Date(dateOfJoining) >= new Date(item.fromdate) &&
+        new Date(dateOfJoining) <= new Date(item.todate),
+    );
 
     if (foundData) {
       let filteredDatas = expDptDates
-        .filter((d) => d.department === boardingDetails.department && new Date(d.fromdate) >= new Date(foundData.fromdate))
+        .filter(
+          (d) =>
+            d.department === boardingDetails.department &&
+            new Date(d.fromdate) >= new Date(foundData.fromdate),
+        )
         .map((data) => ({
           label: data.fromdate,
           value: data.fromdate,
@@ -3222,10 +4514,23 @@ function EditMovietolive() {
   const fetchDepartmentMonthsets = async () => {
     const now = new Date();
     let today = new Date();
-    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, "0");
     var currentyear = today.getFullYear();
 
-    let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    let months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     let currentmonth = months[mm - 1];
 
     try {
@@ -3234,13 +4539,22 @@ function EditMovietolive() {
           Authorization: `Bearer ${auth.APIToken}`,
         },
       });
-      let filteredMonthsets = res_employee.data.departmentdetails.filter((item) => item.year == currentyear && item.monthname == currentmonth);
-      let filteredMonthsetsDATES = res_employee.data.departmentdetails.filter((item) => item.fromdate);
+      let filteredMonthsets = res_employee.data.departmentdetails.filter(
+        (item) => item.year == currentyear && item.monthname == currentmonth,
+      );
+      let filteredMonthsetsDATES = res_employee.data.departmentdetails.filter(
+        (item) => item.fromdate,
+      );
       setExpDptDates(res_employee.data.departmentdetails);
-      setMonthsets(res_employee.data.departmentdetails);
+      setMonthsets(filteredMonthsets);
       setSpecificDates(filteredMonthsetsDATES);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   useEffect(() => {
@@ -3253,8 +4567,8 @@ function EditMovietolive() {
     e.preventDefault();
     handleSubmitMulti(e);
   };
-  const [newval, setNewval] = useState('');
-  const [prevEmpCode, setPrevEmpCode] = useState('');
+  const [newval, setNewval] = useState("");
+  const [prevEmpCode, setPrevEmpCode] = useState("");
 
   // let newval =
   //   empsettings === true && overllsettings?.length > 0
@@ -3349,12 +4663,14 @@ function EditMovietolive() {
         },
       });
       let ALLusers = req?.data?.users.filter((item) => {
-        if (item?.workmode != 'Internship' && item.branch == branch) {
+        if (item?.workmode != "Internship" && item.branch == branch) {
           return item;
         }
       });
 
-      let filteredsssssData = overllsettingsDefault?.todos?.filter((item) => item.branch.includes(branch) && item.company == company);
+      let filteredsssssData = overllsettingsDefault?.todos?.filter(
+        (item) => item.branch.includes(branch) && item.company == company,
+      );
       setOverallsettings(filteredsssssData);
 
       // const branchCode = branchNames?.filter((item) => item.name === branch);
@@ -3363,61 +4679,116 @@ function EditMovietolive() {
       //
       setEmpCode(ALLusers);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
   const workmodeOptions = [
-    { label: 'Remote', value: 'Remote' },
-    { label: 'Office', value: 'Office' },
+    { label: "Remote", value: "Remote" },
+    { label: "Office", value: "Office" },
   ];
 
   useEffect(() => {
     var filteredWorks;
-    if (boardingDetails.unit === '' && boardingDetails.floor === '') {
-      filteredWorks = workStationOpt?.filter((u) => u.company === boardingDetails.company && u.branch === boardingDetails.branch);
-    } else if (boardingDetails.unit === '') {
-      filteredWorks = workStationOpt?.filter((u) => u.company === boardingDetails.company && u.branch === boardingDetails.branch && u.floor === boardingDetails.floor);
-    } else if (boardingDetails.floor === '') {
-      filteredWorks = workStationOpt?.filter((u) => u.company === boardingDetails.company && u.branch === boardingDetails.branch && u.unit === boardingDetails.unit);
+    if (boardingDetails.unit === "" && boardingDetails.floor === "") {
+      filteredWorks = workStationOpt?.filter(
+        (u) =>
+          u.company === boardingDetails.company &&
+          u.branch === boardingDetails.branch,
+      );
+    } else if (boardingDetails.unit === "") {
+      filteredWorks = workStationOpt?.filter(
+        (u) =>
+          u.company === boardingDetails.company &&
+          u.branch === boardingDetails.branch &&
+          u.floor === boardingDetails.floor,
+      );
+    } else if (boardingDetails.floor === "") {
+      filteredWorks = workStationOpt?.filter(
+        (u) =>
+          u.company === boardingDetails.company &&
+          u.branch === boardingDetails.branch &&
+          u.unit === boardingDetails.unit,
+      );
     } else {
-      filteredWorks = workStationOpt?.filter((u) => u.company === boardingDetails.company && u.branch === boardingDetails.branch && u.unit === boardingDetails.unit && u.floor === boardingDetails.floor);
+      filteredWorks = workStationOpt?.filter(
+        (u) =>
+          u.company === boardingDetails.company &&
+          u.branch === boardingDetails.branch &&
+          u.unit === boardingDetails.unit &&
+          u.floor === boardingDetails.floor,
+      );
     }
     const result = filteredWorks?.flatMap((item) => {
       return item.combinstation.flatMap((combinstationItem) => {
-        return combinstationItem.subTodos?.length > 0 ? combinstationItem.subTodos.map((subTodo) => subTodo.subcabinname + '(' + item.branch + '-' + item.floor + ')') : [combinstationItem.cabinname + '(' + item.branch + '-' + item.floor + ')'];
+        return combinstationItem.subTodos?.length > 0
+          ? combinstationItem.subTodos.map(
+              (subTodo) =>
+                subTodo.subcabinname +
+                "(" +
+                item.branch +
+                "-" +
+                item.floor +
+                ")",
+            )
+          : [
+              combinstationItem.cabinname +
+                "(" +
+                item.branch +
+                "-" +
+                item.floor +
+                ")",
+            ];
       });
     });
     const processedResult = result.map((e) => {
-      const selectedCabinName = e?.split('(')[0];
+      const selectedCabinName = e?.split("(")[0];
 
       const Bracketsbranch = e?.match(/\(([^)]+)\)/)?.[1];
 
-      const hyphenCount = Bracketsbranch.split('-').length - 1;
+      const hyphenCount = Bracketsbranch.split("-").length - 1;
 
-      const Branch = hyphenCount === 1 ? Bracketsbranch.split('-')[0]?.trim() : Bracketsbranch.split('-').slice(0, 2).join('-');
+      const Branch =
+        hyphenCount === 1
+          ? Bracketsbranch.split("-")[0]?.trim()
+          : Bracketsbranch.split("-").slice(0, 2).join("-");
 
-      const Floor = hyphenCount === 1 ? Bracketsbranch.split('-')[1]?.trim() : hyphenCount === 2 ? Bracketsbranch.split('-').pop() : Bracketsbranch.split('-').slice(-2).join('-').replace(')', '');
+      const Floor =
+        hyphenCount === 1
+          ? Bracketsbranch.split("-")[1]?.trim()
+          : hyphenCount === 2
+            ? Bracketsbranch.split("-").pop()
+            : Bracketsbranch.split("-").slice(-2).join("-").replace(")", "");
 
       const shortname = workStationSystemName
-        ?.filter((item) => item?.branch === Branch && (Floor === '' || Floor === item?.floor) && item?.cabinname === selectedCabinName)
+        ?.filter(
+          (item) =>
+            item?.branch === Branch &&
+            (Floor === "" || Floor === item?.floor) &&
+            item?.cabinname === selectedCabinName,
+        )
         ?.map((item) => item?.systemshortname)
         ?.toString();
 
       return e + `(${shortname})`;
     });
 
-    console.log(workStationSystemName, 'workStationSystemName');
+    console.log(workStationSystemName, "workStationSystemName");
 
     let datas = [
       ...processedResult.map((t) => ({
         label: t,
-        value: t.replace(/\([^)]*\)$/, ''),
+        value: t.replace(/\([^)]*\)$/, ""),
       })),
     ];
 
     // setFilteredWorkStation(result.flat());
-    console.log(datas, 'datas');
+    console.log(datas, "datas");
     setFilteredWorkStation(datas);
   }, [userUpdate, boardingDetails.area, boardingDetails.floor]);
 
@@ -3519,20 +4890,39 @@ function EditMovietolive() {
         //workstation start
         let allWorkStationOpt = await fetchWorkStation();
 
-        setPrimaryWorkStation(res?.data?.suser?.workstation[0] || 'Please Select Primary Work Station');
+        setPrimaryWorkStation(
+          res?.data?.suser?.workstation[0] ||
+            "Please Select Primary Work Station",
+        );
 
         const assignPrimarySecondaryWorkstations = (data) => {
           return data.map((emp) => {
-            const workstations = (emp.workstation || []).map((ws) => (ws ? ws?.trim() : ''));
+            const workstations = (emp.workstation || []).map((ws) =>
+              ws ? ws?.trim() : "",
+            );
 
             const [primary, ...secondary] = workstations;
 
             const extractBranchAndFloor = (workstation) => {
-              const branchAndFloor = (workstation || '')?.match(/\(([^)]+)\)/)?.[1];
+              const branchAndFloor = (workstation || "")?.match(
+                /\(([^)]+)\)/,
+              )?.[1];
               if (branchAndFloor) {
-                const hyphenCount = branchAndFloor.split('-').length - 1;
-                const Branch = hyphenCount === 1 ? branchAndFloor.split('-')[0]?.trim() : branchAndFloor.split('-').slice(0, 2).join('-');
-                const Floor = hyphenCount === 1 ? branchAndFloor.split('-')[1]?.trim() : hyphenCount === 2 ? branchAndFloor.split('-').pop() : branchAndFloor.split('-').slice(-2).join('-')?.replace(')', '');
+                const hyphenCount = branchAndFloor.split("-").length - 1;
+                const Branch =
+                  hyphenCount === 1
+                    ? branchAndFloor.split("-")[0]?.trim()
+                    : branchAndFloor.split("-").slice(0, 2).join("-");
+                const Floor =
+                  hyphenCount === 1
+                    ? branchAndFloor.split("-")[1]?.trim()
+                    : hyphenCount === 2
+                      ? branchAndFloor.split("-").pop()
+                      : branchAndFloor
+                          .split("-")
+                          .slice(-2)
+                          .join("-")
+                          ?.replace(")", "");
                 return { Branch, Floor };
               }
               return {};
@@ -3540,65 +4930,139 @@ function EditMovietolive() {
 
             const findSystemShortName = (workstation) => {
               const { Branch, Floor } = extractBranchAndFloor(workstation);
-              const match = workStationSystemName?.find((sht) => sht?.branch === Branch && sht?.floor === Floor && sht?.cabinname === workstation.split('(')[0]?.trim());
-              return match ? match.systemshortname : '';
+              const match = workStationSystemName?.find(
+                (sht) =>
+                  sht?.branch === Branch &&
+                  sht?.floor === Floor &&
+                  sht?.cabinname === workstation.split("(")[0]?.trim(),
+              );
+              return match ? match.systemshortname : "";
             };
 
             const primarySystemShortName = findSystemShortName(primary);
-            const secondarySystemShortNames = secondary.map(findSystemShortName).filter((name) => name);
+            const secondarySystemShortNames = secondary
+              .map(findSystemShortName)
+              .filter((name) => name);
 
-            const secondaryworkstationvalue = secondary.join(', ');
+            const secondaryworkstationvalue = secondary.join(", ");
 
             return {
               ...emp,
-              primaryworkstation: ['Please Select Primary Work Station', 'Select Primary Workstation', null]?.includes(primary) ? '' : primary || '', // Set the first workstation as primary
-              secondaryworkstation: secondaryworkstationvalue || '',
-              systemshortname: [primarySystemShortName, ...secondarySystemShortNames].join(', '), // Combine all short names
+              primaryworkstation: [
+                "Please Select Primary Work Station",
+                "Select Primary Workstation",
+                null,
+              ]?.includes(primary)
+                ? ""
+                : primary || "", // Set the first workstation as primary
+              secondaryworkstation: secondaryworkstationvalue || "",
+              systemshortname: [
+                primarySystemShortName,
+                ...secondarySystemShortNames,
+              ].join(", "), // Combine all short names
             };
           });
         };
 
-        const updatedData = assignPrimarySecondaryWorkstations([res?.data?.suser]);
+        const updatedData = assignPrimarySecondaryWorkstations([
+          res?.data?.suser,
+        ]);
 
-        const systemShortNamesArray = updatedData[0]?.systemshortname.split(', ');
+        const systemShortNamesArray =
+          updatedData[0]?.systemshortname.split(", ");
 
         const [primary, ...secondary] = systemShortNamesArray;
 
-        setPrimaryKeyShortname(primary === '' ? '' : `${primary},`);
+        setPrimaryKeyShortname(primary === "" ? "" : `${primary},`);
         setKeyShortname(secondary?.toString());
 
-        const employeeCount = Number(res?.data?.suser?.employeecount ?? 0) + Number(res?.data?.suser?.wfhcount ?? 0);
+        const employeeCount =
+          Number(res?.data?.suser?.employeecount ?? 0) +
+          Number(res?.data?.suser?.wfhcount ?? 0);
         setMaxSelections(employeeCount);
         var filteredWorks;
-        if (res?.data?.suser?.unit === '' && res?.data?.suser?.floor === '') {
-          filteredWorks = workStationOpt?.filter((u) => u.company === res?.data?.suser?.company && u.branch === res?.data?.suser?.branch);
-        } else if (res?.data?.suser?.unit === '') {
-          filteredWorks = workStationOpt?.filter((u) => u.company === res?.data?.suser?.company && u.branch === res?.data?.suser?.branch && u.floor === res?.data?.suser?.floor);
-        } else if (res?.data?.suser?.floor === '') {
-          filteredWorks = workStationOpt?.filter((u) => u.company === res?.data?.suser?.company && u.branch === res?.data?.suser?.branch && u.unit === res?.data?.suser?.unit);
+        if (res?.data?.suser?.unit === "" && res?.data?.suser?.floor === "") {
+          filteredWorks = workStationOpt?.filter(
+            (u) =>
+              u.company === res?.data?.suser?.company &&
+              u.branch === res?.data?.suser?.branch,
+          );
+        } else if (res?.data?.suser?.unit === "") {
+          filteredWorks = workStationOpt?.filter(
+            (u) =>
+              u.company === res?.data?.suser?.company &&
+              u.branch === res?.data?.suser?.branch &&
+              u.floor === res?.data?.suser?.floor,
+          );
+        } else if (res?.data?.suser?.floor === "") {
+          filteredWorks = workStationOpt?.filter(
+            (u) =>
+              u.company === res?.data?.suser?.company &&
+              u.branch === res?.data?.suser?.branch &&
+              u.unit === res?.data?.suser?.unit,
+          );
         } else {
-          filteredWorks = workStationOpt?.filter((u) => u.company === res?.data?.suser?.company && u.branch === res?.data?.suser?.branch && u.unit === res?.data?.suser?.unit && u.floor === res?.data?.suser?.floor);
+          filteredWorks = workStationOpt?.filter(
+            (u) =>
+              u.company === res?.data?.suser?.company &&
+              u.branch === res?.data?.suser?.branch &&
+              u.unit === res?.data?.suser?.unit &&
+              u.floor === res?.data?.suser?.floor,
+          );
         }
 
         const result = filteredWorks.flatMap((item) => {
           return item.combinstation.flatMap((combinstationItem) => {
-            return combinstationItem.subTodos.length > 0 ? combinstationItem.subTodos.map((subTodo) => subTodo.subcabinname + '(' + item.branch + '-' + item.floor + ')') : [combinstationItem.cabinname + '(' + item.branch + '-' + item.floor + ')'];
+            return combinstationItem.subTodos.length > 0
+              ? combinstationItem.subTodos.map(
+                  (subTodo) =>
+                    subTodo.subcabinname +
+                    "(" +
+                    item.branch +
+                    "-" +
+                    item.floor +
+                    ")",
+                )
+              : [
+                  combinstationItem.cabinname +
+                    "(" +
+                    item.branch +
+                    "-" +
+                    item.floor +
+                    ")",
+                ];
           });
         });
 
         const processedResult = result.map((e) => {
-          const selectedCabinName = e?.split('(')[0];
+          const selectedCabinName = e?.split("(")[0];
 
           const Bracketsbranch = e?.match(/\(([^)]+)\)/)?.[1];
 
-          const hyphenCount = Bracketsbranch.split('-').length - 1;
+          const hyphenCount = Bracketsbranch.split("-").length - 1;
 
-          const Branch = hyphenCount === 1 ? Bracketsbranch.split('-')[0]?.trim() : Bracketsbranch.split('-').slice(0, 2).join('-');
+          const Branch =
+            hyphenCount === 1
+              ? Bracketsbranch.split("-")[0]?.trim()
+              : Bracketsbranch.split("-").slice(0, 2).join("-");
 
-          const Floor = hyphenCount === 1 ? Bracketsbranch.split('-')[1]?.trim() : hyphenCount === 2 ? Bracketsbranch.split('-').pop() : Bracketsbranch.split('-').slice(-2).join('-')?.replace(')', '');
+          const Floor =
+            hyphenCount === 1
+              ? Bracketsbranch.split("-")[1]?.trim()
+              : hyphenCount === 2
+                ? Bracketsbranch.split("-").pop()
+                : Bracketsbranch.split("-")
+                    .slice(-2)
+                    .join("-")
+                    ?.replace(")", "");
 
           const shortname = workStationSystemName
-            ?.filter((item) => item?.branch === Branch && (Floor === '' || Floor === item?.floor) && item?.cabinname === selectedCabinName)
+            ?.filter(
+              (item) =>
+                item?.branch === Branch &&
+                (Floor === "" || Floor === item?.floor) &&
+                item?.cabinname === selectedCabinName,
+            )
             ?.map((item) => item?.systemshortname)
             ?.toString();
 
@@ -3609,38 +5073,50 @@ function EditMovietolive() {
         let workstationsFinal = [
           ...processedResult.map((t) => ({
             label: t,
-            value: t?.replace(/\([^)]*\)$/, ''),
+            value: t?.replace(/\([^)]*\)$/, ""),
           })),
         ];
-        let primaryWorkstationNew = res?.data?.suser?.workstation[0] || 'Please Select Primary Work Station';
-        let findLabel = workstationsFinal?.find((item) => item.label.includes(primaryWorkstationNew)) || {};
+        let primaryWorkstationNew =
+          res?.data?.suser?.workstation[0] ||
+          "Please Select Primary Work Station";
+        let findLabel =
+          workstationsFinal?.find((item) =>
+            item.label.includes(primaryWorkstationNew),
+          ) || {};
         setFilteredWorkStation(workstationsFinal);
-        setPrimaryWorkStationLabel(findLabel?.label || 'Please Select Primary Work Station');
+        setPrimaryWorkStationLabel(
+          findLabel?.label || "Please Select Primary Work Station",
+        );
 
-        const matches = (findLabel?.label || '')?.match(/^(.*?)\((.*?)\)\((.*?)\)$/);
+        const matches = (findLabel?.label || "")?.match(
+          /^(.*?)\((.*?)\)\((.*?)\)$/,
+        );
         console.log(primaryWorkstationNew, matches);
         setWorkstationTodoList((prev) =>
           matches
             ? [
-              {
-                workstation: matches?.[1]?.trim() + '(' + matches?.[2]?.trim() + ')', // G-HRA(TTS-TRICHY-Ground Floor)
-                shortname: matches?.[3],
-                type: 'Primary',
-              },
-            ]
-            : []
+                {
+                  workstation:
+                    matches?.[1]?.trim() + "(" + matches?.[2]?.trim() + ")", // G-HRA(TTS-TRICHY-Ground Floor)
+                  shortname: matches?.[3],
+                  type: "Primary",
+                },
+              ]
+            : [],
         );
         let secondaryWorkstation = Array.isArray(res?.data?.suser?.workstation)
           ? res?.data?.suser?.workstation
-            ?.filter((item) => item !== res?.data?.suser?.workstation[0])
-            .map((x) => ({
-              ...x,
-              label: x,
-              value: x,
-            }))
+              ?.filter((item) => item !== res?.data?.suser?.workstation[0])
+              .map((x) => ({
+                ...x,
+                label: x,
+                value: x,
+              }))
           : [];
         let foundDataNew = secondaryWorkstation?.map((item) => {
-          let getData = allWorkStationOpt?.find((data) => data.value === item.value);
+          let getData = allWorkStationOpt?.find(
+            (data) => data.value === item.value,
+          );
           return {
             ...item,
             label: getData?.label,
@@ -3667,22 +5143,31 @@ function EditMovietolive() {
             return {
               workstation: `${matches[1]?.trim()}(${matches[2]?.trim()})`,
               shortname: matches[3],
-              type: 'Secondary',
+              type: "Secondary",
             };
           })
           .filter(Boolean); // remove null results
         setWorkstationTodoList((prev) => {
-          const primaryItem = prev?.find((item) => item?.type === 'Primary');
+          const primaryItem = prev?.find((item) => item?.type === "Primary");
           return primaryItem ? [primaryItem, ...resultNew] : [...resultNew];
         });
 
-        setValueWorkStation(res?.data?.suser?.workstation?.filter((item) => item !== res?.data?.suser?.workstation[0]));
+        setValueWorkStation(
+          res?.data?.suser?.workstation?.filter(
+            (item) => item !== res?.data?.suser?.workstation[0],
+          ),
+        );
         //workstation end
         const wfhcount = res?.data?.suser?.wfhcount || 0;
         // setMaxSelections(Number(employeeCount) + Number(wfhcount));
         setWfhSelections(Number(wfhcount));
       } catch (err) {
-        handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+        handleApiError(
+          err,
+          setPopupContentMalert,
+          setPopupSeverityMalert,
+          handleClickOpenPopupMalert,
+        );
       }
     };
     rowData();
@@ -3690,63 +5175,113 @@ function EditMovietolive() {
   const handleEmployeesChange = (options) => {
     // const maxOptions = Number(maxSelections) - 1;
 
-    const check = (primaryWorkStation || '')?.trim().toLowerCase() !== 'please select primary work station' && (primaryWorkStation || '')?.trim() !== '' && (primaryWorkStation || '')?.trim().toLowerCase() !== 'select primary workstation';
+    const check =
+      (primaryWorkStation || "")?.trim().toLowerCase() !==
+        "please select primary work station" &&
+      (primaryWorkStation || "")?.trim() !== "" &&
+      (primaryWorkStation || "")?.trim().toLowerCase() !==
+        "select primary workstation";
 
-    const maxOptions = check ? Number(maxSelections) - 1 : Number(maxSelections);
-    console.log(maxOptions, 'maxOptions');
+    const maxOptions = check
+      ? Number(maxSelections) - 1
+      : Number(maxSelections);
+    console.log(maxOptions, "maxOptions");
     // Restrict selection to maxOptions
     if (options.length <= maxOptions) {
-      const selectedCabs = options?.map((option) => option?.value?.split('(')[0]) || [];
+      const selectedCabs =
+        options?.map((option) => option?.value?.split("(")[0]) || [];
 
       const extractBranchAndFloor = (workstation) => {
-        const branchAndFloor = (workstation || '')?.match(/\(([^)]+)\)/)?.[1];
+        const branchAndFloor = (workstation || "")?.match(/\(([^)]+)\)/)?.[1];
         if (branchAndFloor) {
-          const hyphenCount = branchAndFloor.split('-').length - 1;
-          const Branch = hyphenCount === 1 ? branchAndFloor.split('-')[0]?.trim() : branchAndFloor.split('-').slice(0, 2).join('-');
-          const Floor = hyphenCount === 1 ? branchAndFloor.split('-')[1]?.trim() : hyphenCount === 2 ? branchAndFloor.split('-').pop() : branchAndFloor.split('-').slice(-2).join('-')?.replace(')', '');
+          const hyphenCount = branchAndFloor.split("-").length - 1;
+          const Branch =
+            hyphenCount === 1
+              ? branchAndFloor.split("-")[0]?.trim()
+              : branchAndFloor.split("-").slice(0, 2).join("-");
+          const Floor =
+            hyphenCount === 1
+              ? branchAndFloor.split("-")[1]?.trim()
+              : hyphenCount === 2
+                ? branchAndFloor.split("-").pop()
+                : branchAndFloor
+                    .split("-")
+                    .slice(-2)
+                    .join("-")
+                    ?.replace(")", "");
           return { Branch, Floor };
         }
         return {};
       };
 
       setKeyShortname((prevKeyShortname) => {
-        const prevShortnamesArray = prevKeyShortname ? prevKeyShortname.split(', ') : [];
+        const prevShortnamesArray = prevKeyShortname
+          ? prevKeyShortname.split(", ")
+          : [];
 
         const newShortnames = options
           ?.map((item) => {
             const { Branch, Floor } = extractBranchAndFloor(item?.value);
 
-            return workStationSystemName?.filter((workItem) => workItem.branch === Branch && (Floor === '' || Floor === workItem?.floor) && selectedCabs.includes(workItem?.cabinname))?.map((workItem) => workItem?.systemshortname);
+            return workStationSystemName
+              ?.filter(
+                (workItem) =>
+                  workItem.branch === Branch &&
+                  (Floor === "" || Floor === workItem?.floor) &&
+                  selectedCabs.includes(workItem?.cabinname),
+              )
+              ?.map((workItem) => workItem?.systemshortname);
           })
           .flat();
 
-        const updatedShortnames = prevShortnamesArray.filter((shortname) => newShortnames.includes(shortname) || selectedCabs.includes(workStationSystemName?.find((workItem) => workItem?.systemshortname === shortname)?.cabinname));
+        const updatedShortnames = prevShortnamesArray.filter(
+          (shortname) =>
+            newShortnames.includes(shortname) ||
+            selectedCabs.includes(
+              workStationSystemName?.find(
+                (workItem) => workItem?.systemshortname === shortname,
+              )?.cabinname,
+            ),
+        );
 
-        const mergedShortnames = Array.from(new Set([...updatedShortnames, ...newShortnames]));
+        const mergedShortnames = Array.from(
+          new Set([...updatedShortnames, ...newShortnames]),
+        );
 
-        return mergedShortnames.join(', ');
+        return mergedShortnames.join(", ");
       });
 
       const updatedOptions = allWorkStationOpt.map((option) => ({
         ...option,
-        disabled: maxOptions - 1 > 0 && options.length >= maxOptions - 1 && !options.find((selectedOption) => selectedOption.value === option.value),
+        disabled:
+          maxOptions - 1 > 0 &&
+          options.length >= maxOptions - 1 &&
+          !options.find(
+            (selectedOption) => selectedOption.value === option.value,
+          ),
       }));
 
       setValueWorkStation(options.map((a) => a.value));
       setSelectedOptionsWorkStation(options);
 
       const result = options.map((item) => {
-        const matches = (item?.label || '')?.match(/^(.*?)\((.*?)\)\((.*?)\)$/);
+        const matches = (item?.label || "")?.match(/^(.*?)\((.*?)\)\((.*?)\)$/);
         return {
-          workstation: matches?.[1]?.trim() + '(' + matches?.[2]?.trim() + ')', // G-HRA(TTS-TRICHY-Ground Floor)
+          workstation: matches?.[1]?.trim() + "(" + matches?.[2]?.trim() + ")", // G-HRA(TTS-TRICHY-Ground Floor)
           shortname: matches?.[3],
-          type: 'Secondary', // TT_1_U4_G-HRA
+          type: "Secondary", // TT_1_U4_G-HRA
         };
       });
       setWorkstationTodoList((prev) => {
-        const primaryItem = prev?.find((item) => item?.type === 'Primary');
+        const primaryItem = prev?.find((item) => item?.type === "Primary");
         return primaryItem ? [primaryItem, ...result] : [...result];
       });
+    } else {
+      setPopupContentMalert(
+        `Work Station Exceeds System Count (${maxSelections || 0})`,
+      );
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
     }
   };
   // company multi select
@@ -3772,8 +5307,17 @@ function EditMovietolive() {
   //   setSelectedOptionsWorkStation(options);
   //   setFilteredWorkStation(updatedOptions);
   // };
-  const customValueRendererEmployees = (valueWorkStation, _filteredWorkStation) => {
-    return valueWorkStation.length ? valueWorkStation.map(({ label }) => label).join(', ') : <span style={{ color: 'hsl(0, 0%, 20%)' }}>Please Select Secondary Work Station</span>;
+  const customValueRendererEmployees = (
+    valueWorkStation,
+    _filteredWorkStation,
+  ) => {
+    return valueWorkStation.length ? (
+      valueWorkStation.map(({ label }) => label).join(", ")
+    ) : (
+      <span style={{ color: "hsl(0, 0%, 20%)" }}>
+        Please Select Secondary Work Station
+      </span>
+    );
   };
   const [allAssignedWorkStations, setAllAssignedWorkStations] = useState([]);
   const fetchWorkStation = async () => {
@@ -3790,12 +5334,12 @@ function EditMovietolive() {
           },
         },
         {
-          $unwind: '$workstation', // Unwind the workstation array into separate documents
+          $unwind: "$workstation", // Unwind the workstation array into separate documents
         },
         {
           $group: {
             _id: null, // Group all documents together
-            allWorkstations: { $addToSet: '$workstation' }, // Combine all unique workstation values into a single array
+            allWorkstations: { $addToSet: "$workstation" }, // Combine all unique workstation values into a single array
           },
         },
       ];
@@ -3808,31 +5352,61 @@ function EditMovietolive() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-        }
+        },
       );
       const allWorkstations = response.data?.users?.[0]?.allWorkstations || [];
       // setAllAssignedWorkStations(allWorkstations)
       setAllAssignedWorkStations([]);
       const result = res?.data?.locationgroupings.flatMap((item) => {
         return item.combinstation.flatMap((combinstationItem) => {
-          return combinstationItem.subTodos.length > 0 ? combinstationItem.subTodos.map((subTodo) => subTodo.subcabinname + '(' + item.branch + '-' + item.floor + ')') : [combinstationItem.cabinname + '(' + item.branch + '-' + item.floor + ')'];
+          return combinstationItem.subTodos.length > 0
+            ? combinstationItem.subTodos.map(
+                (subTodo) =>
+                  subTodo.subcabinname +
+                  "(" +
+                  item.branch +
+                  "-" +
+                  item.floor +
+                  ")",
+              )
+            : [
+                combinstationItem.cabinname +
+                  "(" +
+                  item.branch +
+                  "-" +
+                  item.floor +
+                  ")",
+              ];
         });
       });
       setWorkStationOpt(res?.data?.locationgroupings);
 
       const processedResult = result.map((e) => {
-        const selectedCabinName = e?.split('(')[0];
+        const selectedCabinName = e?.split("(")[0];
 
         const Bracketsbranch = e?.match(/\(([^)]+)\)/)?.[1];
 
-        const hyphenCount = Bracketsbranch.split('-').length - 1;
+        const hyphenCount = Bracketsbranch.split("-").length - 1;
 
-        const Branch = hyphenCount === 1 ? Bracketsbranch.split('-')[0]?.trim() : Bracketsbranch.split('-').slice(0, 2).join('-');
+        const Branch =
+          hyphenCount === 1
+            ? Bracketsbranch.split("-")[0]?.trim()
+            : Bracketsbranch.split("-").slice(0, 2).join("-");
 
-        const Floor = hyphenCount === 1 ? Bracketsbranch.split('-')[1]?.trim() : hyphenCount === 2 ? Bracketsbranch.split('-').pop() : Bracketsbranch.split('-').slice(-2).join('-')?.replace(')', '');
+        const Floor =
+          hyphenCount === 1
+            ? Bracketsbranch.split("-")[1]?.trim()
+            : hyphenCount === 2
+              ? Bracketsbranch.split("-").pop()
+              : Bracketsbranch.split("-").slice(-2).join("-")?.replace(")", "");
 
         const shortname = workStationSystemName
-          ?.filter((item) => item?.branch === Branch && (Floor === '' || Floor === item?.floor) && item?.cabinname === selectedCabinName)
+          ?.filter(
+            (item) =>
+              item?.branch === Branch &&
+              (Floor === "" || Floor === item?.floor) &&
+              item?.cabinname === selectedCabinName,
+          )
           ?.map((item) => item?.systemshortname)
           ?.toString();
 
@@ -3844,13 +5418,18 @@ function EditMovietolive() {
         ?.map((d) => ({
           ...d,
           label: d,
-          value: d?.replace(/\([^)]*\)$/, ''),
+          value: d?.replace(/\([^)]*\)$/, ""),
         }));
-      console.log(secondaryworkstation, 'secondaryworkstation');
+      console.log(secondaryworkstation, "secondaryworkstation");
       setAllWorkStationOpt(secondaryworkstation);
       return secondaryworkstation;
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const [empcodelimitedAll, setEmpCodeLimitedAll] = useState([]);
@@ -3865,15 +5444,24 @@ function EditMovietolive() {
       });
 
       let ALLusers = req?.data?.users;
-      const lastThreeDigitsArray = ALLusers.map((employee) => employee?.empcode?.slice(-3));
+      const lastThreeDigitsArray = ALLusers.map((employee) =>
+        employee?.empcode?.slice(-3),
+      );
       setEmpCodeLimited(lastThreeDigitsArray);
-      const allDigitsArray = ALLusers?.filter((data) => data?._id !== id && data?.empcode !== '')?.map((employee) => employee?.empcode);
+      const allDigitsArray = ALLusers?.filter(
+        (data) => data?._id !== id && data?.empcode !== "",
+      )?.map((employee) => employee?.empcode);
 
       setEmpCodeLimitedAll(allDigitsArray);
 
       // setEmpCode(ALLusers);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   const fetchOverAllSettings = async (comp, branc) => {
@@ -3884,11 +5472,18 @@ function EditMovietolive() {
         },
       });
       setOverallsettingsDefault(res?.data?.overallsettings[0]);
-      let filter = res?.data?.overallsettings[0].todos.filter((item) => item.branch.includes(branc) && item.company == comp);
+      let filter = res?.data?.overallsettings[0].todos.filter(
+        (item) => item.branch.includes(branc) && item.company == comp,
+      );
       setOverallsettings(filter);
       setEmpsettings(res?.data?.overallsettings[0].empdigits);
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -3898,11 +5493,21 @@ function EditMovietolive() {
   }, []);
 
   const getWeekdayOptions = () => {
-    const isNoneSelected = selectedOptionsCate.some((opt) => opt.value === 'None');
+    const isNoneSelected = selectedOptionsCate.some(
+      (opt) => opt.value === "None",
+    );
 
     return [
-      { label: 'None', value: 'None' },
-      ...['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => ({
+      { label: "None", value: "None" },
+      ...[
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ].map((day) => ({
         label: day,
         value: day,
         disabled: isNoneSelected,
@@ -3912,37 +5517,47 @@ function EditMovietolive() {
 
   // week off details
   const [selectedOptionsCate, setSelectedOptionsCate] = useState([]);
-  let [valueCate, setValueCate] = useState('');
+  let [valueCate, setValueCate] = useState("");
   const handleCategoryChange = (options) => {
-    const isNoneSelected = options.some((opt) => opt.value === 'None');
+    const isNoneSelected = options.some((opt) => opt.value === "None");
 
     if (isNoneSelected) {
       // If "None" is selected, ignore other options and set only "None"
-      setSelectedOptionsCate([{ label: 'None', value: 'None' }]);
-      setValueCate(['None']);
+      setSelectedOptionsCate([{ label: "None", value: "None" }]);
+      setValueCate(["None"]);
     } else {
       // Otherwise, remove "None" and accept selected options
-      const filtered = options.filter((opt) => opt.value !== 'None');
+      const filtered = options.filter((opt) => opt.value !== "None");
       setSelectedOptionsCate(filtered);
       setValueCate(filtered.map((a) => a.value));
     }
   };
 
   const customValueRendererCate = (valueCate, _days) => {
-    return valueCate?.length ? valueCate.map(({ label }) => label).join(', ') : 'Please Select Days';
+    return valueCate?.length
+      ? valueCate.map(({ label }) => label).join(", ")
+      : "Please Select Days";
   };
 
   // SELECT DROPDOWN STYLES
   const colourStyles = {
     menuList: (styles) => ({
       ...styles,
-      background: 'white',
+      background: "white",
     }),
     option: (styles, { isFocused, isSelected }) => ({
       ...styles,
       // color:'black',
-      color: isFocused ? 'rgb(255 255 255, 0.5)' : isSelected ? 'white' : 'black',
-      background: isFocused ? 'rgb(25 118 210, 0.7)' : isSelected ? 'rgb(25 118 210, 0.5)' : null,
+      color: isFocused
+        ? "rgb(255 255 255, 0.5)"
+        : isSelected
+          ? "white"
+          : "black",
+      background: isFocused
+        ? "rgb(25 118 210, 0.7)"
+        : isSelected
+          ? "rgb(25 118 210, 0.5)"
+          : null,
       zIndex: 1,
     }),
     menu: (base) => ({
@@ -3970,61 +5585,69 @@ function EditMovietolive() {
             name: file.name,
             preview: reader.result,
             type: file.type, // Include the file type
-            data: reader.result.split(',')[1],
-            remark: '',
+            data: reader.result.split(",")[1],
+            remark: "",
           },
         ]);
       };
     }
   };
 
-  const [errmsg, setErrmsg] = useState('');
+  const [errmsg, setErrmsg] = useState("");
 
   const [errorsLog, setErrorsLog] = useState({});
 
   // const [designation, setDesignation] = useState([]);
   const [shifttiming, setShiftTiming] = useState([]);
-  const [usernameaddedby, setUsernameaddedby] = useState('');
+  const [usernameaddedby, setUsernameaddedby] = useState("");
 
-  const [file, setFile] = useState('');
+  const [file, setFile] = useState("");
 
-  const [first, setFirst] = useState('');
-  const [second, setSecond] = useState('');
-  const [third, setThird] = useState('');
+  const [first, setFirst] = useState("");
+  const [second, setSecond] = useState("");
+  const [third, setThird] = useState("");
 
-  const [qualinames, setQualinames] = useState('');
-  const [skillSet, setSkillSet] = useState('');
+  const [qualinames, setQualinames] = useState("");
+  const [skillSet, setSkillSet] = useState("");
   const [repotingtonames, setrepotingtonames] = useState([]);
   const [internCourseNames, setInternCourseNames] = useState();
 
-  const [designationGroup, setDesignationGroup] = useState('');
+  const [designationGroup, setDesignationGroup] = useState("");
   const [oldHierarchyData, setOldHierarchyData] = useState([]);
-  const [oldHierarchyDataSupervisor, setOldHierarchyDataSupervisor] = useState([]);
-  const [selectedDesignation, setSelectedDesignation] = useState('');
-  const [olddesignation, setOldDesignation] = useState('');
-  const changeTo = [{ label: 'Replace', value: 'Replace' }];
-  const [changeToDesign, setChangeToDesign] = useState('Replace');
-  const [superVisorChoosen, setSuperVisorChoosen] = useState('Please Select Supervisor');
+  const [oldHierarchyDataSupervisor, setOldHierarchyDataSupervisor] = useState(
+    [],
+  );
+  const [selectedDesignation, setSelectedDesignation] = useState("");
+  const [olddesignation, setOldDesignation] = useState("");
+  const changeTo = [{ label: "Replace", value: "Replace" }];
+  const [changeToDesign, setChangeToDesign] = useState("Replace");
+  const [superVisorChoosen, setSuperVisorChoosen] = useState(
+    "Please Select Supervisor",
+  );
   const [newHierarchyData, setNewHierarchyData] = useState([]);
   const [getingOlddatas, setGettingOldDatas] = useState([]);
   const [lastUpdatedData, setLastUpdatedData] = useState([]);
   const [hierarchyall, setHierarchyall] = useState([]);
   const [users, setUsers] = useState([]);
   const [designationsName, setDesignationsName] = useState([]);
-  const [teamDesigChange, setTeamDesigChange] = useState('');
+  const [teamDesigChange, setTeamDesigChange] = useState("");
   const [oldUpdatedData, setOldUpdatedData] = useState([]);
   const [newUpdatingData, setNewUpdatingData] = useState([]);
   const [oldEmployeeHierData, setOldEmployeeHierData] = useState([]);
   const [userReportingToChange, setUserReportingToChange] = useState([]);
-  const [oldDesignationGroup, setOldDesignationGroup] = useState('');
-  const [newDesignationGroup, setNewDesignationGroup] = useState('');
+  const [oldDesignationGroup, setOldDesignationGroup] = useState("");
+  const [newDesignationGroup, setNewDesignationGroup] = useState("");
   const [designationdatasEdit, setDesignationdatasEdit] = useState([]);
-  const [newDesignatonChoosed, setnewDesignationChoosed] = useState('');
+  const [newDesignatonChoosed, setnewDesignationChoosed] = useState("");
   const [oldTeamData, setOldTeamData] = useState([]);
   const [oldTeamSupervisor, setoldTeamSupervisor] = useState(false);
   const [newUpdateDataAll, setNewUpdateDataAll] = useState([]);
   const [newDataTeamWise, setNewDataTeamWise] = useState([]);
-  const identifySuperVisor = hierarchyall?.map((item) => item.supervisorchoose[0])?.includes(getingOlddatas?.companyname) && !designationsName?.includes(selectedDesignation);
+  const identifySuperVisor =
+    hierarchyall
+      ?.map((item) => item.supervisorchoose[0])
+      ?.includes(getingOlddatas?.companyname) &&
+    !designationsName?.includes(selectedDesignation);
 
   function getUniqueData(dataArray) {
     const uniqueData = [];
@@ -4032,7 +5655,9 @@ function EditMovietolive() {
 
     for (const item of dataArray) {
       // Sort supervisorchoose array for consistent uniqueness checks
-      const supervisorKey = item.supervisorchoose ? [...item.supervisorchoose].sort().join(',') : '';
+      const supervisorKey = item.supervisorchoose
+        ? [...item.supervisorchoose].sort().join(",")
+        : "";
 
       // Create a unique key based on (team, designation, supervisorchoose)
       const key = `${item.company}-${item.branch}-${item.unit}-${item.team}-${item.designationgroup}-${supervisorKey}`;
@@ -4048,8 +5673,10 @@ function EditMovietolive() {
 
   const fetchSuperVisorChangingHierarchy = async (value, page) => {
     //
-    if (olddesignation !== value && page === 'Designation') {
-      let designationGrpName = alldesignation?.find((data) => value === data?.name)?.group;
+    if (olddesignation !== value && page === "Designation") {
+      let designationGrpName = alldesignation?.find(
+        (data) => value === data?.name,
+      )?.group;
       let res = await axios.post(SERVICE.HIERARCHY_DEISGNATIONLOG_RELATION, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
@@ -4058,15 +5685,28 @@ function EditMovietolive() {
         designation: value,
         desiggroup: designationGrpName,
         user: getingOlddatas,
-        company: getingOlddatas?.boardingLog?.length === 1 ? boardingDetails.company : 'none',
-        branch: getingOlddatas?.boardingLog?.length === 1 ? boardingDetails.branch : 'none',
-        unit: getingOlddatas?.boardingLog?.length === 1 ? boardingDetails.unit : 'none',
+        company:
+          getingOlddatas?.boardingLog?.length === 1
+            ? boardingDetails.company
+            : "none",
+        branch:
+          getingOlddatas?.boardingLog?.length === 1
+            ? boardingDetails.branch
+            : "none",
+        unit:
+          getingOlddatas?.boardingLog?.length === 1
+            ? boardingDetails.unit
+            : "none",
         department: boardingDetails.department,
-        team: getingOlddatas?.boardingLog?.length === 1 ? boardingDetails.team : 'none',
+        team:
+          getingOlddatas?.boardingLog?.length === 1
+            ? boardingDetails.team
+            : "none",
       });
       const oldData = res?.data?.olddata?.length > 0 ? res?.data?.olddata : [];
       const newdata = res?.data?.newdata?.length > 0 ? res?.data?.newdata : [];
-      const oldDataEmp = res?.data?.olddataEmp?.length > 0 ? res?.data?.olddataEmp : [];
+      const oldDataEmp =
+        res?.data?.olddataEmp?.length > 0 ? res?.data?.olddataEmp : [];
       //
       setOldUpdatedData(oldData);
       setNewUpdatingData(newdata);
@@ -4075,16 +5715,30 @@ function EditMovietolive() {
       setNewUpdateDataAll([]);
       setNewDataTeamWise([]);
     }
-    if (getingOlddatas?.team !== value && page === 'Team') {
-      let designationGrpName = alldesignation?.find((data) => getingOlddatas?.designation === data?.name)?.group;
+    if (getingOlddatas?.team !== value && page === "Team") {
+      let designationGrpName = alldesignation?.find(
+        (data) => getingOlddatas?.designation === data?.name,
+      )?.group;
       const userData = {
-        company: getingOlddatas?.boardingLog?.length === 1 ? boardingDetails.company : getingOlddatas?.company,
-        branch: getingOlddatas?.boardingLog?.length === 1 ? boardingDetails.branch : getingOlddatas?.branch,
-        unit: getingOlddatas?.boardingLog?.length === 1 ? boardingDetails.unit : getingOlddatas?.unit,
+        company:
+          getingOlddatas?.boardingLog?.length === 1
+            ? boardingDetails.company
+            : getingOlddatas?.company,
+        branch:
+          getingOlddatas?.boardingLog?.length === 1
+            ? boardingDetails.branch
+            : getingOlddatas?.branch,
+        unit:
+          getingOlddatas?.boardingLog?.length === 1
+            ? boardingDetails.unit
+            : getingOlddatas?.unit,
         department: boardingDetails.department,
-        team: getingOlddatas?.boardingLog?.length === 1 ? boardingDetails.team : getingOlddatas?.team,
+        team:
+          getingOlddatas?.boardingLog?.length === 1
+            ? boardingDetails.team
+            : getingOlddatas?.team,
         companyname: getingOlddatas?.companyname,
-      }
+      };
       let res = await axios.post(SERVICE.HIERARCHY_PROCESSALOOT_TEAM_RELATION, {
         headers: {
           Authorization: `Bearer ${auth.APIToken}`,
@@ -4096,9 +5750,16 @@ function EditMovietolive() {
         desiggroup: designationGrpName,
       });
       const oldData = res?.data?.olddata?.length > 0 ? res?.data?.olddata : [];
-      const newDataAll = res?.data?.newdata[0]?.all?.length > 0 ? getUniqueData(res?.data?.newdata[0]?.all) : [];
-      const newDataRemaining = res?.data?.newdata[0]?.team?.length > 0 ? getUniqueData(res?.data?.newdata[0]?.team) : [];
-      const newDataAllSupervisor = res?.data?.supData?.length > 0 ? getUniqueData(res?.data?.supData) : [];
+      const newDataAll =
+        res?.data?.newdata[0]?.all?.length > 0
+          ? getUniqueData(res?.data?.newdata[0]?.all)
+          : [];
+      const newDataRemaining =
+        res?.data?.newdata[0]?.team?.length > 0
+          ? getUniqueData(res?.data?.newdata[0]?.team)
+          : [];
+      const newDataAllSupervisor =
+        res?.data?.supData?.length > 0 ? getUniqueData(res?.data?.supData) : [];
 
       setoldTeamSupervisor(newDataAllSupervisor);
       setOldTeamData(oldData);
@@ -4111,42 +5772,58 @@ function EditMovietolive() {
   };
 
   const fetchReportingToUserHierarchy = async (value, page) => {
-    if (page === 'Designation' && getingOlddatas?.designation !== value) {
-      let designationGrpName = alldesignation?.find((data) => value === data?.name)?.group;
-      let res = await axios.post(SERVICE.REPORTINGTO_DESIGNATION_USER_HIERARCHY_RELATION, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
+    if (page === "Designation" && getingOlddatas?.designation !== value) {
+      let designationGrpName = alldesignation?.find(
+        (data) => value === data?.name,
+      )?.group;
+      let res = await axios.post(
+        SERVICE.REPORTINGTO_DESIGNATION_USER_HIERARCHY_RELATION,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          olddesig: oldDesignationGroup,
+          designation: value,
+          desiggroup: designationGrpName,
+          user: getingOlddatas,
+          company: boardingDetails.company,
+          branch: boardingDetails.branch,
+          unit: boardingDetails.unit,
+          department: boardingDetails.department,
+          team: boardingDetails.team,
         },
-        olddesig: oldDesignationGroup,
-        designation: value,
-        desiggroup: designationGrpName,
-        user: getingOlddatas,
-        company: boardingDetails.company,
-        branch: boardingDetails.branch,
-        unit: boardingDetails.unit,
-        department: boardingDetails.department,
-        team: boardingDetails.team,
-      });
-      const userResponse = res?.data?.newdata[0]?.result?.length > 0 ? res?.data?.newdata[0]?.result : [];
+      );
+      const userResponse =
+        res?.data?.newdata[0]?.result?.length > 0
+          ? res?.data?.newdata[0]?.result
+          : [];
       setUserReportingToChange(userResponse);
     }
-    if (page === 'Team' && getingOlddatas?.team !== value) {
-      let designationGrpName = alldesignation?.find((data) => value === data?.name)?.group;
-      let res = await axios.post(SERVICE.REPORTINGTO_DESIGNATION_USER_HIERARCHY_RELATION, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
+    if (page === "Team" && getingOlddatas?.team !== value) {
+      let designationGrpName = alldesignation?.find(
+        (data) => value === data?.name,
+      )?.group;
+      let res = await axios.post(
+        SERVICE.REPORTINGTO_DESIGNATION_USER_HIERARCHY_RELATION,
+        {
+          headers: {
+            Authorization: `Bearer ${auth.APIToken}`,
+          },
+          olddesig: oldDesignationGroup,
+          designation: value,
+          desiggroup: designationGrpName,
+          user: getingOlddatas,
+          company: boardingDetails.company,
+          branch: boardingDetails.branch,
+          unit: boardingDetails.unit,
+          department: boardingDetails.department,
+          team: boardingDetails.team,
         },
-        olddesig: oldDesignationGroup,
-        designation: value,
-        desiggroup: designationGrpName,
-        user: getingOlddatas,
-        company: boardingDetails.company,
-        branch: boardingDetails.branch,
-        unit: boardingDetails.unit,
-        department: boardingDetails.department,
-        team: boardingDetails.team,
-      });
-      const userResponse = res?.data?.newdata[0]?.result?.length > 0 ? res?.data?.newdata[0]?.result : [];
+      );
+      const userResponse =
+        res?.data?.newdata[0]?.result?.length > 0
+          ? res?.data?.newdata[0]?.result
+          : [];
       setUserReportingToChange(userResponse);
     } else {
       setUserReportingToChange([]);
@@ -4163,18 +5840,23 @@ function EditMovietolive() {
       });
       setQualinames(
         req.data.qualificationdetails?.length > 0 &&
-        req.data.qualificationdetails.map((d) => ({
-          ...d,
-          label: d.qualiname,
-          value: d.qualiname,
-        }))
+          req.data.qualificationdetails.map((d) => ({
+            ...d,
+            label: d.qualiname,
+            value: d.qualiname,
+          })),
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
-  const [getunitname, setgetunitname] = useState('');
+  const [getunitname, setgetunitname] = useState("");
   let branch = getunitname ? getunitname : employee?.branch;
 
   //SkillSet DropDowns
@@ -4188,14 +5870,19 @@ function EditMovietolive() {
       });
       setSkillSet(
         req.data.skillsets?.length > 0 &&
-        req.data.skillsets.map((d) => ({
-          ...d,
-          label: d.name,
-          value: d.name,
-        }))
+          req.data.skillsets.map((d) => ({
+            ...d,
+            label: d.name,
+            value: d.name,
+          })),
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   useEffect(() => {
@@ -4212,10 +5899,12 @@ function EditMovietolive() {
   const [btnUpload, setBtnUpload] = useState(false);
   // Image Upload
   function handleChangeImage(e) {
-    let profileimage = document.getElementById('profileimage');
-    var path = (window.URL || window.webkitURL).createObjectURL(profileimage.files[0]);
+    let profileimage = document.getElementById("profileimage");
+    var path = (window.URL || window.webkitURL).createObjectURL(
+      profileimage.files[0],
+    );
     toDataURL(path, function (dataUrl) {
-      profileimage.setAttribute('value', String(dataUrl));
+      profileimage.setAttribute("value", String(dataUrl));
       setBoardingDetails({ ...employee, profileimage: String(dataUrl) });
       return dataUrl;
     });
@@ -4231,8 +5920,8 @@ function EditMovietolive() {
       };
       reader.readAsDataURL(xhr.response);
     };
-    xhr.open('GET', url);
-    xhr.responseType = 'blob';
+    xhr.open("GET", url);
+    xhr.responseType = "blob";
     xhr.send();
   }
 
@@ -4255,9 +5944,18 @@ function EditMovietolive() {
         },
       });
       setrepotingtonames(req.data.users);
-      setAllUsersLoginName(req?.data?.users?.filter((item) => item._id !== id)?.map((user) => user.username));
+      setAllUsersLoginName(
+        req?.data?.users
+          ?.filter((item) => item._id !== id)
+          ?.map((user) => user.username),
+      );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -4271,18 +5969,23 @@ function EditMovietolive() {
       });
       setShiftTiming(
         req.data.shifts?.length > 0 &&
-        req.data.shifts.map((d) => ({
-          ...d,
-          label: d.name,
-          value: d.name,
-        }))
+          req.data.shifts.map((d) => ({
+            ...d,
+            label: d.name,
+            value: d.name,
+          })),
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
-  const [name, setUserNameEmail] = useState('');
+  const [name, setUserNameEmail] = useState("");
   const [reportingtonames, setreportingtonames] = useState([]);
   // User Name Functionality
   const fetchUserName = async () => {
@@ -4296,11 +5999,30 @@ function EditMovietolive() {
       req.data.users.filter((data) => {
         if (data._id !== id) {
           if (first + second === data.username) {
-            setThird(first + second?.slice(0, 1) + new Date(employee?.dob ? employee?.dob : '').getDate());
-            setUserNameEmail(first + second?.slice(0, 1) + new Date(employee?.dob ? employee?.dob : '').getDate());
-          } else if (first + second + new Date(employee?.dob).getDate() == data.username) {
-            setThird(first + second?.slice(0, 1) + new Date(employee?.dob ? employee?.dob : '').getMonth());
-            setUserNameEmail(first + second?.slice(0, 1) + new Date(employee?.dob ? employee?.dob : '').getMonth());
+            setThird(
+              first +
+                second?.slice(0, 1) +
+                new Date(employee?.dob ? employee?.dob : "").getDate(),
+            );
+            setUserNameEmail(
+              first +
+                second?.slice(0, 1) +
+                new Date(employee?.dob ? employee?.dob : "").getDate(),
+            );
+          } else if (
+            first + second + new Date(employee?.dob).getDate() ==
+            data.username
+          ) {
+            setThird(
+              first +
+                second?.slice(0, 1) +
+                new Date(employee?.dob ? employee?.dob : "").getMonth(),
+            );
+            setUserNameEmail(
+              first +
+                second?.slice(0, 1) +
+                new Date(employee?.dob ? employee?.dob : "").getMonth(),
+            );
           } else if (first + second?.slice(0, 1) === data.username) {
             setThird(first + second?.slice(0, 2));
             setUserNameEmail(first + second?.slice(0, 2));
@@ -4311,7 +6033,12 @@ function EditMovietolive() {
         }
       });
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
   useEffect(() => {
@@ -4337,9 +6064,15 @@ function EditMovietolive() {
       company: user?.company,
       branch: user?.branch,
       unit: user?.unit,
+      department: user?.department,
     });
 
-    const resultUsers = res?.data?.result?.length > 0 ? res?.data?.result[0]?.result?.supervisorchoose?.filter((data) => data !== user?.companyname) : [];
+    const resultUsers =
+      res?.data?.result?.length > 0
+        ? res?.data?.result[0]?.result?.supervisorchoose?.filter(
+            (data) => data !== user?.companyname,
+          )
+        : [];
     setreportingtonames(resultUsers);
   };
 
@@ -4365,7 +6098,12 @@ function EditMovietolive() {
           }
         });
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -4379,14 +6117,19 @@ function EditMovietolive() {
       });
       setInternCourseNames(
         req.data.internCourses?.length > 0 &&
-        req.data.internCourses.map((d) => ({
-          ...d,
-          label: d.name,
-          value: d.name,
-        }))
+          req.data.internCourses.map((d) => ({
+            ...d,
+            label: d.name,
+            value: d.name,
+          })),
       );
     } catch (err) {
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
@@ -4415,10 +6158,10 @@ function EditMovietolive() {
 
   //ERROR MESSAGESE
   const ShowErrMess = () => {
-    if (first?.length == '' || second?.length == 0) {
-      setErrmsg('Unavailable');
+    if (first?.length == "" || second?.length == 0) {
+      setErrmsg("Unavailable");
     } else if (third?.length >= 1) {
-      setErrmsg('Available');
+      setErrmsg("Available");
     }
   };
 
@@ -4427,38 +6170,44 @@ function EditMovietolive() {
 
   const LoadingDialog = ({ open, onClose, progress }) => {
     const dialogStyles = {
-      padding: '24px',
-      textAlign: 'center',
+      padding: "24px",
+      textAlign: "center",
     };
 
     const dialogTitleStyles = {
-      fontWeight: 'bold',
-      fontSize: '1.5rem',
-      color: '#3f51b5', // Primary color
+      fontWeight: "bold",
+      fontSize: "1.5rem",
+      color: "#3f51b5", // Primary color
     };
 
     const dialogContentStyles = {
-      padding: '16px',
+      padding: "16px",
     };
 
     const progressStyles = {
-      marginTop: '16px',
-      height: '10px',
-      borderRadius: '5px',
+      marginTop: "16px",
+      height: "10px",
+      borderRadius: "5px",
     };
 
     const progressTextStyles = {
-      marginTop: '8px',
-      fontWeight: 'bold',
-      color: '#4caf50', // Success color
+      marginTop: "8px",
+      fontWeight: "bold",
+      color: "#4caf50", // Success color
     };
 
     return (
       <Dialog open={open} onClose={onClose}>
         <DialogTitle style={dialogTitleStyles}>Updating...</DialogTitle>
         <DialogContent style={dialogContentStyles}>
-          <Typography>Please wait while we update the employee code across all pages.</Typography>
-          <LinearProgress style={progressStyles} variant="determinate" value={progress} />
+          <Typography>
+            Please wait while we update the employee code across all pages.
+          </Typography>
+          <LinearProgress
+            style={progressStyles}
+            variant="determinate"
+            value={progress}
+          />
           <Typography style={progressTextStyles}>{progress}%</Typography>
         </DialogContent>
         <DialogActions></DialogActions>
@@ -4466,38 +6215,149 @@ function EditMovietolive() {
     );
   };
   const sendEditRequest = async () => {
-    let newEmpCode = await EmployeeCodeAutoGenerate(boardingDetails.company, boardingDetails.branch, boardingDetails.branchcode, dateOfJoining);
+    let newEmpCode = await EmployeeCodeAutoGenerate(
+      boardingDetails.company,
+      boardingDetails.branch,
+      boardingDetails.branchcode,
+      dateOfJoining,
+    );
     setOpenPopupUpload(true);
-    let salarytable = [
-      ...oldSalaryData,
-      {
-        movetolive: true,
-        onboardas: 'Employee',
-        salarystatus: salaryTableData?.salarystatus || '',
-        basic: salaryTableData?.basic || 0,
-        hra: salaryTableData?.hra || 0,
-        conveyance: salaryTableData?.conveyance || 0,
-        medicalallowance: salaryTableData?.medicalallowance || 0,
-        productionallowance: salaryTableData?.productionallowance || 0,
-        shiftallowance: salaryTableData?.shiftallowance || 0,
-        grossmonthsalary: salaryTableData?.grossmonthsalary || 0,
-        annualgrossctc: salaryTableData?.annualgrossctc || 0,
-        otherallowance: salaryTableData?.otherallowance || 0,
-        performanceincentive: salaryTableData?.performanceincentive || 0,
+    const salarysettings = boardingDetails?.salarysettings || [];
 
-        file: tableImage || null,
-      },
+    const allComponents = [
+      "Basic",
+      "HRA",
+      "Conveyance",
+      "Medical Allowance",
+      "Production Allowance",
+      "Shift Allowance",
+      "Performance Incentive",
+      "Special Allowance",
     ];
+
+    // 🧮 Helper to get amount from breakupData
+    const getAmount = (name, dataArray) =>
+      Number(dataArray?.find((data) => data?.name === name)?.amount || 0);
+
+    // 🧩 Function to calculate salary data (works for both Experience & Manual)
+    const calculateSalaryData = (breakupData, salaryTableData, tableImage) => {
+      const selectedComponents = salarysettings.length
+        ? salarysettings.filter((name) => allComponents.includes(name))
+        : allComponents;
+
+      let visibleComponents = {};
+      let remainingTotal = 0;
+
+      for (const name of allComponents) {
+        const amount = getAmount(name, breakupData);
+        if (selectedComponents.includes(name)) {
+          visibleComponents[name] = amount;
+        } else {
+          remainingTotal += amount;
+        }
+      }
+
+      // Add remaining to Special Allowance
+      visibleComponents["Special Allowance"] =
+        (visibleComponents["Special Allowance"] || 0) + remainingTotal;
+
+      const {
+        ["Basic"]: basic = 0,
+        ["HRA"]: hra = 0,
+        ["Conveyance"]: conveyance = 0,
+        ["Medical Allowance"]: medicalallowance = 0,
+        ["Production Allowance"]: productionallowance = 0,
+        ["Shift Allowance"]: shiftallowance = 0,
+        ["Performance Incentive"]: performanceincentive = 0,
+        ["Special Allowance"]: otherallowance = 0,
+      } = visibleComponents;
+
+      const grossmonthsalary =
+        basic +
+        hra +
+        conveyance +
+        medicalallowance +
+        productionallowance +
+        shiftallowance +
+        performanceincentive +
+        otherallowance;
+
+      const annualgrossctc = grossmonthsalary * 12;
+
+      return {
+        movetolive: true,
+        onboardas: "Employee",
+        salarystatus: salaryTableData?.salarystatus || "",
+        basic,
+        hra,
+        conveyance,
+        medicalallowance,
+        productionallowance,
+        shiftallowance,
+        performanceincentive,
+        otherallowance,
+        grossmonthsalary,
+        annualgrossctc,
+        file: tableImage || null,
+        salaryoption: salaryOption || "",
+      };
+    };
+
+    // 🧠 Final salary table (dynamic based on option)
+    let salarytable =
+      salaryOption === "Experience Based"
+        ? [
+            ...oldSalaryData,
+            calculateSalaryData(breakupData, salaryTableData, tableImage),
+          ]
+        : [
+            ...oldSalaryData,
+            calculateSalaryData(
+              breakupDataManual,
+              salaryTableDataManual,
+              tableImageManual,
+            ),
+          ];
+
+    // let salarytable = [
+    //   ...oldSalaryData,
+    //   {
+    //     movetolive: true,
+    //     onboardas: 'Employee',
+    //     salarystatus: salaryTableData?.salarystatus || '',
+    //     basic: Number(breakupData?.find((data) => data?.name === 'Basic')?.amount || 0),
+    //     hra: Number(breakupData?.find((data) => data?.name === 'HRA')?.amount || 0),
+    //     conveyance: Number(breakupData?.find((data) => data?.name === 'Conveyance')?.amount || 0),
+    //     medicalallowance: Number(breakupData?.find((data) => data?.name === 'Medical Allowance')?.amount || 0),
+    //     productionallowance: Number(breakupData?.find((data) => data?.name === 'Production Allowance')?.amount || 0),
+    //     otherallowance: Number(breakupData?.find((data) => data?.name === 'Special Allowance')?.amount || 0),
+    //     shiftallowance: Number(breakupData?.find((data) => data?.name === 'Shift Allowance')?.amount || 0),
+    //     // basic: salaryTableData?.basic || 0,
+    //     // hra: salaryTableData?.hra || 0,
+    //     // conveyance: salaryTableData?.conveyance || 0,
+    //     // medicalallowance: salaryTableData?.medicalallowance || 0,
+    //     // productionallowance: salaryTableData?.productionallowance || 0,
+    //     // shiftallowance: salaryTableData?.shiftallowance || 0,
+    //     // grossmonthsalary: salaryTableData?.grossmonthsalary || 0,
+    //     annualgrossctc: salaryTableData?.annualgrossctc || 0,
+    //     otherallowance: salaryTableData?.otherallowance || 0,
+    //     performanceincentive: salaryTableData?.performanceincentive || 0,
+
+    //     file: tableImage || null,
+    //   },
+    // ];
     try {
       // departmentlog details
       const finaldot = [
         ...(departmentLog || []),
         {
-          userid: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+          userid: String(
+            internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+          ),
           username: boardingDetails?.username,
           department: String(boardingDetails.department),
           startdate: String(dateOfJoining),
-          time: moment().format('HH:mm'),
+          time: moment().format("HH:mm"),
           branch: String(boardingDetails.branch),
           companyname: String(boardingDetails.company),
           unit: String(boardingDetails.unit),
@@ -4519,7 +6379,7 @@ function EditMovietolive() {
           companyname: String(boardingDetails.company),
           designation: String(boardingDetails.designation),
           startdate: String(dateOfJoining), // Fixed the field names
-          time: moment().format('HH:mm'),
+          time: moment().format("HH:mm"),
           branch: String(boardingDetails.branch), // Fixed the field names
           unit: String(boardingDetails.unit),
           team: String(boardingDetails.team),
@@ -4528,16 +6388,31 @@ function EditMovietolive() {
           movetolive: true,
         },
       ];
-      let primaryWork = ['please select primary workstation', 'select primary workstation', '', undefined, 'please select primary work station', 'select primary work station', 'primary workstation', 'primary work station', null].includes((primaryWorkStation || '').toLowerCase())
+      let primaryWork = [
+        "please select primary workstation",
+        "select primary workstation",
+        "",
+        undefined,
+        "please select primary work station",
+        "select primary work station",
+        "primary workstation",
+        "primary work station",
+        null,
+      ].includes((primaryWorkStation || "").toLowerCase())
         ? null
         : primaryWorkStation;
 
       // Filter out falsy or null-like values from valueWorkStation
-      let filteredValueWorkStation = (valueWorkStation || []).filter((item) => item && item !== '');
+      let filteredValueWorkStation = (valueWorkStation || []).filter(
+        (item) => item && item !== "",
+      );
 
       // Build finalWorkStation
       let finalWorkStation;
-      const shortnameArray = workstationTodoList?.length > 0 ? workstationTodoList?.map((data) => data?.shortname) : [];
+      const shortnameArray =
+        workstationTodoList?.length > 0
+          ? workstationTodoList?.map((data) => data?.shortname)
+          : [];
 
       if (!primaryWork && filteredValueWorkStation.length === 0) {
         finalWorkStation = []; // case 1: both are empty
@@ -4548,51 +6423,114 @@ function EditMovietolive() {
       }
 
       // boarding log details
-      let trimmedWorkstation = primaryWorkStation == 'Please Select Primary Work Station' ? [] : primaryWorkStation;
+      let trimmedWorkstation =
+        primaryWorkStation == "Please Select Primary Work Station"
+          ? []
+          : primaryWorkStation;
       const finalboardinglog = [
         ...(boardingLog || []),
         {
           username: String(boardingDetails.companyname),
           company: String(boardingDetails.company),
           startdate: String(dateOfJoining), // Fixed the field names
-          time: moment().format('HH:mm'),
+          time: moment().format("HH:mm"),
           branch: String(boardingDetails.branch), // Fixed the field names
           unit: String(boardingDetails.unit),
           team: String(boardingDetails.team),
-          floor: String(boardingDetails.floor === 'Please Select Floor' ? '' : boardingDetails.floor),
-          area: String(boardingDetails.area === 'Please Select Area' ? '' : boardingDetails.area),
+          floor: String(
+            boardingDetails.floor === "Please Select Floor"
+              ? ""
+              : boardingDetails.floor,
+          ),
+          area: String(
+            boardingDetails.area === "Please Select Area"
+              ? ""
+              : boardingDetails.area,
+          ),
           workmode: String(boardingDetails.workmode),
           workstationofficestatus: Boolean(boardingDetails.ifoffice),
-          workstationinput: String(boardingDetails.workmode === 'Remote' || boardingDetails.ifoffice ? primaryWorkStationInput : ''),
+          workstationinput: String(
+            boardingDetails.workmode === "Remote" || boardingDetails.ifoffice
+              ? primaryWorkStationInput
+              : "",
+          ),
           // workstation: boardingDetails.workmode !== 'Remote' ? (valueWorkStation.length === 0 ? trimmedWorkstation : [primaryWorkStation, ...valueWorkStation]) : [primaryWorkStation, ...valueWorkStation],
           workstation: finalWorkStation,
           workstationshortname: shortnameArray,
-          ischangecompany: boardingDetails.company === boardingLog[boardingLog?.length - 1].company ? Boolean(false) : Boolean(true),
-          ischangebranch: boardingDetails.company === boardingLog[boardingLog?.length - 1].company ? (boardingDetails.branch === boardingLog[boardingLog?.length - 1].branch ? Boolean(false) : Boolean(true)) : Boolean(true),
-          ischangeunit: boardingDetails.branch === boardingLog[boardingLog?.length - 1].branch ? (boardingDetails.unit === boardingLog[boardingLog?.length - 1].unit ? Boolean(false) : Boolean(true)) : Boolean(true),
-          ischangeteam: boardingDetails.unit === boardingLog[boardingLog?.length - 1].unit ? (boardingDetails.team === boardingLog[boardingLog?.length - 1].team ? Boolean(false) : Boolean(true)) : Boolean(true),
-          ischangefloor: boardingDetails.company === boardingLog[boardingLog?.length - 1].company ? (boardingDetails.branch === boardingLog[boardingLog?.length - 1].branch ? Boolean(false) : Boolean(true)) : Boolean(true),
+          ischangecompany:
+            boardingDetails.company ===
+            boardingLog[boardingLog?.length - 1].company
+              ? Boolean(false)
+              : Boolean(true),
+          ischangebranch:
+            boardingDetails.company ===
+            boardingLog[boardingLog?.length - 1].company
+              ? boardingDetails.branch ===
+                boardingLog[boardingLog?.length - 1].branch
+                ? Boolean(false)
+                : Boolean(true)
+              : Boolean(true),
+          ischangeunit:
+            boardingDetails.branch ===
+            boardingLog[boardingLog?.length - 1].branch
+              ? boardingDetails.unit ===
+                boardingLog[boardingLog?.length - 1].unit
+                ? Boolean(false)
+                : Boolean(true)
+              : Boolean(true),
+          ischangeteam:
+            boardingDetails.unit === boardingLog[boardingLog?.length - 1].unit
+              ? boardingDetails.team ===
+                boardingLog[boardingLog?.length - 1].team
+                ? Boolean(false)
+                : Boolean(true)
+              : Boolean(true),
+          ischangefloor:
+            boardingDetails.company ===
+            boardingLog[boardingLog?.length - 1].company
+              ? boardingDetails.branch ===
+                boardingLog[boardingLog?.length - 1].branch
+                ? Boolean(false)
+                : Boolean(true)
+              : Boolean(true),
           ischangearea:
-            boardingDetails.company === boardingLog[boardingLog?.length - 1].company ? (boardingDetails.branch === boardingLog[boardingLog?.length - 1].branch ? (boardingDetails.floor === boardingLog[boardingLog?.length - 1].floor ? Boolean(false) : Boolean(true)) : Boolean(true)) : Boolean(true),
+            boardingDetails.company ===
+            boardingLog[boardingLog?.length - 1].company
+              ? boardingDetails.branch ===
+                boardingLog[boardingLog?.length - 1].branch
+                ? boardingDetails.floor ===
+                  boardingLog[boardingLog?.length - 1].floor
+                  ? Boolean(false)
+                  : Boolean(true)
+                : Boolean(true)
+              : Boolean(true),
           ischangeworkstation:
-            boardingDetails.company === boardingLog[boardingLog?.length - 1].company
-              ? boardingDetails.branch === boardingLog[boardingLog?.length - 1].branch
-                ? boardingDetails.unit === boardingLog[boardingLog?.length - 1].unit
-                  ? boardingDetails.floor === boardingLog[boardingLog?.length - 1].floor
+            boardingDetails.company ===
+            boardingLog[boardingLog?.length - 1].company
+              ? boardingDetails.branch ===
+                boardingLog[boardingLog?.length - 1].branch
+                ? boardingDetails.unit ===
+                  boardingLog[boardingLog?.length - 1].unit
+                  ? boardingDetails.floor ===
+                    boardingLog[boardingLog?.length - 1].floor
                     ? Boolean(false)
                     : Boolean(true)
                   : Boolean(true)
                 : Boolean(true)
               : Boolean(true),
-          logcreation: 'user',
-          ischangeworkmode: boardingDetails.workmode === boardingLog[boardingLog?.length - 1].workmode ? false : true,
+          logcreation: "user",
+          ischangeworkmode:
+            boardingDetails.workmode ===
+            boardingLog[boardingLog?.length - 1].workmode
+              ? false
+              : true,
           updatedusername: String(isUserRoleAccess.companyname),
           updateddatetime: String(new Date()),
           shifttype: String(boardingDetails.shifttype),
           shifttiming: String(boardingDetails.shifttiming),
           shiftgrouping: String(boardingDetails.shiftgrouping),
           weekoff: [...valueCate],
-          todo: boardingDetails.shifttype === 'Standard' ? [] : [...todo],
+          todo: boardingDetails.shifttype === "Standard" ? [] : [...todo],
           logeditedby: [],
           movetolive: true,
         },
@@ -4607,9 +6545,22 @@ function EditMovietolive() {
           branch: String(boardingDetails.branch),
           unit: String(boardingDetails.unit),
           team: String(boardingDetails.team),
-          process: String(loginNotAllot.process === '' || loginNotAllot.process == undefined ? '' : loginNotAllot.process),
-          processduration: String(loginNotAllot.processduration === '' || loginNotAllot.processduration == undefined ? '' : loginNotAllot.processduration),
-          processtype: String(loginNotAllot.processtype === '' || loginNotAllot.processtype == undefined ? '' : loginNotAllot.processtype),
+          process:
+            salaryOption === "Experience Based"
+              ? String(loginNotAllot.process || "")
+              : String(salarySetUpForm?.salarycode || "MANUAL"),
+          processduration: String(
+            loginNotAllot.processduration === "" ||
+              loginNotAllot.processduration == undefined
+              ? ""
+              : loginNotAllot.processduration,
+          ),
+          processtype: String(
+            loginNotAllot.processtype === "" ||
+              loginNotAllot.processtype == undefined
+              ? ""
+              : loginNotAllot.processtype,
+          ),
 
           date: String(dateOfJoining),
           logeditedby: [],
@@ -4625,17 +6576,110 @@ function EditMovietolive() {
       const finalassignexplog = [
         ...(employee?.assignExpLog || []),
         {
-          expmode: String(assignExperience.assignExpMode),
-          expval: String(assignExperience.assignExpvalue),
+          // expmode: String(assignExperience.assignExpMode),
+          // expval: String(assignExperience.assignExpvalue),
 
-          endexp: String(assignExperience.assignEndExpvalue),
-          endexpdate: assignExperience.assignEndExpvalue === 'Yes' ? String(assignExperience.assignEndExpDate) : '',
-          endtar: String(assignExperience.assignEndTarvalue),
-          endtardate: assignExperience.assignEndTarvalue === 'Yes' ? String(assignExperience.assignEndTarDate) : '',
-          updatedate: String(assignExperience.updatedate),
+          // endexp: String(assignExperience.assignEndExpvalue),
+          // endexpdate: assignExperience.assignEndExpvalue === 'Yes' ? String(assignExperience.assignEndExpDate) : '',
+          // endtar: String(assignExperience.assignEndTarvalue),
+          // endtardate: assignExperience.assignEndTarvalue === 'Yes' ? String(assignExperience.assignEndTarDate) : '',
+          // updatedate: String(assignExperience.updatedate),
           date: String(dateOfJoining),
           movetolive: true,
+
+          //  date: String(employee?.doj),
+
+          expmode: salarySetUpForm.mode,
+          salarycode: salarySetUpForm.salarycode,
+          endexp: "No",
+          endexpdate: "",
+          endtar: "No",
+          endtardate: "",
+          basic: String(formValue?.basic || ""),
+          hra: String(formValue?.hra || ""),
+          conveyance: String(formValue?.conveyance || ""),
+          gross: String(formValue?.gross || ""),
+          medicalallowance: String(formValue?.medicalallowance || ""),
+          productionallowance: String(formValue?.productionallowance || ""),
+          otherallowance: String(formValue?.otherallowance || ""),
+          productionallowancetwo: String(
+            formValue?.productionallowancetwo || "",
+          ),
+          pfdeduction: Boolean(formValue?.pfdeduction || ""),
+          esideduction: Boolean(formValue?.esideduction || ""),
+          ctc: String(Ctc || ""),
+          updatedate: String(formValue?.startDate || ""),
+          updatename: String(getingOlddatas.companyname || ""),
+          // date: String(new Date()),
+          startmonth: String(formValue?.startmonth || ""),
+          endmonth: String(""),
+          startyear: String(formValue?.startyear || ""),
+          endyear: String(""),
         },
+        salaryOption === "Experience Based"
+          ? {
+              date: String(dateOfJoining),
+              movetolive: true,
+              expmode: String(assignExperience?.assignExpMode),
+              expval: String(assignExperience?.assignExpvalue || "0"),
+              endexp: String(assignExperience?.assignEndExpvalue),
+              endexpdate:
+                assignExperience?.assignEndExpvalue === "Yes"
+                  ? String(assignExperience?.assignEndExpDate)
+                  : "",
+              endtar: String(assignExperience?.assignEndTarvalue),
+              endtardate:
+                assignExperience?.assignEndTarvalue === "Yes"
+                  ? String(assignExperience?.assignEndTarDate)
+                  : "",
+              updatedate: String(assignExperience?.updatedate),
+              type: String(""),
+              updatename: String(getingOlddatas.companyname || ""),
+              salarycode: String(""),
+              basic: String("0"),
+              hra: String("0"),
+              conveyance: String("0"),
+              gross: String("0"),
+              medicalallowance: String("0"),
+              productionallowance: String("0"),
+              otherallowance: String("0"),
+              productionallowancetwo: String("0"),
+              pfdeduction: false,
+              esideduction: false,
+              ctc: String(""),
+            }
+          : {
+              expmode: salarySetUpForm.mode,
+              salarycode:
+                salarySetUpForm.salarycode === "Please Select Salary Code"
+                  ? ""
+                  : salarySetUpForm.salarycode,
+              endexp: "No",
+              endexpdate: "",
+              endtar: "No",
+              endtardate: "",
+              basic: String(formValue?.basic || ""),
+              hra: String(formValue?.hra || ""),
+              conveyance: String(formValue?.conveyance || ""),
+              gross: String(formValue?.gross || ""),
+              medicalallowance: String(formValue?.medicalallowance || ""),
+              productionallowance: String(formValue?.productionallowance || ""),
+              otherallowance: String(formValue?.otherallowance || ""),
+              productionallowancetwo: String(
+                formValue?.productionallowancetwo || "",
+              ),
+              pfdeduction: Boolean(formValue?.pfdeduction || ""),
+              esideduction: Boolean(formValue?.esideduction || ""),
+              ctc: String(Ctc || ""),
+              updatedate: String(formValue?.startDate || ""),
+              updatename: String(getingOlddatas.companyname || ""),
+              startmonth: String(formValue?.startmonth || ""),
+              endmonth: String(""),
+              startyear: String(formValue?.startyear || ""),
+              endyear: String(""),
+              date: String(dateOfJoining),
+              movetolive: true,
+            },
       ];
       // State for tracking overall upload progress
       let totalLoaded = 0;
@@ -4666,14 +6710,14 @@ function EditMovietolive() {
           unit: boardingDetails.unit,
           team: boardingDetails.team,
           date: dateOfJoining,
-          time: moment().format('HH:mm'),
+          time: moment().format("HH:mm"),
         },
         {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
           onUploadProgress: handleUploadProgress,
-        }
+        },
       );
 
       let rocketchatshiftgrouping = [];
@@ -4683,14 +6727,14 @@ function EditMovietolive() {
         const lastBoardingLog = finalboardinglog[finalboardinglog.length - 1];
 
         // If shifttype is "Standard", push shiftgrouping and shifttiming values
-        if (lastBoardingLog.shifttype === 'Standard') {
+        if (lastBoardingLog.shifttype === "Standard") {
           if (lastBoardingLog.shiftgrouping) {
             rocketchatshiftgrouping.push(lastBoardingLog.shiftgrouping);
           }
           if (lastBoardingLog.shifttiming) {
             rocketchatshift.push(lastBoardingLog.shifttiming);
           }
-        } else if (lastBoardingLog.shifttype !== 'Standard') {
+        } else if (lastBoardingLog.shifttype !== "Standard") {
           // If shifttype is not "Standard", check the todo array
           const boardtodo = lastBoardingLog.todo;
 
@@ -4725,14 +6769,19 @@ function EditMovietolive() {
           username: boardingDetails?.username,
           companyname: boardingDetails?.companyname,
           rocketchatemail: createRocketChat?.email,
-          rocketchatid: boardingDetails?.rocketchatid || '',
-          rocketchatroles: createRocketChat?.create ? createRocketChat?.roles?.map((data) => data?.value) : [],
+          rocketchatid: boardingDetails?.rocketchatid || "",
+          rocketchatroles: createRocketChat?.create
+            ? createRocketChat?.roles?.map((data) => data?.value)
+            : [],
           rocketchatteamid: boardingDetails?.rocketchatteamid || [],
           rocketchatchannelid: boardingDetails?.rocketchatchannelid || [],
-
+          ldapEmail: createLdap?.ldapEmail || "",
+          ldapDN: createLdap?.ldapDN || "",
           hiconnectemail: createHiConnect?.hiconnectemail,
-          hiconnectid: boardingDetails?.hiconnectid || '',
-          hiconnectroles: createHiConnect?.createhiconnect ? createHiConnect?.hiconnectroles?.map((data) => data?.value) : [],
+          hiconnectid: boardingDetails?.hiconnectid || "",
+          hiconnectroles: createHiConnect?.createhiconnect
+            ? createHiConnect?.hiconnectroles?.map((data) => data?.value)
+            : [],
           hiconnectteamid: boardingDetails?.hiconnectteamid || [],
           hiconnectchannelid: boardingDetails?.hiconnectchannelid || [],
 
@@ -4746,9 +6795,17 @@ function EditMovietolive() {
           branch: String(boardingDetails.branch),
           unit: String(boardingDetails.unit),
           team: String(boardingDetails.team),
-          employeecount: String(boardingDetails?.employeecount || ''),
-          floor: String(boardingDetails.floor === 'Please Select Floor' ? '' : boardingDetails.floor),
-          area: String(boardingDetails.area === 'Please Select Area' ? '' : boardingDetails.area),
+          employeecount: String(boardingDetails?.employeecount || ""),
+          floor: String(
+            boardingDetails.floor === "Please Select Floor"
+              ? ""
+              : boardingDetails.floor,
+          ),
+          area: String(
+            boardingDetails.area === "Please Select Area"
+              ? ""
+              : boardingDetails.area,
+          ),
           department: String(boardingDetails.department),
           designation: String(boardingDetails.designation),
           shiftgrouping: String(boardingDetails.shiftgrouping),
@@ -4756,17 +6813,23 @@ function EditMovietolive() {
           shifttype: String(boardingDetails.shifttype),
           reportingto: String(boardingDetails.reportingto),
           boardingLog: finalboardinglog,
-
-          internstatus: String('Moved'),
+          createdomainemail: Boolean(boardingDetails?.createdomainemail),
+          internstatus: String("Moved"),
           doj: String(dateOfJoining),
           workmode: String(boardingDetails.workmode),
           wordcheck: Boolean(internStatusUpdate.wordcheck),
-          empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+          empcode: String(
+            internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+          ),
 
           // workstation: boardingDetails.workmode !== 'Remote' ? (valueWorkStation.length === 0 ? trimmedWorkstation : [primaryWorkStation, ...valueWorkStation]) : [primaryWorkStation, ...valueWorkStation],
           workstation: finalWorkStation,
           workstationshortname: shortnameArray,
-          workstationinput: String(boardingDetails.workmode === 'Remote' || boardingDetails.ifoffice ? primaryWorkStationInput : ''),
+          workstationinput: String(
+            boardingDetails.workmode === "Remote" || boardingDetails.ifoffice
+              ? primaryWorkStationInput
+              : "",
+          ),
 
           workstationofficestatus: Boolean(boardingDetails.ifoffice),
 
@@ -4778,15 +6841,24 @@ function EditMovietolive() {
 
           assignExpMode: String(assignExperience.assignExpMode),
 
-          assignExpvalue: String(assignExperience.assignExpvalue),
+          assignExpvalue: String(assignExperience.assignExpvalue || "0"),
 
           endexp: String(assignExperience.assignEndExpvalue),
-          endexpdate: assignExperience.assignEndExpvalue === 'Yes' ? String(assignExperience.assignEndExpDate) : '',
+          endexpdate:
+            assignExperience.assignEndExpvalue === "Yes"
+              ? String(assignExperience.assignEndExpDate)
+              : "",
           endtar: String(assignExperience.assignEndTarvalue),
-          endtardate: assignExperience.assignEndTarvalue === 'Yes' ? String(assignExperience.assignEndTarDate) : '',
+          endtardate:
+            assignExperience.assignEndTarvalue === "Yes"
+              ? String(assignExperience.assignEndTarDate)
+              : "",
           updatedate: String(assignExperience.updatedate),
 
-          process: String(loginNotAllot.process),
+          process:
+            salaryOption === "Experience Based"
+              ? String(loginNotAllot.process)
+              : String(salarySetUpForm?.salarycode || "MANUAL"),
           processduration: String(loginNotAllot.processduration),
           processtype: String(loginNotAllot.processtype),
           date: formattedDate,
@@ -4797,7 +6869,12 @@ function EditMovietolive() {
           modeexperience: String(modeexperience),
           targetexperience: String(targetexperience),
           targetpts: String(targetpts),
-          attendancemode: boardingDetails?.attOptions?.length > 0 ? boardingDetails.attOptions.filter((val) => valueAttMode.includes(val)) : valueAttMode,
+          attendancemode:
+            boardingDetails?.attOptions?.length > 0
+              ? boardingDetails.attOptions.filter((val) =>
+                  valueAttMode.includes(val),
+                )
+              : valueAttMode,
           updatedby: [
             ...updatedBy,
             {
@@ -4811,15 +6888,19 @@ function EditMovietolive() {
             Authorization: `Bearer ${auth.APIToken}`,
           },
           onUploadProgress: handleUploadProgress,
-        }
+        },
       );
       if (!boardingDetails?.rocketchatid && createRocketChat?.create) {
         await axios.post(
           `${SERVICE.CREATE_ROCKETCHAT_USER_INEDIT}`,
           {
             createrocketchat: Boolean(createRocketChat?.create),
-            rocketchatemail: String(createRocketChat?.create ? createRocketChat?.email : ''),
-            rocketchatroles: createRocketChat?.create ? createRocketChat?.roles?.map((data) => data?.value) : [],
+            rocketchatemail: String(
+              createRocketChat?.create ? createRocketChat?.email : "",
+            ),
+            rocketchatroles: createRocketChat?.create
+              ? createRocketChat?.roles?.map((data) => data?.value)
+              : [],
             username: boardingDetails?.username,
             companyname: boardingDetails?.companyname,
             password: String(boardingDetails.originalpassword),
@@ -4831,7 +6912,10 @@ function EditMovietolive() {
             team: String(boardingDetails.team),
             department: String(boardingDetails.department),
             designation: String(boardingDetails.designation),
-            process: String(loginNotAllot.process),
+            process:
+              salaryOption === "Experience Based"
+                ? String(loginNotAllot.process)
+                : String(salarySetUpForm?.salarycode || "MANUAL"),
             workmode: String(boardingDetails.workmode),
             rocketchatshiftgrouping,
             rocketchatshift,
@@ -4841,7 +6925,7 @@ function EditMovietolive() {
               Authorization: `Bearer ${auth.APIToken}`,
             },
             onUploadProgress: handleUploadProgress,
-          }
+          },
         );
       }
       if (!boardingDetails?.hiconnectid && createRocketChat?.createhiconnect) {
@@ -4849,8 +6933,14 @@ function EditMovietolive() {
           `${SERVICE.CREATE_ROCKETCHAT_USER_INEDIT}`,
           {
             createhiconnect: Boolean(createHiConnect?.createhiconnect),
-            hiconnectemail: String(createHiConnect?.createhiconnect ? createHiConnect?.hiconnectemail : ''),
-            hiconnectroles: createHiConnect?.createhiconnect ? createHiConnect?.hiconnectroles?.map((data) => data?.value) : [],
+            hiconnectemail: String(
+              createHiConnect?.createhiconnect
+                ? createHiConnect?.hiconnectemail
+                : "",
+            ),
+            hiconnectroles: createHiConnect?.createhiconnect
+              ? createHiConnect?.hiconnectroles?.map((data) => data?.value)
+              : [],
             username: boardingDetails?.username,
             firstname: boardingDetails?.firstname,
             lastname: boardingDetails?.lastname,
@@ -4863,7 +6953,10 @@ function EditMovietolive() {
             team: String(boardingDetails.team),
             department: String(boardingDetails.department),
             designation: String(boardingDetails.designation),
-            process: String(loginNotAllot.process),
+            process:
+              salaryOption === "Experience Based"
+                ? String(loginNotAllot.process)
+                : String(salarySetUpForm?.salarycode || "MANUAL"),
             workmode: String(boardingDetails.workmode),
             rocketchatshiftgrouping,
             rocketchatshift,
@@ -4873,15 +6966,57 @@ function EditMovietolive() {
               Authorization: `Bearer ${auth.APIToken}`,
             },
             onUploadProgress: handleUploadProgress,
-          }
+          },
+        );
+      }
+      if (!boardingDetails?.ldapDN && createLdap?.createldapaccount) {
+        await axios.post(
+          `${SERVICE.CREATE_LDAP_CONNECT_ACCOUNT_IN_EDIT}`,
+          {
+            createldapaccount: Boolean(createLdap?.createldapaccount),
+            ldapEmail: String(
+              createLdap?.createldapaccount ? createLdap?.ldapEmail : "",
+            ),
+            ldapOU: createLdap?.createldapaccount ? createLdap?.ldapOU : "",
+            userAccountControl: createLdap?.userAccountControl || "512",
+            passwordBehaviour: createLdap?.passwordBehaviour || "",
+            password: String(boardingDetails?.originalpassword),
+            originalpassword: String(boardingDetails?.originalpassword),
+            username: boardingDetails?.username,
+            firstname: String(boardingDetails?.firstname),
+            lastname: String(boardingDetails?.lastname),
+            callingname: String(boardingDetails?.callingname?.toUpperCase()),
+            employeeid: newId,
+            dob: String(boardingDetails.dob),
+            company: String(boardingDetails.company),
+            branch: String(boardingDetails.branch),
+            unit: String(boardingDetails.unit),
+            team: String(boardingDetails.team),
+            department: String(boardingDetails?.department),
+            designation: String(selectedDesignation),
+            process:
+              finalprocesslog?.length > 1
+                ? String(loginNotAllot?.process || "")
+                : String(boardingDetails?.process || ""),
+            workmode: String(boardingDetails?.workmode),
+            rocketchatshiftgrouping,
+            rocketchatshift,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${auth.APIToken}`,
+            },
+          },
         );
       }
       if (documentID) {
         let employeeDocuments = await axios.put(
           `${SERVICE.EMPLOYEEDOCUMENT_SINGLE_UPDATE}/${documentID}`,
           {
-            empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
-            type: String('Employee'),
+            empcode: String(
+              internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+            ),
+            type: String("Employee"),
             updatedby: [
               ...updatedBy,
               {
@@ -4895,18 +7030,20 @@ function EditMovietolive() {
               Authorization: `Bearer ${auth.APIToken}`,
             },
             onUploadProgress: handleUploadProgress,
-          }
+          },
         );
       }
       if (oldSalaryId) {
         const salaryTablefun = await salaryTableFunction({
           salarytable,
           salaryoption: salaryOption,
-          empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+          empcode: String(
+            internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+          ),
 
           commonid: id,
           //  companyname: String(companycaps),
-          type: 'Employee',
+          type: "Employee",
           //  profileimage: croppedImage || employee?.profileimage, // File object preferred, not base64 string
           updatedby: [
             //  ...updateby,
@@ -4933,7 +7070,20 @@ function EditMovietolive() {
           const secondaryWithoutDep = newUpdatingData[0]?.secondaryNotDep;
           const tertiaryWithoutDep = newUpdatingData[0]?.tertiaryNotDep;
 
-          if ([primaryDep, secondaryDep, tertiary, primaryDepAll, secondaryDepAll, tertiaryAll, primaryWithoutDep, secondaryWithoutDep, tertiaryWithoutDep].some((dep) => dep?.length > 0) && userReportingToChange?.length > 0) {
+          if (
+            [
+              primaryDep,
+              secondaryDep,
+              tertiary,
+              primaryDepAll,
+              secondaryDepAll,
+              tertiaryAll,
+              primaryWithoutDep,
+              secondaryWithoutDep,
+              tertiaryWithoutDep,
+            ].some((dep) => dep?.length > 0) &&
+            userReportingToChange?.length > 0
+          ) {
             const supervisor = userReportingToChange[0]?.supervisorchoose;
             let res = await axios.put(
               `${SERVICE.UPDATE_INTERN}/${newId}`,
@@ -4955,14 +7105,27 @@ function EditMovietolive() {
                   Authorization: `Bearer ${auth.APIToken}`,
                 },
                 onUploadProgress: handleUploadProgress,
-              }
+              },
             );
           }
 
           if (primaryDep?.length > 0) {
             const uniqueEntries = primaryDep?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -4989,7 +7152,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     pagecontrols: data?.pagecontrols,
                     addedby: [
@@ -5004,14 +7171,27 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (secondaryDep?.length > 0) {
             const uniqueEntries = secondaryDep?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5039,7 +7219,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5053,14 +7237,27 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (tertiary?.length > 0) {
             const uniqueEntries = tertiary?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5088,7 +7285,11 @@ function EditMovietolive() {
                     pagecontrols: data?.pagecontrols,
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5102,14 +7303,27 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (primaryDepAll?.length > 0) {
             const uniqueEntries = primaryDepAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5137,7 +7351,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5151,14 +7369,27 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (secondaryDepAll?.length > 0) {
             const uniqueEntries = secondaryDepAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5186,7 +7417,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5200,14 +7435,27 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (tertiaryAll?.length > 0) {
             const uniqueEntries = tertiaryAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5235,7 +7483,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5249,12 +7501,25 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (primaryWithoutDep?.length > 0) {
-            const uniqueEntries = primaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = primaryWithoutDep?.filter(
+              (item, index, self) =>
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.department === item.department &&
+                    t.designationgroup === item.designationgroup &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -5281,7 +7546,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5295,12 +7564,25 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (secondaryWithoutDep?.length > 0) {
-            const uniqueEntries = secondaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = secondaryWithoutDep?.filter(
+              (item, index, self) =>
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.department === item.department &&
+                    t.designationgroup === item.designationgroup &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -5327,7 +7609,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5341,12 +7627,25 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (tertiaryWithoutDep?.length > 0) {
-            const uniqueEntries = tertiaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = tertiaryWithoutDep?.filter(
+              (item, index, self) =>
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.department === item.department &&
+                    t.designationgroup === item.designationgroup &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -5369,7 +7668,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5383,8 +7686,8 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
         }
@@ -5401,7 +7704,7 @@ function EditMovietolive() {
                   Authorization: `Bearer ${auth.APIToken}`,
                 },
                 onUploadProgress: handleUploadProgress,
-              }
+              },
             );
           });
         }
@@ -5439,7 +7742,20 @@ function EditMovietolive() {
           const primaryWithoutDep = newUpdatingData[0]?.primaryNotDep;
           const secondaryWithoutDep = newUpdatingData[0]?.secondaryNotDep;
           const tertiaryWithoutDep = newUpdatingData[0]?.tertiaryNotDep;
-          if ([primaryDep, secondaryDep, tertiary, primaryDepAll, secondaryDepAll, tertiaryAll, primaryWithoutDep, secondaryWithoutDep, tertiaryWithoutDep].some((dep) => dep?.length > 0) && userReportingToChange?.length > 0) {
+          if (
+            [
+              primaryDep,
+              secondaryDep,
+              tertiary,
+              primaryDepAll,
+              secondaryDepAll,
+              tertiaryAll,
+              primaryWithoutDep,
+              secondaryWithoutDep,
+              tertiaryWithoutDep,
+            ].some((dep) => dep?.length > 0) &&
+            userReportingToChange?.length > 0
+          ) {
             const supervisor = userReportingToChange[0]?.supervisorchoose;
             let res = await axios.put(
               `${SERVICE.USER_SINGLE_PWD}/${id}`,
@@ -5458,14 +7774,27 @@ function EditMovietolive() {
                   Authorization: `Bearer ${auth.APIToken}`,
                 },
                 onUploadProgress: handleUploadProgress,
-              }
+              },
             );
           }
 
           if (primaryDep?.length > 0) {
             const uniqueEntries = primaryDep?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5488,7 +7817,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     pagecontrols: data?.pagecontrols,
                     addedby: [
@@ -5503,14 +7836,27 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (secondaryDep?.length > 0) {
             const uniqueEntries = secondaryDep?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5534,7 +7880,11 @@ function EditMovietolive() {
                     action: Boolean(true),
                     empbranch: boardingDetails?.branch,
                     empunit: boardingDetails?.unit,
-                    empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                    empcode: String(
+                      internStatusUpdate.wordcheck
+                        ? employeecodenew
+                        : newEmpCode,
+                    ),
                     empteam: boardingDetails?.team,
                     addedby: [
                       {
@@ -5548,14 +7898,27 @@ function EditMovietolive() {
                       Authorization: `Bearer ${auth.APIToken}`,
                     },
                     onUploadProgress: handleUploadProgress,
-                  }
-                )
+                  },
+                ),
             );
           }
           if (tertiary?.length > 0) {
             const uniqueEntries = tertiary?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5580,7 +7943,9 @@ function EditMovietolive() {
                   action: Boolean(true),
                   empbranch: boardingDetails?.branch,
                   empunit: boardingDetails?.unit,
-                  empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                  empcode: String(
+                    internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+                  ),
                   empteam: boardingDetails?.team,
                   pagecontrols: data?.pagecontrols,
                   addedby: [
@@ -5589,13 +7954,26 @@ function EditMovietolive() {
                       date: String(new Date()),
                     },
                   ],
-                })
+                }),
             );
           }
           if (primaryDepAll?.length > 0) {
             const uniqueEntries = primaryDepAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5621,7 +7999,9 @@ function EditMovietolive() {
                   empbranch: boardingDetails?.branch,
                   empunit: boardingDetails?.unit,
                   pagecontrols: data?.pagecontrols,
-                  empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                  empcode: String(
+                    internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+                  ),
                   empteam: boardingDetails?.team,
                   addedby: [
                     {
@@ -5629,13 +8009,26 @@ function EditMovietolive() {
                       date: String(new Date()),
                     },
                   ],
-                })
+                }),
             );
           }
           if (secondaryDepAll?.length > 0) {
             const uniqueEntries = secondaryDepAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5660,7 +8053,9 @@ function EditMovietolive() {
                   action: Boolean(true),
                   empbranch: boardingDetails?.branch,
                   empunit: boardingDetails?.unit,
-                  empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                  empcode: String(
+                    internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+                  ),
                   empteam: boardingDetails?.team,
                   pagecontrols: data?.pagecontrols,
                   addedby: [
@@ -5669,13 +8064,26 @@ function EditMovietolive() {
                       date: String(new Date()),
                     },
                   ],
-                })
+                }),
             );
           }
           if (tertiaryAll?.length > 0) {
             const uniqueEntries = tertiaryAll?.filter(
               (item, index, self) =>
-                index === self.findIndex((t) => t.company === item.company && t.designationgroup === item.designationgroup && t.branch === item.branch && t.unit === item.unit && t.team === item.team && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta)))
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.company === item.company &&
+                    t.designationgroup === item.designationgroup &&
+                    t.branch === item.branch &&
+                    t.unit === item.unit &&
+                    t.team === item.team &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
             );
 
             let answer = uniqueEntries?.map(
@@ -5701,7 +8109,9 @@ function EditMovietolive() {
                   action: Boolean(true),
                   empbranch: boardingDetails?.branch,
                   empunit: boardingDetails?.unit,
-                  empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                  empcode: String(
+                    internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+                  ),
                   empteam: boardingDetails?.team,
                   addedby: [
                     {
@@ -5709,11 +8119,24 @@ function EditMovietolive() {
                       date: String(new Date()),
                     },
                   ],
-                })
+                }),
             );
           }
           if (primaryWithoutDep?.length > 0) {
-            const uniqueEntries = primaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = primaryWithoutDep?.filter(
+              (item, index, self) =>
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.department === item.department &&
+                    t.designationgroup === item.designationgroup &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -5738,7 +8161,9 @@ function EditMovietolive() {
                   action: Boolean(true),
                   empbranch: boardingDetails?.branch,
                   empunit: boardingDetails?.unit,
-                  empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                  empcode: String(
+                    internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+                  ),
                   empteam: boardingDetails?.team,
                   addedby: [
                     {
@@ -5746,11 +8171,24 @@ function EditMovietolive() {
                       date: String(new Date()),
                     },
                   ],
-                })
+                }),
             );
           }
           if (secondaryWithoutDep?.length > 0) {
-            const uniqueEntries = secondaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = secondaryWithoutDep?.filter(
+              (item, index, self) =>
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.department === item.department &&
+                    t.designationgroup === item.designationgroup &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -5775,7 +8213,9 @@ function EditMovietolive() {
                   action: Boolean(true),
                   empbranch: boardingDetails?.branch,
                   empunit: boardingDetails?.unit,
-                  empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                  empcode: String(
+                    internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+                  ),
                   empteam: boardingDetails?.team,
                   addedby: [
                     {
@@ -5783,11 +8223,24 @@ function EditMovietolive() {
                       date: String(new Date()),
                     },
                   ],
-                })
+                }),
             );
           }
           if (tertiaryWithoutDep?.length > 0) {
-            const uniqueEntries = tertiaryWithoutDep?.filter((item, index, self) => index === self.findIndex((t) => t.department === item.department && t.designationgroup === item.designationgroup && t.supervisorchoose?.length === item.supervisorchoose?.length && t.supervisorchoose?.every((dta) => item.supervisorchoose.includes(dta))));
+            const uniqueEntries = tertiaryWithoutDep?.filter(
+              (item, index, self) =>
+                index ===
+                self.findIndex(
+                  (t) =>
+                    t.department === item.department &&
+                    t.designationgroup === item.designationgroup &&
+                    t.supervisorchoose?.length ===
+                      item.supervisorchoose?.length &&
+                    t.supervisorchoose?.every((dta) =>
+                      item.supervisorchoose.includes(dta),
+                    ),
+                ),
+            );
 
             let answer = uniqueEntries?.map(
               async (data) =>
@@ -5812,7 +8265,9 @@ function EditMovietolive() {
                   action: Boolean(true),
                   empbranch: boardingDetails?.branch,
                   empunit: boardingDetails?.unit,
-                  empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+                  empcode: String(
+                    internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+                  ),
                   empteam: boardingDetails?.team,
                   addedby: [
                     {
@@ -5820,7 +8275,7 @@ function EditMovietolive() {
                       date: String(new Date()),
                     },
                   ],
-                })
+                }),
             );
           }
         }
@@ -5878,7 +8333,9 @@ function EditMovietolive() {
               action: Boolean(true),
               empbranch: boardingDetails?.branch,
               empunit: boardingDetails?.unit,
-              empcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+              empcode: String(
+                internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+              ),
               empteam: boardingDetails?.team,
               addedby: [
                 {
@@ -5887,7 +8344,7 @@ function EditMovietolive() {
                 },
               ],
             });
-          })
+          }),
         );
       }
       // Execute the operations
@@ -5903,85 +8360,106 @@ function EditMovietolive() {
         `${SERVICE.EMPLOYEECODEOVERALLUPDATE}`,
         {
           oldempcode: oldEmpCode,
-          newempcode: String(internStatusUpdate.wordcheck ? employeecodenew : newEmpCode),
+          newempcode: String(
+            internStatusUpdate.wordcheck ? employeecodenew : newEmpCode,
+          ),
         },
         {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
           onUploadProgress: handleUploadProgress,
-        }
+        },
       );
-
-      try {
-        let domainUpdate = await axios.post(
-          SERVICE.CREATEPOSTFIXMAILUSERBYEMPLOYEE,
-          {
-            // username: mailDetails?.username,
-            // password: mailDetails?.originalpassword,
-            // name: mailDetails?.companyname,
-            // maildir: mailDetails?.username,
-            // quota: mailDetails?.quota ?? '1000',
-            // domain: domainsList,
-            // local_part: mailDetails?.username,
-            username: boardingDetails?.username,
-            password: boardingDetails.originalpassword,
-            maildir: boardingDetails?.username,
-            local_part: boardingDetails?.username,
-            name: boardingDetails?.companyname,
-            quota: mailDetails?.quota ?? '1000',
-            domain: domainsList,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${auth.APIToken}`,
+      if (boardingDetails?.createdomainemail) {
+        try {
+          let domainUpdate = await axios.post(
+            SERVICE.CREATEPOSTFIXMAILUSERBYEMPLOYEE,
+            {
+              // username: mailDetails?.username,
+              // password: mailDetails?.originalpassword,
+              // name: mailDetails?.companyname,
+              // maildir: mailDetails?.username,
+              // quota: mailDetails?.quota ?? '1000',
+              // domain: domainsList,
+              // local_part: mailDetails?.username,
+              username: boardingDetails?.username,
+              password: boardingDetails.originalpassword,
+              maildir: boardingDetails?.username,
+              local_part: boardingDetails?.username,
+              name: boardingDetails?.companyname,
+              quota: mailDetails?.quota ?? "1000",
+              domain: domainsList,
             },
-            onUploadProgress: handleUploadProgress,
-          }
-        );
+            {
+              headers: {
+                Authorization: `Bearer ${auth.APIToken}`,
+              },
+              onUploadProgress: handleUploadProgress,
+            },
+          );
 
-        // Check response status and display corresponding notifications
-        if (domainUpdate.status === 201) {
-          // Show success toast if response code is 201
-          toast.success(domainUpdate?.data?.message);
-        } else {
-          toast.error(domainUpdate?.data?.message);
-        }
-      } catch (error) {
-        // If response code is 400, show an alert with the error message
-        if (error.response && error.response.status === 400) {
-          toast.error(`Error: ${error.response.data.message || 'Bad request'}`);
-        } else {
-          // General error handling for other status codes
-          toast.error('Failed to create user. Please try again.');
+          // Check response status and display corresponding notifications
+          if (domainUpdate.status === 201) {
+            // Show success toast if response code is 201
+            toast.success(domainUpdate?.data?.message);
+          } else {
+            toast.error(domainUpdate?.data?.message);
+          }
+        } catch (error) {
+          // If response code is 400, show an alert with the error message
+          if (error.response && error.response.status === 400) {
+            toast.error(
+              `Error: ${error.response.data.message || "Bad request"}`,
+            );
+          } else {
+            // General error handling for other status codes
+            toast.error("Failed to create user. Please try again.");
+          }
         }
       }
-
       setDateOfJoining(date);
-      setEmployeecodenew('');
+      setEmployeecodenew("");
       setOpenPopupUpload(false);
       // handleCloseModEdit();
-      setPopupContent('Updated Successfully');
-      setPopupSeverity('success');
+      setPopupContent("Updated Successfully");
+      setPopupSeverity("success");
       handleClickOpenPopup();
-      backPage('/internlist');
+      backPage("/internlist");
       // await fetchEmployee();
     } catch (err) {
       setOpenPopupUpload(false);
-      handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
     }
   };
 
   const nextStep = () => {
     // Check the validity of field1
 
-    if (loginNotAllot.process === 'Please Select Process') {
-      setPopupContentMalert('Please Select Process!');
-      setPopupSeverityMalert('info');
+    if (
+      loginNotAllot.process === "Please Select Process" &&
+      salaryOption === "Experience Based"
+    ) {
+      setPopupContentMalert("Please Select Process!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (loginNotAllot.time === 'Hrs' || loginNotAllot.time === '' || loginNotAllot.time == undefined || loginNotAllot.timemins === '' || loginNotAllot.timemins == undefined || loginNotAllot.timemins === 'Mins' || (loginNotAllot.time === '00' && loginNotAllot.timemins === '00')) {
-      setPopupContentMalert('Please Select Duration!');
-      setPopupSeverityMalert('info');
+    } else if (
+      (loginNotAllot.time === "Hrs" ||
+        loginNotAllot.time === "" ||
+        loginNotAllot.time == undefined ||
+        loginNotAllot.timemins === "" ||
+        loginNotAllot.timemins == undefined ||
+        loginNotAllot.timemins === "Mins" ||
+        (loginNotAllot.time === "00" && loginNotAllot.timemins === "00")) &&
+      salaryOption === "Experience Based"
+    ) {
+      setPopupContentMalert("Please Select Duration!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
       setStep(step + 1);
@@ -5991,12 +8469,20 @@ function EditMovietolive() {
   //login detail validation
   const nextStepLog = (e) => {
     e.preventDefault();
-    const checkShiftMode = todo?.filter((d) => d.shiftmode === 'Please Select Shift Mode');
-    const checkShiftGroup = todo?.filter((d) => d.shiftmode === 'Shift' && d.shiftgrouping === 'Please Select Shift Grouping');
-    const checkShift = todo?.filter((d) => d.shiftmode === 'Shift' && d.shifttiming === 'Please Select Shift');
+    const checkShiftMode = todo?.filter(
+      (d) => d.shiftmode === "Please Select Shift Mode",
+    );
+    const checkShiftGroup = todo?.filter(
+      (d) =>
+        d.shiftmode === "Shift" &&
+        d.shiftgrouping === "Please Select Shift Grouping",
+    );
+    const checkShift = todo?.filter(
+      (d) => d.shiftmode === "Shift" && d.shifttiming === "Please Select Shift",
+    );
 
     let value = todo.reduce((indexes, obj, index) => {
-      if (obj.shiftmode === 'Please Select Shift Mode') {
+      if (obj.shiftmode === "Please Select Shift Mode") {
         // Check if the object has the 'name' property
         indexes.push(index);
       }
@@ -6006,7 +8492,10 @@ function EditMovietolive() {
     setFinderrorindex(value);
 
     let valuegrp = todo.reduce((indexes, obj, index) => {
-      if (obj.shiftmode === 'Shift' && obj.shiftgrouping === 'Please Select Shift Grouping') {
+      if (
+        obj.shiftmode === "Shift" &&
+        obj.shiftgrouping === "Please Select Shift Grouping"
+      ) {
         // Check if the object has the 'name' property
         indexes.push(index);
       }
@@ -6016,7 +8505,10 @@ function EditMovietolive() {
     setFinderrorindexgrp(valuegrp);
 
     let valuegrpshift = todo.reduce((indexes, obj, index) => {
-      if (obj.shiftmode === 'Shift' && obj.shifttiming === 'Please Select Shift') {
+      if (
+        obj.shiftmode === "Shift" &&
+        obj.shifttiming === "Please Select Shift"
+      ) {
         // Check if the object has the 'name' property
         indexes.push(index);
       }
@@ -6025,9 +8517,15 @@ function EditMovietolive() {
 
     setFinderrorindexshift(valuegrpshift);
 
-    let oneweekrotation = weekoptions2weeks?.filter((item) => !todo?.some((val) => val?.week === item))?.length;
-    let twoweekrotation = weekoptions1month?.filter((item) => !todo?.some((val) => val?.week === item))?.length;
-    let onemonthrotation = weekoptions2months?.filter((item) => !todo?.some((val) => val?.week === item))?.length;
+    let oneweekrotation = weekoptions2weeks?.filter(
+      (item) => !todo?.some((val) => val?.week === item),
+    )?.length;
+    let twoweekrotation = weekoptions1month?.filter(
+      (item) => !todo?.some((val) => val?.week === item),
+    )?.length;
+    let onemonthrotation = weekoptions2months?.filter(
+      (item) => !todo?.some((val) => val?.week === item),
+    )?.length;
 
     const primaryDep = newUpdatingData[0]?.primaryDep;
     const secondaryDep = newUpdatingData[0]?.secondaryDep;
@@ -6042,53 +8540,69 @@ function EditMovietolive() {
     let systemCount = valueWorkStation?.length || 0;
 
     // Add 1 if primaryWorkStation is valid (not empty or default)
-    if (primaryWorkStation !== 'Please Select Primary Work Station' && primaryWorkStation !== '' && primaryWorkStation !== undefined) {
+    if (
+      primaryWorkStation !== "Please Select Primary Work Station" &&
+      primaryWorkStation !== "" &&
+      primaryWorkStation !== undefined
+    ) {
       systemCount += 1;
     }
 
-    if (boardingDetails?.company === 'Please Select Company') {
-      setPopupContentMalert('Please Select Company!');
-      setPopupSeverityMalert('info');
+    if (boardingDetails?.company === "Please Select Company") {
+      setPopupContentMalert("Please Select Company!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails?.branch === 'Please Select Branch') {
-      setPopupContentMalert('Please Select Branch!');
-      setPopupSeverityMalert('info');
+    } else if (boardingDetails?.branch === "Please Select Branch") {
+      setPopupContentMalert("Please Select Branch!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails?.unit === 'Please Select Unit') {
-      setPopupContentMalert('Please Select Unit!');
-      setPopupSeverityMalert('info');
+    } else if (boardingDetails?.unit === "Please Select Unit") {
+      setPopupContentMalert("Please Select Unit!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails?.department === 'Please Select Department') {
-      setPopupContentMalert('Please Select Department!');
-      setPopupSeverityMalert('info');
+    } else if (boardingDetails?.department === "Please Select Department") {
+      setPopupContentMalert("Please Select Department!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (selectedAttMode.length === 0) {
-      setPopupContentMalert('Please Select Attendance Mode!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Select Attendance Mode!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails?.team === 'Please Select Team') {
-      setPopupContentMalert('Please Select Team!');
-      setPopupSeverityMalert('info');
-      handleClickOpenPopupMalert();
-    } else if (boardingDetails?.floor === 'Please Select Floor' || boardingDetails?.floor === '' || !boardingDetails?.floor) {
-      setPopupContentMalert('Please Select Floor!');
-      setPopupSeverityMalert('info');
-      handleClickOpenPopupMalert();
-    } else if (boardingDetails?.area === 'Please Select Area' || boardingDetails?.area === '' || !boardingDetails?.area) {
-      setPopupContentMalert('Please Select Area!');
-      setPopupSeverityMalert('info');
-      handleClickOpenPopupMalert();
-    } else if (boardingDetails?.designation === 'Please Select Designation') {
-      setPopupContentMalert('Please Select Designation!');
-      setPopupSeverityMalert('info');
-      handleClickOpenPopupMalert();
-    } else if (changeToDesign === 'Replace' && identifySuperVisor && superVisorChoosen === 'Please Select Supervisor') {
-      setPopupContentMalert('Please Select Supervisor 1!');
-      setPopupSeverityMalert('info');
+    } else if (boardingDetails?.team === "Please Select Team") {
+      setPopupContentMalert("Please Select Team!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (
-      teamDesigChange === 'Designation' &&
-      changeToDesign === 'Replace' &&
+      boardingDetails?.floor === "Please Select Floor" ||
+      boardingDetails?.floor === "" ||
+      !boardingDetails?.floor
+    ) {
+      setPopupContentMalert("Please Select Floor!");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    } else if (
+      boardingDetails?.area === "Please Select Area" ||
+      boardingDetails?.area === "" ||
+      !boardingDetails?.area
+    ) {
+      setPopupContentMalert("Please Select Area!");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    } else if (boardingDetails?.designation === "Please Select Designation") {
+      setPopupContentMalert("Please Select Designation!");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    } else if (
+      changeToDesign === "Replace" &&
+      identifySuperVisor &&
+      superVisorChoosen === "Please Select Supervisor"
+    ) {
+      setPopupContentMalert("Please Select Supervisor 1!");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+    } else if (
+      teamDesigChange === "Designation" &&
+      changeToDesign === "Replace" &&
       oldEmployeeHierData?.length > 0 &&
       primaryDep?.length < 1 &&
       secondaryDep?.length < 1 &&
@@ -6100,12 +8614,21 @@ function EditMovietolive() {
       secondaryWithoutDep?.length < 1 &&
       tertiaryWithoutDep?.length < 1
     ) {
-      setPopupContentMalert("These Employee's Designation is not matched in hierarchy ,Add Hierarchy and update!");
-      setPopupSeverityMalert('info');
+      setPopupContentMalert(
+        "These Employee's Designation is not matched in hierarchy ,Add Hierarchy and update!",
+      );
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (teamDesigChange === 'Team' && oldTeamData?.length > 0 && newUpdateDataAll?.length < 1 && newDataTeamWise?.length < 1) {
-      setPopupContentMalert('This Employee is not allowed to Change Team with their Designation , Create in Hierarchy First!');
-      setPopupSeverityMalert('info');
+    } else if (
+      teamDesigChange === "Team" &&
+      oldTeamData?.length > 0 &&
+      newUpdateDataAll?.length < 1 &&
+      newDataTeamWise?.length < 1
+    ) {
+      setPopupContentMalert(
+        "This Employee is not allowed to Change Team with their Designation , Create in Hierarchy First!",
+      );
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     }
     // else if (teamDesigChange === 'Team' && oldTeamSupervisor?.length > 0) {
@@ -6113,97 +8636,147 @@ function EditMovietolive() {
     //   setPopupSeverityMalert("info");
     //   handleClickOpenPopupMalert();
     // }
-    else if ((boardingDetails?.employeecount === '' || boardingDetails?.employeecount === '0' || !boardingDetails?.employeecount) && boardingDetails?.prod) {
-      setPopupContentMalert(' System Count must be required!');
-      setPopupSeverityMalert('info');
+    else if (
+      (boardingDetails?.employeecount === "" ||
+        boardingDetails?.employeecount === "0" ||
+        !boardingDetails?.employeecount) &&
+      boardingDetails?.prod
+    ) {
+      setPopupContentMalert(" System Count must be required!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if ((primaryWorkStation === 'Please Select Primary Work Station' || primaryWorkStation === '' || !primaryWorkStation) && boardingDetails?.prod) {
-      setPopupContentMalert(' Please Select Primary Work Station!');
-      setPopupSeverityMalert('info');
+    } else if (
+      (primaryWorkStation === "Please Select Primary Work Station" ||
+        primaryWorkStation === "" ||
+        !primaryWorkStation) &&
+      boardingDetails?.prod
+    ) {
+      setPopupContentMalert(" Please Select Primary Work Station!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails?.shifttype === 'Please Select Shift Type') {
-      setPopupContentMalert('Please Select Shift Type!');
-      setPopupSeverityMalert('info');
+    } else if (boardingDetails?.shifttype === "Please Select Shift Type") {
+      setPopupContentMalert("Please Select Shift Type!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails.shifttype === 'Standard' && boardingDetails.shiftgrouping === 'Please Select Shift Grouping') {
-      setPopupContentMalert('ShiftGrouping must be required!');
-      setPopupSeverityMalert('info');
+    } else if (
+      boardingDetails.shifttype === "Standard" &&
+      boardingDetails.shiftgrouping === "Please Select Shift Grouping"
+    ) {
+      setPopupContentMalert("ShiftGrouping must be required!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails.shifttype === 'Standard' && boardingDetails.shifttiming === 'Please Select Shift') {
-      setPopupContentMalert('Shifttiming must be required!');
-      setPopupSeverityMalert('info');
+    } else if (
+      boardingDetails.shifttype === "Standard" &&
+      boardingDetails.shifttiming === "Please Select Shift"
+    ) {
+      setPopupContentMalert("Shifttiming must be required!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails.shifttype === 'Daily' && todo.length === 0) {
-      setPopupContentMalert('Please Add all the weeks in the todo!');
-      setPopupSeverityMalert('info');
+    } else if (boardingDetails.shifttype === "Daily" && todo.length === 0) {
+      setPopupContentMalert("Please Add all the weeks in the todo!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails.shifttype === '1 Week Rotation' && oneweekrotation > 0) {
-      setPopupContentMalert('Please Add all the weeks in the todo!');
-      setPopupSeverityMalert('info');
+    } else if (
+      boardingDetails.shifttype === "1 Week Rotation" &&
+      oneweekrotation > 0
+    ) {
+      setPopupContentMalert("Please Add all the weeks in the todo!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails.shifttype === '2 Week Rotation' && twoweekrotation > 0) {
-      setPopupContentMalert('Please Add all the weeks in the todo!');
-      setPopupSeverityMalert('info');
+    } else if (
+      boardingDetails.shifttype === "2 Week Rotation" &&
+      twoweekrotation > 0
+    ) {
+      setPopupContentMalert("Please Add all the weeks in the todo!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails.shifttype === '1 Month Rotation' && onemonthrotation > 0) {
-      setPopupContentMalert('Please Add all the weeks in the todo!');
-      setPopupSeverityMalert('info');
+    } else if (
+      boardingDetails.shifttype === "1 Month Rotation" &&
+      onemonthrotation > 0
+    ) {
+      setPopupContentMalert("Please Add all the weeks in the todo!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if ((boardingDetails.shifttype === 'Daily' || boardingDetails.shifttype === '1 Week Rotation' || boardingDetails.shifttype === '2 Week Rotation' || boardingDetails.shifttype === '1 Month Rotation') && checkShiftMode.length > 0) {
-      setPopupContentMalert('Shift Mode must be required!');
-      setPopupSeverityMalert('info');
+    } else if (
+      (boardingDetails.shifttype === "Daily" ||
+        boardingDetails.shifttype === "1 Week Rotation" ||
+        boardingDetails.shifttype === "2 Week Rotation" ||
+        boardingDetails.shifttype === "1 Month Rotation") &&
+      checkShiftMode.length > 0
+    ) {
+      setPopupContentMalert("Shift Mode must be required!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if ((boardingDetails.shifttype === 'Daily' || boardingDetails.shifttype === '1 Week Rotation' || boardingDetails.shifttype === '2 Week Rotation' || boardingDetails.shifttype === '1 Month Rotation') && checkShiftGroup.length > 0) {
-      setPopupContentMalert('Shift Group must be required!');
-      setPopupSeverityMalert('info');
+    } else if (
+      (boardingDetails.shifttype === "Daily" ||
+        boardingDetails.shifttype === "1 Week Rotation" ||
+        boardingDetails.shifttype === "2 Week Rotation" ||
+        boardingDetails.shifttype === "1 Month Rotation") &&
+      checkShiftGroup.length > 0
+    ) {
+      setPopupContentMalert("Shift Group must be required!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if ((boardingDetails.shifttype === 'Daily' || boardingDetails.shifttype === '1 Week Rotation' || boardingDetails.shifttype === '2 Week Rotation' || boardingDetails.shifttype === '1 Month Rotation') && checkShift.length > 0) {
-      setPopupContentMalert('Shift must be required!');
-      setPopupSeverityMalert('info');
+    } else if (
+      (boardingDetails.shifttype === "Daily" ||
+        boardingDetails.shifttype === "1 Week Rotation" ||
+        boardingDetails.shifttype === "2 Week Rotation" ||
+        boardingDetails.shifttype === "1 Month Rotation") &&
+      checkShift.length > 0
+    ) {
+      setPopupContentMalert("Shift must be required!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (boardingDetails?.reportingto === 'Please Select Reporting To') {
-      setPopupContentMalert('Please Select Reporting To!');
-      setPopupSeverityMalert('info');
+    } else if (boardingDetails?.reportingto === "Please Select Reporting To") {
+      setPopupContentMalert("Please Select Reporting To!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (
       // boardingDetails.workmode === "" ||
-      boardingDetails.workmode === 'Please Select Work Mode'
+      boardingDetails.workmode === "Please Select Work Mode"
       // boardingDetails.workmode === "Internship"
     ) {
-      setPopupContentMalert('Please Select Work Mode!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Select Work Mode!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (Number(maxSelections) && systemCount > Number(maxSelections)) {
-      setPopupContentMalert('Work Station Exceeds System Count!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Work Station Exceeds System Count!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (!boardingDetails.religion) {
-      setPopupContentMalert('Please Select Religion!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Select Religion!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (!dateOfTraining || dateOfTraining === '') {
-      setPopupContentMalert('Please Select DOT!');
-      setPopupSeverityMalert('info');
+    } else if (!dateOfTraining || dateOfTraining === "") {
+      setPopupContentMalert("Please Select DOT!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (!dateOfJoining || dateOfJoining === '') {
-      setPopupContentMalert('Please Select DOJ!');
-      setPopupSeverityMalert('info');
+    } else if (!dateOfJoining || dateOfJoining === "") {
+      setPopupContentMalert("Please Select DOJ!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else if (dateOfTraining === dateOfJoining) {
-      setPopupContentMalert('DOT and DOJ cannot be same!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("DOT and DOJ cannot be same!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if ((!internStatusUpdate.wordcheck && empcodelimitedAll?.includes(newval)) || (internStatusUpdate.wordcheck && empcodelimitedAll?.includes(employeecodenew))) {
-      setPopupContentMalert('Empcode Already Exist!');
-      setPopupSeverityMalert('info');
+    } else if (
+      (!internStatusUpdate.wordcheck && empcodelimitedAll?.includes(newval)) ||
+      (internStatusUpdate.wordcheck &&
+        empcodelimitedAll?.includes(employeecodenew))
+    ) {
+      setPopupContentMalert("Empcode Already Exist!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (internStatusUpdate.wordcheck && employeecodenew === '') {
-      setPopupContentMalert('Please Enter EmpCode!');
-      setPopupSeverityMalert('info');
+    } else if (internStatusUpdate.wordcheck && employeecodenew === "") {
+      setPopupContentMalert("Please Enter EmpCode!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
-    } else if (internStatusUpdate.wordcheck === true && employeecodenew?.toLowerCase() === newval?.toLowerCase()) {
-      setPopupContentMalert('Empcode Auto and Manual Cant be Same!');
-      setPopupSeverityMalert('info');
+    } else if (
+      internStatusUpdate.wordcheck === true &&
+      employeecodenew?.toLowerCase() === newval?.toLowerCase()
+    ) {
+      setPopupContentMalert("Empcode Auto and Manual Cant be Same!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     } else {
       setStep(step + 1);
@@ -6227,15 +8800,19 @@ function EditMovietolive() {
     const secondaryWithoutDep = newUpdatingData[0]?.secondaryNotDep;
     const tertiaryWithoutDep = newUpdatingData[0]?.tertiaryNotDep;
 
-    if (changeToDesign === 'Replace' && identifySuperVisor && superVisorChoosen === 'Please Select Supervisor') {
-      setPopupContentMalert('Please Select Supervisor 2!');
-      setPopupSeverityMalert('info');
+    if (
+      changeToDesign === "Replace" &&
+      identifySuperVisor &&
+      superVisorChoosen === "Please Select Supervisor"
+    ) {
+      setPopupContentMalert("Please Select Supervisor 2!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
     if (
-      teamDesigChange === 'Designation' &&
-      changeToDesign === 'Replace' &&
+      teamDesigChange === "Designation" &&
+      changeToDesign === "Replace" &&
       oldEmployeeHierData?.length > 0 &&
       primaryDep?.length < 1 &&
       secondaryDep?.length < 1 &&
@@ -6247,14 +8824,23 @@ function EditMovietolive() {
       secondaryWithoutDep?.length < 1 &&
       tertiaryWithoutDep?.length < 1
     ) {
-      setPopupContentMalert("These Employee's Designation is not matched in hierarchy ,Add Hierarchy and update!");
-      setPopupSeverityMalert('info');
+      setPopupContentMalert(
+        "These Employee's Designation is not matched in hierarchy ,Add Hierarchy and update!",
+      );
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
-    if (teamDesigChange === 'Team' && oldTeamData?.length > 0 && newUpdateDataAll?.length < 1 && newDataTeamWise?.length < 1) {
-      setPopupContentMalert('This Employee is not allowed to Change Team with their Designation , Create in Hierarchy First!');
-      setPopupSeverityMalert('info');
+    if (
+      teamDesigChange === "Team" &&
+      oldTeamData?.length > 0 &&
+      newUpdateDataAll?.length < 1 &&
+      newDataTeamWise?.length < 1
+    ) {
+      setPopupContentMalert(
+        "This Employee is not allowed to Change Team with their Designation , Create in Hierarchy First!",
+      );
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
@@ -6266,58 +8852,92 @@ function EditMovietolive() {
     //   return;
     // }
 
-    if (createRocketChat?.create && createRocketChat?.email === '') {
-      setPopupContentMalert('Please Select ConnecTTS Email!');
-      setPopupSeverityMalert('info');
+    if (createRocketChat?.create && createRocketChat?.email === "") {
+      setPopupContentMalert("Please Select ConnecTTS Email!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
     if (createRocketChat?.create && createRocketChat?.roles?.length === 0) {
-      setPopupContentMalert('Please Select ConnecTTS Role!');
-      setPopupSeverityMalert('info');
+      setPopupContentMalert("Please Select ConnecTTS Role!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
-    if (createHiConnect?.createhiconnect && createHiConnect?.hiconnectemail === '') {
-      setPopupContentMalert('Please Select HiConnect Email!');
-      setPopupSeverityMalert('info');
+    if (
+      createHiConnect?.createhiconnect &&
+      createHiConnect?.hiconnectemail === ""
+    ) {
+      setPopupContentMalert("Please Select HiConnect Email!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
-    if (createHiConnect?.createhiconnect && createHiConnect?.hiconnectroles?.length === 0) {
-      setPopupContentMalert('Please Select HiConnect Role!');
-      setPopupSeverityMalert('info');
+    if (
+      createHiConnect?.createhiconnect &&
+      createHiConnect?.hiconnectroles?.length === 0
+    ) {
+      setPopupContentMalert("Please Select HiConnect Role!");
+      setPopupSeverityMalert("info");
+      handleClickOpenPopupMalert();
+      return;
+    }
+    if (createLdap?.createldapaccount && createLdap?.ldapEmail === "") {
+      setPopupContentMalert("Please Select LDAP Email!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
 
-    if ((assignExperience.assignExpMode === 'Add' || assignExperience.assignExpMode === 'Minus' || assignExperience.assignExpMode === 'Fix') && !assignExperience.assignExpvalue) {
-      setPopupContentMalert('Please Enter Value!');
-      setPopupSeverityMalert('info');
+    if (
+      (assignExperience.assignExpMode === "Add" ||
+        assignExperience.assignExpMode === "Minus" ||
+        assignExperience.assignExpMode === "Fix") &&
+      !assignExperience.assignExpvalue
+    ) {
+      setPopupContentMalert("Please Enter Value!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
 
-    if (loginNotAllot.process === 'Please Select Process') {
-      setPopupContentMalert('Please Select Process!');
-      setPopupSeverityMalert('info');
+    if (
+      loginNotAllot.process === "Please Select Process" &&
+      salaryOption === "Experience Based"
+    ) {
+      setPopupContentMalert("Please Select Process!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
-    if (loginNotAllot.time === 'Hrs' || loginNotAllot.time === '' || loginNotAllot.time == undefined || loginNotAllot.timemins === '' || loginNotAllot.timemins == undefined || loginNotAllot.timemins === 'Mins' || (loginNotAllot.time === '00' && loginNotAllot.timemins === '00')) {
-      setPopupContentMalert('Please Select Duration!');
-      setPopupSeverityMalert('info');
+    if (
+      (loginNotAllot.time === "Hrs" ||
+        loginNotAllot.time === "" ||
+        loginNotAllot.time == undefined ||
+        loginNotAllot.timemins === "" ||
+        loginNotAllot.timemins == undefined ||
+        loginNotAllot.timemins === "Mins" ||
+        (loginNotAllot.time === "00" && loginNotAllot.timemins === "00")) &&
+      salaryOption === "Experience Based"
+    ) {
+      setPopupContentMalert("Please Select Duration!");
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
 
     if (CheckedBiometric && !addBiometricData && !BioPostCheckDevice) {
       setPopupContentMalert(`Please Finish the Biometric Process 3`);
-      setPopupSeverityMalert('info');
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
       return;
     }
-    if ((BiometricPostDevice?.cloudIDC || BioEditUserCheck) && !['Bio-Socket', 'Bowee-Witzee', 'Bowee-Chandichan', 'Bowee']?.includes(deviceDetails?.brand)) {
+    if (
+      (BiometricPostDevice?.cloudIDC || BioEditUserCheck) &&
+      !["Bio-Socket", "Bowee-Witzee", "Bowee-Chandichan", "Bowee"]?.includes(
+        deviceDetails?.brand,
+      )
+    ) {
       handleCommitUserBiometric(e);
     }
     sendEditRequest();
@@ -6326,10 +8946,10 @@ function EditMovietolive() {
   const renderStepTwo = () => {
     return (
       <>
-        <Headtitle title={'INTERN MOVE TO LIVE'} />
+        <Headtitle title={"INTERN MOVE TO LIVE"} />
 
         <Box sx={userStyle.dialogbox}>
-          <Typography sx={userStyle.SubHeaderText} onClick={() => { }}>
+          <Typography sx={userStyle.SubHeaderText} onClick={() => {}}>
             Boarding Information
           </Typography>
           <br />
@@ -6342,7 +8962,7 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Company <b style={{ color: 'red' }}>*</b>
+                  Company <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
@@ -6356,12 +8976,27 @@ function EditMovietolive() {
                     setBoardingDetails({
                       ...boardingDetails,
                       company: e.value,
-                      branch: 'Please Select Branch',
-                      unit: 'Please Select Unit',
-                      floor: 'Please Select Floor',
-                      area: 'Please Select Area',
-                      team: 'Please Select Team',
+                      branch: "Please Select Branch",
+                      unit: "Please Select Unit",
+                      floor: "Please Select Floor",
+                      area: "Please Select Area",
+                      team: "Please Select Team",
+
+                      shifttype: "Please Select Shift Type",
+                      shiftgrouping: "Please Select Shift Grouping",
+                      shifttiming: "Please Select Shift",
                     });
+                    setTodo([]);
+                    setValueCate([]);
+                    setSelectedOptionsCate([]);
+                    setValueCateWeeks([]);
+                    setSelectedOptionsCateWeeks([]);
+                    setShifts([]);
+
+                    setAssignExperience((prev) => ({
+                      ...prev,
+                      assignExpvalue: "0",
+                    }));
                   }}
                 />
               </FormControl>
@@ -6369,7 +9004,7 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Branch <b style={{ color: 'red' }}>*</b>
+                  Branch <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
@@ -6391,15 +9026,33 @@ function EditMovietolive() {
                       ...boardingDetails,
                       branch: e.value,
                       branchcode: e.code,
-                      unit: 'Please Select Unit',
-                      floor: 'Please Select Floor',
-                      area: 'Please Select Area',
-                      team: 'Please Select Team',
+                      unit: "Please Select Unit",
+                      floor: "Please Select Floor",
+                      area: "Please Select Area",
+                      team: "Please Select Team",
+                      shifttype: "Please Select Shift Type",
+                      shiftgrouping: "Please Select Shift Grouping",
+                      shifttiming: "Please Select Shift",
                     });
+                    setTodo([]);
+                    setValueCate([]);
+                    setSelectedOptionsCate([]);
+                    setValueCateWeeks([]);
+                    setSelectedOptionsCateWeeks([]);
+                    setShifts([]);
                     setSelectedBranchCode(e?.code?.slice(0, 2));
                     // fetchUserDatasOnChange(e.value, boardingDetails.company);
                     fetchbranchNamesOnChange(e.value, boardingDetails.company);
-                    debouncedEmployeeCodeAutoGenerate(boardingDetails.company, e.value, e.code, dateOfJoining || formattedDate);
+                    debouncedEmployeeCodeAutoGenerate(
+                      boardingDetails.company,
+                      e.value,
+                      e.code,
+                      dateOfJoining || formattedDate,
+                    );
+                    setAssignExperience((prev) => ({
+                      ...prev,
+                      assignExpvalue: "0",
+                    }));
                   }}
                 />
               </FormControl>
@@ -6407,7 +9060,7 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Unit <b style={{ color: 'red' }}>*</b>
+                  Unit <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
@@ -6427,11 +9080,24 @@ function EditMovietolive() {
                     setBoardingDetails({
                       ...boardingDetails,
                       unit: e.value,
-                      floor: 'Please Select Floor',
-                      area: 'Please Select Area',
-                      team: 'Please Select Team',
+                      floor: "Please Select Floor",
+                      area: "Please Select Area",
+                      team: "Please Select Team",
+                      shifttype: "Please Select Shift Type",
+                      shiftgrouping: "Please Select Shift Grouping",
+                      shifttiming: "Please Select Shift",
                     });
+                    setTodo([]);
+                    setValueCate([]);
+                    setSelectedOptionsCate([]);
+                    setValueCateWeeks([]);
+                    setSelectedOptionsCateWeeks([]);
+                    setShifts([]);
                     setSelectedUnitCode(e?.code?.slice(0, 2));
+                    setAssignExperience((prev) => ({
+                      ...prev,
+                      assignExpvalue: "0",
+                    }));
                   }}
                 />
               </FormControl>
@@ -6445,30 +9111,50 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Department <b style={{ color: 'red' }}>*</b>
+                  Department <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
                   options={departmentOption}
                   placeholder="Please Select Department"
                   value={{
-                    label: boardingDetails?.department === '' || boardingDetails?.department == undefined ? 'Please Select Department' : boardingDetails?.department,
-                    value: boardingDetails?.department === '' || boardingDetails?.department == undefined ? 'Please Select Department' : boardingDetails?.department,
+                    label:
+                      boardingDetails?.department === "" ||
+                      boardingDetails?.department == undefined
+                        ? "Please Select Department"
+                        : boardingDetails?.department,
+                    value:
+                      boardingDetails?.department === "" ||
+                      boardingDetails?.department == undefined
+                        ? "Please Select Department"
+                        : boardingDetails?.department,
                   }}
                   onChange={(e) => {
                     setBoardingDetails({
                       ...boardingDetails,
+                      salarysettings: e?.salarysettings || [],
                       department: e.value,
-                      attOptions: e.attendancemode || attModeOptions?.map((data) => data?.value),
-                      designation: 'Please Select Designation',
-                      team: 'Please Select Team',
+                      attOptions:
+                        e.attendancemode ||
+                        attModeOptions?.map((data) => data?.value),
+                      designation: "Please Select Designation",
+                      team: "Please Select Team",
                       prod: e.prod,
-                      employeecount: '0',
-                      reportingto: 'Please Select Reporting To',
+                      employeecount: "0",
+                      reportingto: "Please Select Reporting To",
+                      shifttype: "Please Select Shift Type",
+                      shiftgrouping: "Please Select Shift Grouping",
+                      shifttiming: "Please Select Shift",
                     });
+                    setTodo([]);
+                    setValueCate([]);
+                    setSelectedOptionsCate([]);
+                    setValueCateWeeks([]);
+                    setSelectedOptionsCateWeeks([]);
+                    setShifts([]);
                     setSelectedAttMode([]);
                     setValueAttMode([]);
-                    setSelectedDesignation('');
+                    setSelectedDesignation("");
                   }}
                 />
               </FormControl>
@@ -6476,10 +9162,16 @@ function EditMovietolive() {
             <Grid item md={4} sm={6} xs={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Attendance Mode<b style={{ color: 'red' }}>*</b>
+                  Attendance Mode<b style={{ color: "red" }}>*</b>
                 </Typography>
                 <MultiSelect
-                  options={boardingDetails?.attOptions?.length > 0 ? attModeOptions.filter((option) => boardingDetails.attOptions.includes(option.value)) : attModeOptions}
+                  options={
+                    boardingDetails?.attOptions?.length > 0
+                      ? attModeOptions.filter((option) =>
+                          boardingDetails.attOptions.includes(option.value),
+                        )
+                      : attModeOptions
+                  }
                   value={selectedAttMode}
                   onChange={(e) => {
                     handleAttModeChange(e);
@@ -6498,12 +9190,17 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Team <b style={{ color: 'red' }}>*</b>
+                  Team <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
                   options={teamsOption
-                    ?.filter((u) => u.unit === boardingDetails.unit && u.branch === boardingDetails.branch && u.department === boardingDetails.department)
+                    ?.filter(
+                      (u) =>
+                        u.unit === boardingDetails.unit &&
+                        u.branch === boardingDetails.branch &&
+                        u.department === boardingDetails.department,
+                    )
                     .map((u) => ({
                       ...u,
                       label: u.teamname,
@@ -6518,22 +9215,39 @@ function EditMovietolive() {
                     setBoardingDetails({
                       ...boardingDetails,
                       team: e.value,
-                      floor: 'Please Select Floor',
-                      area: 'Please Select Area',
-                      reportingto: 'Please Select Reporting To',
+                      floor: "Please Select Floor",
+                      area: "Please Select Area",
+                      reportingto: "Please Select Reporting To",
+                      shifttype: "Please Select Shift Type",
+                      shiftgrouping: "Please Select Shift Grouping",
+                      shifttiming: "Please Select Shift",
                     });
-                    setTeamDesigChange('Team');
-                    fetchSuperVisorChangingHierarchy(e.value, 'Team');
-                    fetchReportingToUserHierarchy(e.value, 'Team');
+                    setTodo([]);
+                    setValueCate([]);
+                    setSelectedOptionsCate([]);
+                    setValueCateWeeks([]);
+                    setSelectedOptionsCateWeeks([]);
+                    setShifts([]);
+                    setTeamDesigChange("Team");
+                    fetchSuperVisorChangingHierarchy(e.value, "Team");
+                    fetchReportingToUserHierarchy(e.value, "Team");
                     // checkHierarchyName(e.value, "Team");
                     setLoginNotAllot({
                       ...loginNotAllot,
-                      process: 'Please Select Process',
+                      process: "Please Select Process",
                     });
-                    fetchSuperVisorDropdowns(e.value, oldUserCompanyname);
+
+                    const user = {
+                      company: boardingDetails.company,
+                      branch: boardingDetails.branch,
+                      unit: boardingDetails.unit,
+                      department: boardingDetails?.department,
+                    };
+                    fetchSuperVisorDropdowns(e.value, user);
                     setAssignExperience({
                       ...assignExperience,
-                      assignExpMode: 'Auto Increment',
+                      assignExpMode: "Auto Increment",
+                      assignExpvalue: "0",
                     });
                   }}
                 />
@@ -6542,7 +9256,7 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Floor<b style={{ color: 'red' }}>*</b>
+                  Floor<b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
@@ -6562,7 +9276,7 @@ function EditMovietolive() {
                     setBoardingDetails({
                       ...boardingDetails,
                       floor: e.value,
-                      area: 'Please Select Area',
+                      area: "Please Select Area",
                     });
                   }}
                 />
@@ -6571,11 +9285,22 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Area<b style={{ color: 'red' }}>*</b>
+                  Area<b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
-                  options={[...new Set(areaOption.filter((u) => u.branch === boardingDetails.branch && u.unit === boardingDetails.unit && u.floor === boardingDetails.floor).flatMap((item) => item.area))].map((location) => ({
+                  options={[
+                    ...new Set(
+                      areaOption
+                        .filter(
+                          (u) =>
+                            u.branch === boardingDetails.branch &&
+                            u.unit === boardingDetails.unit &&
+                            u.floor === boardingDetails.floor,
+                        )
+                        .flatMap((item) => item.area),
+                    ),
+                  ].map((location) => ({
                     label: location,
                     value: location,
                   }))}
@@ -6609,15 +9334,21 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  New Designation <b style={{ color: 'red' }}>*</b>
+                  New Designation <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
-                  options={designation?.filter((item) => item.department === boardingDetails.department)}
+                  options={designation?.filter(
+                    (item) => item.department === boardingDetails.department,
+                  )}
                   placeholder="Please Select Designation"
                   value={{
-                    value: boardingDetails.designation ? boardingDetails.designation : 'Please Select Designation',
-                    label: boardingDetails.designation ? boardingDetails.designation : 'Please Select Designation',
+                    value: boardingDetails.designation
+                      ? boardingDetails.designation
+                      : "Please Select Designation",
+                    label: boardingDetails.designation
+                      ? boardingDetails.designation
+                      : "Please Select Designation",
                   }}
                   onChange={(e) => {
                     let count = e?.systemcount;
@@ -6625,16 +9356,27 @@ function EditMovietolive() {
                       ...boardingDetails,
                       designation: e.value,
                       employeecount: count,
+                      shifttype: "Please Select Shift Type",
+                      shiftgrouping: "Please Select Shift Grouping",
+                      shifttiming: "Please Select Shift",
                     });
-                    setTeamDesigChange('Designation');
-                    fetchSuperVisorChangingHierarchy(e.value, 'Designation');
-                    fetchReportingToUserHierarchy(e.value, 'Designation');
+                    setTodo([]);
+                    setValueCate([]);
+                    setSelectedOptionsCate([]);
+                    setValueCateWeeks([]);
+                    setSelectedOptionsCateWeeks([]);
+                    setShifts([]);
+                    setTeamDesigChange("Designation");
+                    fetchSuperVisorChangingHierarchy(e.value, "Designation");
+                    fetchReportingToUserHierarchy(e.value, "Designation");
                     DesignGroupChange(e.value);
                     setSelectedDesignation(e.value);
 
                     setMaxSelections(maxWfhSelections + Number(count));
-                    setPrimaryWorkStation('Please Select Primary Work Station');
-                    setPrimaryWorkStationLabel('Please Select Primary Work Station');
+                    setPrimaryWorkStation("Please Select Primary Work Station");
+                    setPrimaryWorkStationLabel(
+                      "Please Select Primary Work Station",
+                    );
                     setSelectedOptionsWorkStation([]);
                     setValueWorkStation([]);
                     setWorkstationTodoList([]);
@@ -6651,7 +9393,10 @@ function EditMovietolive() {
             </Grid>
             <Grid item md={4} sm={12} xs={12}>
               <FormControl fullWidth size="small">
-                <Typography>System Count {boardingDetails?.prod && <b style={{ color: 'red' }}>*</b>}</Typography>
+                <Typography>
+                  System Count{" "}
+                  {boardingDetails?.prod && <b style={{ color: "red" }}>*</b>}
+                </Typography>
                 <OutlinedInput
                   id="component-outlined"
                   type="text"
@@ -6660,13 +9405,15 @@ function EditMovietolive() {
                   value={boardingDetails.employeecount}
                   readOnly={!boardingDetails.prod}
                   onChange={(e) => {
-                    let count = e.target.value.replace(/[^0-9.;\s]/g, '');
+                    let count = e.target.value.replace(/[^0-9.;\s]/g, "");
                     setBoardingDetails((prev) => ({
                       ...prev,
                       employeecount: count,
                     }));
-                    setPrimaryWorkStation('Please Select Primary Work Station');
-                    setPrimaryWorkStationLabel('Please Select Primary Work Station');
+                    setPrimaryWorkStation("Please Select Primary Work Station");
+                    setPrimaryWorkStationLabel(
+                      "Please Select Primary Work Station",
+                    );
                     setSelectedOptionsWorkStation([]);
                     setValueWorkStation([]);
                     setWorkstationTodoList([]);
@@ -6693,52 +9440,57 @@ function EditMovietolive() {
               {errorsLog.attmode && <div>{errorsLog.attmode}</div>}
             </Grid> */}
 
-            {hierarchyall?.map((item) => item.supervisorchoose[0])?.includes(getingOlddatas?.companyname) && !designationsName?.includes(selectedDesignation) && (
-              <>
-                <Grid item md={3} sm={6} xs={12}>
-                  <FormControl fullWidth size="small">
-                    <Typography>
-                      Change To<b style={{ color: 'red' }}>*</b>
-                    </Typography>
-                    <Selects
-                      options={changeTo}
-                      value={{
-                        label: changeToDesign,
-                        value: changeToDesign,
-                      }}
-                      onChange={(e) => {
-                        setChangeToDesign(e.value);
-                        setSuperVisorChoosen('Please Select Supervisor');
-                      }}
-                    />
-                  </FormControl>
-                </Grid>
-
-                {changeToDesign === 'Replace' && (
+            {hierarchyall
+              ?.map((item) => item.supervisorchoose[0])
+              ?.includes(getingOlddatas?.companyname) &&
+              !designationsName?.includes(selectedDesignation) && (
+                <>
                   <Grid item md={3} sm={6} xs={12}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Choose SuperVisor <b style={{ color: 'red' }}>*</b>
+                        Change To<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <Selects
-                        options={users?.filter((data) => data?.designation === selectedDesignation)}
+                        options={changeTo}
                         value={{
-                          label: superVisorChoosen,
-                          value: superVisorChoosen,
+                          label: changeToDesign,
+                          value: changeToDesign,
                         }}
                         onChange={(e) => {
-                          setSuperVisorChoosen(e.value);
+                          setChangeToDesign(e.value);
+                          setSuperVisorChoosen("Please Select Supervisor");
                         }}
                       />
                     </FormControl>
                   </Grid>
-                )}
-              </>
-            )}
+
+                  {changeToDesign === "Replace" && (
+                    <Grid item md={3} sm={6} xs={12}>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          Choose SuperVisor <b style={{ color: "red" }}>*</b>
+                        </Typography>
+                        <Selects
+                          options={users?.filter(
+                            (data) => data?.designation === selectedDesignation,
+                          )}
+                          value={{
+                            label: superVisorChoosen,
+                            value: superVisorChoosen,
+                          }}
+                          onChange={(e) => {
+                            setSuperVisorChoosen(e.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Grid>
+                  )}
+                </>
+              )}
 
             <Grid item md={4} sm={6} xs={12}>
               <Typography>
-                Shift Type<b style={{ color: 'red' }}>*</b>
+                Shift Type<b style={{ color: "red" }}>*</b>
               </Typography>
               <FormControl fullWidth size="small">
                 <Selects
@@ -6765,11 +9517,11 @@ function EditMovietolive() {
               </FormControl>
               {errorsLog.shifttype && <div>{errorsLog.shifttype}</div>}
             </Grid>
-            {boardingDetails.shifttype === 'Standard' ? (
+            {boardingDetails.shifttype === "Standard" ? (
               <>
                 <Grid item md={4} sm={6} xs={12}>
                   <Typography>
-                    Shift Grouping<b style={{ color: 'red' }}>*</b>
+                    Shift Grouping<b style={{ color: "red" }}>*</b>
                   </Typography>
                   <FormControl fullWidth size="small">
                     <Selects
@@ -6783,7 +9535,7 @@ function EditMovietolive() {
                         setBoardingDetails({
                           ...boardingDetails,
                           shiftgrouping: e.value,
-                          shifttiming: 'Please Select Shift',
+                          shifttiming: "Please Select Shift",
                         });
                         ShiftDropdwonsSecond(e.value);
                       }}
@@ -6793,7 +9545,7 @@ function EditMovietolive() {
                 </Grid>
                 <Grid item md={4} sm={6} xs={12}>
                   <Typography>
-                    Shift<b style={{ color: 'red' }}>*</b>
+                    Shift<b style={{ color: "red" }}>*</b>
                   </Typography>
                   <FormControl fullWidth size="small">
                     <Selects
@@ -6814,36 +9566,51 @@ function EditMovietolive() {
                   </FormControl>
                   {/* {errorsLog.shifttiming && <div>{errorsLog.shifttiming}</div>} */}
                 </Grid>
-                <Grid item md={4} sm={6} xs={12} sx={{ display: 'flex' }}>
+                <Grid item md={4} sm={6} xs={12} sx={{ display: "flex" }}>
                   <FormControl fullWidth size="small">
                     <Typography>Week Off</Typography>
-                    <MultiSelect size="small" options={getWeekdayOptions()} value={selectedOptionsCate} onChange={handleCategoryChange} valueRenderer={customValueRendererCate} labelledBy="Please Select Days" />
+                    <MultiSelect
+                      size="small"
+                      options={getWeekdayOptions()}
+                      value={selectedOptionsCate}
+                      onChange={handleCategoryChange}
+                      valueRenderer={customValueRendererCate}
+                      labelledBy="Please Select Days"
+                    />
                   </FormControl>
                 </Grid>
               </>
             ) : null}
 
             <Grid item md={12} sm={12} xs={12}>
-              {boardingDetails.shifttype === 'Daily' ? (
+              {boardingDetails.shifttype === "Daily" ? (
                 <>
                   <Grid container spacing={2}>
                     <Grid item md={3.5} sm={6} xs={12}>
                       <Typography>
-                        Shift Grouping<b style={{ color: 'red' }}>*</b>
+                        Shift Grouping<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <FormControl fullWidth size="small">
                         <Selects
                           options={ShiftGroupingOptions}
                           label="Please Select Shift Group"
                           value={{
-                            label: boardingDetails.shiftgrouping === '' || boardingDetails.shiftgrouping === undefined ? 'Please Select Shift Grouping' : boardingDetails.shiftgrouping,
-                            value: boardingDetails.shiftgrouping === '' || boardingDetails.shiftgrouping === undefined ? 'Please Select Shift Grouping' : boardingDetails.shiftgrouping,
+                            label:
+                              boardingDetails.shiftgrouping === "" ||
+                              boardingDetails.shiftgrouping === undefined
+                                ? "Please Select Shift Grouping"
+                                : boardingDetails.shiftgrouping,
+                            value:
+                              boardingDetails.shiftgrouping === "" ||
+                              boardingDetails.shiftgrouping === undefined
+                                ? "Please Select Shift Grouping"
+                                : boardingDetails.shiftgrouping,
                           }}
                           onChange={(e) => {
                             setBoardingDetails({
                               ...boardingDetails,
                               shiftgrouping: e.value,
-                              shifttiming: 'Please Select Shift',
+                              shifttiming: "Please Select Shift",
                             });
                             ShiftDropdwonsSecond(e.value);
                           }}
@@ -6852,7 +9619,7 @@ function EditMovietolive() {
                     </Grid>
                     <Grid item md={3.5} sm={6} xs={12}>
                       <Typography>
-                        Shift<b style={{ color: 'red' }}>*</b>
+                        Shift<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <FormControl fullWidth size="small">
                         <Selects
@@ -6860,8 +9627,16 @@ function EditMovietolive() {
                           options={shifts}
                           styles={colourStyles}
                           value={{
-                            label: boardingDetails.shifttiming === '' || boardingDetails.shifttiming === undefined ? 'Please Select Shift' : boardingDetails.shifttiming,
-                            value: boardingDetails.shifttiming === '' || boardingDetails.shifttiming === undefined ? 'Please Select Shift' : boardingDetails.shifttiming,
+                            label:
+                              boardingDetails.shifttiming === "" ||
+                              boardingDetails.shifttiming === undefined
+                                ? "Please Select Shift"
+                                : boardingDetails.shifttiming,
+                            value:
+                              boardingDetails.shifttiming === "" ||
+                              boardingDetails.shifttiming === undefined
+                                ? "Please Select Shift"
+                                : boardingDetails.shifttiming,
                           }}
                           onChange={(e) => {
                             setBoardingDetails({
@@ -6872,28 +9647,35 @@ function EditMovietolive() {
                         />
                       </FormControl>
                     </Grid>
-                    <Grid item md={3.5} sm={6} xs={12} sx={{ display: 'flex' }}>
+                    <Grid item md={3.5} sm={6} xs={12} sx={{ display: "flex" }}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Week Off<b style={{ color: 'red' }}>*</b>
+                          Week Off<b style={{ color: "red" }}>*</b>
                         </Typography>
-                        <MultiSelect size="small" options={getWeekdayOptions()} value={selectedOptionsCate} onChange={handleCategoryChange} valueRenderer={customValueRendererCate} labelledBy="Please Select Days" />
+                        <MultiSelect
+                          size="small"
+                          options={getWeekdayOptions()}
+                          value={selectedOptionsCate}
+                          onChange={handleCategoryChange}
+                          valueRenderer={customValueRendererCate}
+                          labelledBy="Please Select Days"
+                        />
                       </FormControl>
                     </Grid>
                     <Grid item md={1} sm={12} xs={12}>
                       <Button
                         variant="contained"
                         style={{
-                          height: '30px',
-                          minWidth: '20px',
-                          padding: '19px 13px',
-                          color: 'white',
-                          background: 'rgb(25, 118, 210)',
-                          marginTop: '25px',
+                          height: "30px",
+                          minWidth: "20px",
+                          padding: "19px 13px",
+                          color: "white",
+                          background: "rgb(25, 118, 210)",
+                          marginTop: "25px",
                         }}
                         onClick={handleAddTodo}
                       >
-                        <FaPlus style={{ fontSize: '15px' }} />
+                        <FaPlus style={{ fontSize: "15px" }} />
                       </Button>
                     </Grid>
                   </Grid>
@@ -6908,17 +9690,17 @@ function EditMovietolive() {
                       </Grid>
                       <Grid item md={2} sm={12} xs={12}>
                         <Typography>
-                          Shift Mode<b style={{ color: 'red' }}>*</b>
+                          Shift Mode<b style={{ color: "red" }}>*</b>
                         </Typography>
                       </Grid>
                       <Grid item md={2} sm={12} xs={12}>
                         <Typography>
-                          Shift Grouping<b style={{ color: 'red' }}>*</b>
+                          Shift Grouping<b style={{ color: "red" }}>*</b>
                         </Typography>
                       </Grid>
                       <Grid item md={2.5} sm={12} xs={12}>
                         <Typography>
-                          Shift<b style={{ color: 'red' }}>*</b>{' '}
+                          Shift<b style={{ color: "red" }}>*</b>{" "}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -6929,12 +9711,18 @@ function EditMovietolive() {
                         {editingIndexcheck === index ? (
                           <Grid container spacing={1}>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.day}
                               </Typography>
                             </Grid>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.week}
                               </Typography>
                             </Grid>
@@ -6947,11 +9735,17 @@ function EditMovietolive() {
                                     label: todo.shiftmode,
                                     value: todo.shiftmode,
                                   }}
-                                  onChange={(selectedOption) => multiInputs(index, 'shiftmode', selectedOption.value)}
+                                  onChange={(selectedOption) =>
+                                    multiInputs(
+                                      index,
+                                      "shiftmode",
+                                      selectedOption.value,
+                                    )
+                                  }
                                 />
                               </FormControl>
                             </Grid>
-                            {todo.shiftmode === 'Shift' ? (
+                            {todo.shiftmode === "Shift" ? (
                               <>
                                 <Grid item md={2} sm={4} xs={4}>
                                   <FormControl fullWidth size="small">
@@ -6962,13 +9756,25 @@ function EditMovietolive() {
                                         label: todo.shiftgrouping,
                                         value: todo.shiftgrouping,
                                       }}
-                                      onChange={(selectedOption) => multiInputs(index, 'shiftgrouping', selectedOption.value)}
+                                      onChange={(selectedOption) =>
+                                        multiInputs(
+                                          index,
+                                          "shiftgrouping",
+                                          selectedOption.value,
+                                        )
+                                      }
                                     />
                                   </FormControl>
                                 </Grid>
                                 <Grid item md={2.5} sm={4} xs={4}>
                                   <FormControl fullWidth size="small">
-                                    <AsyncShiftTimingSelects todo={todo} index={index} auth={auth} multiInputs={multiInputs} colourStyles={colourStyles} />
+                                    <AsyncShiftTimingSelects
+                                      todo={todo}
+                                      index={index}
+                                      auth={auth}
+                                      multiInputs={multiInputs}
+                                      colourStyles={colourStyles}
+                                    />
                                   </FormControl>
                                 </Grid>
                               </>
@@ -6980,12 +9786,16 @@ function EditMovietolive() {
                             )}
                             <Grid item md={1} sm={1} xs={1}>
                               {/* Confirm button */}
-                              {todo.shiftmode === 'Shift' && (todo.shiftgrouping === 'Please Select Shift Grouping' || todo.shifttiming === 'Please Select Shift') ? null : (
+                              {todo.shiftmode === "Shift" &&
+                              (todo.shiftgrouping ===
+                                "Please Select Shift Grouping" ||
+                                todo.shifttiming ===
+                                  "Please Select Shift") ? null : (
                                 <Button onClick={handleUpdateTodocheck}>
                                   <CheckCircleIcon
                                     style={{
-                                      fontSize: '1.5rem',
-                                      color: '#216d21',
+                                      fontSize: "1.5rem",
+                                      color: "#216d21",
                                     }}
                                   />
                                 </Button>
@@ -6994,37 +9804,59 @@ function EditMovietolive() {
                             <Grid item md={1} sm={1} xs={1}>
                               {/* Cancel button */}
                               <Button onClick={handleCancelEdit}>
-                                <CancelIcon style={{ fontSize: '1.5rem', color: 'red' }} />
+                                <CancelIcon
+                                  style={{ fontSize: "1.5rem", color: "red" }}
+                                />
                               </Button>
                             </Grid>
                           </Grid>
                         ) : (
                           <Grid container spacing={1}>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.day}
                               </Typography>
                             </Grid>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.week}
                               </Typography>
                             </Grid>
                             <Grid item md={2} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.shiftmode}
                               </Typography>
                             </Grid>
-                            {todo.shiftmode === 'Shift' ? (
+                            {todo.shiftmode === "Shift" ? (
                               <>
                                 <Grid item md={2} sm={6} xs={12}>
-                                  <Typography variant="subtitle2" color="textSecondary">
-                                    {todo.shiftgrouping === 'Please Select Shift Grouping' ? '' : todo.shiftgrouping}
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="textSecondary"
+                                  >
+                                    {todo.shiftgrouping ===
+                                    "Please Select Shift Grouping"
+                                      ? ""
+                                      : todo.shiftgrouping}
                                   </Typography>
                                 </Grid>
                                 <Grid item md={2} sm={6} xs={12}>
-                                  <Typography variant="subtitle2" color="textSecondary">
-                                    {todo.shifttiming === 'Please Select Shift' ? '' : todo.shifttiming}
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="textSecondary"
+                                  >
+                                    {todo.shifttiming === "Please Select Shift"
+                                      ? ""
+                                      : todo.shifttiming}
                                   </Typography>
                                 </Grid>
                               </>
@@ -7036,11 +9868,13 @@ function EditMovietolive() {
                             )}
                             <Grid item md={1} sm={6} xs={6}>
                               {/* Edit button */}
-                              <Button onClick={() => handleEditTodocheck(index)}>
+                              <Button
+                                onClick={() => handleEditTodocheck(index)}
+                              >
                                 <FaEdit
                                   style={{
-                                    color: '#1976d2',
-                                    fontSize: '1.2rem',
+                                    color: "#1976d2",
+                                    fontSize: "1.2rem",
                                   }}
                                 />
                               </Button>
@@ -7053,26 +9887,34 @@ function EditMovietolive() {
                 </>
               ) : null}
 
-              {boardingDetails.shifttype === '1 Week Rotation' ? (
+              {boardingDetails.shifttype === "1 Week Rotation" ? (
                 <>
                   <Grid container spacing={2}>
                     <Grid item md={3.5} sm={6} xs={12}>
                       <Typography>
-                        Shift Grouping<b style={{ color: 'red' }}>*</b>
+                        Shift Grouping<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <FormControl fullWidth size="small">
                         <Selects
                           options={ShiftGroupingOptions}
                           label="Please Select Shift Group"
                           value={{
-                            label: boardingDetails.shiftgrouping === '' || boardingDetails.shiftgrouping === undefined ? 'Please Select Shift Grouping' : boardingDetails.shiftgrouping,
-                            value: boardingDetails.shiftgrouping === '' || boardingDetails.shiftgrouping === undefined ? 'Please Select Shift Grouping' : boardingDetails.shiftgrouping,
+                            label:
+                              boardingDetails.shiftgrouping === "" ||
+                              boardingDetails.shiftgrouping === undefined
+                                ? "Please Select Shift Grouping"
+                                : boardingDetails.shiftgrouping,
+                            value:
+                              boardingDetails.shiftgrouping === "" ||
+                              boardingDetails.shiftgrouping === undefined
+                                ? "Please Select Shift Grouping"
+                                : boardingDetails.shiftgrouping,
                           }}
                           onChange={(e) => {
                             setBoardingDetails({
                               ...boardingDetails,
                               shiftgrouping: e.value,
-                              shifttiming: 'Please Select Shift',
+                              shifttiming: "Please Select Shift",
                             });
                             ShiftDropdwonsSecond(e.value);
                           }}
@@ -7081,7 +9923,7 @@ function EditMovietolive() {
                     </Grid>
                     <Grid item md={3.5} sm={6} xs={12}>
                       <Typography>
-                        Shift<b style={{ color: 'red' }}>*</b>
+                        Shift<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <FormControl fullWidth size="small">
                         <Selects
@@ -7089,8 +9931,16 @@ function EditMovietolive() {
                           options={shifts}
                           styles={colourStyles}
                           value={{
-                            label: boardingDetails.shifttiming === '' || boardingDetails.shifttiming === undefined ? 'Please Select Shift' : boardingDetails.shifttiming,
-                            value: boardingDetails.shifttiming === '' || boardingDetails.shifttiming === undefined ? 'Please Select Shift' : boardingDetails.shifttiming,
+                            label:
+                              boardingDetails.shifttiming === "" ||
+                              boardingDetails.shifttiming === undefined
+                                ? "Please Select Shift"
+                                : boardingDetails.shifttiming,
+                            value:
+                              boardingDetails.shifttiming === "" ||
+                              boardingDetails.shifttiming === undefined
+                                ? "Please Select Shift"
+                                : boardingDetails.shifttiming,
                           }}
                           onChange={(e) => {
                             setBoardingDetails({
@@ -7104,12 +9954,15 @@ function EditMovietolive() {
                     <Grid item md={4} sm={6} xs={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Weeks <b style={{ color: 'red' }}>*</b>
+                          Weeks <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           size="small"
                           options={weekoptions2weeks
-                            ?.filter((item) => !todo?.some((val) => val?.week === item))
+                            ?.filter(
+                              (item) =>
+                                !todo?.some((val) => val?.week === item),
+                            )
                             ?.map((data) => ({
                               label: data,
                               value: data,
@@ -7121,28 +9974,35 @@ function EditMovietolive() {
                         />
                       </FormControl>
                     </Grid>
-                    <Grid item md={4} sm={6} xs={12} sx={{ display: 'flex' }}>
+                    <Grid item md={4} sm={6} xs={12} sx={{ display: "flex" }}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Week Off<b style={{ color: 'red' }}>*</b>
+                          Week Off<b style={{ color: "red" }}>*</b>
                         </Typography>
-                        <MultiSelect size="small" options={getWeekdayOptions()} value={selectedOptionsCate} onChange={handleCategoryChange} valueRenderer={customValueRendererCate} labelledBy="Please Select Days" />
+                        <MultiSelect
+                          size="small"
+                          options={getWeekdayOptions()}
+                          value={selectedOptionsCate}
+                          onChange={handleCategoryChange}
+                          valueRenderer={customValueRendererCate}
+                          labelledBy="Please Select Days"
+                        />
                       </FormControl>
                     </Grid>
                     <Grid item md={1} sm={12} xs={12}>
                       <Button
                         variant="contained"
                         style={{
-                          height: '30px',
-                          minWidth: '20px',
-                          padding: '19px 13px',
-                          color: 'white',
-                          background: 'rgb(25, 118, 210)',
-                          marginTop: '25px',
+                          height: "30px",
+                          minWidth: "20px",
+                          padding: "19px 13px",
+                          color: "white",
+                          background: "rgb(25, 118, 210)",
+                          marginTop: "25px",
                         }}
                         onClick={handleAddTodo}
                       >
-                        <FaPlus style={{ fontSize: '15px' }} />
+                        <FaPlus style={{ fontSize: "15px" }} />
                       </Button>
                     </Grid>
                   </Grid>
@@ -7157,17 +10017,17 @@ function EditMovietolive() {
                       </Grid>
                       <Grid item md={2} sm={12} xs={12}>
                         <Typography>
-                          Shift Mode<b style={{ color: 'red' }}>*</b>
+                          Shift Mode<b style={{ color: "red" }}>*</b>
                         </Typography>
                       </Grid>
                       <Grid item md={2} sm={12} xs={12}>
                         <Typography>
-                          Shift Grouping<b style={{ color: 'red' }}>*</b>
+                          Shift Grouping<b style={{ color: "red" }}>*</b>
                         </Typography>
                       </Grid>
                       <Grid item md={2.5} sm={12} xs={12}>
                         <Typography>
-                          Shift<b style={{ color: 'red' }}>*</b>{' '}
+                          Shift<b style={{ color: "red" }}>*</b>{" "}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -7178,12 +10038,18 @@ function EditMovietolive() {
                         {editingIndexcheck === index ? (
                           <Grid container spacing={1}>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.day}
                               </Typography>
                             </Grid>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.week}
                               </Typography>
                             </Grid>
@@ -7196,11 +10062,17 @@ function EditMovietolive() {
                                     label: todo.shiftmode,
                                     value: todo.shiftmode,
                                   }}
-                                  onChange={(selectedOption) => multiInputs(index, 'shiftmode', selectedOption.value)}
+                                  onChange={(selectedOption) =>
+                                    multiInputs(
+                                      index,
+                                      "shiftmode",
+                                      selectedOption.value,
+                                    )
+                                  }
                                 />
                               </FormControl>
                             </Grid>
-                            {todo.shiftmode === 'Shift' ? (
+                            {todo.shiftmode === "Shift" ? (
                               <>
                                 <Grid item md={2} sm={4} xs={4}>
                                   <FormControl fullWidth size="small">
@@ -7211,13 +10083,25 @@ function EditMovietolive() {
                                         label: todo.shiftgrouping,
                                         value: todo.shiftgrouping,
                                       }}
-                                      onChange={(selectedOption) => multiInputs(index, 'shiftgrouping', selectedOption.value)}
+                                      onChange={(selectedOption) =>
+                                        multiInputs(
+                                          index,
+                                          "shiftgrouping",
+                                          selectedOption.value,
+                                        )
+                                      }
                                     />
                                   </FormControl>
                                 </Grid>
                                 <Grid item md={2.5} sm={4} xs={4}>
                                   <FormControl fullWidth size="small">
-                                    <AsyncShiftTimingSelects todo={todo} index={index} auth={auth} multiInputs={multiInputs} colourStyles={colourStyles} />
+                                    <AsyncShiftTimingSelects
+                                      todo={todo}
+                                      index={index}
+                                      auth={auth}
+                                      multiInputs={multiInputs}
+                                      colourStyles={colourStyles}
+                                    />
                                   </FormControl>
                                 </Grid>
                               </>
@@ -7229,12 +10113,16 @@ function EditMovietolive() {
                             )}
                             <Grid item md={1} sm={1} xs={1}>
                               {/* Confirm button */}
-                              {todo.shiftmode === 'Shift' && (todo.shiftgrouping === 'Please Select Shift Grouping' || todo.shifttiming === 'Please Select Shift') ? null : (
+                              {todo.shiftmode === "Shift" &&
+                              (todo.shiftgrouping ===
+                                "Please Select Shift Grouping" ||
+                                todo.shifttiming ===
+                                  "Please Select Shift") ? null : (
                                 <Button onClick={handleUpdateTodocheck}>
                                   <CheckCircleIcon
                                     style={{
-                                      fontSize: '1.5rem',
-                                      color: '#216d21',
+                                      fontSize: "1.5rem",
+                                      color: "#216d21",
                                     }}
                                   />
                                 </Button>
@@ -7243,37 +10131,59 @@ function EditMovietolive() {
                             <Grid item md={1} sm={1} xs={1}>
                               {/* Cancel button */}
                               <Button onClick={handleCancelEdit}>
-                                <CancelIcon style={{ fontSize: '1.5rem', color: 'red' }} />
+                                <CancelIcon
+                                  style={{ fontSize: "1.5rem", color: "red" }}
+                                />
                               </Button>
                             </Grid>
                           </Grid>
                         ) : (
                           <Grid container spacing={1}>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.day}
                               </Typography>
                             </Grid>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.week}
                               </Typography>
                             </Grid>
                             <Grid item md={2} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.shiftmode}
                               </Typography>
                             </Grid>
-                            {todo.shiftmode === 'Shift' ? (
+                            {todo.shiftmode === "Shift" ? (
                               <>
                                 <Grid item md={2} sm={6} xs={12}>
-                                  <Typography variant="subtitle2" color="textSecondary">
-                                    {todo.shiftgrouping === 'Please Select Shift Grouping' ? '' : todo.shiftgrouping}
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="textSecondary"
+                                  >
+                                    {todo.shiftgrouping ===
+                                    "Please Select Shift Grouping"
+                                      ? ""
+                                      : todo.shiftgrouping}
                                   </Typography>
                                 </Grid>
                                 <Grid item md={2} sm={6} xs={12}>
-                                  <Typography variant="subtitle2" color="textSecondary">
-                                    {todo.shifttiming === 'Please Select Shift' ? '' : todo.shifttiming}
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="textSecondary"
+                                  >
+                                    {todo.shifttiming === "Please Select Shift"
+                                      ? ""
+                                      : todo.shifttiming}
                                   </Typography>
                                 </Grid>
                               </>
@@ -7285,11 +10195,13 @@ function EditMovietolive() {
                             )}
                             <Grid item md={1} sm={6} xs={6}>
                               {/* Edit button */}
-                              <Button onClick={() => handleEditTodocheck(index)}>
+                              <Button
+                                onClick={() => handleEditTodocheck(index)}
+                              >
                                 <FaEdit
                                   style={{
-                                    color: '#1976d2',
-                                    fontSize: '1.2rem',
+                                    color: "#1976d2",
+                                    fontSize: "1.2rem",
                                   }}
                                 />
                               </Button>
@@ -7302,26 +10214,34 @@ function EditMovietolive() {
                 </>
               ) : null}
 
-              {boardingDetails.shifttype === '2 Week Rotation' ? (
+              {boardingDetails.shifttype === "2 Week Rotation" ? (
                 <>
                   <Grid container spacing={2}>
                     <Grid item md={3.5} sm={6} xs={12}>
                       <Typography>
-                        Shift Grouping<b style={{ color: 'red' }}>*</b>
+                        Shift Grouping<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <FormControl fullWidth size="small">
                         <Selects
                           options={ShiftGroupingOptions}
                           label="Please Select Shift Group"
                           value={{
-                            label: boardingDetails.shiftgrouping === '' || boardingDetails.shiftgrouping === undefined ? 'Please Select Shift Grouping' : boardingDetails.shiftgrouping,
-                            value: boardingDetails.shiftgrouping === '' || boardingDetails.shiftgrouping === undefined ? 'Please Select Shift Grouping' : boardingDetails.shiftgrouping,
+                            label:
+                              boardingDetails.shiftgrouping === "" ||
+                              boardingDetails.shiftgrouping === undefined
+                                ? "Please Select Shift Grouping"
+                                : boardingDetails.shiftgrouping,
+                            value:
+                              boardingDetails.shiftgrouping === "" ||
+                              boardingDetails.shiftgrouping === undefined
+                                ? "Please Select Shift Grouping"
+                                : boardingDetails.shiftgrouping,
                           }}
                           onChange={(e) => {
                             setBoardingDetails({
                               ...boardingDetails,
                               shiftgrouping: e.value,
-                              shifttiming: 'Please Select Shift',
+                              shifttiming: "Please Select Shift",
                             });
                             ShiftDropdwonsSecond(e.value);
                           }}
@@ -7330,7 +10250,7 @@ function EditMovietolive() {
                     </Grid>
                     <Grid item md={3.5} sm={6} xs={12}>
                       <Typography>
-                        Shift<b style={{ color: 'red' }}>*</b>
+                        Shift<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <FormControl fullWidth size="small">
                         <Selects
@@ -7338,8 +10258,16 @@ function EditMovietolive() {
                           options={shifts}
                           styles={colourStyles}
                           value={{
-                            label: boardingDetails.shifttiming === '' || boardingDetails.shifttiming === undefined ? 'Please Select Shift' : boardingDetails.shifttiming,
-                            value: boardingDetails.shifttiming === '' || boardingDetails.shifttiming === undefined ? 'Please Select Shift' : boardingDetails.shifttiming,
+                            label:
+                              boardingDetails.shifttiming === "" ||
+                              boardingDetails.shifttiming === undefined
+                                ? "Please Select Shift"
+                                : boardingDetails.shifttiming,
+                            value:
+                              boardingDetails.shifttiming === "" ||
+                              boardingDetails.shifttiming === undefined
+                                ? "Please Select Shift"
+                                : boardingDetails.shifttiming,
                           }}
                           onChange={(e) => {
                             setBoardingDetails({
@@ -7353,12 +10281,15 @@ function EditMovietolive() {
                     <Grid item md={4} sm={6} xs={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Weeks <b style={{ color: 'red' }}>*</b>
+                          Weeks <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           size="small"
                           options={weekoptions1month
-                            ?.filter((item) => !todo?.some((val) => val?.week === item))
+                            ?.filter(
+                              (item) =>
+                                !todo?.some((val) => val?.week === item),
+                            )
                             ?.map((data) => ({
                               label: data,
                               value: data,
@@ -7370,28 +10301,35 @@ function EditMovietolive() {
                         />
                       </FormControl>
                     </Grid>
-                    <Grid item md={4} sm={6} xs={12} sx={{ display: 'flex' }}>
+                    <Grid item md={4} sm={6} xs={12} sx={{ display: "flex" }}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Week Off<b style={{ color: 'red' }}>*</b>
+                          Week Off<b style={{ color: "red" }}>*</b>
                         </Typography>
-                        <MultiSelect size="small" options={getWeekdayOptions()} value={selectedOptionsCate} onChange={handleCategoryChange} valueRenderer={customValueRendererCate} labelledBy="Please Select Days" />
+                        <MultiSelect
+                          size="small"
+                          options={getWeekdayOptions()}
+                          value={selectedOptionsCate}
+                          onChange={handleCategoryChange}
+                          valueRenderer={customValueRendererCate}
+                          labelledBy="Please Select Days"
+                        />
                       </FormControl>
                     </Grid>
                     <Grid item md={1} sm={12} xs={12}>
                       <Button
                         variant="contained"
                         style={{
-                          height: '30px',
-                          minWidth: '20px',
-                          padding: '19px 13px',
-                          color: 'white',
-                          background: 'rgb(25, 118, 210)',
-                          marginTop: '25px',
+                          height: "30px",
+                          minWidth: "20px",
+                          padding: "19px 13px",
+                          color: "white",
+                          background: "rgb(25, 118, 210)",
+                          marginTop: "25px",
                         }}
                         onClick={handleAddTodo}
                       >
-                        <FaPlus style={{ fontSize: '15px' }} />
+                        <FaPlus style={{ fontSize: "15px" }} />
                       </Button>
                     </Grid>
                   </Grid>
@@ -7406,17 +10344,17 @@ function EditMovietolive() {
                       </Grid>
                       <Grid item md={2} sm={12} xs={12}>
                         <Typography>
-                          Shift Mode<b style={{ color: 'red' }}>*</b>
+                          Shift Mode<b style={{ color: "red" }}>*</b>
                         </Typography>
                       </Grid>
                       <Grid item md={2} sm={12} xs={12}>
                         <Typography>
-                          Shift Grouping<b style={{ color: 'red' }}>*</b>
+                          Shift Grouping<b style={{ color: "red" }}>*</b>
                         </Typography>
                       </Grid>
                       <Grid item md={2.5} sm={12} xs={12}>
                         <Typography>
-                          Shift<b style={{ color: 'red' }}>*</b>{' '}
+                          Shift<b style={{ color: "red" }}>*</b>{" "}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -7427,12 +10365,18 @@ function EditMovietolive() {
                         {editingIndexcheck === index ? (
                           <Grid container spacing={1}>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.day}
                               </Typography>
                             </Grid>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.week}
                               </Typography>
                             </Grid>
@@ -7445,11 +10389,17 @@ function EditMovietolive() {
                                     label: todo.shiftmode,
                                     value: todo.shiftmode,
                                   }}
-                                  onChange={(selectedOption) => multiInputs(index, 'shiftmode', selectedOption.value)}
+                                  onChange={(selectedOption) =>
+                                    multiInputs(
+                                      index,
+                                      "shiftmode",
+                                      selectedOption.value,
+                                    )
+                                  }
                                 />
                               </FormControl>
                             </Grid>
-                            {todo.shiftmode === 'Shift' ? (
+                            {todo.shiftmode === "Shift" ? (
                               <>
                                 <Grid item md={2} sm={4} xs={4}>
                                   <FormControl fullWidth size="small">
@@ -7460,13 +10410,25 @@ function EditMovietolive() {
                                         label: todo.shiftgrouping,
                                         value: todo.shiftgrouping,
                                       }}
-                                      onChange={(selectedOption) => multiInputs(index, 'shiftgrouping', selectedOption.value)}
+                                      onChange={(selectedOption) =>
+                                        multiInputs(
+                                          index,
+                                          "shiftgrouping",
+                                          selectedOption.value,
+                                        )
+                                      }
                                     />
                                   </FormControl>
                                 </Grid>
                                 <Grid item md={2.5} sm={4} xs={4}>
                                   <FormControl fullWidth size="small">
-                                    <AsyncShiftTimingSelects todo={todo} index={index} auth={auth} multiInputs={multiInputs} colourStyles={colourStyles} />
+                                    <AsyncShiftTimingSelects
+                                      todo={todo}
+                                      index={index}
+                                      auth={auth}
+                                      multiInputs={multiInputs}
+                                      colourStyles={colourStyles}
+                                    />
                                   </FormControl>
                                 </Grid>
                               </>
@@ -7478,12 +10440,16 @@ function EditMovietolive() {
                             )}
                             <Grid item md={1} sm={1} xs={1}>
                               {/* Confirm button */}
-                              {todo.shiftmode === 'Shift' && (todo.shiftgrouping === 'Please Select Shift Grouping' || todo.shifttiming === 'Please Select Shift') ? null : (
+                              {todo.shiftmode === "Shift" &&
+                              (todo.shiftgrouping ===
+                                "Please Select Shift Grouping" ||
+                                todo.shifttiming ===
+                                  "Please Select Shift") ? null : (
                                 <Button onClick={handleUpdateTodocheck}>
                                   <CheckCircleIcon
                                     style={{
-                                      fontSize: '1.5rem',
-                                      color: '#216d21',
+                                      fontSize: "1.5rem",
+                                      color: "#216d21",
                                     }}
                                   />
                                 </Button>
@@ -7492,37 +10458,59 @@ function EditMovietolive() {
                             <Grid item md={1} sm={1} xs={1}>
                               {/* Cancel button */}
                               <Button onClick={handleCancelEdit}>
-                                <CancelIcon style={{ fontSize: '1.5rem', color: 'red' }} />
+                                <CancelIcon
+                                  style={{ fontSize: "1.5rem", color: "red" }}
+                                />
                               </Button>
                             </Grid>
                           </Grid>
                         ) : (
                           <Grid container spacing={1}>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.day}
                               </Typography>
                             </Grid>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.week}
                               </Typography>
                             </Grid>
                             <Grid item md={2} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.shiftmode}
                               </Typography>
                             </Grid>
-                            {todo.shiftmode === 'Shift' ? (
+                            {todo.shiftmode === "Shift" ? (
                               <>
                                 <Grid item md={2} sm={6} xs={12}>
-                                  <Typography variant="subtitle2" color="textSecondary">
-                                    {todo.shiftgrouping === 'Please Select Shift Grouping' ? '' : todo.shiftgrouping}
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="textSecondary"
+                                  >
+                                    {todo.shiftgrouping ===
+                                    "Please Select Shift Grouping"
+                                      ? ""
+                                      : todo.shiftgrouping}
                                   </Typography>
                                 </Grid>
                                 <Grid item md={2} sm={6} xs={12}>
-                                  <Typography variant="subtitle2" color="textSecondary">
-                                    {todo.shifttiming === 'Please Select Shift' ? '' : todo.shifttiming}
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="textSecondary"
+                                  >
+                                    {todo.shifttiming === "Please Select Shift"
+                                      ? ""
+                                      : todo.shifttiming}
                                   </Typography>
                                 </Grid>
                               </>
@@ -7534,11 +10522,13 @@ function EditMovietolive() {
                             )}
                             <Grid item md={1} sm={6} xs={6}>
                               {/* Edit button */}
-                              <Button onClick={() => handleEditTodocheck(index)}>
+                              <Button
+                                onClick={() => handleEditTodocheck(index)}
+                              >
                                 <FaEdit
                                   style={{
-                                    color: '#1976d2',
-                                    fontSize: '1.2rem',
+                                    color: "#1976d2",
+                                    fontSize: "1.2rem",
                                   }}
                                 />
                               </Button>
@@ -7551,26 +10541,34 @@ function EditMovietolive() {
                 </>
               ) : null}
 
-              {boardingDetails.shifttype === '1 Month Rotation' ? (
+              {boardingDetails.shifttype === "1 Month Rotation" ? (
                 <>
                   <Grid container spacing={2}>
                     <Grid item md={3.5} sm={6} xs={12}>
                       <Typography>
-                        Shift Grouping<b style={{ color: 'red' }}>*</b>
+                        Shift Grouping<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <FormControl fullWidth size="small">
                         <Selects
                           options={ShiftGroupingOptions}
                           label="Please Select Shift Group"
                           value={{
-                            label: boardingDetails.shiftgrouping === '' || boardingDetails.shiftgrouping === undefined ? 'Please Select Shift Grouping' : boardingDetails.shiftgrouping,
-                            value: boardingDetails.shiftgrouping === '' || boardingDetails.shiftgrouping === undefined ? 'Please Select Shift Grouping' : boardingDetails.shiftgrouping,
+                            label:
+                              boardingDetails.shiftgrouping === "" ||
+                              boardingDetails.shiftgrouping === undefined
+                                ? "Please Select Shift Grouping"
+                                : boardingDetails.shiftgrouping,
+                            value:
+                              boardingDetails.shiftgrouping === "" ||
+                              boardingDetails.shiftgrouping === undefined
+                                ? "Please Select Shift Grouping"
+                                : boardingDetails.shiftgrouping,
                           }}
                           onChange={(e) => {
                             setBoardingDetails({
                               ...boardingDetails,
                               shiftgrouping: e.value,
-                              shifttiming: 'Please Select Shift',
+                              shifttiming: "Please Select Shift",
                             });
                             ShiftDropdwonsSecond(e.value);
                           }}
@@ -7579,7 +10577,7 @@ function EditMovietolive() {
                     </Grid>
                     <Grid item md={3.5} sm={6} xs={12}>
                       <Typography>
-                        Shift<b style={{ color: 'red' }}>*</b>
+                        Shift<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <FormControl fullWidth size="small">
                         <Selects
@@ -7587,8 +10585,16 @@ function EditMovietolive() {
                           options={shifts}
                           styles={colourStyles}
                           value={{
-                            label: boardingDetails.shifttiming === '' || boardingDetails.shifttiming === undefined ? 'Please Select Shift' : boardingDetails.shifttiming,
-                            value: boardingDetails.shifttiming === '' || boardingDetails.shifttiming === undefined ? 'Please Select Shift' : boardingDetails.shifttiming,
+                            label:
+                              boardingDetails.shifttiming === "" ||
+                              boardingDetails.shifttiming === undefined
+                                ? "Please Select Shift"
+                                : boardingDetails.shifttiming,
+                            value:
+                              boardingDetails.shifttiming === "" ||
+                              boardingDetails.shifttiming === undefined
+                                ? "Please Select Shift"
+                                : boardingDetails.shifttiming,
                           }}
                           onChange={(e) => {
                             setBoardingDetails({
@@ -7602,12 +10608,15 @@ function EditMovietolive() {
                     <Grid item md={4} sm={6} xs={12}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Weeks <b style={{ color: 'red' }}>*</b>
+                          Weeks <b style={{ color: "red" }}>*</b>
                         </Typography>
                         <MultiSelect
                           size="small"
                           options={weekoptions2months
-                            ?.filter((item) => !todo?.some((val) => val?.week === item))
+                            ?.filter(
+                              (item) =>
+                                !todo?.some((val) => val?.week === item),
+                            )
                             ?.map((data) => ({
                               label: data,
                               value: data,
@@ -7619,28 +10628,35 @@ function EditMovietolive() {
                         />
                       </FormControl>
                     </Grid>
-                    <Grid item md={4} sm={6} xs={12} sx={{ display: 'flex' }}>
+                    <Grid item md={4} sm={6} xs={12} sx={{ display: "flex" }}>
                       <FormControl fullWidth size="small">
                         <Typography>
-                          Week Off<b style={{ color: 'red' }}>*</b>
+                          Week Off<b style={{ color: "red" }}>*</b>
                         </Typography>
-                        <MultiSelect size="small" options={getWeekdayOptions()} value={selectedOptionsCate} onChange={handleCategoryChange} valueRenderer={customValueRendererCate} labelledBy="Please Select Days" />
+                        <MultiSelect
+                          size="small"
+                          options={getWeekdayOptions()}
+                          value={selectedOptionsCate}
+                          onChange={handleCategoryChange}
+                          valueRenderer={customValueRendererCate}
+                          labelledBy="Please Select Days"
+                        />
                       </FormControl>
                     </Grid>
                     <Grid item md={1} sm={12} xs={12}>
                       <Button
                         variant="contained"
                         style={{
-                          height: '30px',
-                          minWidth: '20px',
-                          padding: '19px 13px',
-                          color: 'white',
-                          background: 'rgb(25, 118, 210)',
-                          marginTop: '25px',
+                          height: "30px",
+                          minWidth: "20px",
+                          padding: "19px 13px",
+                          color: "white",
+                          background: "rgb(25, 118, 210)",
+                          marginTop: "25px",
                         }}
                         onClick={handleAddTodo}
                       >
-                        <FaPlus style={{ fontSize: '15px' }} />
+                        <FaPlus style={{ fontSize: "15px" }} />
                       </Button>
                     </Grid>
                   </Grid>
@@ -7655,17 +10671,17 @@ function EditMovietolive() {
                       </Grid>
                       <Grid item md={2} sm={12} xs={12}>
                         <Typography>
-                          Shift Mode<b style={{ color: 'red' }}>*</b>
+                          Shift Mode<b style={{ color: "red" }}>*</b>
                         </Typography>
                       </Grid>
                       <Grid item md={2} sm={12} xs={12}>
                         <Typography>
-                          Shift Grouping<b style={{ color: 'red' }}>*</b>
+                          Shift Grouping<b style={{ color: "red" }}>*</b>
                         </Typography>
                       </Grid>
                       <Grid item md={2.5} sm={12} xs={12}>
                         <Typography>
-                          Shift<b style={{ color: 'red' }}>*</b>{' '}
+                          Shift<b style={{ color: "red" }}>*</b>{" "}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -7676,12 +10692,18 @@ function EditMovietolive() {
                         {editingIndexcheck === index ? (
                           <Grid container spacing={1}>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.day}
                               </Typography>
                             </Grid>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.week}
                               </Typography>
                             </Grid>
@@ -7694,11 +10716,17 @@ function EditMovietolive() {
                                     label: todo.shiftmode,
                                     value: todo.shiftmode,
                                   }}
-                                  onChange={(selectedOption) => multiInputs(index, 'shiftmode', selectedOption.value)}
+                                  onChange={(selectedOption) =>
+                                    multiInputs(
+                                      index,
+                                      "shiftmode",
+                                      selectedOption.value,
+                                    )
+                                  }
                                 />
                               </FormControl>
                             </Grid>
-                            {todo.shiftmode === 'Shift' ? (
+                            {todo.shiftmode === "Shift" ? (
                               <>
                                 <Grid item md={2} sm={4} xs={4}>
                                   <FormControl fullWidth size="small">
@@ -7709,13 +10737,25 @@ function EditMovietolive() {
                                         label: todo.shiftgrouping,
                                         value: todo.shiftgrouping,
                                       }}
-                                      onChange={(selectedOption) => multiInputs(index, 'shiftgrouping', selectedOption.value)}
+                                      onChange={(selectedOption) =>
+                                        multiInputs(
+                                          index,
+                                          "shiftgrouping",
+                                          selectedOption.value,
+                                        )
+                                      }
                                     />
                                   </FormControl>
                                 </Grid>
                                 <Grid item md={2.5} sm={4} xs={4}>
                                   <FormControl fullWidth size="small">
-                                    <AsyncShiftTimingSelects todo={todo} index={index} auth={auth} multiInputs={multiInputs} colourStyles={colourStyles} />
+                                    <AsyncShiftTimingSelects
+                                      todo={todo}
+                                      index={index}
+                                      auth={auth}
+                                      multiInputs={multiInputs}
+                                      colourStyles={colourStyles}
+                                    />
                                   </FormControl>
                                 </Grid>
                               </>
@@ -7727,12 +10767,16 @@ function EditMovietolive() {
                             )}
                             <Grid item md={1} sm={1} xs={1}>
                               {/* Confirm button */}
-                              {todo.shiftmode === 'Shift' && (todo.shiftgrouping === 'Please Select Shift Grouping' || todo.shifttiming === 'Please Select Shift') ? null : (
+                              {todo.shiftmode === "Shift" &&
+                              (todo.shiftgrouping ===
+                                "Please Select Shift Grouping" ||
+                                todo.shifttiming ===
+                                  "Please Select Shift") ? null : (
                                 <Button onClick={handleUpdateTodocheck}>
                                   <CheckCircleIcon
                                     style={{
-                                      fontSize: '1.5rem',
-                                      color: '#216d21',
+                                      fontSize: "1.5rem",
+                                      color: "#216d21",
                                     }}
                                   />
                                 </Button>
@@ -7741,37 +10785,59 @@ function EditMovietolive() {
                             <Grid item md={1} sm={1} xs={1}>
                               {/* Cancel button */}
                               <Button onClick={handleCancelEdit}>
-                                <CancelIcon style={{ fontSize: '1.5rem', color: 'red' }} />
+                                <CancelIcon
+                                  style={{ fontSize: "1.5rem", color: "red" }}
+                                />
                               </Button>
                             </Grid>
                           </Grid>
                         ) : (
                           <Grid container spacing={1}>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.day}
                               </Typography>
                             </Grid>
                             <Grid item md={1.5} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.week}
                               </Typography>
                             </Grid>
                             <Grid item md={2} sm={6} xs={12}>
-                              <Typography variant="subtitle2" color="textSecondary">
+                              <Typography
+                                variant="subtitle2"
+                                color="textSecondary"
+                              >
                                 {todo.shiftmode}
                               </Typography>
                             </Grid>
-                            {todo.shiftmode === 'Shift' ? (
+                            {todo.shiftmode === "Shift" ? (
                               <>
                                 <Grid item md={2} sm={6} xs={12}>
-                                  <Typography variant="subtitle2" color="textSecondary">
-                                    {todo.shiftgrouping === 'Please Select Shift Grouping' ? '' : todo.shiftgrouping}
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="textSecondary"
+                                  >
+                                    {todo.shiftgrouping ===
+                                    "Please Select Shift Grouping"
+                                      ? ""
+                                      : todo.shiftgrouping}
                                   </Typography>
                                 </Grid>
                                 <Grid item md={2} sm={6} xs={12}>
-                                  <Typography variant="subtitle2" color="textSecondary">
-                                    {todo.shifttiming === 'Please Select Shift' ? '' : todo.shifttiming}
+                                  <Typography
+                                    variant="subtitle2"
+                                    color="textSecondary"
+                                  >
+                                    {todo.shifttiming === "Please Select Shift"
+                                      ? ""
+                                      : todo.shifttiming}
                                   </Typography>
                                 </Grid>
                               </>
@@ -7783,11 +10849,13 @@ function EditMovietolive() {
                             )}
                             <Grid item md={1} sm={6} xs={6}>
                               {/* Edit button */}
-                              <Button onClick={() => handleEditTodocheck(index)}>
+                              <Button
+                                onClick={() => handleEditTodocheck(index)}
+                              >
                                 <FaEdit
                                   style={{
-                                    color: '#1976d2',
-                                    fontSize: '1.2rem',
+                                    color: "#1976d2",
+                                    fontSize: "1.2rem",
                                   }}
                                 />
                               </Button>
@@ -8207,7 +11275,7 @@ function EditMovietolive() {
             <Grid item md={4} sm={6} xs={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Reporting To <b style={{ color: 'red' }}>*</b>
+                  Reporting To <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   labelId="demo-select-small"
@@ -8215,15 +11283,18 @@ function EditMovietolive() {
                   options={
                     allHierarchy && reportingtonames?.length > 0
                       ? reportingtonames?.map((row) => ({
-                        label: row,
-                        value: row,
-                      }))
-                      : allUsersData
-                        ?.filter((data) => data?.role?.includes('Manager') && data?.company === boardingDetails?.company && data?.branch === boardingDetails?.branch && data?.unit === boardingDetails?.unit && data?.team === boardingDetails?.team)
-                        ?.map((row) => ({
-                          label: row?.companyname,
-                          value: row?.companyname,
+                          label: row,
+                          value: row,
                         }))
+                      : allUsersData
+                          ?.filter(
+                            (data) => data?.role?.includes("Manager"),
+                            //  && data?.company === boardingDetails?.company && data?.branch === boardingDetails?.branch && data?.unit === boardingDetails?.unit && data?.team === boardingDetails?.team
+                          )
+                          ?.map((row) => ({
+                            label: row?.companyname,
+                            value: row?.companyname,
+                          }))
                   }
                   value={{
                     label: boardingDetails.reportingto,
@@ -8241,15 +11312,21 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Work Mode <b style={{ color: 'red' }}>*</b>
+                  Work Mode <b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
                   options={workmodeOptions}
                   placeholder="Please Select Work Mode"
                   value={{
-                    label: boardingDetails.workmode === 'Internship' ? 'Please Select Work Mode' : boardingDetails.workmode,
-                    value: boardingDetails.workmode === 'Internship' ? 'Please Select Work Mode' : boardingDetails.workmode,
+                    label:
+                      boardingDetails.workmode === "Internship"
+                        ? "Please Select Work Mode"
+                        : boardingDetails.workmode,
+                    value:
+                      boardingDetails.workmode === "Internship"
+                        ? "Please Select Work Mode"
+                        : boardingDetails.workmode,
                   }}
                   onChange={(e) => {
                     setBoardingDetails((prev) => ({
@@ -8260,8 +11337,10 @@ function EditMovietolive() {
                     setSelectedOptionsWorkStation([]);
                     setValueWorkStation([]);
                     setWorkstationTodoList([]);
-                    setPrimaryWorkStation('Please Select Primary Work Station');
-                    setPrimaryWorkStationLabel('Please Select Primary Work Station');
+                    setPrimaryWorkStation("Please Select Primary Work Station");
+                    setPrimaryWorkStationLabel(
+                      "Please Select Primary Work Station",
+                    );
                     // fetchUserDatasOnChange(
                     //   boardingDetails.branch,
                     //   boardingDetails.company
@@ -8272,18 +11351,29 @@ function EditMovietolive() {
             </Grid>
 
             <>
-              {' '}
+              {" "}
               <Grid item md={4} sm={12} xs={12}>
                 <FormControl size="small" fullWidth>
-                  <Typography>Work Station (Primary){boardingDetails?.prod && <b style={{ color: 'red' }}>*</b>}</Typography>
+                  <Typography>
+                    Work Station (Primary)
+                    {boardingDetails?.prod && <b style={{ color: "red" }}>*</b>}
+                  </Typography>
                   <Selects
                     options={filteredWorkStation.filter((item, index, self) => {
-                      return index === self.findIndex((i) => i.value === item.value) && !valueWorkStation?.includes(item?.value);
+                      return (
+                        index ===
+                          self.findIndex((i) => i.value === item.value) &&
+                        !valueWorkStation?.includes(item?.value)
+                      );
                     })}
                     label="Please Select Shift"
                     value={{
-                      label: primaryWorkStationLabel ? primaryWorkStationLabel : 'Please Select Primary Work Station',
-                      value: primaryWorkStation ? primaryWorkStation : 'Please Select Primary Work Station',
+                      label: primaryWorkStationLabel
+                        ? primaryWorkStationLabel
+                        : "Please Select Primary Work Station",
+                      value: primaryWorkStation
+                        ? primaryWorkStation
+                        : "Please Select Primary Work Station",
                     }}
                     isDisabled={maxSelections === 0} // onChange={(e) => {
                     //   setPrimaryWorkStation(e.value);
@@ -8301,92 +11391,129 @@ function EditMovietolive() {
                     //   // setValueWorkStation([]);
                     // }}
                     onChange={(e) => {
-                      const isValue = e.value?.replace(/\([^)]*\)$/, '');
+                      const isValue = e.value?.replace(/\([^)]*\)$/, "");
                       setPrimaryWorkStation(e.value);
                       setPrimaryWorkStationLabel(e.label);
                       // setSelectedOptionsWorkStation([]);
                       // setValueWorkStation([]);
 
-                      setValueWorkStation((prev) => prev.filter((val) => val !== e.value));
+                      setValueWorkStation((prev) =>
+                        prev.filter((val) => val !== e.value),
+                      );
 
                       // Remove selected object from selectedOptionsWorkStation array
-                      setSelectedOptionsWorkStation((prev) => prev.filter((obj) => obj.value !== e.value));
+                      setSelectedOptionsWorkStation((prev) =>
+                        prev.filter((obj) => obj.value !== e.value),
+                      );
 
-                      const matches = e.label?.match(/^(.*?)\((.*?)\)\((.*?)\)$/);
+                      const matches = e.label?.match(
+                        /^(.*?)\((.*?)\)\((.*?)\)$/,
+                      );
 
-                      setSelectedOptionsWorkStation((prev) => prev.filter((obj) => obj.value !== e.value));
-                      let setWorkTodo = workstationTodoList?.filter((data) => data?.type !== 'Primary' && data?.shortname !== matches?.[3]) || [];
+                      setSelectedOptionsWorkStation((prev) =>
+                        prev.filter((obj) => obj.value !== e.value),
+                      );
+                      let setWorkTodo =
+                        workstationTodoList?.filter(
+                          (data) =>
+                            data?.type !== "Primary" &&
+                            data?.shortname !== matches?.[3],
+                        ) || [];
                       setWorkstationTodoList((prev) => [
                         {
-                          workstation: matches?.[1]?.trim() + '(' + matches?.[2]?.trim() + ')', // G-HRA(TTS-TRICHY-Ground Floor)
+                          workstation:
+                            matches?.[1]?.trim() +
+                            "(" +
+                            matches?.[2]?.trim() +
+                            ")", // G-HRA(TTS-TRICHY-Ground Floor)
                           shortname: matches?.[3],
-                          type: 'Primary',
+                          type: "Primary",
                         },
                         ...setWorkTodo,
                       ]);
 
-                      const selectedCabinName = e?.value?.split('(')[0];
-                      const Bracketsbranch = e?.value?.match(/\(([^)]+)\)/)?.[1];
-                      const hyphenCount = Bracketsbranch.split('-').length - 1;
+                      const selectedCabinName = e?.value?.split("(")[0];
+                      const Bracketsbranch =
+                        e?.value?.match(/\(([^)]+)\)/)?.[1];
+                      const hyphenCount = Bracketsbranch.split("-").length - 1;
 
-                      const Branch = hyphenCount === 1 ? Bracketsbranch.split('-')[0]?.trim() : Bracketsbranch?.split('-').slice(0, 2).join('-');
+                      const Branch =
+                        hyphenCount === 1
+                          ? Bracketsbranch.split("-")[0]?.trim()
+                          : Bracketsbranch?.split("-").slice(0, 2).join("-");
 
-                      const Floor = hyphenCount === 1 ? Bracketsbranch.split('-')[1]?.trim() : hyphenCount === 2 ? Bracketsbranch.split('-').pop() : Bracketsbranch.split('-').slice(-2).join('-')?.replace(')', '');
+                      const Floor =
+                        hyphenCount === 1
+                          ? Bracketsbranch.split("-")[1]?.trim()
+                          : hyphenCount === 2
+                            ? Bracketsbranch.split("-").pop()
+                            : Bracketsbranch.split("-")
+                                .slice(-2)
+                                .join("-")
+                                ?.replace(")", "");
 
-                      console.log(workStationSystemName, 'workStationSystemName');
+                      console.log(
+                        workStationSystemName,
+                        "workStationSystemName",
+                      );
 
                       const shortname = workStationSystemName
-                        ?.filter((item) => item?.branch === Branch && (Floor === '' || Floor === item?.floor) && item?.cabinname === selectedCabinName)
+                        ?.filter(
+                          (item) =>
+                            item?.branch === Branch &&
+                            (Floor === "" || Floor === item?.floor) &&
+                            item?.cabinname === selectedCabinName,
+                        )
                         ?.map((item) => item?.systemshortname)
                         ?.toString();
 
                       setPrimaryKeyShortname(`${shortname},`);
-                      setKeyShortname('');
+                      setKeyShortname("");
                     }}
-                  // menuPortalTarget={document.body}
-                  // styles={{
-                  //   menuPortal: (base) => ({ ...base, zIndex: 1500 }),
-                  // }}
-                  // formatOptionLabel={(data) => {
-                  //   let value = data?.label;
-                  //   if (!value) {
-                  //     value = 'Please Select Primary Work Station';
-                  //   }
-                  //   // Extract text before and within parentheses
-                  //   const bracketIndex = value?.indexOf('(');
-                  //   const label = bracketIndex > -1 ? value?.slice(0, bracketIndex) : value;
-                  //   const bracketContent = bracketIndex > -1 ? value?.slice(bracketIndex) : '';
+                    // menuPortalTarget={document.body}
+                    // styles={{
+                    //   menuPortal: (base) => ({ ...base, zIndex: 1500 }),
+                    // }}
+                    // formatOptionLabel={(data) => {
+                    //   let value = data?.label;
+                    //   if (!value) {
+                    //     value = 'Please Select Primary Work Station';
+                    //   }
+                    //   // Extract text before and within parentheses
+                    //   const bracketIndex = value?.indexOf('(');
+                    //   const label = bracketIndex > -1 ? value?.slice(0, bracketIndex) : value;
+                    //   const bracketContent = bracketIndex > -1 ? value?.slice(bracketIndex) : '';
 
-                  //   // const bracketIndex = value.indexOf('(');
-                  //   // const bracketContent = bracketIndex > -1 ? value.slice(bracketIndex) : "";
+                    //   // const bracketIndex = value.indexOf('(');
+                    //   // const bracketContent = bracketIndex > -1 ? value.slice(bracketIndex) : "";
 
-                  //   // Check if there's a second set of parentheses
-                  //   const secondBracketMatch = bracketContent?.match(/\(([^)]+)\)\(([^)]+)\)/);
+                    //   // Check if there's a second set of parentheses
+                    //   const secondBracketMatch = bracketContent?.match(/\(([^)]+)\)\(([^)]+)\)/);
 
-                  //   const hasSecondBracket = secondBracketMatch !== null;
+                    //   const hasSecondBracket = secondBracketMatch !== null;
 
-                  //   let firstBracketContent;
-                  //   let secondBracketContent;
-                  //   if (hasSecondBracket) {
-                  //     firstBracketContent = secondBracketMatch[1]; // Content of the first set of parentheses
-                  //     secondBracketContent = secondBracketMatch[2]; // Content of the second set of parentheses
-                  //   }
+                    //   let firstBracketContent;
+                    //   let secondBracketContent;
+                    //   if (hasSecondBracket) {
+                    //     firstBracketContent = secondBracketMatch[1]; // Content of the first set of parentheses
+                    //     secondBracketContent = secondBracketMatch[2]; // Content of the second set of parentheses
+                    //   }
 
-                  //   return (
-                  //     <div>
-                  //       <span>{label}</span>
+                    //   return (
+                    //     <div>
+                    //       <span>{label}</span>
 
-                  //       {hasSecondBracket ? (
-                  //         <>
-                  //           <span>{`(${firstBracketContent})`}</span>
-                  //           <span style={{ color: 'green' }}>{`(${secondBracketContent})`}</span>
-                  //         </>
-                  //       ) : (
-                  //         <span>{bracketContent}</span>
-                  //       )}
-                  //     </div>
-                  //   );
-                  // }}
+                    //       {hasSecondBracket ? (
+                    //         <>
+                    //           <span>{`(${firstBracketContent})`}</span>
+                    //           <span style={{ color: 'green' }}>{`(${secondBracketContent})`}</span>
+                    //         </>
+                    //       ) : (
+                    //         <span>{bracketContent}</span>
+                    //       )}
+                    //     </div>
+                    //   );
+                    // }}
                   />
                 </FormControl>
               </Grid>
@@ -8396,13 +11523,17 @@ function EditMovietolive() {
                   <MultiSelect
                     size="small"
                     options={allWorkStationOpt.filter((item, index, self) => {
-                      return index === self.findIndex((i) => i.value === item.value) && item.value !== primaryWorkStation;
+                      return (
+                        index ===
+                          self.findIndex((i) => i.value === item.value) &&
+                        item.value !== primaryWorkStation
+                      );
                     })}
                     value={selectedOptionsWorkStation}
                     onChange={handleEmployeesChange}
                     valueRenderer={customValueRendererEmployees}
                     disabled={maxSelections === 0 || Number(maxSelections) < 0}
-                  // disabled={maxSelections === 0 || Number(maxSelections) < 1 || primaryWorkStation === 'Please Select Primary Work Station' || primaryWorkStation === '' || !primaryWorkStation}
+                    // disabled={maxSelections === 0 || Number(maxSelections) < 1 || primaryWorkStation === 'Please Select Primary Work Station' || primaryWorkStation === '' || !primaryWorkStation}
                   />
                 </FormControl>
               </Grid>
@@ -8414,8 +11545,14 @@ function EditMovietolive() {
                   aria-label="minimum height"
                   minRows={5}
                   readOnly
-                  value={workstationTodoList?.length > 0 ? workstationTodoList?.map((data) => data?.shortname)?.join(',') : ''}
-                // value={keyPrimaryShortname + keyShortname}
+                  value={
+                    workstationTodoList?.length > 0
+                      ? workstationTodoList
+                          ?.map((data) => data?.shortname)
+                          ?.join(",")
+                      : ""
+                  }
+                  // value={keyPrimaryShortname + keyShortname}
                 />
               </FormControl>
             </Grid>
@@ -8423,7 +11560,7 @@ function EditMovietolive() {
               <TableContainer size="small">
                 <Table>
                   <TableHead>
-                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                    <TableRow sx={{ backgroundColor: "#f5f5f5" }}>
                       <TableCell sx={{ py: 0.3 }}>
                         <Typography variant="subtitle1">Workstation</Typography>
                       </TableCell>
@@ -8443,16 +11580,25 @@ function EditMovietolive() {
                     {workstationTodoList.map((todo, index) => (
                       <TableRow key={index}>
                         <TableCell sx={{ py: 0.3 }}>
-                          <Typography sx={{ fontSize: '0.9rem' }}>{todo.workstation}</Typography>
+                          <Typography sx={{ fontSize: "0.9rem" }}>
+                            {todo.workstation}
+                          </Typography>
                         </TableCell>
                         <TableCell sx={{ py: 0.3 }}>
-                          <Typography sx={{ fontSize: '0.9rem' }}>{todo.shortname}</Typography>
+                          <Typography sx={{ fontSize: "0.9rem" }}>
+                            {todo.shortname}
+                          </Typography>
                         </TableCell>
                         <TableCell sx={{ py: 0.3 }}>
-                          <Typography sx={{ fontSize: '0.9rem' }}>{todo.type}</Typography>
+                          <Typography sx={{ fontSize: "0.9rem" }}>
+                            {todo.type}
+                          </Typography>
                         </TableCell>
                         <TableCell align="right" sx={{ py: 0.3 }}>
-                          <IconButton onClick={() => deleteTodo(todo)} color="error">
+                          <IconButton
+                            onClick={() => deleteTodo(todo)}
+                            color="error"
+                          >
                             <CloseIcon />
                           </IconButton>
                         </TableCell>
@@ -8471,7 +11617,7 @@ function EditMovietolive() {
                 </Table>
               </TableContainer>
             </Grid>
-            {boardingDetails.workmode === 'Office' && (
+            {boardingDetails.workmode === "Office" && (
               <>
                 <Grid item md={4} sm={12} xs={12}>
                   <FormControl size="small" fullWidth>
@@ -8480,7 +11626,11 @@ function EditMovietolive() {
                   <Grid>
                     <FormGroup>
                       <FormControlLabel
-                        control={<Checkbox checked={boardingDetails.ifoffice === true} />}
+                        control={
+                          <Checkbox
+                            checked={boardingDetails.ifoffice === true}
+                          />
+                        }
                         onChange={(e) => {
                           setBoardingDetails({
                             ...boardingDetails,
@@ -8495,39 +11645,52 @@ function EditMovietolive() {
                 </Grid>
               </>
             )}
-            {(boardingDetails.workmode === 'Remote' || boardingDetails?.ifoffice) && boardingDetails?.workmode !== 'Internship' && (
-              <Grid item md={4} sm={6} xs={12}>
-                <FormControl size="small" fullWidth>
-                  <Typography>Work Station (WFH)</Typography>
-                  <OutlinedInput
-                    id="component-outlined"
-                    type="text"
-                    placeholder="Please Enter Work Station"
-                    value={primaryWorkStationInput}
-                    // onChange={(e) => {
-                    //   setPrimaryWorkStationInput(e.target.value);
-                    // }}
-                    readOnly
-                  />
-                </FormControl>
-              </Grid>
-            )}
+            {(boardingDetails.workmode === "Remote" ||
+              boardingDetails?.ifoffice) &&
+              boardingDetails?.workmode !== "Internship" && (
+                <Grid item md={4} sm={6} xs={12}>
+                  <FormControl size="small" fullWidth>
+                    <Typography>Work Station (WFH)</Typography>
+                    <OutlinedInput
+                      id="component-outlined"
+                      type="text"
+                      placeholder="Please Enter Work Station"
+                      value={primaryWorkStationInput}
+                      // onChange={(e) => {
+                      //   setPrimaryWorkStationInput(e.target.value);
+                      // }}
+                      readOnly
+                    />
+                  </FormControl>
+                </Grid>
+              )}
 
             <Grid item md={4} sm={6} xs={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Religion <b style={{ color: 'red' }}>*</b>
+                  Religion <b style={{ color: "red" }}>*</b>
                 </Typography>
 
                 <Selects
                   maxMenuHeight={300}
                   options={religionOptions}
                   value={{
-                    label: boardingDetails.religion === '' || boardingDetails.religion == undefined ? 'Select Religion' : boardingDetails.religion,
-                    value: boardingDetails.religion === '' || boardingDetails.religion == undefined ? 'Select Religion' : boardingDetails.religion,
+                    label:
+                      boardingDetails.religion === "" ||
+                      boardingDetails.religion == undefined
+                        ? "Select Religion"
+                        : boardingDetails.religion,
+                    value:
+                      boardingDetails.religion === "" ||
+                      boardingDetails.religion == undefined
+                        ? "Select Religion"
+                        : boardingDetails.religion,
                   }}
                   onChange={(e) => {
-                    setBoardingDetails({ ...boardingDetails, religion: e.value });
+                    setBoardingDetails({
+                      ...boardingDetails,
+                      religion: e.value,
+                    });
                   }}
                 />
               </FormControl>
@@ -8535,16 +11698,16 @@ function EditMovietolive() {
             <Grid item md={3} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Dot<b style={{ color: 'red' }}>*</b>
+                  Dot<b style={{ color: "red" }}>*</b>
                 </Typography>
                 <OutlinedInput
                   id="component-outlined"
                   type="date"
                   value={dateOfTraining}
                   onChange={(e) => {
-                    if (e.target.value !== '') {
+                    if (e.target.value !== "") {
                       setDateOfTraining(e.target.value);
-                      setDateOfJoining('');
+                      setDateOfJoining("");
                     }
                   }}
                 />
@@ -8553,25 +11716,26 @@ function EditMovietolive() {
             <Grid item md={3} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Doj<b style={{ color: 'red' }}>*</b>
+                  Doj<b style={{ color: "red" }}>*</b>
                 </Typography>
                 <OutlinedInput
                   id="component-outlined"
                   type="date"
                   value={dateOfJoining}
                   onChange={(e) => {
-                    if (e.target.value !== '') {
+                    if (e.target.value !== "") {
                       setDateOfJoining(e.target.value);
                       setAssignExperience({
                         ...assignExperience,
                         updatedate: e.target.value,
-                        assignEndExpDate: '',
-                        assignEndTarDate: '',
-                        assignExpMode: 'Auto Increment',
+                        assignEndExpDate: "",
+                        assignEndTarDate: "",
+                        assignExpMode: "Auto Increment",
+                        assignExpvalue: "0",
                       });
                       setLoginNotAllot({
                         ...loginNotAllot,
-                        process: 'Please Select Process',
+                        process: "Please Select Process",
                       });
                       setnewstate(!newstate);
                       // EmployeeCodeAutoGenerate(
@@ -8581,7 +11745,9 @@ function EditMovietolive() {
                       //   e.target.value
                       // );
                       // Format the picked date to YYMMDD format
-                      const formattedDate = moment(e.target.value).format('YYMMDD');
+                      const formattedDate = moment(e.target.value).format(
+                        "YYMMDD",
+                      );
 
                       // Extract the branch code (first 2 characters) and the rest of the code (after the date)
                       const branchCode = newval.slice(0, 2); // First 2 characters for branch code
@@ -8603,14 +11769,20 @@ function EditMovietolive() {
             <Grid item md={2} sm={12} xs={12}>
               <FormControl size="small" fullWidth>
                 <Typography>Prev EmpCode</Typography>
-                <OutlinedInput id="component-outlined" type="text" placeholder="EmpCode" value={prevEmpCode ?? '000'} readOnly />
+                <OutlinedInput
+                  id="component-outlined"
+                  type="text"
+                  placeholder="EmpCode"
+                  value={prevEmpCode ?? "000"}
+                  readOnly
+                />
               </FormControl>
             </Grid>
             <Grid item md={3} xs={12} sm={12}>
               {internStatusUpdate.wordcheck ? (
                 <FormControl size="small" fullWidth>
                   <Typography>
-                    EmpCode(Manual) <b style={{ color: 'red' }}>*</b>
+                    EmpCode(Manual) <b style={{ color: "red" }}>*</b>
                   </Typography>
                   <OutlinedInput
                     id="component-outlined"
@@ -8626,9 +11798,14 @@ function EditMovietolive() {
               ) : (
                 <FormControl size="small" fullWidth>
                   <Typography>
-                    EmpCode(Auto) <b style={{ color: 'red' }}>*</b>
+                    EmpCode(Auto) <b style={{ color: "red" }}>*</b>
                   </Typography>
-                  <OutlinedInput id="component-outlined" type="text" placeholder="EmpCode" value={dateOfJoining === '' ? '' : newval} />
+                  <OutlinedInput
+                    id="component-outlined"
+                    type="text"
+                    placeholder="EmpCode"
+                    value={dateOfJoining === "" ? "" : newval}
+                  />
                 </FormControl>
               )}
               <Grid>
@@ -8656,9 +11833,9 @@ function EditMovietolive() {
         <br />
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            margin: '20px 0px',
+            display: "flex",
+            justifyContent: "space-between",
+            margin: "20px 0px",
           }}
         >
           <Box>
@@ -8681,7 +11858,12 @@ function EditMovietolive() {
             {/* </Link> */}
           </Box>
           <Box>
-            <Button className="next" variant="contained" onClick={nextStepLog} sx={buttonStyles?.buttonsubmit}>
+            <Button
+              className="next"
+              variant="contained"
+              onClick={nextStepLog}
+              sx={buttonStyles?.buttonsubmit}
+            >
               Next
             </Button>
           </Box>
@@ -8693,11 +11875,11 @@ function EditMovietolive() {
   const renderStepThree = () => {
     return (
       <>
-        <Headtitle title={'INTERN MOVE TO LIVE'} />
+        <Headtitle title={"INTERN MOVE TO LIVE"} />
         <Box sx={userStyle.selectcontainer}>
           <Typography sx={userStyle.SubHeaderText}>
-            {' '}
-            Process Allot <b style={{ color: 'red' }}>*</b>
+            {" "}
+            Process Allot <b style={{ color: "red" }}>*</b>
           </Typography>
           <br />
           <br />
@@ -8705,11 +11887,17 @@ function EditMovietolive() {
           <Grid container spacing={2}>
             <Grid item md={4} xs={12} sm={12}>
               <Typography>
-                Process <b style={{ color: 'red' }}>*</b>
+                Process <b style={{ color: "red" }}>*</b>
               </Typography>
               <FormControl fullWidth size="small">
                 <Selects
-                  options={Array.from(new Set(ProcessOptions?.filter((comp) => boardingDetails.team === comp.team)?.map((com) => com.process))).map((name) => ({
+                  options={Array.from(
+                    new Set(
+                      ProcessOptions?.filter(
+                        (comp) => boardingDetails.team === comp.team,
+                      )?.map((com) => com.process),
+                    ),
+                  ).map((name) => ({
                     label: name,
                     value: name,
                   }))}
@@ -8722,6 +11910,10 @@ function EditMovietolive() {
                       ...loginNotAllot,
                       process: e.value,
                     });
+                    setAssignExperience((prev) => ({
+                      ...prev,
+                      assignExpvalue: "0",
+                    }));
                     setnewstate(!newstate);
                   }}
                 />
@@ -8729,7 +11921,7 @@ function EditMovietolive() {
             </Grid>
             <Grid item md={4} xs={12} sm={12}>
               <Typography>
-                Process Type <b style={{ color: 'red' }}>*</b>
+                Process Type <b style={{ color: "red" }}>*</b>
               </Typography>
               <FormControl fullWidth size="small">
                 <Selects
@@ -8750,7 +11942,7 @@ function EditMovietolive() {
             </Grid>
             <Grid item md={4} xs={12} sm={12}>
               <Typography>
-                Process Duration <b style={{ color: 'red' }}>*</b>
+                Process Duration <b style={{ color: "red" }}>*</b>
               </Typography>
               <FormControl fullWidth size="small">
                 <Selects
@@ -8771,7 +11963,7 @@ function EditMovietolive() {
             </Grid>
             <Grid item md={4} xs={12} sm={6}>
               <Typography>
-                Duration <b style={{ color: 'red' }}>*</b>
+                Duration <b style={{ color: "red" }}>*</b>
               </Typography>
               <Grid container spacing={1}>
                 <Grid item md={6} xs={12} sm={6}>
@@ -8817,13 +12009,21 @@ function EditMovietolive() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>Gross Salary</Typography>
-                <OutlinedInput id="component-outlined" type="text" value={overallgrosstotal} />
+                <OutlinedInput
+                  id="component-outlined"
+                  type="text"
+                  value={overallgrosstotal}
+                />
               </FormControl>
             </Grid>
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>Mode Experience</Typography>
-                <OutlinedInput id="component-outlined" type="text" value={modeexperience} />
+                <OutlinedInput
+                  id="component-outlined"
+                  type="text"
+                  value={modeexperience}
+                />
               </FormControl>
             </Grid>
             <Grid item md={4} xs={12} sm={12}>
@@ -8834,9 +12034,9 @@ function EditMovietolive() {
                   type="text"
                   // placeholder="Please Enter IFSC Code"
                   value={targetexperience}
-                // onChange={(e) => {
-                //   setEmployee({ ...employee, ifsccode: e.target.value });
-                // }}
+                  // onChange={(e) => {
+                  //   setEmployee({ ...employee, ifsccode: e.target.value });
+                  // }}
                 />
               </FormControl>
             </Grid>
@@ -8848,9 +12048,9 @@ function EditMovietolive() {
                   type="text"
                   // placeholder="Please Enter IFSC Code"
                   value={targetpts}
-                // onChange={(e) => {
-                //   setEmployee({ ...employee, ifsccode: e.target.value });
-                // }}
+                  // onChange={(e) => {
+                  //   setEmployee({ ...employee, ifsccode: e.target.value });
+                  // }}
                 />
               </FormControl>
             </Grid>
@@ -8859,17 +12059,22 @@ function EditMovietolive() {
         <br />
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            margin: '20px 0px',
+            display: "flex",
+            justifyContent: "space-between",
+            margin: "20px 0px",
           }}
         >
           <Box>
-            <Button className="prev" variant="contained" onClick={prevStep} sx={buttonStyles?.buttonsubmit}>
+            <Button
+              className="prev"
+              variant="contained"
+              onClick={prevStep}
+              sx={buttonStyles?.buttonsubmit}
+            >
               Previous
             </Button>
           </Box>
-          <Box sx={{ display: 'flex', gap: '10px' }}>
+          <Box sx={{ display: "flex", gap: "10px" }}>
             {/* <Link to="/list"><Button sx={userStyle.btncancel} > Cancel </Button></Link> */}
             {/* <Link
               to="/internlist"
@@ -8882,13 +12087,18 @@ function EditMovietolive() {
             <Button
               sx={buttonStyles.btncancel}
               onClick={(e) => {
-                handleOpenConfirmationPopup('cancel');
+                handleOpenConfirmationPopup("cancel");
               }}
             >
               Cancel
             </Button>
             {/* </Link> */}
-            <Button className="next" variant="contained" onClick={nextStep} sx={buttonStyles?.buttonsubmit}>
+            <Button
+              className="next"
+              variant="contained"
+              onClick={nextStep}
+              sx={buttonStyles?.buttonsubmit}
+            >
               Next
             </Button>
 
@@ -8921,11 +12131,11 @@ function EditMovietolive() {
   //rocket chat start
   const [createRocketChat, setCreateRocketChat] = useState({
     create: false,
-    email: '',
+    email: "",
     roles: [
       {
-        label: 'user',
-        value: 'user',
+        label: "user",
+        value: "user",
       },
     ],
   });
@@ -8945,7 +12155,7 @@ function EditMovietolive() {
         response?.data?.rocketchatRoles?.map((data) => ({
           value: data?._id,
           label: data?._id,
-        }))
+        })),
       );
     } catch (err) {
       let error = err.response?.data?.message;
@@ -8954,7 +12164,12 @@ function EditMovietolive() {
         // setPopupSeverityMalert("error");
         // handleClickOpenPopupMalert();
       } else {
-        handleApiError(err, setPopupContentMalert, setPopupSeverityMalert, handleClickOpenPopupMalert);
+        handleApiError(
+          err,
+          setPopupContentMalert,
+          setPopupSeverityMalert,
+          handleClickOpenPopupMalert,
+        );
       }
     }
   };
@@ -8963,305 +12178,1537 @@ function EditMovietolive() {
     setCreateRocketChat((prev) => ({ ...prev, roles: options }));
   };
 
-  const customValueRendererRocketchatRole = (valueRocketchatTeamCat, _categoryname) => {
-    return valueRocketchatTeamCat?.length ? valueRocketchatTeamCat.map(({ label }) => label)?.join(', ') : 'Please Select Role';
+  const customValueRendererRocketchatRole = (
+    valueRocketchatTeamCat,
+    _categoryname,
+  ) => {
+    return valueRocketchatTeamCat?.length
+      ? valueRocketchatTeamCat.map(({ label }) => label)?.join(", ")
+      : "Please Select Role";
   };
 
+  const [salarySetUpForm, setSalarysetupForm] = useState({
+    mode: "Auto",
+    empcode: "",
+    employeename: "",
+    salarycode: "Please Select Salary Code",
+  });
+  const [isActive, setIsActive] = useState(false);
+  const [Ctc, setCtc] = useState("");
+  const [formValue, setFormValue] = useState({
+    esideduction: false,
+    pfdeduction: false,
+    basic: "",
+    hra: "",
+    conveyance: "",
+    gross: "",
+    medicalallowance: "",
+    productionallowance: "",
+    otherallowance: "",
+    productionallowancetwo: "",
+    startDate: "",
+    startmonth: "",
+    startyear: "",
+  });
+  console.log(formValue, "formValue");
+  //change form
+
+  const handleChangeGross = (e) => {
+    const regex = /^[0-9]+$/; // Only allows positive integers
+    const inputValue = e.target.value;
+
+    if (regex.test(inputValue) || inputValue === "") {
+      // Just update the gross value immediately
+      setFormValue((prev) => ({ ...prev, gross: inputValue }));
+
+      // Debounced calculation (runs after typing stops)
+      debouncedCalculate(inputValue);
+    }
+  };
+
+  const nameToKeyMap = {
+    Basic: "basic",
+    HRA: "hra",
+    Conveyance: "conveyance",
+    "Medical Allowance": "medicalallowance",
+    "Production Allowance": "productionallowance",
+    "Production Allowance 2": "productionallowancetwo",
+    "Shift Allowance": "shiftallowance",
+    "Special Allowance": "otherallowance",
+  };
+
+  const debouncedCalculate = useCallback(
+    debounce((inputValue) => {
+      const breakupDataManual = calculateBreakupManual(
+        inputValue,
+        settingsRef.current,
+      );
+      console.log(breakupDataManual, "breakupDataManual");
+      console.log(settingsRef.current, "settingsRef.current");
+      const salarysettings = salsettingsRef.current || [];
+      console.log(salarysettings, "salarysettings");
+      // All known salary component names
+      const allComponents = [
+        "Basic",
+        "HRA",
+        "Conveyance",
+        "Medical Allowance",
+        "Production Allowance",
+        // "Production Allowance 2",
+        "Shift Allowance",
+        "Special Allowance",
+      ];
+
+      // Helper: find amount for a name
+      const getAmount = (name) =>
+        Number(breakupDataManual?.find((d) => d?.name === name)?.amount || 0);
+
+      // Filter to include only components in salarysettings
+      const selectedComponents = salarysettings.length
+        ? salarysettings.filter((n) => allComponents.includes(n))
+        : allComponents;
+
+      // Compute visible + remaining totals
+      let visibleComponents = {};
+      let remainingTotal = 0;
+
+      for (const name of allComponents) {
+        const amount = getAmount(name);
+        if (selectedComponents.includes(name)) {
+          visibleComponents[name] = amount;
+        } else {
+          remainingTotal += amount;
+        }
+      }
+
+      // Add leftover components into “Special Allowance”
+      visibleComponents["Special Allowance"] =
+        (visibleComponents["Special Allowance"] || 0) + remainingTotal;
+
+      // Extract fields safely
+      const {
+        ["Basic"]: basic = 0,
+        ["HRA"]: hra = 0,
+        ["Conveyance"]: conveyance = 0,
+        ["Medical Allowance"]: medicalallowance = 0,
+        ["Production Allowance"]: productionallowance = 0,
+        ["Production Allowance 2"]: productionallowancetwo = 0,
+        ["Shift Allowance"]: shiftallowance = 0,
+        ["Special Allowance"]: otherallowance = 0,
+      } = visibleComponents;
+      console.log(visibleComponents, "visibleComponents");
+      console.log(remainingTotal, "remainingTotal");
+      console.log(otherallowance, "otherallowance");
+      // Update form values
+      setFormValue((prev) => ({
+        ...prev,
+        gross: inputValue,
+        basic: String(basic),
+        hra: String(hra),
+        conveyance: String(conveyance),
+        medicalallowance: String(medicalallowance),
+        productionallowance: String(productionallowance),
+        productionallowancetwo: String(productionallowancetwo),
+        shiftallowance: String(shiftallowance),
+        otherallowance: String(otherallowance),
+      }));
+
+      // Update salary table
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        basic,
+        hra,
+        conveyance,
+        medicalallowance,
+        productionallowance,
+        productionallowancetwo,
+        shiftallowance,
+        otherallowance,
+        performanceincentive: 0,
+        grossmonthsalary: Number(inputValue) || 0,
+        annualgrossctc: (Number(inputValue) || 0) * 12,
+      }));
+    }, 300),
+    [],
+  );
+  //change form
+  const handleChangeBasic = (e) => {
+    const regex = /^[0-9]+$/; // Only allows positive integers
+    // const regex = /^\d*\.?\d*$/;
+    const inputValue = e.target.value;
+    if (regex.test(inputValue) || inputValue === "") {
+      let gross =
+        Number(e.target.value) +
+        Number(formValue?.hra) +
+        Number(formValue?.conveyance) +
+        Number(formValue?.medicalallowance) +
+        Number(formValue?.productionallowance) +
+        // Number(formValue?.productionallowancetwo)
+        +Number(formValue?.otherallowance);
+      setFormValue({
+        ...formValue,
+        basic: inputValue,
+        gross,
+      });
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        basic: Number(inputValue) || 0,
+        grossmonthsalary: gross || 0,
+        annualgrossctc: 12 * gross || 0,
+      }));
+    }
+  };
+
+  //change form
+  const handleChangeHra = (e) => {
+    const regex = /^[0-9]+$/; // Only allows positive integers
+    // const regex = /^\d*\.?\d*$/;
+    const inputValue = e.target.value;
+    if (regex.test(inputValue) || inputValue === "") {
+      let gross =
+        Number(e.target.value) +
+        Number(formValue?.basic) +
+        Number(formValue?.conveyance) +
+        Number(formValue?.medicalallowance) +
+        Number(formValue?.productionallowance) +
+        // Number(formValue?.productionallowancetwo) +
+        Number(formValue?.otherallowance);
+
+      setFormValue({
+        ...formValue,
+        hra: e.target.value,
+        gross,
+      });
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        hra: Number(inputValue) || 0,
+        grossmonthsalary: gross || 0,
+        annualgrossctc: 12 * gross || 0,
+      }));
+    }
+  };
+
+  //change form
+  const handleChangeConveyance = (e) => {
+    const regex = /^[0-9]+$/;
+    const inputValue = e.target.value;
+    if (regex.test(inputValue) || inputValue === "") {
+      let gross =
+        Number(e.target.value) +
+        Number(formValue?.basic) +
+        Number(formValue?.hra) +
+        Number(formValue?.medicalallowance) +
+        Number(formValue?.productionallowance) +
+        // + Number(formValue?.productionallowancetwo)
+        Number(formValue?.otherallowance);
+      setFormValue({
+        ...formValue,
+        conveyance: e.target.value,
+        gross,
+      });
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        conveyance: Number(inputValue) || 0,
+        grossmonthsalary: gross || 0,
+        annualgrossctc: 12 * gross || 0,
+      }));
+    }
+  };
+  //change form
+  const handleChangeMedAllow = (e) => {
+    const regex = /^[0-9]+$/;
+    const inputValue = e.target.value;
+    if (regex.test(inputValue) || inputValue === "") {
+      let gross =
+        Number(e.target.value) +
+        Number(formValue?.hra) +
+        Number(formValue?.conveyance) +
+        Number(formValue?.basic) +
+        Number(formValue?.productionallowance) +
+        // + Number(formValue?.productionallowancetwo)
+        Number(formValue?.otherallowance);
+      setFormValue({
+        ...formValue,
+        medicalallowance: inputValue,
+        gross,
+      });
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        medicalallowance: Number(inputValue) || 0,
+        grossmonthsalary: gross || 0,
+        annualgrossctc: 12 * gross || 0,
+      }));
+    }
+  };
+
+  //change form
+  const handleChangeProdAllow = (e) => {
+    const regex = /^[0-9]+$/;
+    const inputValue = e.target.value;
+    if (regex.test(inputValue) || inputValue === "") {
+      let gross =
+        Number(e.target.value) +
+        Number(formValue?.basic) +
+        Number(formValue?.hra) +
+        Number(formValue?.conveyance) +
+        Number(formValue?.medicalallowance) +
+        Number(formValue?.medicalallowance) +
+        // + Number(formValue?.productionallowancetwo)
+        Number(formValue?.otherallowance);
+      setFormValue({
+        ...formValue,
+        productionallowance: inputValue,
+        gross,
+      });
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        productionallowance: Number(inputValue),
+        // + Number(formValue?.productionallowancetwo)
+        grossmonthsalary: gross || 0,
+        annualgrossctc: 12 * gross || 0,
+      }));
+    }
+  };
+
+  //change form
+  const handleChangeProdAllowtwo = (e) => {
+    const regex = /^[0-9]+$/;
+    const inputValue = e.target.value;
+    if (regex.test(inputValue) || inputValue === "") {
+      let gross =
+        Number(e.target.value) +
+        Number(formValue?.basic) +
+        Number(formValue?.hra) +
+        Number(formValue?.conveyance) +
+        Number(formValue?.medicalallowance) +
+        Number(formValue?.medicalallowance) +
+        Number(formValue?.productionallowance) +
+        Number(formValue?.otherallowance);
+      setFormValue({
+        ...formValue,
+        productionallowancetwo: inputValue,
+        gross,
+      });
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        productionallowance:
+          Number(inputValue) + Number(formValue?.productionallowance),
+        grossmonthsalary: gross || 0,
+        annualgrossctc: 12 * gross || 0,
+      }));
+    }
+  };
+  //change form
+  const handleChangeOtherAllow = (e) => {
+    const regex = /^[0-9]+$/;
+    const inputValue = e.target.value;
+
+    if (regex.test(inputValue) || inputValue === "") {
+      let gross =
+        Number(e.target.value) +
+        Number(formValue?.basic) +
+        Number(formValue?.hra) +
+        Number(formValue?.conveyance) +
+        Number(formValue?.medicalallowance) +
+        Number(formValue?.medicalallowance) +
+        Number(formValue?.productionallowance);
+      // + Number(formValue?.productionallowancetwo)
+      setFormValue({
+        ...formValue,
+        otherallowance: inputValue,
+        gross,
+      });
+      setSalaryTableDataManual((prev) => ({
+        ...prev,
+        otherallowance: inputValue || 0,
+        grossmonthsalary: gross || 0,
+        annualgrossctc: 12 * gross || 0,
+      }));
+    }
+  };
+  const [salarySlabOpt, setSalarySlabOpt] = useState([]);
+
+  //get all client user id.
+  const fetchProfessionalTax = async (process, salarycode) => {
+    try {
+      let res_freq = await axios.get(SERVICE.SALARYSLAB_PROCESS_FILTER, {
+        headers: {
+          Authorization: `Bearer ${auth.APIToken}`,
+        },
+        process: process,
+      });
+      const OptSlaball = res_freq?.data?.salaryslab;
+      const OptSlab = res_freq?.data?.salaryslab.filter((slab) => {
+        return slab.salarycode === salarycode;
+      });
+
+      setSalarySlabOpt(OptSlaball);
+      setFormValue(OptSlab[0]);
+      setCtc(
+        OptSlab[0].basic +
+          OptSlab[0].hra +
+          OptSlab[0].conveyance +
+          OptSlab[0].medicalallowance +
+          OptSlab[0].productionallowance +
+          // + OptSlab[0].productionallowancetwo
+          OptSlab[0].otherallowance,
+      );
+    } catch (err) {
+      handleApiError(
+        err,
+        setPopupContentMalert,
+        setPopupSeverityMalert,
+        handleClickOpenPopupMalert,
+      );
+    }
+  };
+  const [accessibleErrors, setAccessibleErrors] = useState({});
+
+  const ModeOpt = [
+    { label: "Manual", value: "Manual" },
+    { label: "Auto", value: "Auto" },
+  ];
   const renderStepSix = () => {
     return (
       <>
-        <Headtitle title={'INTERN MOVE TO LIVE'} />
+        <Headtitle title={"INTERN MOVE TO LIVE"} />
         <br />
 
-        <Box sx={userStyle.dialogbox}>
-          <Grid container spacing={1}>
-            <Grid item md={5} xs={0} sm={4}>
-              <Typography sx={userStyle.SubHeaderText}>Exp Log Details </Typography>
-            </Grid>
+        {salaryOption === "Experience Based" ? (
+          <>
+            <Box sx={userStyle.dialogbox}>
+              <Grid container spacing={1}>
+                <Grid item md={5} xs={0} sm={4}>
+                  <Typography sx={userStyle.SubHeaderText}>
+                    Exp Log Details{" "}
+                  </Typography>
+                </Grid>
 
-            <Grid item md={3} xs={0} sm={4}>
-              <>
-                <Button className="next" variant="contained" onClick={handleClickOpenEdit}>
-                  Salary Fix
-                </Button>
-              </>
-            </Grid>
+                <Grid item md={3} xs={0} sm={4}>
+                  <>
+                    <Button
+                      className="next"
+                      variant="contained"
+                      onClick={handleClickOpenEdit}
+                    >
+                      Salary Fix
+                    </Button>
+                  </>
+                </Grid>
 
-            <Grid item md={1} xs={12} sm={4} marginTop={1}>
-              <Typography>
-                Date <b style={{ color: 'red' }}>*</b>
-              </Typography>
-            </Grid>
-            <Grid item md={3} xs={12} sm={4}>
-              <FormControl fullWidth>
-                <Selects
-                  maxMenuHeight={250}
-                  styles={{
-                    menu: (provided) => ({
-                      ...provided,
-                      maxHeight: 200, // Adjust the max height of the menu base
-                    }),
-                    menuList: (provided) => ({
-                      ...provided,
-                      maxHeight: 200, // Adjust the max height of the menu option list
-                    }),
-                  }}
-                  options={expDateOptions}
-                  value={{
-                    label: assignExperience.updatedate,
-                    value: assignExperience.updatedate,
-                  }}
-                  onChange={(e) => {
-                    setAssignExperience({
-                      ...assignExperience,
-                      updatedate: e.value,
-                    });
-                    setnewstate(!newstate);
-                  }}
-                />
-              </FormControl>
-              {errorsLog.updatedate && <div>{errorsLog.updatedate}</div>}
-            </Grid>
-          </Grid>
-          <br />
-          <Grid container spacing={1}>
-            <Grid item md={12} xs={12} sm={12}>
-              {' '}
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                }}
-              >
-                <div
-                  style={{
-                    width: '70%',
-                    maxWidth: '800px',
-                  }}
-                >
-                  <SalaryTable
-                    name={getingOlddatas.companyname || ''}
-                    salaryFixed={salaryTableData?.salaryfixed || false}
-                    salaryStatus={salaryTableData?.salarystatus || ''}
-                    expectedSalary={salaryTableData?.expectedsalary || ''}
-                    basic={salaryTableData?.basic || 0}
-                    hra={salaryTableData?.hra || 0}
-                    conveyance={salaryTableData?.conveyance || 0}
-                    medicalallowance={salaryTableData?.medicalallowance || 0}
-                    productionallowance={salaryTableData?.productionallowance || 0}
-                    otherallowance={salaryTableData?.otherallowance || 0}
-                    performanceincentive={salaryTableData?.performanceincentive || 0}
-                    shiftallowance={salaryTableData?.shiftallowance || 0}
-                    grossmonthsalary={salaryTableData?.grossmonthsalary || 0}
-                    annualgrossctc={salaryTableData?.annualgrossctc || 0}
-                    onImageGenerated={(img) => setTableImage(img)}
-                    generateImage={true}
-                  />
-                </div>
-              </div>
-            </Grid>
-            <Grid item md={4} xs={12} sm={4}>
-              <FormControl fullWidth>
-                <Typography>Mode Val</Typography>
-                <Selects
-                  maxMenuHeight={250}
-                  options={modeOption}
-                  value={{
-                    label: assignExperience.assignExpMode,
-                    value: assignExperience.assignExpMode,
-                  }}
-                  onChange={(e) => {
-                    setAssignExperience({
-                      ...assignExperience,
-                      assignExpMode: e.value,
-                      assignExpvalue: e.value === 'Auto Increment' ? 0 : '',
-                    });
-                    setnewstate(!newstate);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            {assignExperience.assignExpMode === 'Please Select Mode' ? (
-              ''
-            ) : (
-              <>
-                <Grid item md={4} xs={12} sm={4}>
-                  <FormControl fullWidth size="small">
-                    <Typography>Value (In Months) {assignExperience.assignExpMode === 'Add' || assignExperience.assignExpMode === 'Minus' || assignExperience.assignExpMode === 'Fix' ? <b style={{ color: 'red' }}>*</b> : ''}</Typography>
-                    <OutlinedInput
-                      id="component-outlined"
-                      type="text"
-                      placeholder="Please Enter Value (In Months)"
-                      disabled={assignExperience.assignExpMode === 'Auto Increment'}
-                      value={assignExperience.assignExpMode === 'Auto Increment' ? '0' : assignExperience.assignExpvalue}
+                <Grid item md={1} xs={12} sm={4} marginTop={1}>
+                  <Typography>
+                    Date <b style={{ color: "red" }}>*</b>
+                  </Typography>
+                </Grid>
+                <Grid item md={3} xs={12} sm={4}>
+                  <FormControl fullWidth>
+                    <Selects
+                      maxMenuHeight={250}
+                      styles={{
+                        menu: (provided) => ({
+                          ...provided,
+                          maxHeight: 200, // Adjust the max height of the menu base
+                        }),
+                        menuList: (provided) => ({
+                          ...provided,
+                          maxHeight: 200, // Adjust the max height of the menu option list
+                        }),
+                      }}
+                      options={expDateOptions}
+                      value={{
+                        label: assignExperience.updatedate,
+                        value: assignExperience.updatedate,
+                      }}
                       onChange={(e) => {
                         setAssignExperience({
                           ...assignExperience,
-                          assignExpvalue: e.target.value,
+                          updatedate: e.value,
                         });
                         setnewstate(!newstate);
                       }}
                     />
                   </FormControl>
-                  {errorsLog.value && <div>{errorsLog.value}</div>}
+                  {errorsLog.updatedate && <div>{errorsLog.updatedate}</div>}
                 </Grid>
-              </>
-            )}
-          </Grid>
-          <br />
-          <Grid container spacing={1}>
-            <Grid item md={3} xs={12} sm={4}>
-              <FormControl fullWidth>
-                <Typography>Mode Exp</Typography>
-                <Selects
-                  maxMenuHeight={250}
-                  options={modeOptionexp}
-                  value={{
-                    label: assignExperience.assignEndExp,
-                    value: assignExperience.assignEndExp,
-                  }}
-                />
-              </FormControl>
-            </Grid>
-
-            <Grid item md={3} xs={12} sm={4}>
-              <FormControl fullWidth>
-                <Typography>End Exp</Typography>
-                <Selects
-                  maxMenuHeight={250}
-                  options={valueOpt}
-                  value={{
-                    label: assignExperience.assignEndExpvalue,
-                    value: assignExperience.assignEndExpvalue,
-                  }}
-                  onChange={(e) => {
-                    setAssignExperience({
-                      ...assignExperience,
-                      assignEndExpvalue: e.value,
-                    });
-                    setnewstate(!newstate);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-
-            {assignExperience.assignEndExpvalue === 'Yes' ? (
-              <>
-                <Grid item md={3} xs={12} sm={4}>
-                  <Typography>End Exp Date {assignExperience.assignEndExpvalue === 'Yes' ? <b style={{ color: 'red' }}>*</b> : ''}</Typography>
-                  <Selects
-                    maxMenuHeight={250}
-                    menuPlacement="top"
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        maxHeight: 200, // Adjust the max height of the menu base
-                      }),
-                      menuList: (provided) => ({
-                        ...provided,
-                        maxHeight: 200, // Adjust the max height of the menu option list
-                      }),
+              </Grid>
+              <br />
+              <Grid container spacing={1}>
+                <Grid item md={12} xs={12} sm={12}>
+                  {" "}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100%",
                     }}
-                    options={expDateOptions}
+                  >
+                    <div
+                      style={{
+                        width: "70%",
+                        maxWidth: "800px",
+                      }}
+                    >
+                      <SalaryTable
+                        name={getingOlddatas.companyname || ""}
+                        salaryFixed={salaryTableData?.salaryfixed || false}
+                        salaryStatus={salaryTableData?.salarystatus || ""}
+                        expectedSalary={salaryTableData?.expectedsalary || ""}
+                        basic={Number(
+                          breakupData?.find((data) => data?.name === "Basic")
+                            ?.amount || 0,
+                        )}
+                        hra={Number(
+                          breakupData?.find((data) => data?.name === "HRA")
+                            ?.amount || 0,
+                        )}
+                        conveyance={Number(
+                          breakupData?.find(
+                            (data) => data?.name === "Conveyance",
+                          )?.amount || 0,
+                        )}
+                        medicalallowance={Number(
+                          breakupData?.find(
+                            (data) => data?.name === "Medical Allowance",
+                          )?.amount || 0,
+                        )}
+                        productionallowance={Number(
+                          breakupData?.find(
+                            (data) => data?.name === "Production Allowance",
+                          )?.amount || 0,
+                        )}
+                        otherallowance={Number(
+                          breakupData?.find(
+                            (data) => data?.name === "Special Allowance",
+                          )?.amount || 0,
+                        )}
+                        shiftallowance={Number(
+                          breakupData?.find(
+                            (data) => data?.name === "Shift Allowance",
+                          )?.amount || 0,
+                        )}
+                        // basic={salaryTableData?.basic || 0}
+                        // hra={salaryTableData?.hra || 0}
+                        // conveyance={salaryTableData?.conveyance || 0}
+                        // medicalallowance={salaryTableData?.medicalallowance || 0}
+                        // productionallowance={salaryTableData?.productionallowance || 0}
+                        // otherallowance={salaryTableData?.otherallowance || 0}
+                        // shiftallowance={salaryTableData?.shiftallowance || 0}
+                        performanceincentive={
+                          salaryTableData?.performanceincentive || 0
+                        }
+                        grossmonthsalary={
+                          salaryTableData?.grossmonthsalary || 0
+                        }
+                        annualgrossctc={salaryTableData?.annualgrossctc || 0}
+                        onImageGenerated={(img) => setTableImage(img)}
+                        generateImage={true}
+                        salarysettings={boardingDetails?.salarysettings || []}
+                      />
+                    </div>
+                  </div>
+                </Grid>
+                <Grid item md={4} xs={12} sm={4}>
+                  <FormControl fullWidth>
+                    <Typography>Salary Options</Typography>
+                    <Selects
+                      maxMenuHeight={250}
+                      options={salaryOptions}
+                      value={{
+                        label: salaryOption,
+                        value: salaryOption,
+                      }}
+                      onChange={(e) => {
+                        setSalaryOption(e.value);
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid item md={4} xs={12} sm={4}>
+                  <FormControl fullWidth>
+                    <Typography>Mode Val</Typography>
+                    <Selects
+                      maxMenuHeight={250}
+                      options={modeOption}
+                      value={{
+                        label: assignExperience.assignExpMode,
+                        value: assignExperience.assignExpMode,
+                      }}
+                      onChange={(e) => {
+                        setAssignExperience({
+                          ...assignExperience,
+                          assignExpMode: e.value,
+                          assignExpvalue: e.value === "Auto Increment" ? 0 : "",
+                        });
+                        setnewstate(!newstate);
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                {assignExperience.assignExpMode === "Please Select Mode" ? (
+                  ""
+                ) : (
+                  <>
+                    <Grid item md={4} xs={12} sm={4}>
+                      <FormControl fullWidth size="small">
+                        <Typography>
+                          Value (In Months){" "}
+                          {assignExperience.assignExpMode === "Add" ||
+                          assignExperience.assignExpMode === "Minus" ||
+                          assignExperience.assignExpMode === "Fix" ? (
+                            <b style={{ color: "red" }}>*</b>
+                          ) : (
+                            ""
+                          )}
+                        </Typography>
+                        <OutlinedInput
+                          id="component-outlined"
+                          type="text"
+                          placeholder="Please Enter Value (In Months)"
+                          disabled={
+                            assignExperience.assignExpMode === "Auto Increment"
+                          }
+                          value={
+                            assignExperience.assignExpMode === "Auto Increment"
+                              ? "0"
+                              : assignExperience.assignExpvalue
+                          }
+                          onChange={(e) => {
+                            let val = e.target.value.replace(/\D/g, ""); // only digits
+
+                            // allow clearing
+                            if (val === "") {
+                              setAssignExperience({
+                                ...assignExperience,
+                                assignExpvalue: "0", // default show 0
+                              });
+                              return;
+                            }
+
+                            // prevent typing leading zeros like "00", "01"
+                            if (
+                              assignExperience.assignExpvalue === "0" &&
+                              val.length > 1
+                            ) {
+                              val = val.replace(/^0+/, ""); // remove leading zeros
+                            }
+
+                            let num = Number(val);
+
+                            const dynamicLimit = getExperienceLimit({
+                              limits: limitArray,
+                              company: boardingDetails.company,
+                              branch: boardingDetails.branch,
+                              unit: boardingDetails.unit,
+                              team: boardingDetails.team,
+                              employee: getingOlddatas.companyname,
+                              process: loginNotAllot?.process,
+                            });
+
+                            // ⛔ Apply limit only if found
+                            if (dynamicLimit !== null && num > dynamicLimit) {
+                              return;
+                            }
+
+                            setAssignExperience({
+                              ...assignExperience,
+                              assignExpvalue: val, // keep as string
+                            });
+
+                            setnewstate(!newstate);
+                          }}
+                        />
+                      </FormControl>
+                      {errorsLog.value && <div>{errorsLog.value}</div>}
+                    </Grid>
+                  </>
+                )}
+              </Grid>
+              <br />
+              <Grid container spacing={1}>
+                <Grid item md={3} xs={12} sm={4}>
+                  <FormControl fullWidth>
+                    <Typography>Mode Exp</Typography>
+                    <Selects
+                      maxMenuHeight={250}
+                      options={modeOptionexp}
+                      value={{
+                        label: assignExperience.assignEndExp,
+                        value: assignExperience.assignEndExp,
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+
+                <Grid item md={3} xs={12} sm={4}>
+                  <FormControl fullWidth>
+                    <Typography>End Exp</Typography>
+                    <Selects
+                      maxMenuHeight={250}
+                      options={valueOpt}
+                      value={{
+                        label: assignExperience.assignEndExpvalue,
+                        value: assignExperience.assignEndExpvalue,
+                      }}
+                      onChange={(e) => {
+                        setAssignExperience({
+                          ...assignExperience,
+                          assignEndExpvalue: e.value,
+                        });
+                        setnewstate(!newstate);
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+
+                {assignExperience.assignEndExpvalue === "Yes" ? (
+                  <>
+                    <Grid item md={3} xs={12} sm={4}>
+                      <Typography>
+                        End Exp Date{" "}
+                        {assignExperience.assignEndExpvalue === "Yes" ? (
+                          <b style={{ color: "red" }}>*</b>
+                        ) : (
+                          ""
+                        )}
+                      </Typography>
+                      <Selects
+                        maxMenuHeight={250}
+                        menuPlacement="top"
+                        styles={{
+                          menu: (provided) => ({
+                            ...provided,
+                            maxHeight: 200, // Adjust the max height of the menu base
+                          }),
+                          menuList: (provided) => ({
+                            ...provided,
+                            maxHeight: 200, // Adjust the max height of the menu option list
+                          }),
+                        }}
+                        options={expDateOptions}
+                        value={{
+                          label: assignExperience.assignEndExpDate,
+                          value: assignExperience.assignEndExpDate,
+                        }}
+                        onChange={(e) => {
+                          setAssignExperience({
+                            ...assignExperience,
+                            assignEndExpDate: e.value,
+                          });
+                          setnewstate(!newstate);
+                        }}
+                      />
+                      {errorsLog.endexpdate && (
+                        <div>{errorsLog.endexpdate}</div>
+                      )}
+                    </Grid>
+                  </>
+                ) : null}
+              </Grid>
+              <br />
+              <Grid container spacing={1}>
+                <Grid item md={3} xs={12} sm={4}>
+                  <FormControl fullWidth>
+                    <Typography>Mode Target</Typography>
+                    <Selects
+                      maxMenuHeight={250}
+                      options={modeOptiontar}
+                      value={{
+                        label: assignExperience.assignEndTar,
+                        value: assignExperience.assignEndTar,
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+
+                <Grid item md={3} xs={12} sm={4}>
+                  <FormControl fullWidth>
+                    <Typography>End Tar</Typography>
+                    <Selects
+                      maxMenuHeight={250}
+                      options={valueOpt}
+                      value={{
+                        label: assignExperience.assignEndTarvalue,
+                        value: assignExperience.assignEndTarvalue,
+                      }}
+                      onChange={(e) => {
+                        setAssignExperience({
+                          ...assignExperience,
+                          assignEndTarvalue: e.value,
+                        });
+                        setnewstate(!newstate);
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+
+                {assignExperience.assignEndTarvalue === "Yes" ? (
+                  <>
+                    <Grid item md={3} xs={12} sm={4}>
+                      <Typography>
+                        End Tar Date{" "}
+                        {assignExperience.assignEndTarvalue === "Yes" ? (
+                          <b style={{ color: "red" }}>*</b>
+                        ) : (
+                          ""
+                        )}
+                      </Typography>
+
+                      <Selects
+                        maxMenuHeight={250}
+                        menuPlacement="top"
+                        options={expDateOptions}
+                        styles={{
+                          menu: (provided) => ({
+                            ...provided,
+                            maxHeight: 200, // Adjust the max height of the menu base
+                          }),
+                          menuList: (provided) => ({
+                            ...provided,
+                            maxHeight: 200, // Adjust the max height of the menu option list
+                          }),
+                        }}
+                        value={{
+                          label: assignExperience.assignEndTarDate,
+                          value: assignExperience.assignEndTarDate,
+                        }}
+                        onChange={(e) => {
+                          setAssignExperience({
+                            ...assignExperience,
+                            assignEndTarDate: e.value,
+                          });
+                          setnewstate(!newstate);
+                        }}
+                      />
+                      {errorsLog.endtardate && (
+                        <div>{errorsLog.endtardate}</div>
+                      )}
+                    </Grid>
+                  </>
+                ) : null}
+              </Grid>
+              <br />
+            </Box>
+          </>
+        ) : (
+          <Box sx={userStyle.dialogbox}>
+            <>
+              <Grid container spacing={1}>
+                <Grid item md={5} xs={0} sm={4}>
+                  <Typography sx={userStyle.SubHeaderText}>
+                    Salary Setup{" "}
+                  </Typography>
+                </Grid>
+                <Grid item md={2} xs={0} sm={2} marginTop={1}>
+                  <Typography>Salary Options :</Typography>
+                </Grid>
+                <Grid item md={4} xs={12} sm={4}>
+                  <FormControl fullWidth>
+                    <Selects
+                      maxMenuHeight={250}
+                      options={salaryOptions}
+                      value={{
+                        label: salaryOption,
+                        value: salaryOption,
+                      }}
+                      onChange={(e) => {
+                        setSalaryOption(e.value);
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+              </Grid>
+              <br />
+              <Grid container spacing={2}>
+                <Grid item md={12} xs={12} sm={12}>
+                  {" "}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "70%",
+                        maxWidth: "800px",
+                      }}
+                    >
+                      <SalaryTable
+                        name={getingOlddatas.companyname || ""}
+                        salaryFixed={salaryTableData?.salaryfixed || false}
+                        salaryStatus={salaryTableData?.salarystatus || ""}
+                        expectedSalary={salaryTableData?.expectedsalary || ""}
+                        basic={Number(
+                          breakupDataManual?.find(
+                            (data) => data?.name === "Basic",
+                          )?.amount || 0,
+                        )}
+                        hra={Number(
+                          breakupDataManual?.find(
+                            (data) => data?.name === "HRA",
+                          )?.amount || 0,
+                        )}
+                        conveyance={Number(
+                          breakupDataManual?.find(
+                            (data) => data?.name === "Conveyance",
+                          )?.amount || 0,
+                        )}
+                        medicalallowance={Number(
+                          breakupDataManual?.find(
+                            (data) => data?.name === "Medical Allowance",
+                          )?.amount || 0,
+                        )}
+                        productionallowance={Number(
+                          breakupDataManual?.find(
+                            (data) => data?.name === "Production Allowance",
+                          )?.amount || 0,
+                        )}
+                        otherallowance={Number(
+                          breakupDataManual?.find(
+                            (data) => data?.name === "Special Allowance",
+                          )?.amount || 0,
+                        )}
+                        shiftallowance={Number(
+                          breakupDataManual?.find(
+                            (data) => data?.name === "Shift Allowance",
+                          )?.amount || 0,
+                        )}
+                        // basic={salaryTableDataManual?.basic || 0}
+                        // hra={salaryTableDataManual?.hra || 0}
+                        // conveyance={salaryTableDataManual?.conveyance || 0}
+                        // medicalallowance={salaryTableDataManual?.medicalallowance || 0}
+                        // productionallowance={salaryTableDataManual?.productionallowance || 0}
+                        // otherallowance={salaryTableDataManual?.otherallowance || 0}
+                        // shiftallowance={salaryTableDataManual?.shiftallowance || 0}
+
+                        performanceincentive={
+                          salaryTableDataManual?.performanceincentive || 0
+                        }
+                        grossmonthsalary={
+                          salaryTableDataManual?.grossmonthsalary || 0
+                        }
+                        annualgrossctc={
+                          salaryTableDataManual?.annualgrossctc || 0
+                        }
+                        onImageGenerated={(img) => setTableImageManual(img)}
+                        generateImage={true}
+                        salarysettings={boardingDetails?.salarysettings || []}
+                      />
+                    </div>
+                  </div>
+                </Grid>
+                <Grid item md={3} sm={6} xs={12}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Mode<b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <Selects
+                      styles={colourStyles}
+                      options={ModeOpt}
+                      value={{
+                        label: salarySetUpForm.mode,
+                        value: salarySetUpForm.mode,
+                      }}
+                      onChange={(e) => {
+                        setSalarysetupForm({
+                          ...salarySetUpForm,
+                          mode: e.value,
+                          salarycode: e.value == "Manual" ? "MANUAL" : "",
+                        });
+                        if (e.value === "Auto") {
+                          setIsActive(true);
+                          setFormValue({
+                            ...formValue,
+                            gross: "",
+                            basic: "",
+                            hra: "",
+                            conveyance: "",
+                            medicalallowance: "",
+                            productionallowance: "",
+                            productionallowancetwo: "",
+                            otherallowance: "",
+                          });
+                          setCtc("");
+                        } else {
+                          setIsActive(false);
+                        }
+                      }}
+                    />
+                  </FormControl>
+                </Grid>
+                <Grid
+                  item
+                  md={3}
+                  sm={6}
+                  xs={12}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography>
+                    Date<b style={{ color: "red" }}>*</b>
+                  </Typography>
+                  <FormControl fullWidth>
+                    <Selects
+                      maxMenuHeight={250}
+                      styles={{
+                        menu: (provided) => ({
+                          ...provided,
+                          maxHeight: 200, // Adjust the max height of the menu base
+                        }),
+                        menuList: (provided) => ({
+                          ...provided,
+                          maxHeight: 200, // Adjust the max height of the menu option list
+                        }),
+                      }}
+                      options={expDptDates
+                        .filter(
+                          (d) => d.department === boardingDetails?.department,
+                        )
+                        .map((item) => ({
+                          ...item,
+                          label: item.fromdate,
+                          value: item.fromdate,
+                        }))}
+                      value={{
+                        label: formValue.startDate ?? "Please Select Date",
+                        value: formValue.startDate ?? "Please Select Date",
+                      }}
+                      onChange={(e) => {
+                        const mondatefilter = e?.value?.split("-");
+                        const getmonth =
+                          mondatefilter[1] === "12"
+                            ? "December"
+                            : mondatefilter[1] === "11"
+                              ? "November"
+                              : mondatefilter[1] === "10"
+                                ? "October"
+                                : mondatefilter[1] === "09"
+                                  ? "September"
+                                  : mondatefilter[1] === "9"
+                                    ? "September"
+                                    : mondatefilter[1] === "08"
+                                      ? "August"
+                                      : mondatefilter[1] === "8"
+                                        ? "August"
+                                        : mondatefilter[1] === "07"
+                                          ? "July"
+                                          : mondatefilter[1] === "7"
+                                            ? "July"
+                                            : mondatefilter[1] === "06"
+                                              ? "June"
+                                              : mondatefilter[1] === "6"
+                                                ? "June"
+                                                : mondatefilter[1] === "05"
+                                                  ? "May"
+                                                  : mondatefilter[1] === "5"
+                                                    ? "May"
+                                                    : mondatefilter[1] === "04"
+                                                      ? "April"
+                                                      : mondatefilter[1] === "4"
+                                                        ? "April"
+                                                        : mondatefilter[1] ===
+                                                            "03"
+                                                          ? "March"
+                                                          : mondatefilter[1] ===
+                                                              "3"
+                                                            ? "March"
+                                                            : mondatefilter[1] ===
+                                                                "02"
+                                                              ? "February"
+                                                              : mondatefilter[1] ===
+                                                                  "2"
+                                                                ? "February"
+                                                                : mondatefilter[1] ===
+                                                                    "01"
+                                                                  ? "January"
+                                                                  : mondatefilter[1] ===
+                                                                      "1"
+                                                                    ? "January"
+                                                                    : "";
+                        setFormValue({
+                          ...formValue,
+                          startmonthlabel: getmonth,
+                          startmonth: mondatefilter[1],
+                          startyear: mondatefilter[0],
+                          startDate: e.value,
+                        });
+                      }}
+                    />
+                  </FormControl>
+                  {accessibleErrors.startdate && (
+                    <div>{accessibleErrors.startdate}</div>
+                  )}
+                </Grid>
+                <Grid item md={3} xs={12} sm={6}>
+                  {salarySetUpForm.mode === "Manual" ? (
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Salary Code <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter Salary Code"
+                        value={salarySetUpForm.salarycode}
+                      />
+                    </FormControl>
+                  ) : (
+                    <FormControl fullWidth size="small">
+                      <Typography>Salary Code</Typography>
+                      <Selects
+                        isDisabled
+                        options={salarySlabOpt
+                          .filter(
+                            (item) =>
+                              item.processqueue === loginNotAllot.process,
+                          )
+                          .map((sc) => ({
+                            ...sc,
+                            value: sc.salarycode,
+                            label: sc.salarycode,
+                          }))}
+                        value={{
+                          label: salarySetUpForm.salarycode,
+                          value: salarySetUpForm.salarycode,
+                        }}
+                        onChange={(e) => {
+                          setSalarysetupForm({
+                            ...salarySetUpForm,
+                            salarycode: e.value,
+                          });
+                          fetchProfessionalTax(e.process, e.value);
+                        }}
+                      />
+                    </FormControl>
+                  )}
+                </Grid>
+                {/* {salarySetUpForm.mode === "Manual" && ( */}
+                <>
+                  <Grid item md={3} sm={12} xs={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Start Month <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter Salary Code"
+                        value={formValue.startmonthlabel}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={3} sm={12} xs={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        {" "}
+                        Start Year <b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter Salary Code"
+                        value={formValue.startyear}
+                      />
+                    </FormControl>
+                  </Grid>
+                </>
+                <Grid item md={3} xs={12} sm={12}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Gross Salary <b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <OutlinedInput
+                      id="component-outlined"
+                      type="text"
+                      disabled={salarySetUpForm.mode === "Auto"}
+                      placeholder="Please Enter Gross"
+                      value={formValue.gross}
+                      onChange={handleChangeGross}
+                    />
+                  </FormControl>
+                  {salarySetUpForm.mode === "Manual" &&
+                    accessibleErrors.grosssalary && (
+                      <div>{accessibleErrors.grosssalary}</div>
+                    )}
+                </Grid>
+
+                {(boardingDetails?.salarysettings?.length
+                  ? boardingDetails.salarysettings
+                  : [
+                      "Basic",
+                      "HRA",
+                      "Conveyance",
+                      "Medical Allowance",
+                      "Production Allowance",
+                      "Production Allowance 2",
+                      "Shift Allowance",
+                      "Special Allowance",
+                    ]
+                ).map((name) => {
+                  const key =
+                    nameToKeyMap[name] ||
+                    name.toLowerCase().replace(/\s+/g, "");
+                  return (
+                    <Grid item md={3} xs={12} sm={12} key={name}>
+                      <FormControl fullWidth size="small">
+                        <Typography>{name}</Typography>
+                        <OutlinedInput
+                          type="text"
+                          disabled={salarySetUpForm.mode === "Auto"}
+                          readOnly
+                          placeholder={`Please Enter ${name}`}
+                          value={formValue[key] || ""}
+                        />
+                      </FormControl>
+                    </Grid>
+                  );
+                })}
+
+                <Grid item md={3} xs={12} sm={12}></Grid>
+                <Grid item md={3} xs={12} sm={12}>
+                  <FormControl
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Checkbox
+                      sx={{ height: "20", padding: "0  25px" }}
+                      checked={formValue.esideduction}
+                      disabled={salarySetUpForm.mode === "Auto"}
+                      onChange={(e) => {
+                        setFormValue({
+                          ...formValue,
+                          esideduction: e.target.checked,
+                        });
+                      }}
+                    />
+                    <Typography>ESI Deduction</Typography>
+                  </FormControl>
+                </Grid>
+                <Grid item md={3} xs={12} sm={12}>
+                  <FormControl
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Checkbox
+                      sx={{ height: "20", padding: "0  25px" }}
+                      checked={formValue.pfdeduction}
+                      disabled={salarySetUpForm.mode === "Auto"}
+                      onChange={(e) => {
+                        setFormValue({
+                          ...formValue,
+                          pfdeduction: e.target.checked,
+                        });
+                      }}
+                    />
+                    <Typography>PF Deduction</Typography>
+                  </FormControl>
+                </Grid>
+              </Grid>
+            </>
+          </Box>
+        )}
+        <br />
+        {salaryOption === "Experience Based" && (
+          <Box sx={userStyle.selectcontainer}>
+            <Typography sx={userStyle.SubHeaderText}>
+              {" "}
+              Process Allot <b style={{ color: "red" }}>*</b>
+            </Typography>
+            <br />
+            <br />
+
+            <Grid container spacing={2}>
+              <Grid item md={4} xs={12} sm={12}>
+                <Typography>
+                  Process <b style={{ color: "red" }}>*</b>
+                </Typography>
+                <FormControl fullWidth size="small">
+                  <Selects
+                    options={Array.from(
+                      new Set(
+                        ProcessOptions?.filter(
+                          (comp) => boardingDetails.team === comp.team,
+                        )?.map((com) => com.process),
+                      ),
+                    ).map((name) => ({
+                      label: name,
+                      value: name,
+                    }))}
                     value={{
-                      label: assignExperience.assignEndExpDate,
-                      value: assignExperience.assignEndExpDate,
+                      label: loginNotAllot.process,
+                      value: loginNotAllot.process,
                     }}
                     onChange={(e) => {
-                      setAssignExperience({
-                        ...assignExperience,
-                        assignEndExpDate: e.value,
+                      setLoginNotAllot({
+                        ...loginNotAllot,
+                        process: e.value,
+                      });
+                      setAssignExperience((prev) => ({
+                        ...prev,
+                        assignExpvalue: "0",
+                      }));
+                      setnewstate(!newstate);
+                    }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <Typography>
+                  Process Type <b style={{ color: "red" }}>*</b>
+                </Typography>
+                <FormControl fullWidth size="small">
+                  <Selects
+                    options={processTypes}
+                    value={{
+                      label: loginNotAllot?.processtype,
+                      value: loginNotAllot?.processtype,
+                    }}
+                    onChange={(e) => {
+                      setLoginNotAllot({
+                        ...loginNotAllot,
+                        processtype: e.value,
                       });
                       setnewstate(!newstate);
                     }}
                   />
-                  {errorsLog.endexpdate && <div>{errorsLog.endexpdate}</div>}
-                </Grid>
-              </>
-            ) : null}
-          </Grid>
-          <br />
-          <Grid container spacing={1}>
-            <Grid item md={3} xs={12} sm={4}>
-              <FormControl fullWidth>
-                <Typography>Mode Target</Typography>
-                <Selects
-                  maxMenuHeight={250}
-                  options={modeOptiontar}
-                  value={{
-                    label: assignExperience.assignEndTar,
-                    value: assignExperience.assignEndTar,
-                  }}
-                />
-              </FormControl>
-            </Grid>
-
-            <Grid item md={3} xs={12} sm={4}>
-              <FormControl fullWidth>
-                <Typography>End Tar</Typography>
-                <Selects
-                  maxMenuHeight={250}
-                  options={valueOpt}
-                  value={{
-                    label: assignExperience.assignEndTarvalue,
-                    value: assignExperience.assignEndTarvalue,
-                  }}
-                  onChange={(e) => {
-                    setAssignExperience({
-                      ...assignExperience,
-                      assignEndTarvalue: e.value,
-                    });
-                    setnewstate(!newstate);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-
-            {assignExperience.assignEndTarvalue === 'Yes' ? (
-              <>
-                <Grid item md={3} xs={12} sm={4}>
-                  <Typography>End Tar Date {assignExperience.assignEndTarvalue === 'Yes' ? <b style={{ color: 'red' }}>*</b> : ''}</Typography>
-
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <Typography>
+                  Process Duration <b style={{ color: "red" }}>*</b>
+                </Typography>
+                <FormControl fullWidth size="small">
                   <Selects
-                    maxMenuHeight={250}
-                    menuPlacement="top"
-                    options={expDateOptions}
-                    styles={{
-                      menu: (provided) => ({
-                        ...provided,
-                        maxHeight: 200, // Adjust the max height of the menu base
-                      }),
-                      menuList: (provided) => ({
-                        ...provided,
-                        maxHeight: 200, // Adjust the max height of the menu option list
-                      }),
-                    }}
+                    options={processDuration}
                     value={{
-                      label: assignExperience.assignEndTarDate,
-                      value: assignExperience.assignEndTarDate,
+                      label: loginNotAllot?.processduration,
+                      value: loginNotAllot?.processduration,
                     }}
                     onChange={(e) => {
-                      setAssignExperience({
-                        ...assignExperience,
-                        assignEndTarDate: e.value,
+                      setLoginNotAllot({
+                        ...loginNotAllot,
+                        processduration: e.value,
                       });
                       setnewstate(!newstate);
                     }}
                   />
-                  {errorsLog.endtardate && <div>{errorsLog.endtardate}</div>}
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={6}>
+                <Typography>
+                  Duration <b style={{ color: "red" }}>*</b>
+                </Typography>
+                <Grid container spacing={1}>
+                  <Grid item md={6} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Selects
+                        maxMenuHeight={300}
+                        options={hrsOption}
+                        placeholder="Hrs"
+                        value={{
+                          label: loginNotAllot.time,
+                          value: loginNotAllot.time,
+                        }}
+                        onChange={(e) => {
+                          setLoginNotAllot({
+                            ...loginNotAllot,
+                            time: e.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={6} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Selects
+                        maxMenuHeight={300}
+                        options={minsOption}
+                        placeholder="Mins"
+                        value={{
+                          label: loginNotAllot.timemins,
+                          value: loginNotAllot.timemins,
+                        }}
+                        onChange={(e) => {
+                          setLoginNotAllot({
+                            ...loginNotAllot,
+                            timemins: e.value,
+                          });
+                        }}
+                      />
+                    </FormControl>
+                  </Grid>
                 </Grid>
-              </>
-            ) : null}
-          </Grid>
-          <br />
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <FormControl fullWidth size="small">
+                  <Typography>Gross Salary</Typography>
+                  <OutlinedInput
+                    id="component-outlined"
+                    type="text"
+                    value={overallgrosstotal}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <FormControl fullWidth size="small">
+                  <Typography>Mode Experience</Typography>
+                  <OutlinedInput
+                    id="component-outlined"
+                    type="text"
+                    value={modeexperience}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <FormControl fullWidth size="small">
+                  <Typography>Target Experience</Typography>
+                  <OutlinedInput
+                    id="component-outlined"
+                    type="text"
+                    // placeholder="Please Enter IFSC Code"
+                    value={targetexperience}
+                    // onChange={(e) => {
+                    //   setEmployee({ ...employee, ifsccode: e.target.value });
+                    // }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item md={4} xs={12} sm={12}>
+                <FormControl fullWidth size="small">
+                  <Typography>Target Points</Typography>
+                  <OutlinedInput
+                    id="component-outlined"
+                    type="text"
+                    // placeholder="Please Enter IFSC Code"
+                    value={targetpts}
+                    // onChange={(e) => {
+                    //   setEmployee({ ...employee, ifsccode: e.target.value });
+                    // }}
+                  />
+                </FormControl>
+              </Grid>
+            </Grid>
+          </Box>
+        )}
+        <br />
+        <Box sx={userStyle.dialogbox}>
+          <Grid container spacing={1} marginTop={1}>
+            <Grid container spacing={1}>
+              <Grid item md={8} xs={0} sm={4}>
+                <Typography sx={userStyle.SubHeaderText}>
+                  {" "}
+                  Domain Mail Creation
+                </Typography>
+                {/* <p style={{ fontSize: 'small' }}>{`(Once an account is created, the "Create Account" checkbox cannot be unchecked.)`}</p> */}
+              </Grid>
+            </Grid>
+            <br />
+            <Grid container spacing={2}>
+              <Grid item md={12} xs={12} sm={12}>
+                <Grid container spacing={2}>
+                  <Grid item md={3} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>&nbsp;</Typography>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={boardingDetails?.createdomainemail}
+                            onChange={(e) => {
+                              setBoardingDetails((prev) => ({
+                                ...prev,
+                                createdomainemail: e.target.checked,
+                              }));
+                            }}
+                          />
+                        }
+                        label="Create Domain Email"
+                      />
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              </Grid>
+              <br />
+              <br />
+              {boardingDetails?.createdomainemail && (
+                <>
+                  <Grid item md={2.8} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        UserName<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        value={boardingDetails?.username}
+                        readOnly
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={2.8} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Password<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        type="password"
+                        value={boardingDetails?.originalpassword}
+                        readOnly
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid item md={2.8} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Name<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        value={boardingDetails?.companyname}
+                        readOnly
+                      />
+                    </FormControl>
+                  </Grid>
 
+                  <Grid item md={2.8} xs={12} sm={12}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Domain<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        value={boardingDetails?.companyemail}
+                        readOnly
+                        // onChange={(e) => {
+                        //   setMailDetails((prev) => ({
+                        //     ...prev, domain: e.target.value
+                        //   }))
+                        // }}
+                      />
+                    </FormControl>
+                  </Grid>
+                </>
+              )}
+            </Grid>
+          </Grid>
+        </Box>
+        <br />
+        <Box sx={userStyle.dialogbox}>
           <Grid container spacing={1} marginTop={1}>
             <Grid container spacing={1}>
               <Grid item md={8} xs={0} sm={4}>
                 <Typography sx={userStyle.SubHeaderText}>Connects</Typography>
-                <p style={{ fontSize: 'small' }}>{`(Once an account is created, the "Create Account" checkbox cannot be unchecked.)`}</p>
+                <p
+                  style={{ fontSize: "small" }}
+                >{`(Once an account is created, the "Create Account" checkbox cannot be unchecked.)`}</p>
               </Grid>
             </Grid>
             <br />
@@ -9278,11 +13725,15 @@ function EditMovietolive() {
                             create: e.target.checked,
                             roles: [
                               {
-                                label: 'user',
-                                value: 'user',
+                                label: "user",
+                                value: "user",
                               },
                             ],
-                            email: boardingDetails?.companyemail?.split(',')?.length > 0 ? boardingDetails?.companyemail?.split(',')[0] : '',
+                            email:
+                              boardingDetails?.companyemail?.split(",")
+                                ?.length > 0
+                                ? boardingDetails?.companyemail?.split(",")[0]
+                                : "",
                           }));
                         }}
                         disabled={!!boardingDetails?.rocketchatid}
@@ -9297,34 +13748,45 @@ function EditMovietolive() {
                   <Grid item md={4} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Email<b style={{ color: 'red' }}>*</b>
+                        Email<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <Selects
                         maxMenuHeight={250}
                         options={
-                          boardingDetails?.companyemail?.split(',')?.length > 0
-                            ? boardingDetails.companyemail?.split(',')?.map((data) => ({
-                              label: data,
-                              value: data,
-                            }))
+                          boardingDetails?.companyemail?.split(",")?.length > 0
+                            ? boardingDetails.companyemail
+                                ?.split(",")
+                                ?.map((data) => ({
+                                  label: data,
+                                  value: data,
+                                }))
                             : []
                         }
                         placeholder="Please Select Email"
                         value={{
-                          label: !createRocketChat?.email ? 'Please Select Email' : createRocketChat?.email,
-                          value: !createRocketChat?.email ? 'Please Select Email' : createRocketChat?.email,
+                          label: !createRocketChat?.email
+                            ? "Please Select Email"
+                            : createRocketChat?.email,
+                          value: !createRocketChat?.email
+                            ? "Please Select Email"
+                            : createRocketChat?.email,
                         }}
                         onChange={(e) => {
-                          setCreateRocketChat((prev) => ({ ...prev, email: e.value }));
+                          setCreateRocketChat((prev) => ({
+                            ...prev,
+                            email: e.value,
+                          }));
                         }}
                       />
-                      {errorsLog.rocketchatemail && <div>{errorsLog.rocketchatemail}</div>}
+                      {errorsLog.rocketchatemail && (
+                        <div>{errorsLog.rocketchatemail}</div>
+                      )}
                     </FormControl>
                   </Grid>
                   <Grid item md={4} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Role<b style={{ color: 'red' }}>*</b>
+                        Role<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <MultiSelect
                         options={rocketChatRolesOptions}
@@ -9335,7 +13797,9 @@ function EditMovietolive() {
                         valueRenderer={customValueRendererRocketchatRole}
                         labelledBy="Please Select Role"
                       />
-                      {errorsLog.rocketchatrole && <div>{errorsLog.rocketchatrole}</div>}
+                      {errorsLog.rocketchatrole && (
+                        <div>{errorsLog.rocketchatrole}</div>
+                      )}
                     </FormControl>
                   </Grid>
                 </>
@@ -9345,201 +13809,65 @@ function EditMovietolive() {
           <br />
         </Box>
         <br />
-        <HiConnectComponentCreate value={createHiConnect} setValue={setCreateHiConnect} employeeEmails={boardingDetails?.companyemail} errors={errorsLog} employee={boardingDetails} from="edit" />
+        <HiConnectComponentCreate
+          value={createHiConnect}
+          setValue={setCreateHiConnect}
+          employeeEmails={boardingDetails?.companyemail}
+          errors={errorsLog}
+          employee={boardingDetails}
+          from="edit"
+        />
         <br />
-        <Box sx={userStyle.selectcontainer}>
-          <Typography sx={userStyle.SubHeaderText}>
-            {' '}
-            Process Allot <b style={{ color: 'red' }}>*</b>
-          </Typography>
-          <br />
-          <br />
-
-          <Grid container spacing={2}>
-            <Grid item md={4} xs={12} sm={12}>
-              <Typography>
-                Process <b style={{ color: 'red' }}>*</b>
-              </Typography>
-              <FormControl fullWidth size="small">
-                <Selects
-                  options={Array.from(new Set(ProcessOptions?.filter((comp) => boardingDetails.team === comp.team)?.map((com) => com.process))).map((name) => ({
-                    label: name,
-                    value: name,
-                  }))}
-                  value={{
-                    label: loginNotAllot.process,
-                    value: loginNotAllot.process,
-                  }}
-                  onChange={(e) => {
-                    setLoginNotAllot({
-                      ...loginNotAllot,
-                      process: e.value,
-                    });
-                    setnewstate(!newstate);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item md={4} xs={12} sm={12}>
-              <Typography>
-                Process Type <b style={{ color: 'red' }}>*</b>
-              </Typography>
-              <FormControl fullWidth size="small">
-                <Selects
-                  options={processTypes}
-                  value={{
-                    label: loginNotAllot?.processtype,
-                    value: loginNotAllot?.processtype,
-                  }}
-                  onChange={(e) => {
-                    setLoginNotAllot({
-                      ...loginNotAllot,
-                      processtype: e.value,
-                    });
-                    setnewstate(!newstate);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item md={4} xs={12} sm={12}>
-              <Typography>
-                Process Duration <b style={{ color: 'red' }}>*</b>
-              </Typography>
-              <FormControl fullWidth size="small">
-                <Selects
-                  options={processDuration}
-                  value={{
-                    label: loginNotAllot?.processduration,
-                    value: loginNotAllot?.processduration,
-                  }}
-                  onChange={(e) => {
-                    setLoginNotAllot({
-                      ...loginNotAllot,
-                      processduration: e.value,
-                    });
-                    setnewstate(!newstate);
-                  }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item md={4} xs={12} sm={6}>
-              <Typography>
-                Duration <b style={{ color: 'red' }}>*</b>
-              </Typography>
-              <Grid container spacing={1}>
-                <Grid item md={6} xs={12} sm={6}>
-                  <FormControl fullWidth size="small">
-                    <Selects
-                      maxMenuHeight={300}
-                      options={hrsOption}
-                      placeholder="Hrs"
-                      value={{
-                        label: loginNotAllot.time,
-                        value: loginNotAllot.time,
-                      }}
-                      onChange={(e) => {
-                        setLoginNotAllot({
-                          ...loginNotAllot,
-                          time: e.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                </Grid>
-                <Grid item md={6} xs={12} sm={6}>
-                  <FormControl fullWidth size="small">
-                    <Selects
-                      maxMenuHeight={300}
-                      options={minsOption}
-                      placeholder="Mins"
-                      value={{
-                        label: loginNotAllot.timemins,
-                        value: loginNotAllot.timemins,
-                      }}
-                      onChange={(e) => {
-                        setLoginNotAllot({
-                          ...loginNotAllot,
-                          timemins: e.value,
-                        });
-                      }}
-                    />
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item md={4} xs={12} sm={12}>
-              <FormControl fullWidth size="small">
-                <Typography>Gross Salary</Typography>
-                <OutlinedInput id="component-outlined" type="text" value={overallgrosstotal} />
-              </FormControl>
-            </Grid>
-            <Grid item md={4} xs={12} sm={12}>
-              <FormControl fullWidth size="small">
-                <Typography>Mode Experience</Typography>
-                <OutlinedInput id="component-outlined" type="text" value={modeexperience} />
-              </FormControl>
-            </Grid>
-            <Grid item md={4} xs={12} sm={12}>
-              <FormControl fullWidth size="small">
-                <Typography>Target Experience</Typography>
-                <OutlinedInput
-                  id="component-outlined"
-                  type="text"
-                  // placeholder="Please Enter IFSC Code"
-                  value={targetexperience}
-                // onChange={(e) => {
-                //   setEmployee({ ...employee, ifsccode: e.target.value });
-                // }}
-                />
-              </FormControl>
-            </Grid>
-            <Grid item md={4} xs={12} sm={12}>
-              <FormControl fullWidth size="small">
-                <Typography>Target Points</Typography>
-                <OutlinedInput
-                  id="component-outlined"
-                  type="text"
-                  // placeholder="Please Enter IFSC Code"
-                  value={targetpts}
-                // onChange={(e) => {
-                //   setEmployee({ ...employee, ifsccode: e.target.value });
-                // }}
-                />
-              </FormControl>
-            </Grid>
-          </Grid>
-        </Box>
+        <LdapComponentCreate
+          value={createLdap}
+          setValue={setCreateLdap}
+          employeeEmails={boardingDetails?.companyemail}
+          errors={errorsLog}
+          employee={{ ...boardingDetails }}
+          from="edit"
+        />
+        <br />
         <br />
         {/* </Box><br /> */}
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            margin: '20px 0px',
+            display: "flex",
+            justifyContent: "space-between",
+            margin: "20px 0px",
           }}
         >
           <Box>
-            <Button className="prev" variant="contained" onClick={prevStep} sx={buttonStyles?.buttonsubmit}>
+            <Button
+              className="prev"
+              variant="contained"
+              onClick={prevStep}
+              sx={buttonStyles?.buttonsubmit}
+            >
               Previous
             </Button>
           </Box>
-          <Box sx={{ display: 'flex', gap: '10px' }}>
+          <Box sx={{ display: "flex", gap: "10px" }}>
             {/* <Button sx={userStyle.btncancel} onClick={(e)=>{handleDraftSubmit(e);}} > Draft </Button> */}
             {/* <Link to="/internlist"> */}
             <Button
               sx={buttonStyles.btncancel}
               onClick={(e) => {
-                handleOpenConfirmationPopup('cancel');
+                handleOpenConfirmationPopup("cancel");
               }}
             >
-              {' '}
-              Cancel{' '}
-            </Button> <Box>
-              <Button className="next" variant="contained" onClick={nextStepLog} sx={buttonStyles?.buttonsubmit}>
+              {" "}
+              Cancel{" "}
+            </Button>{" "}
+            <Box>
+              <Button
+                className="next"
+                variant="contained"
+                onClick={nextStepLog}
+                sx={buttonStyles?.buttonsubmit}
+              >
                 Next
               </Button>
             </Box>
-
             {/* </Link> */}
             {/* <LoadingButton
               onClick={(e) => {
@@ -9562,24 +13890,32 @@ function EditMovietolive() {
   const renderStepSeven = () => {
     return (
       <>
-        <Headtitle title={'INTERN MOVE TO LIVE'} />
+        <Headtitle title={"INTERN MOVE TO LIVE"} />
         <Grid container spacing={2}>
-          <Grid item md={1} xs={12} sm={12} container justifyContent={{ xs: 'center', md: 'flex-start' }} alignItems="center">
+          <Grid
+            item
+            md={1}
+            xs={12}
+            sm={12}
+            container
+            justifyContent={{ xs: "center", md: "flex-start" }}
+            alignItems="center"
+          >
             <Button
               className="prev"
               variant="contained"
               size="small"
               onClick={prevStep}
               sx={{
-                display: { xs: 'none', md: 'flex' }, // Hide on small screens, show on large screens
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '10px',
-                position: { xs: 'static', md: 'fixed' }, // Static for small screens, fixed for larger screens
-                left: { md: '10px' }, // Align left for large screens
-                top: { md: '50%' }, // Center vertically for large screens
-                transform: { md: 'translateY(-50%)' }, // Center transform for large screens
-                textTransform: 'capitalize',
+                display: { xs: "none", md: "flex" }, // Hide on small screens, show on large screens
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "10px",
+                position: { xs: "static", md: "fixed" }, // Static for small screens, fixed for larger screens
+                left: { md: "10px" }, // Align left for large screens
+                top: { md: "50%" }, // Center vertically for large screens
+                transform: { md: "translateY(-50%)" }, // Center transform for large screens
+                textTransform: "capitalize",
                 mt: { xs: 2, md: 0 }, // Margin top for small screens to add space
                 mb: { xs: 1, md: 0 }, // Margin bottom for small screens
                 ...buttonStyles?.buttonsubmit,
@@ -9593,14 +13929,25 @@ function EditMovietolive() {
             <Box sx={userStyle.dialogbox}>
               <Grid container spacing={1}>
                 <Grid item md={8} xs={0} sm={4}>
-                  <Typography sx={userStyle.SubHeaderText}>Biometric User Creation</Typography>
+                  <Typography sx={userStyle.SubHeaderText}>
+                    Biometric User Creation
+                  </Typography>
                 </Grid>
               </Grid>
               <br />
               <Grid item md={4} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>&nbsp;</Typography>
-                  <FormControlLabel control={<Checkbox checked={CheckedBiometric} disabled={BioPostCheckDevice ? true : false} onChange={(e) => setCheckedBiometric((prev) => !prev)} />} label="Create Biometric" />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={CheckedBiometric}
+                        disabled={BioPostCheckDevice ? true : false}
+                        onChange={(e) => setCheckedBiometric((prev) => !prev)}
+                      />
+                    }
+                    label="Create Biometric"
+                  />
                 </FormControl>
               </Grid>
               {CheckedBiometric && (
@@ -9608,7 +13955,7 @@ function EditMovietolive() {
                   <Grid item md={2.8} xs={12} sm={12}>
                     <FormControl fullWidth size="small">
                       <Typography>
-                        Device Name<b style={{ color: 'red' }}>*</b>
+                        Device Name<b style={{ color: "red" }}>*</b>
                       </Typography>
                       <Selects
                         options={BiometricDeviceOptions}
@@ -9620,7 +13967,11 @@ function EditMovietolive() {
                         onChange={(e) => {
                           setBiometricDevicename(e.value);
                           fetchBioInfoStatus(e.value);
-                        fetchBiometricUser(e.value, employee?.username, employee?.profileimage);
+                          fetchBiometricUser(
+                            e.value,
+                            employee?.username,
+                            employee?.profileimage,
+                          );
 
                           setBiometricId(0);
                           handleDeviceStatus(e?.value);
@@ -9632,22 +13983,33 @@ function EditMovietolive() {
                     {/* <Box display="flex" flexDirection="column" alignItems="center" gap={1}> */}
                     <Typography variant="subtitle1">Device Status</Typography>
                     <Box display="flex" gap={1}>
-                      <Typography variant="h6" sx={{ color: deviceOnlineStatus === 'Active' ? 'green' : 'red' }}>
-                        {deviceOnlineStatus === 'Active' ? 'Online' : 'Offline'}
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          color:
+                            deviceOnlineStatus === "Active" ? "green" : "red",
+                        }}
+                      >
+                        {deviceOnlineStatus === "Active" ? "Online" : "Offline"}
                       </Typography>
-                      <Switch checked={deviceOnlineStatus === 'Active'} color="success" disabled size="medium" />
+                      <Switch
+                        checked={deviceOnlineStatus === "Active"}
+                        color="success"
+                        disabled
+                        size="medium"
+                      />
                     </Box>
                     {/* </Box> */}
                   </Grid>
-                  {deviceOnlineStatus === 'Active' && (
+                  {deviceOnlineStatus === "Active" && (
                     <>
                       {BiometricId > 0 ? (
                         <Grid item md={2} xs={12} sm={12} mt={3}>
                           <CheckCircle
                             sx={{
-                              color: 'green',
+                              color: "green",
                               fontSize: 24,
-                              verticalAlign: 'middle',
+                              verticalAlign: "middle",
                             }}
                           />
                           <span style={{ marginLeft: 8 }}>Available</span>
@@ -9661,76 +14023,121 @@ function EditMovietolive() {
                             loading={loadingBiometric} // Disable button while loading
                             sx={{ minWidth: 140 }}
                           >
-                            {'Check Availability'}
+                            {"Check Availability"}
                           </LoadingButton>
                         </Grid>
                       )}
                       <Grid item md={2.8} xs={12} sm={12}>
                         <FormControl fullWidth size="small">
                           <Typography>Biometric User Id</Typography>
-                          <OutlinedInput type="text" value={BiometricId} readOnly />
+                          <OutlinedInput
+                            type="text"
+                            value={BiometricId}
+                            readOnly
+                          />
                         </FormControl>
                       </Grid>
                       <Grid item md={2.8} xs={12} sm={12}>
                         <FormControl fullWidth size="small">
                           <Typography>Biometric Username</Typography>
-                          <OutlinedInput value={getingOlddatas?.username} readOnly />
+                          <OutlinedInput
+                            value={getingOlddatas?.username}
+                            readOnly
+                          />
                         </FormControl>
                       </Grid>
 
                       {/* Upload Section (only show when documentFiles is null) */}
-                      {!documentFiles && ['Bio-Socket', 'Bowee']?.includes(deviceDetails?.brand) && (
-                        <Grid item xs={12} sm={12} md={3}>
-                          <FormControl fullWidth size="small">
-                            <Typography mb={1}>Upload Profile</Typography>
-                            <Button
-                              variant="contained"
-                              size="small"
-                              component="label"
-                              sx={{
-                                '@media only screen and (max-width:550px)': {
-                                  marginY: '5px',
-                                },
-                                ...buttonStyles.buttonsubmit,
-                              }}
-                            >
-                              Upload
-                              <input type="file" id="resume" accept=".png" name="file" hidden onChange={handleResumeUpload} />
-                            </Button>
-                          </FormControl>
-                        </Grid>
-                      )}
+                      {!documentFiles &&
+                        ["Bio-Socket", "Bowee"]?.includes(
+                          deviceDetails?.brand,
+                        ) && (
+                          <Grid item xs={12} sm={12} md={3}>
+                            <FormControl fullWidth size="small">
+                              <Typography mb={1}>Upload Profile</Typography>
+                              <Button
+                                variant="contained"
+                                size="small"
+                                component="label"
+                                sx={{
+                                  "@media only screen and (max-width:550px)": {
+                                    marginY: "5px",
+                                  },
+                                  ...buttonStyles.buttonsubmit,
+                                }}
+                              >
+                                Upload
+                                <input
+                                  type="file"
+                                  id="resume"
+                                  accept=".png"
+                                  name="file"
+                                  hidden
+                                  onChange={handleResumeUpload}
+                                />
+                              </Button>
+                            </FormControl>
+                          </Grid>
+                        )}
 
                       {/* Uploaded Document Section */}
-                      {documentFiles && ['Bio-Socket', 'Bowee']?.includes(deviceDetails?.brand) && (
-                        <Grid item xs={12} sm={12} md={3}>
-                          <Box textAlign="center">
-                            <img src={documentFiles.preview} alt="Uploaded" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: 4 }} />
-                            <Typography variant="body2" mt={1}>
-                              {documentFiles.name}
-                            </Typography>
-                            <Box display="flex" justifyContent="center" mt={1} gap={2}>
-                              <IconButton color="primary" onClick={() => window.open(documentFiles.preview, '_blank')}>
-                                <Visibility />
-                              </IconButton>
-                              <IconButton color="error" onClick={() => setdocumentFiles(null)}>
-                                <Delete />
-                              </IconButton>
+                      {documentFiles &&
+                        ["Bio-Socket", "Bowee"]?.includes(
+                          deviceDetails?.brand,
+                        ) && (
+                          <Grid item xs={12} sm={12} md={3}>
+                            <Box textAlign="center">
+                              <img
+                                src={documentFiles.preview}
+                                alt="Uploaded"
+                                style={{
+                                  width: "80px",
+                                  height: "80px",
+                                  objectFit: "cover",
+                                  borderRadius: 4,
+                                }}
+                              />
+                              <Typography variant="body2" mt={1}>
+                                {documentFiles.name}
+                              </Typography>
+                              <Box
+                                display="flex"
+                                justifyContent="center"
+                                mt={1}
+                                gap={2}
+                              >
+                                <IconButton
+                                  color="primary"
+                                  onClick={() =>
+                                    window.open(documentFiles.preview, "_blank")
+                                  }
+                                >
+                                  <Visibility />
+                                </IconButton>
+                                <IconButton
+                                  color="error"
+                                  onClick={() => setdocumentFiles(null)}
+                                >
+                                  <Delete />
+                                </IconButton>
+                              </Box>
                             </Box>
-                          </Box>
-                        </Grid>
-                      )}
+                          </Grid>
+                        )}
 
                       <Grid item md={2.8} xs={12} sm={12}>
                         <FormControl fullWidth size="small">
                           <Typography>
-                            Biometric Role<b style={{ color: 'red' }}>*</b>
+                            Biometric Role<b style={{ color: "red" }}>*</b>
                           </Typography>
                           <Selects
                             options={[
-                              { label: 'User', value: 'User' },
-                              { label: 'Manager', value: 'Manager' },
-                              { label: 'Administrator', value: 'Administrator' },
+                              { label: "User", value: "User" },
+                              { label: "Manager", value: "Manager" },
+                              {
+                                label: "Administrator",
+                                value: "Administrator",
+                              },
                             ]}
                             value={{
                               label: biometricrole,
@@ -9745,19 +14152,27 @@ function EditMovietolive() {
                       </Grid>
                       {addBiometricData ? (
                         <Grid item md={2.8} xs={12} sm={12} mt={3}>
-                          <LoadingButton variant="contained" disabled={BioEditUserCheck} onClick={(e) => handleBioEditOldData(e)}>
+                          <LoadingButton
+                            variant="contained"
+                            disabled={BioEditUserCheck}
+                            onClick={(e) => handleBioEditOldData(e)}
+                          >
                             Edit Older
                           </LoadingButton>
                         </Grid>
                       ) : (
                         <Grid item md={2.8} xs={12} sm={12} mt={3}>
-                          <LoadingButton variant="contained" disabled={BiometricPostDevice ? true : false} onClick={(e) => handleSubmitBioCheck(e)}>
+                          <LoadingButton
+                            variant="contained"
+                            disabled={BiometricPostDevice ? true : false}
+                            onClick={(e) => handleSubmitBioCheck(e)}
+                          >
                             Add to Biometric
                           </LoadingButton>
                         </Grid>
                       )}
 
-                      {deviceUserNameAddedList?.length > 0 &&
+                      {deviceUserNameAddedList?.length > 0 && (
                         <TableContainer component={Paper}>
                           <Typography variant="h6" sx={{ p: 2 }}>
                             Device User List
@@ -9765,10 +14180,18 @@ function EditMovietolive() {
                           <Table>
                             <TableHead>
                               <TableRow>
-                                <TableCell><b>Cloud ID</b></TableCell>
-                                <TableCell><b>Staff Name</b></TableCell>
-                                <TableCell><b>Biometric User ID</b></TableCell>
-                                <TableCell><b>Privilege</b></TableCell>
+                                <TableCell>
+                                  <b>Cloud ID</b>
+                                </TableCell>
+                                <TableCell>
+                                  <b>Staff Name</b>
+                                </TableCell>
+                                <TableCell>
+                                  <b>Biometric User ID</b>
+                                </TableCell>
+                                <TableCell>
+                                  <b>Privilege</b>
+                                </TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -9782,7 +14205,8 @@ function EditMovietolive() {
                               ))}
                             </TableBody>
                           </Table>
-                        </TableContainer>}
+                        </TableContainer>
+                      )}
                     </>
                   )}
                 </Grid>
@@ -9790,21 +14214,29 @@ function EditMovietolive() {
             </Box>
             <br />
           </Grid>
-          <Grid item md={1} xs={12} sm={12} container justifyContent={{ xs: 'center', md: 'flex-end' }} alignItems="center">
+          <Grid
+            item
+            md={1}
+            xs={12}
+            sm={12}
+            container
+            justifyContent={{ xs: "center", md: "flex-end" }}
+            alignItems="center"
+          >
             <Box
               sx={{
-                display: 'flex',
-                flexDirection: { xs: 'row', md: 'column' }, // Row for small screens, column for larger screens
-                justifyContent: { xs: 'center', md: 'flex-end' },
-                alignItems: 'center',
-                gap: '10px',
-                position: { xs: 'static', md: 'fixed' }, // Static for small screens, fixed for larger screens
-                bottom: { xs: 0, md: 'auto' }, // Align to bottom for small screens
-                right: { xs: 'auto', md: '10px' }, // Align right for large screens
-                top: { xs: 'auto', md: '50%' }, // Center vertically for large screens
-                transform: { xs: 'none', md: 'translateY(-50%)' }, // Center transform for large screens
-                width: 'auto',
-                padding: { xs: '0 5px', md: '0 10px' }, // Reduce padding for small screens
+                display: "flex",
+                flexDirection: { xs: "row", md: "column" }, // Row for small screens, column for larger screens
+                justifyContent: { xs: "center", md: "flex-end" },
+                alignItems: "center",
+                gap: "10px",
+                position: { xs: "static", md: "fixed" }, // Static for small screens, fixed for larger screens
+                bottom: { xs: 0, md: "auto" }, // Align to bottom for small screens
+                right: { xs: "auto", md: "10px" }, // Align right for large screens
+                top: { xs: "auto", md: "50%" }, // Center vertically for large screens
+                transform: { xs: "none", md: "translateY(-50%)" }, // Center transform for large screens
+                width: "auto",
+                padding: { xs: "0 5px", md: "0 10px" }, // Reduce padding for small screens
                 mb: { xs: 1, md: 0 }, // Margin bottom for small screens
               }}
             >
@@ -9827,15 +14259,15 @@ function EditMovietolive() {
                 //   handleButtonClick(e);
                 // }}
                 onClick={(e) => {
-                  handleOpenConfirmationPopup('submit');
+                  handleOpenConfirmationPopup("submit");
                 }}
                 loading={loading}
                 loadingPosition="start"
                 variant="contained"
                 size="small"
                 sx={{
-                  textTransform: 'capitalize',
-                  width: '73px',
+                  textTransform: "capitalize",
+                  width: "73px",
                   ...buttonStyles?.buttonsubmit,
                 }}
               >
@@ -9854,15 +14286,15 @@ function EditMovietolive() {
                 size="small"
                 sx={{
                   ...buttonStyles?.btncancel,
-                  textTransform: 'capitalize',
-                  width: '73px',
+                  textTransform: "capitalize",
+                  width: "73px",
                 }}
                 onClick={(e) => {
-                  handleOpenConfirmationPopup('cancel');
+                  handleOpenConfirmationPopup("cancel");
                 }}
               >
-                {' '}
-                Cancel{' '}
+                {" "}
+                Cancel{" "}
               </Button>
               {/* </Link> */}
             </Box>
@@ -9871,12 +14303,23 @@ function EditMovietolive() {
 
         {/* ALERT DIALOG */}
         <Box>
-          <Dialog open={isErrorOpen} onClose={handleCloseerr} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-            <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
+          <Dialog
+            open={isErrorOpen}
+            onClose={handleCloseerr}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+          >
+            <DialogContent
+              sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+            >
               <Typography variant="h6">{showAlert}</Typography>
             </DialogContent>
             <DialogActions>
-              <Button variant="contained" color="error" onClick={handleCloseerr}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleCloseerr}
+              >
                 ok
               </Button>
             </DialogActions>
@@ -9888,15 +14331,15 @@ function EditMovietolive() {
   const renderIndicator = () => {
     return (
       <ul className="indicatoremployee">
-        <li className={step === 1 ? 'active' : null}>
+        <li className={step === 1 ? "active" : null}>
           <FaArrowAltCircleRight />
           &ensp;Boarding Update
         </li>
-        <li className={step === 2 ? 'active' : null}>
+        <li className={step === 2 ? "active" : null}>
           <FaArrowAltCircleRight />
           &ensp; Assign Experience && Process Allot
         </li>
-        <li className={step === 3 ? 'active' : null}>
+        <li className={step === 3 ? "active" : null}>
           <FaArrowAltCircleRight />
           &ensp;Bx-Biometric
         </li>
@@ -9914,12 +14357,24 @@ function EditMovietolive() {
 
       {/* ALERT DIALOG */}
       <Box>
-        <Dialog open={isErrorOpen} onClose={handleCloseerr} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
+        <Dialog
+          open={isErrorOpen}
+          onClose={handleCloseerr}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
             <Typography variant="h6">{showAlert}</Typography>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="error" onClick={handleCloseerr} sx={buttonStyles?.buttonsubmit}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCloseerr}
+              sx={buttonStyles?.buttonsubmit}
+            >
               ok
             </Button>
           </DialogActions>
@@ -9928,16 +14383,24 @@ function EditMovietolive() {
 
       <Box>
         {/* edit model */}
-        <Dialog open={isEditOpen} onClose={handleCloseModEdit} fullWidth={true} maxWidth="lg" sx={{ marginTop: '50px' }}>
+        <Dialog
+          open={isEditOpen}
+          onClose={handleCloseModEdit}
+          fullWidth={true}
+          maxWidth="lg"
+          sx={{ marginTop: "50px" }}
+        >
           {/* <Box sx={userStyle.dialogbox}> */}
-          <Box sx={{ padding: '20px' }}>
-            <Typography sx={userStyle.HeaderText}>Employee Move to Live</Typography>
+          <Box sx={{ padding: "20px" }}>
+            <Typography sx={userStyle.HeaderText}>
+              Employee Move to Live
+            </Typography>
             <br />
             <Grid container spacing={2}>
               <Grid item md={2} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    <b>Company</b>{' '}
+                    <b>Company</b>{" "}
                   </Typography>
                   <Typography>{boardingDetails.company} </Typography>
                 </FormControl>
@@ -9945,7 +14408,7 @@ function EditMovietolive() {
               <Grid item md={2} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    <b>Branch</b>{' '}
+                    <b>Branch</b>{" "}
                   </Typography>
                   <Typography>{boardingDetails.branch} </Typography>
                 </FormControl>
@@ -9953,7 +14416,7 @@ function EditMovietolive() {
               <Grid item md={2} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    <b>Unit</b>{' '}
+                    <b>Unit</b>{" "}
                   </Typography>
                   <Typography>{boardingDetails.unit}</Typography>
                 </FormControl>
@@ -9961,7 +14424,7 @@ function EditMovietolive() {
               <Grid item md={2} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    <b>Team</b>{' '}
+                    <b>Team</b>{" "}
                   </Typography>
                   <Typography>{boardingDetails.team} </Typography>
                 </FormControl>
@@ -9969,7 +14432,7 @@ function EditMovietolive() {
               <Grid item md={2} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    <b>Department</b>{' '}
+                    <b>Department</b>{" "}
                   </Typography>
                   <Typography>{boardingDetails.department} </Typography>
                 </FormControl>
@@ -9977,7 +14440,7 @@ function EditMovietolive() {
               <Grid item md={2} xs={12} sm={12}>
                 <FormControl fullWidth size="small">
                   <Typography>
-                    <b>Designation</b>{' '}
+                    <b>Designation</b>{" "}
                   </Typography>
                   <Typography>{boardingDetails.designation} </Typography>
                 </FormControl>
@@ -9985,7 +14448,7 @@ function EditMovietolive() {
 
               <Grid item md={4} xs={12} sm={12}>
                 <Typography>
-                  Type<b style={{ color: 'red' }}>*</b>
+                  Type<b style={{ color: "red" }}>*</b>
                 </Typography>
                 <FormControl fullWidth size="small">
                   <Selects
@@ -9998,23 +14461,23 @@ function EditMovietolive() {
                       setEmployee({
                         ...employee,
                         type: e.value,
-                        salaryrange: 'Please Select Salary Range',
+                        salaryrange: "Please Select Salary Range",
                       });
                       setLoginNotAllot({
                         ...loginNotAllot,
-                        process: 'Please Select Process',
+                        process: "Please Select Process",
                       });
                     }}
                   />
                 </FormControl>
               </Grid>
-              {employee?.type === 'Amount Wise' && (
+              {employee?.type === "Amount Wise" && (
                 <>
                   <Grid item md={4} xs={12} sm={12}>
                     <Grid container spacing={2}>
                       <Grid item md={6} xs={6} sm={6}>
                         <Typography>
-                          Salary Range<b style={{ color: 'red' }}>*</b>
+                          Salary Range<b style={{ color: "red" }}>*</b>
                         </Typography>
                         <FormControl fullWidth size="small">
                           <Selects
@@ -10027,20 +14490,20 @@ function EditMovietolive() {
                               setEmployee({
                                 ...employee,
                                 salaryrange: e.value,
-                                from: '',
-                                to: '',
-                                amountvalue: '',
+                                from: "",
+                                to: "",
+                                amountvalue: "",
                               });
                             }}
                           />
                         </FormControl>
                       </Grid>
 
-                      {employee?.salaryrange === 'Between' ? (
+                      {employee?.salaryrange === "Between" ? (
                         <>
                           <Grid item md={3} xs={3} sm={3}>
                             <Typography>
-                              From<b style={{ color: 'red' }}>*</b>
+                              From<b style={{ color: "red" }}>*</b>
                             </Typography>
                             <FormControl fullWidth size="small">
                               <OutlinedInput
@@ -10060,7 +14523,7 @@ function EditMovietolive() {
 
                           <Grid item md={3} xs={3} sm={3}>
                             <Typography>
-                              To<b style={{ color: 'red' }}>*</b>
+                              To<b style={{ color: "red" }}>*</b>
                             </Typography>
                             <FormControl fullWidth size="small">
                               <OutlinedInput
@@ -10081,7 +14544,7 @@ function EditMovietolive() {
                       ) : (
                         <Grid item md={6} xs={6} sm={6}>
                           <Typography>
-                            Amount Value<b style={{ color: 'red' }}>*</b>
+                            Amount Value<b style={{ color: "red" }}>*</b>
                           </Typography>
                           <OutlinedInput
                             id="component-outlined"
@@ -10101,15 +14564,21 @@ function EditMovietolive() {
                   </Grid>
                 </>
               )}
-              {employee?.type === 'Process Wise' && (
+              {employee?.type === "Process Wise" && (
                 <>
                   <Grid item md={4} xs={12} sm={12}>
                     <Typography>
-                      Process<b style={{ color: 'red' }}>*</b>
+                      Process<b style={{ color: "red" }}>*</b>
                     </Typography>
                     <FormControl fullWidth size="small">
                       <Selects
-                        options={Array.from(new Set(ProcessOptions?.filter((comp) => boardingDetails.team === comp.team)?.map((com) => com.process))).map((name) => ({
+                        options={Array.from(
+                          new Set(
+                            ProcessOptions?.filter(
+                              (comp) => boardingDetails.team === comp.team,
+                            )?.map((com) => com.process),
+                          ),
+                        ).map((name) => ({
                           label: name,
                           value: name,
                         }))}
@@ -10132,7 +14601,11 @@ function EditMovietolive() {
             <br /> <br />
             <Grid container spacing={2}>
               <Grid item md={4} xs={4} sm={4}>
-                <Button variant="contained" onClick={handlesalary} sx={buttonStyles?.buttonsubmit}>
+                <Button
+                  variant="contained"
+                  onClick={handlesalary}
+                  sx={buttonStyles?.buttonsubmit}
+                >
                   Filter
                 </Button>
               </Grid>
@@ -10142,16 +14615,20 @@ function EditMovietolive() {
                 </Button>
               </Grid>
               <Grid item md={4} xs={4} sm={4}>
-                <Button variant="contained" color="error" onClick={handleCloseModEdit}>
-                  {' '}
-                  Close{' '}
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleCloseModEdit}
+                >
+                  {" "}
+                  Close{" "}
                 </Button>
               </Grid>
             </Grid>
           </Box>
           <br />
           <Divider></Divider>
-          <Box sx={{ padding: '20px' }}>
+          <Box sx={{ padding: "20px" }}>
             {/* ******************************************************EXPORT Buttons****************************************************** */}
             <Grid item xs={8}>
               <Typography sx={userStyle.importheadtext}>List</Typography>
@@ -10174,7 +14651,7 @@ function EditMovietolive() {
                       },
                     }}
                     onChange={handlePageSizeChange}
-                    sx={{ width: '77px' }}
+                    sx={{ width: "77px" }}
                   >
                     <MenuItem value={1}>1</MenuItem>
                     <MenuItem value={5}>5</MenuItem>
@@ -10191,7 +14668,12 @@ function EditMovietolive() {
                 <Box>
                   <FormControl fullWidth size="small">
                     <Typography>Search</Typography>
-                    <OutlinedInput id="component-outlined" type="text" value={searchQuery} onChange={handleSearchChange} />
+                    <OutlinedInput
+                      id="component-outlined"
+                      type="text"
+                      value={searchQuery}
+                      onChange={handleSearchChange}
+                    />
                   </FormControl>
                 </Box>
               </Grid>
@@ -10212,8 +14694,8 @@ function EditMovietolive() {
               anchorEl={anchorEl}
               onClose={handleCloseManageColumns}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: "bottom",
+                horizontal: "left",
               }}
             >
               {manageColumnsContent}
@@ -10222,22 +14704,35 @@ function EditMovietolive() {
             <br />
             {isArea ? (
               <>
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                  <ThreeDots height="80" width="80" radius="9" color="#1976d2" ariaLabel="three-dots-loading" wrapperStyle={{}} wrapperClassName="" visible={true} />
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <ThreeDots
+                    height="80"
+                    width="80"
+                    radius="9"
+                    color="#1976d2"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClassName=""
+                    visible={true}
+                  />
                 </Box>
               </>
             ) : (
               <>
                 <Box
                   style={{
-                    width: '100%',
-                    overflowY: 'hidden', // Hide the y-axis scrollbar
+                    width: "100%",
+                    overflowY: "hidden", // Hide the y-axis scrollbar
                   }}
                 >
                   <StyledDataGrid
-                    onClipboardCopy={(copiedString) => setCopiedData(copiedString)}
+                    onClipboardCopy={(copiedString) =>
+                      setCopiedData(copiedString)
+                    }
                     rows={rowsWithCheckboxes}
-                    columns={columnDataTable.filter((column) => columnVisibility[column.field])}
+                    columns={columnDataTable.filter(
+                      (column) => columnVisibility[column.field],
+                    )}
                     onSelectionModelChange={handleSelectionChange}
                     selectionModel={selectedRows}
                     autoHeight={true}
@@ -10250,25 +14745,50 @@ function EditMovietolive() {
                 </Box>
                 <Box style={userStyle.dataTablestyle}>
                   <Box>
-                    Showing {filteredData.length > 0 ? (page - 1) * pageSize + 1 : 0} to {Math.min(page * pageSize, filteredDatas.length)} of {filteredDatas.length} entries
+                    Showing{" "}
+                    {filteredData.length > 0 ? (page - 1) * pageSize + 1 : 0} to{" "}
+                    {Math.min(page * pageSize, filteredDatas.length)} of{" "}
+                    {filteredDatas.length} entries
                   </Box>
                   <Box>
-                    <Button onClick={() => setPage(1)} disabled={page === 1} sx={userStyle.paginationbtn}>
+                    <Button
+                      onClick={() => setPage(1)}
+                      disabled={page === 1}
+                      sx={userStyle.paginationbtn}
+                    >
                       <FirstPageIcon />
                     </Button>
-                    <Button onClick={() => handlePageChange(page - 1)} disabled={page === 1} sx={userStyle.paginationbtn}>
+                    <Button
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page === 1}
+                      sx={userStyle.paginationbtn}
+                    >
                       <NavigateBeforeIcon />
                     </Button>
                     {pageNumbers?.map((pageNumber) => (
-                      <Button key={pageNumber} sx={userStyle.paginationbtn} onClick={() => handlePageChange(pageNumber)} className={page === pageNumber ? 'active' : ''} disabled={page === pageNumber}>
+                      <Button
+                        key={pageNumber}
+                        sx={userStyle.paginationbtn}
+                        onClick={() => handlePageChange(pageNumber)}
+                        className={page === pageNumber ? "active" : ""}
+                        disabled={page === pageNumber}
+                      >
                         {pageNumber}
                       </Button>
                     ))}
                     {lastVisiblePage < totalPages && <span>...</span>}
-                    <Button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages} sx={userStyle.paginationbtn}>
+                    <Button
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page === totalPages}
+                      sx={userStyle.paginationbtn}
+                    >
                       <NavigateNextIcon />
                     </Button>
-                    <Button onClick={() => setPage(totalPages)} disabled={page === totalPages} sx={userStyle.paginationbtn}>
+                    <Button
+                      onClick={() => setPage(totalPages)}
+                      disabled={page === totalPages}
+                      sx={userStyle.paginationbtn}
+                    >
                       <LastPageIcon />
                     </Button>
                   </Box>
@@ -10278,37 +14798,99 @@ function EditMovietolive() {
           </Box>
         </Dialog>
       </Box>
-      <LoadingDialog open={openPopupUpload} onClose={() => setOpenPopupUpload(false)} progress={uploadProgress} />
+      <LoadingDialog
+        open={openPopupUpload}
+        onClose={() => setOpenPopupUpload(false)}
+        progress={uploadProgress}
+      />
       <ToastContainer />
       <LoadingBackdrop open={isLoading} />
       <Box>
-        <Dialog open={isErrorOpenNew} onClose={handleCloseerrNew} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-          <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
+        <Dialog
+          open={isErrorOpenNew}
+          onClose={handleCloseerrNew}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogContent
+            sx={{ width: "350px", textAlign: "center", alignItems: "center" }}
+          >
             <Typography variant="h6">{showAlertNew}</Typography>
           </DialogContent>
           <DialogActions>
-            <Button variant="contained" color="error" onClick={handleCloseerrNew} sx={buttonStyles?.buttonsubmit}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCloseerrNew}
+              sx={buttonStyles?.buttonsubmit}
+            >
               ok
             </Button>
           </DialogActions>
         </Dialog>
       </Box>
       {/* VALIDATION */}
-      <MessageAlert openPopup={openPopupMalert} handleClosePopup={handleClosePopupMalert} popupContent={popupContentMalert} popupSeverity={popupSeverityMalert} />
+      <MessageAlert
+        openPopup={openPopupMalert}
+        handleClosePopup={handleClosePopupMalert}
+        popupContent={popupContentMalert}
+        popupSeverity={popupSeverityMalert}
+      />
       {/* SUCCESS */}
-      <AlertDialog openPopup={openPopup} handleClosePopup={handleClosePopup} popupContent={popupContent} popupSeverity={popupSeverity} />
+      <AlertDialog
+        openPopup={openPopup}
+        handleClosePopup={handleClosePopup}
+        popupContent={popupContent}
+        popupSeverity={popupSeverity}
+      />
 
       <ConfirmationPopup
         open={popup.open}
         onClose={handleCloseConfirmationPopup}
         onConfirm={handleConfirm}
-        title={popup.action === 'submit' ? 'Are you sure? Do you want to Submit?' : popup.action === 'draft' ? 'Are you sure? Do you want to save as Draft?' : 'Are you sure? Do you want to Cancel?'}
-        description={popup.action === 'submit' ? 'This action will finalize and submit your data.' : popup.action === 'draft' ? 'This action will save your progress as a draft.' : 'This action will cancel your progress.'}
-        confirmButtonText={popup.action === 'submit' ? 'Submit' : popup.action === 'draft' ? 'Save Draft' : 'Yes'}
+        title={
+          popup.action === "submit"
+            ? "Are you sure? Do you want to Submit?"
+            : popup.action === "draft"
+              ? "Are you sure? Do you want to save as Draft?"
+              : "Are you sure? Do you want to Cancel?"
+        }
+        description={
+          popup.action === "submit"
+            ? "This action will finalize and submit your data."
+            : popup.action === "draft"
+              ? "This action will save your progress as a draft."
+              : "This action will cancel your progress."
+        }
+        confirmButtonText={
+          popup.action === "submit"
+            ? "Submit"
+            : popup.action === "draft"
+              ? "Save Draft"
+              : "Yes"
+        }
         cancelButtonText="No"
-        icon={popup.action === 'submit' ? 'success' : popup.action === 'draft' ? 'warning' : 'error'}
-        iconColor={popup.action === 'submit' ? 'green' : popup.action === 'draft' ? 'orange' : 'red'}
-        confirmButtonColor={popup.action === 'submit' ? 'success' : popup.action === 'draft' ? 'warning' : 'error'}
+        icon={
+          popup.action === "submit"
+            ? "success"
+            : popup.action === "draft"
+              ? "warning"
+              : "error"
+        }
+        iconColor={
+          popup.action === "submit"
+            ? "green"
+            : popup.action === "draft"
+              ? "orange"
+              : "red"
+        }
+        confirmButtonColor={
+          popup.action === "submit"
+            ? "success"
+            : popup.action === "draft"
+              ? "warning"
+              : "error"
+        }
       />
     </div>
   );

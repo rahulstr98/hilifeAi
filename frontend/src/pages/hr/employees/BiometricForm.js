@@ -199,7 +199,7 @@ const BiometricForm = ({
       } else if (device.brand === 'Bowee') {
         const [bowee, response] = await Promise.all([
           await axios.post(
-            SERVICE.BOWER_BIOMETRIC_NEW_USERID,
+            SERVICE.BOWER_BIOMETRIC_NEW_USERID_GLOBAL,
             { biometricdevicename: biometricdevicename },
             {
               headers: { Authorization: `Bearer ${auth.APIToken}` },
@@ -219,7 +219,7 @@ const BiometricForm = ({
         //     headers: { Authorization: `Bearer ${auth.APIToken}` }
 
         // });
-        let duplicateCheck = bowee?.data?.NewUserID;
+          let duplicateCheck = bowee?.data?.nextUserId;
 
         let duplicateCheckUser = response?.data?.individualuser;
         setBiometricId(duplicateCheck);
@@ -320,21 +320,23 @@ const BiometricForm = ({
       Photo: documentFiles?.data,
     };
     try {
-      const response = await axios.post(
-        SERVICE.BOWER_BIOMETRIC_NEW_USER_ADD,
+      // const response = await axios.post(
+      //   SERVICE.BOWER_BIOMETRIC_NEW_USER_ADD,
 
-        {
-          headers: { Authorization: `Bearer ${auth.APIToken}` },
-          PeopleJson: PeopleJson,
-          biometricdevicename: deviceDetails.biometricserialno,
-        }
-      );
-      if (response.data?.success) {
+      //   {
+      //     headers: { Authorization: `Bearer ${auth.APIToken}` },
+      //     PeopleJson: PeopleJson,
+      //     biometricdevicename: deviceDetails.biometricserialno,
+      //   }
+      // );
+      // if (response.data?.success) {
         let response = await axios.post(SERVICE.BIOMETRIC_USER_SINGLE_ADD, {
           headers: { Authorization: `Bearer ${auth.APIToken}` },
           biometricUserIDC: BiometricId,
           cloudIDC: deviceDetails.biometricserialno,
           dataupload: 'new',
+          datastatus:'create',
+          deviceBrand:deviceDetails.brand,
           downloadedFaceTemplateN: deviceDetails.brand === 'Bowee' && documentFiles?.data ? 1 : 0,
           downloadedFingerTemplateN: 0,
           fingerCountN: 0,
@@ -344,9 +346,10 @@ const BiometricForm = ({
           pwdc: '',
           staffNameC: enableLoginName ? String(third) : employee.username,
           companyname: employee.biometricname,
+          photoImage:documentFiles?.data
         });
         setCheckedBiometricAdded(true);
-      }
+      // }
       setPopupContentMalert('Biometric Data Added');
       setPopupSeverityMalert('success');
       handleClickOpenPopupMalert();

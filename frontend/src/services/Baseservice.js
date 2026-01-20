@@ -5624,7 +5624,7 @@ export const SERVICE = {
   ASSIGN_ELEVATOR_PORT_LIST: `${BASE_URL}/api/assignelevatorportlist`,
   OVERALL_BULK_ASSIGN_ELEVATOR_PORT_DELETE: `${BASE_URL}/api/overallbulkassignelevatorportdelete`,
   OVERALL_ASSIGN_ELEVATOR_PORT_DELETE: `${BASE_URL}/api/singleassignelevatorportdelete`,
-  FLOOR_WISE_USER_ACCESS_BIOMETRIC_DEVICE: `${BASE_URL}/api/biofloorwiseuseraccessbiometricdevice`,
+  FLOOR_WISE_USER_ACCESS_BIOMETRIC_DEVICE: `${BASE_URL}/api/floorwiseuseraccessbiometricdevice`,
 
 
 
