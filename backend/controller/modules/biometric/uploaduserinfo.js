@@ -47,22 +47,22 @@ exports.getNewUserIdGlobal = catchAsyncErrors(async (req, res, next) => {
       {
         $match: {
           cloudIDC: deviceName,
-          biometricUserIDC: { $regex: "^[0-9]+$" } // ensure numeric strings only
-        }
+          biometricUserIDC: { $regex: "^[0-9]+$" }, // ensure numeric strings only
+        },
       },
       {
         $project: {
-          numericUserId: { $toLong: "$biometricUserIDC" }
-        }
+          numericUserId: { $toLong: "$biometricUserIDC" },
+        },
       },
       {
         $group: {
           _id: null,
-          maxUserId: { $max: "$numericUserId" }
-        }
-      }
+          maxUserId: { $max: "$numericUserId" },
+        },
+      },
     ]);
-console.log(result , "result")
+    console.log(result, "result");
     const maxUserId = result.length > 0 ? result[0].maxUserId : 0;
 
     return res.status(200).json({
@@ -70,7 +70,6 @@ console.log(result , "result")
       maxUserId,
       nextUserId: maxUserId + 1, // optional
     });
-
   } catch (err) {
     return next(new ErrorHandler("Records not found!", 500));
   }
@@ -156,7 +155,7 @@ exports.getFilteredBiometricVisitorDetails = catchAsyncErrors(
     } catch (err) {
       return next(new ErrorHandler("Records not found!", 500));
     }
-  }
+  },
 );
 
 exports.getAllUserBioInfos = catchAsyncErrors(async (req, res, next) => {
@@ -170,7 +169,7 @@ exports.getAllUserBioInfos = catchAsyncErrors(async (req, res, next) => {
         cloudIDC: 1,
         biometricUserIDC: 1,
         privilegeC: 1,
-      }
+      },
     );
 
     return res.status(200).json({
@@ -186,7 +185,7 @@ exports.addFloorWiseUserAccessInBiometricDevice = catchAsyncErrors(
     try {
       const deviceDetails = req?.body?.user;
       const oldEditData = deviceDetails?.oldEditData;
-console.log("hitted")
+      console.log("hitted");
       /* -------------------- PARALLEL DB FETCH -------------------- */
       const [users, biometricDevices, elevatorPorts] = await Promise.all([
         User.find(
@@ -197,7 +196,7 @@ console.log("hitted")
             team: { $in: deviceDetails?.team },
             companyname: { $in: deviceDetails?.employeename },
           },
-          { _id: 0, username: 1 }
+          { _id: 0, username: 1 },
         ),
 
         BiometricDeviceManagement.find(
@@ -208,7 +207,7 @@ console.log("hitted")
             isElevator: true,
             brand: "Bowee",
           },
-          { _id: 0, biometricserialno: 1 }
+          { _id: 0, biometricserialno: 1 },
         ),
 
         AssignElevatorPort.find(
@@ -217,37 +216,42 @@ console.log("hitted")
             branch: deviceDetails?.devicebranch,
             floor: { $in: deviceDetails?.devicefloor },
           },
-          { _id: 0, elevatorPort: 1 }
+          { _id: 0, elevatorPort: 1 },
         ),
       ]);
 
-      console.log(users?.length ,biometricDevices?.length , elevatorPorts?.length);
-const usernames = users?.map(u => u.username)?.toString() || "";
-const devices = biometricDevices?.map(d => d.biometricserialnumber)?.toString() || "";
-const ports = elevatorPorts?.map(p => p.elevatorPort)?.toString() || "";
+      console.log(
+        users?.length,
+        biometricDevices?.length,
+        elevatorPorts?.length,
+      );
+      const usernames = users?.map((u) => u.username)?.toString() || "";
+      const devices =
+        biometricDevices?.map((d) => d.biometricserialno)?.toString() || "";
+      const ports = elevatorPorts?.map((p) => p.elevatorPort)?.toString() || "";
 
-const finalArray = usernames.flatMap(staffNameC =>
-  devices.map(cloudIDC => ({
-    staffNameC,
-    cloudIDC,
-    elevatorPorts: ports,
-  }))
-);
+      const finalArray = usernames.flatMap((staffNameC) =>
+        devices.map((cloudIDC) => ({
+          staffNameC,
+          cloudIDC,
+          elevatorPorts: ports,
+        })),
+      );
 
-if (finalArray.length > 0) {
-  const bulkOps = finalArray.map(({ staffNameC, cloudIDC, elevatorPorts }) => ({
-    updateOne: {
-      filter: { staffNameC, cloudIDC },
-      update: { $set: { elevatorPorts } },
-      upsert: false,
-    },
-  }));
+      if (finalArray.length > 0) {
+        const bulkOps = finalArray.map(
+          ({ staffNameC, cloudIDC, elevatorPorts }) => ({
+            updateOne: {
+              filter: { staffNameC, cloudIDC },
+              update: { $set: { elevatorPorts } },
+              upsert: false,
+            },
+          }),
+        );
 
-  const result = await Biouploaduserinfo.bulkWrite(bulkOps);
-  console.log("Updated elevatorPorts successfully:", result);
-}
-
-
+        const result = await Biouploaduserinfo.bulkWrite(bulkOps);
+        console.log("Updated elevatorPorts successfully:", result);
+      }
 
       // if (users?.length && biometricDevices?.length && elevatorPorts?.length) {
       //   const portString = elevatorPorts.map((p) => p.elevatorPort).join(",");
@@ -323,14 +327,14 @@ if (finalArray.length > 0) {
       console.error(err);
       return next(new ErrorHandler("Records not found!", 500));
     }
-  }
+  },
 );
 
 const EditBoweeFloorDetailsInBiometric = async (biodetails, userid) => {
-  console.log(biodetails, userid ,"Hitted")
+  console.log(biodetails, userid, "Hitted");
   const userDetails = await getUserDetailsFromBoweeDevice(
     userid,
-    biodetails.assignedip
+    biodetails.assignedip,
   );
   const URL = `${biodetails?.assignedip}${userDetails?.Photo}`;
 
@@ -346,7 +350,7 @@ const EditBoweeFloorDetailsInBiometric = async (biodetails, userid) => {
     const answer = await sendUserDetailsToDevice(
       PeopleJson,
       base64String,
-      biodetails.assignedip
+      biodetails.assignedip,
     );
     return answer; // ✅ Return here
   } else {
@@ -354,10 +358,10 @@ const EditBoweeFloorDetailsInBiometric = async (biodetails, userid) => {
   }
 };
 const DeleteBoweeFloorDetailsInBiometric = async (biodetails, userid) => {
-  console.log(biodetails, userid,"Hitted")
+  console.log(biodetails, userid, "Hitted");
   const userDetails = await getUserDetailsFromBoweeDevice(
     userid,
-    biodetails.assignedip
+    biodetails.assignedip,
   );
   const URL = `${biodetails?.assignedip}${userDetails?.Photo}`;
 
@@ -373,7 +377,7 @@ const DeleteBoweeFloorDetailsInBiometric = async (biodetails, userid) => {
     const answer = await sendUserDetailsToDevice(
       PeopleJson,
       base64String,
-      biodetails.assignedip
+      biodetails.assignedip,
     );
     return answer; // ✅ Return here
   } else {
@@ -393,13 +397,13 @@ exports.getAllUsersFromDeviceToDatabase = catchAsyncErrors(
         floor,
         area,
         biometricdevices,
-        "company, branch, unit, floor, area, biometricdevices"
+        "company, branch, unit, floor, area, biometricdevices",
       );
 
       // Step 1: Get Bowee devices
       const testing = await BiometricDeviceManagement.find(
         { brand: "Bowee", biometriccommonname: { $in: biometricdevices } },
-        { biometricassignedip: 1 }
+        { biometricassignedip: 1 },
       ).lean();
 
       const deviceUrls =
@@ -416,9 +420,8 @@ exports.getAllUsersFromDeviceToDatabase = catchAsyncErrors(
       }
 
       // Step 2: Fetch users & upload
-      const { totalUsers, uniqueUsers } = await userDetailsListFromBowee(
-        deviceUrls
-      );
+      const { totalUsers, uniqueUsers } =
+        await userDetailsListFromBowee(deviceUrls);
       if (uniqueUsers === 0) {
         return res.status(200).json({
           success: false,
@@ -437,7 +440,7 @@ exports.getAllUsersFromDeviceToDatabase = catchAsyncErrors(
     } catch (err) {
       return next(new ErrorHandler("Records not found!", 500));
     }
-  }
+  },
 );
 
 const userDetailsListFromBowee = async (urls) => {
@@ -485,16 +488,16 @@ const removeDuplicateLogsForUserAddition = async (logs) => {
     // 2. Build a lookup set
     const existingSet = new Set(
       existingLogs.map(
-        (log) => `${log.biometricUserIDC}_${log.cloudIDC}_${log.staffNameC}`
-      )
+        (log) => `${log.biometricUserIDC}_${log.cloudIDC}_${log.staffNameC}`,
+      ),
     );
 
     // 3. Filter only unique logs
     const uniqueLogs = logs.filter(
       (log) =>
         !existingSet.has(
-          `${log.biometricUserIDC}_${log.cloudIDC}_${log.staffNameC}`
-        )
+          `${log.biometricUserIDC}_${log.cloudIDC}_${log.staffNameC}`,
+        ),
     );
     // console.log(uniqueLogs, "uniqueLogs")
     return uniqueLogs;
@@ -568,7 +571,7 @@ exports.getBiometricVisitorDeletionDetails = catchAsyncErrors(
 
             if (!deviceIpAddress?.biometricassignedip) {
               console.log(
-                `⚠️ Device IP not found for serial: ${item?.cloudIDC}`
+                `⚠️ Device IP not found for serial: ${item?.cloudIDC}`,
               );
               continue; // skip this item
             }
@@ -579,7 +582,7 @@ exports.getBiometricVisitorDeletionDetails = catchAsyncErrors(
           } catch (err) {
             console.log(
               `❌ Delete failed for user ${item.biometricUserIDC}`,
-              err.message
+              err.message,
             );
           }
         }
@@ -594,7 +597,7 @@ exports.getBiometricVisitorDeletionDetails = catchAsyncErrors(
       console.log(err);
       return next(new ErrorHandler("Records not found!", 500));
     }
-  }
+  },
 );
 
 exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
@@ -637,7 +640,7 @@ exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
                 user,
                 user?.visitorCreatedDate,
                 user?.expirytime,
-                deviceURL
+                deviceURL,
               );
 
               return {
@@ -650,7 +653,7 @@ exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
               console.error(
                 "Device update failed for:",
                 user.staffNameC,
-                error
+                error,
               );
 
               return {
@@ -670,7 +673,7 @@ exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
                   startdate: user?.visitorCreatedDate,
                   expirytime: user?.expirytime,
                 },
-              }
+              },
             );
 
             return {
@@ -679,7 +682,7 @@ exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
               message: "Startdate/expiry updated",
             };
           }
-        })
+        }),
       );
 
       return res.status(200).json({
@@ -690,7 +693,7 @@ exports.getVisitorsEnableListDetailsById = catchAsyncErrors(
       console.log(err, "err");
       return next(new ErrorHandler("Records not found!", 500));
     }
-  }
+  },
 );
 
 function getUnixFromDateTime(dateStr, timeStr) {
@@ -729,7 +732,7 @@ exports.getVisitorsEnableListDetailsByIdGlobal = catchAsyncErrors(
   async (req, res, next) => {
     try {
       const { ids } = req.body;
-console.log(ids , "iDS")
+      console.log(ids, "iDS");
       if (!Array.isArray(ids) || !ids.length) {
         return res.status(400).json({
           success: false,
@@ -741,12 +744,12 @@ console.log(ids , "iDS")
       const users = await Biouploaduserinfo.find({
         _id: { $in: ids },
       });
-console.log(users?.length , "users")
+      console.log(users?.length, "users");
       // 🔹 Update each user
       const bulkOps = users.map((user) => {
         const expirationTime = getUnixFromDateTime(
           user.visitorCreatedDate, // YYYY-MM-DD
-          user.expirytime           // HH:mm / HH:mm:ss
+          user.expirytime, // HH:mm / HH:mm:ss
         );
 
         return {
@@ -756,8 +759,8 @@ console.log(users?.length , "users")
               $set: {
                 expirationTime, // ✅ unix seconds
                 startdate: user.visitorCreatedDate,
-                dataupload:"new",
-                isEnabledC:"Yes"
+                dataupload: "new",
+                isEnabledC: "Yes",
               },
             },
           },
@@ -776,9 +779,8 @@ console.log(users?.length , "users")
       console.error("Enable visitor error:", err);
       return next(new ErrorHandler("Records not found!", 500));
     }
-  }
+  },
 );
-
 
 cron.schedule("0 0 * * *", async () => {
   try {
@@ -828,7 +830,7 @@ async function runMidnightTask() {
             user,
             user.startdate,
             user.expirytime,
-            deviceURL
+            deviceURL,
           );
 
           return {
@@ -845,7 +847,7 @@ async function runMidnightTask() {
             error: error.message,
           };
         }
-      })
+      }),
     );
 
     // Return results for cron or manual call
@@ -896,11 +898,11 @@ const getCommandBoweeBiometricUserEdit = async (
   biometricDeviceManagement,
   expiryDate,
   expiryTime,
-  deviceURL
+  deviceURL,
 ) => {
   const userDetails = await getUserDetailsFromBoweeDevice(
     biometricDeviceManagement?.biometricUserIDC,
-    deviceURL
+    deviceURL,
   );
 
   if (!userDetails?.Photo) {
@@ -927,7 +929,7 @@ const getCommandBoweeBiometricUserEdit = async (
   // 🔁 Try up to 3 times
   for (let attempt = 1; attempt <= 3; attempt++) {
     console.log(
-      `Attempt ${attempt} to update device for user: ${PeopleJson.UserID}`
+      `Attempt ${attempt} to update device for user: ${PeopleJson.UserID}`,
     );
 
     answer = await sendUserDetailsToDevice(PeopleJson, base64String, deviceURL);
@@ -973,7 +975,7 @@ const getCommandBoweeBiometricUserEdit = async (
         isEnabledC: "Yes",
       },
     },
-    { new: true }
+    { new: true },
   );
 
   return answer;
@@ -981,12 +983,12 @@ const getCommandBoweeBiometricUserEdit = async (
 
 const getCommandBoweeBiometricUserDisable = async (
   biometricDeviceManagement,
-  deviceURL
+  deviceURL,
 ) => {
   // console.log("Hitted")
   const userDetails = await getUserDetailsFromBoweeDevice(
     biometricDeviceManagement?.biometricUserIDC,
-    deviceURL
+    deviceURL,
   );
   const URL = `${deviceURL}${userDetails?.Photo}`;
 
@@ -1004,7 +1006,7 @@ const getCommandBoweeBiometricUserDisable = async (
     const answer = await sendUserDetailsToDevice(
       PeopleJson,
       base64String,
-      deviceURL
+      deviceURL,
     );
     return answer; // ✅ Return here
   } else {

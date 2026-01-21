@@ -1061,7 +1061,6 @@ function BiometricDevicesPairing() {
       /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$/;
 
     if (
-      biometricDevicePairingEdit?.mode === "New" &&
       (biometricDevicePairingEdit.company === "Please Select Company" ||
         !biometricDevicePairingEdit.company)
     ) {
@@ -1069,7 +1068,6 @@ function BiometricDevicesPairing() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (
-      biometricDevicePairingEdit?.mode === "New" &&
       (biometricDevicePairingEdit.branch === "Please Select Branch" ||
         !biometricDevicePairingEdit.branch)
     ) {
@@ -1077,7 +1075,6 @@ function BiometricDevicesPairing() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (
-      biometricDevicePairingEdit?.mode === "New" &&
       (biometricDevicePairingEdit.unit === "Please Select Unit" ||
         !biometricDevicePairingEdit.unit)
     ) {
@@ -1085,7 +1082,6 @@ function BiometricDevicesPairing() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (
-      biometricDevicePairingEdit?.mode === "New" &&
       (biometricDevicePairingEdit.floor === "Please Select Floor" ||
         !biometricDevicePairingEdit.floor)
     ) {
@@ -1093,22 +1089,13 @@ function BiometricDevicesPairing() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (
-      biometricDevicePairingEdit?.mode === "New" &&
       (biometricDevicePairingEdit.area === "Please Select Area" ||
         !biometricDevicePairingEdit.area)
     ) {
       setPopupContentMalert("Please Select Area");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (
-      biometricDevicePairingEdit?.mode === "New" &&
-      (biometricDevicePairingEdit.brand === "Please Select Brand" ||
-        !biometricDevicePairingEdit.brand)
-    ) {
-      setPopupContentMalert("Please Select Brand");
-      setPopupSeverityMalert("warning");
-      handleClickOpenPopupMalert();
-    } else if (valuePairedDevicesEdit?.length === 0) {
+    }  else if (valuePairedDevicesEdit?.length === 0) {
       setPopupContentMalert("Please Select Paired Devices");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -1131,7 +1118,7 @@ function BiometricDevicesPairing() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
-      //   sendEditRequest();
+        sendEditRequest();
     }
   };
 
@@ -1844,8 +1831,8 @@ function BiometricDevicesPairing() {
                     </FormControl>
                   </Grid>
                 </>
-
-                <br />
+              </Grid>
+                              <br />
                 <Grid container spacing={2}>
                   <Grid item md={3} sm={12} xs={12}>
                     <Typography>&nbsp;</Typography>
@@ -1869,7 +1856,6 @@ function BiometricDevicesPairing() {
                     </Grid>
                   </Grid>
                 </Grid>
-              </Grid>
             </>
           </Box>
         </>

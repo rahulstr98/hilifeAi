@@ -117,8 +117,9 @@ const uploaduserinfoSchema = new Schema({
   cardNum: {
     type: String,
     required: false,
+    default: "0",
   },
-  elevatorAccess: {
+  elevatorPorts: {
     type: String,
     required: false,
   },

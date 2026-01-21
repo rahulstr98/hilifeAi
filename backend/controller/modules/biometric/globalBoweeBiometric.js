@@ -74,9 +74,9 @@ function formatUnixToDateTime(timestamp) {
   const pad = (n) => n.toString().padStart(2, "0");
 
   return `${pad(date.getDate())}-${pad(
-    date.getMonth() + 1
+    date.getMonth() + 1,
   )}-${date.getFullYear()} ${pad(date.getHours())}:${pad(
-    date.getMinutes()
+    date.getMinutes(),
   )}:${pad(date.getSeconds())}`;
 }
 
@@ -139,6 +139,73 @@ function updateUserDetailsInCollection(item, deviceSn) {
   };
 }
 
+function isPhotoPath(photoImage) {
+  if (!photoImage) return false;
+
+  // multer saved path usually starts like this
+  if (typeof photoImage === "string" && photoImage.startsWith("/uploads/")) {
+    return true; // ✅ it's a path
+  }
+
+  return false; // ❌ not a path (so base64 or something else)
+}
+
+function pathToBase64Only(photoPath) {
+  // photoPath example: /uploads/biometric/FC-8245H25047289/2.jpg
+
+  // Convert to absolute path (because fs needs full path)
+  const absolutePath = path.join(process.cwd(), photoPath);
+
+  // Read file buffer
+  const fileBuffer = fs.readFileSync(absolutePath);
+
+  // Convert buffer to base64 string
+  const base64Only = fileBuffer.toString("base64");
+
+  return base64Only; // ✅ same as base64Image.split("base64,")[1]
+}
+
+function buildPhotoFields(base64Image) {
+  if (!base64Image) {
+    return {
+      Photo: "",
+    };
+  }
+  const isPath = isPhotoPath(base64Image);
+  const cleanBase64 = base64Image.includes("base64,")
+    ? base64Image.split("base64,")[1]
+    : base64Image;
+
+  const buffer = Buffer.from(cleanBase64, "base64");
+
+  return {
+    Photo: isPath ? pathToBase64Only(base64Image) : cleanBase64, // ✅ RAW BASE64 ONLY
+  };
+}
+
+function buildUserDetails(users) {
+  return users.map((user) => {
+    console.log(user.photoImage ? true : false);
+    const photoFields = buildPhotoFields(user.photoImage, user?.photoPath);
+
+    return {
+      UserID: user.biometricUserIDC,
+      Code: user.biometricUserIDC,
+      Name: user.staffNameC,
+      AccessType: user.privilegeC === "User" ? 0 : 1,
+      ExpirationDate: user.expirationTime,
+      OpenTimes: user.isEnabledC === "Yes" ? 65535 : 0,
+      KeepOpen: 0,
+      Timegroup: 1,
+      Holidays: "",
+      Fingerprints: [],
+      Palmveins: [],
+      Elevators: user?.elevatorPorts ?? "",
+      CardNum: user?.cardNum,
+      ...photoFields,
+    };
+  });
+}
 /* ===================== CONTROLLERS ===================== */
 
 /**
@@ -150,6 +217,33 @@ exports.deviceKeepAlive = catchAsyncErrors(async (req, res, next) => {
   if (!deviceSn) {
     return res.status(400).json({ Success: 0, Message: "SN missing" });
   }
+
+  const now = new Date();
+
+  const formattedDate = now
+    .toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    })
+    .replace(",", ""); // "13-08-2025 17:14:38"
+
+  await Biouploaduserinfo.updateOne(
+    { cloudIDC: deviceSn }, // find by deviceSn
+    {
+      $set: {
+        lastOnlineTimeC: formattedDate,
+      },
+      $setOnInsert: {
+        cloudIDC: deviceSn, // insert only if new
+      },
+    },
+    { upsert: true },
+  );
 
   const command = await BoweeDeviceCommandQueue.findOne({
     deviceSn,
@@ -242,7 +336,7 @@ exports.uploadIdentifyRecord = [
   upload.any(),
   catchAsyncErrors(async (req, res, next) => {
     const recordFile = req.files?.find(
-      (f) => f.fieldname === "RecordDetail" || f.fieldname === "recordJson"
+      (f) => f.fieldname === "RecordDetail" || f.fieldname === "recordJson",
     );
 
     if (!recordFile?.buffer) {
@@ -267,72 +361,6 @@ exports.uploadIdentifyRecord = [
     return res.status(200).json({ Success: 0 });
   }),
 ];
-
-function isPhotoPath(photoImage) {
-  if (!photoImage) return false;
-
-  // multer saved path usually starts like this
-  if (typeof photoImage === "string" && photoImage.startsWith("/uploads/")) {
-    return true; // ✅ it's a path
-  }
-
-  return false; // ❌ not a path (so base64 or something else)
-}
-
-function pathToBase64Only(photoPath) {
-  // photoPath example: /uploads/biometric/FC-8245H25047289/2.jpg
-
-  // Convert to absolute path (because fs needs full path)
-  const absolutePath = path.join(process.cwd(), photoPath);
-
-  // Read file buffer
-  const fileBuffer = fs.readFileSync(absolutePath);
-
-  // Convert buffer to base64 string
-  const base64Only = fileBuffer.toString("base64");
-
-  return base64Only; // ✅ same as base64Image.split("base64,")[1]
-}
-
-function buildPhotoFields(base64Image) {
-  if (!base64Image) {
-    return {
-      Photo: "",
-    };
-  }
-  const isPath = isPhotoPath(base64Image);
-  const cleanBase64 = base64Image.includes("base64,")
-    ? base64Image.split("base64,")[1]
-    : base64Image;
-
-  const buffer = Buffer.from(cleanBase64, "base64");
-
-  return {
-    Photo: isPath ? pathToBase64Only(base64Image) : cleanBase64, // ✅ RAW BASE64 ONLY
-  };
-}
-
-function buildUserDetails(users) {
-  return users.map((user) => {
-    console.log(user.photoImage ? true : false);
-    const photoFields = buildPhotoFields(user.photoImage, user?.photoPath);
-
-    return {
-      UserID: user.biometricUserIDC,
-      Code: user.biometricUserIDC,
-      Name: user.staffNameC,
-      AccessType: user.privilegeC === "User" ? 0 : 1,
-      ExpirationDate: user.expirationTime,
-      OpenTimes: user.isEnabledC === "Yes" ? 65535 : 0,
-      KeepOpen: 0,
-      Timegroup: 1,
-      Holidays: "",
-      Fingerprints: [],
-      Palmveins: [],
-      ...photoFields,
-    };
-  });
-}
 
 exports.downloadPeopleList = async (req, res) => {
   const { SN, Limit } = req.body;
@@ -376,7 +404,7 @@ exports.downloadPeopleListResult = async (req, res) => {
       },
       {
         $set: { dataupload: "Sent" },
-      }
+      },
     );
   }
 
@@ -415,7 +443,7 @@ exports.pushPeople = [
       try {
         const decoded = await new Promise((resolve, reject) => {
           zlib.gunzip(detailFile.buffer, (err, buf) =>
-            err ? reject(err) : resolve(buf)
+            err ? reject(err) : resolve(buf),
           );
         });
 
@@ -481,7 +509,7 @@ exports.pushPeople = [
               createdAt: new Date(),
             },
           },
-          { new: true, upsert: true }
+          { new: true, upsert: true },
         );
 
         console.log("✏️ User updated / inserted:", userFilter.biometricUserIDC);
@@ -512,7 +540,7 @@ exports.pushPeople = [
               createdAt: new Date(),
             },
           },
-          { new: true, upsert: true }
+          { new: true, upsert: true },
         );
 
         console.log("🔍 QUERY processed:", userFilter.biometricUserIDC);
@@ -540,7 +568,7 @@ exports.pushPeople = [
   }),
 ];
 
-exports.DeletePeopleList =catchAsyncErrors( async (req, res, next) => {
+exports.DeletePeopleList = catchAsyncErrors(async (req, res, next) => {
   try {
     const { SN } = req.body;
     console.log("Hitted Delete People");
@@ -567,7 +595,7 @@ exports.DeletePeopleList =catchAsyncErrors( async (req, res, next) => {
 
     await Biouploaduserinfo.updateMany(
       { _id: { $in: recordDetails.map((d) => d._id?.toString()) } },
-      { $set: { dataupload: "deleted", status: "deleted" } }
+      { $set: { dataupload: "deleted", status: "deleted" } },
     );
 
     // 3️⃣ Continue delete cycle

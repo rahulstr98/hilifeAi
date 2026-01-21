@@ -1647,15 +1647,7 @@ function BiometricUsersGrouping() {
       setPopupContentMalert("Please Select Employee Names");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (
-      pairedDeviceGroupingCreate?.paireddeviceone ===
-        "Please Select First Device" ||
-      pairedDeviceGroupingCreate?.paireddeviceone === ""
-    ) {
-      setPopupContentMalert("Please Select Device Name!");
-      setPopupSeverityMalert("warning");
-      handleClickOpenPopupMalert();
-    } else if (
+    }  else if (
       pairedDeviceGroupingCreate?.companydevice === "Please Select Company" ||
       pairedDeviceGroupingCreate?.companydevice === ""
     ) {
@@ -1684,10 +1676,19 @@ function BiometricUsersGrouping() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (
-      pairedDeviceGroupingCreate?.areadevice === "Please Select Company" ||
+      pairedDeviceGroupingCreate?.areadevice === "Please Select Area" ||
       pairedDeviceGroupingCreate?.areadevice === ""
     ) {
       setPopupContentMalert("Please Select Device Area!");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    }
+    else if (
+      pairedDeviceGroupingCreate?.paireddeviceone ===
+        "Please Select First Device" ||
+      pairedDeviceGroupingCreate?.paireddeviceone === ""
+    ) {
+      setPopupContentMalert("Please Select Device Name!");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (Switches) {
@@ -1717,7 +1718,7 @@ function BiometricUsersGrouping() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (duplicate) {
-      setPopupContentMalert("Already this devices paired");
+      setPopupContentMalert("Already the user priority paired");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
@@ -1757,7 +1758,6 @@ function BiometricUsersGrouping() {
     setSelectedOptionsUnit([]);
     setValueTeamCat([]);
     setSelectedOptionsTeam([]);
-    setUsersGroupingArray([]);
     setPairedDeviceGroupingCreate({
       paireddeviceone: "Please Select First Device",
       paireddevicetwo: "",
@@ -2152,13 +2152,7 @@ function BiometricUsersGrouping() {
       setPopupContentMalert("Please Select Employee Names");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (
-      pairedDeviceGroupingEdit.paireddeviceone === "Please Select First Device"
-    ) {
-      setPopupContentMalert("Please Select Device 1");
-      setPopupSeverityMalert("warning");
-      handleClickOpenPopupMalert();
-    } else if (
+    }  else if (
       pairedDeviceGroupingEdit?.companydevice === "Please Select Company" ||
       pairedDeviceGroupingEdit?.companydevice === ""
     ) {
@@ -2187,13 +2181,21 @@ function BiometricUsersGrouping() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (
-      pairedDeviceGroupingEdit?.areadevice === "Please Select Company" ||
+      pairedDeviceGroupingEdit?.areadevice === "Please Select Area" ||
       pairedDeviceGroupingEdit?.areadevice === ""
     ) {
       setPopupContentMalert("Please Select Device Area!");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (Switches) {
+    } 
+    else if (
+      pairedDeviceGroupingEdit.paireddeviceone === "Please Select First Device"
+    ) {
+      setPopupContentMalert("Please Select Device 1");
+      setPopupSeverityMalert("warning");
+      handleClickOpenPopupMalert();
+    }
+    else if (Switches) {
       setPopupContentMalert("Please Select Any of the Switches");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -2220,7 +2222,7 @@ function BiometricUsersGrouping() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else if (duplicate) {
-      setPopupContentMalert("Already this devices paired");
+       setPopupContentMalert("Already the user priority paired");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
@@ -3566,6 +3568,7 @@ function BiometricUsersGrouping() {
                   <br />
                 </Grid>
               </>
+               </Grid>
               <Grid container spacing={1}>
                 <Grid item md={3} xs={12} sm={6}>
                   <FormControl fullWidth size="small">
@@ -3839,7 +3842,7 @@ function BiometricUsersGrouping() {
                               onChange={(e) => {
                                 setTimeIntHourMinSecFirst((prev) => ({
                                   ...prev,
-                                  hour: e.target.value,
+                                  hour: e?.value,
                                 }));
                               }}
                             />{" "}
@@ -3872,7 +3875,7 @@ function BiometricUsersGrouping() {
                               onChange={(e) => {
                                 setTimeIntHourMinSecFirst((prev) => ({
                                   ...prev,
-                                  min: e.target.value,
+                                  min: e?.value,
                                 }));
                               }}
                             />
@@ -3881,7 +3884,7 @@ function BiometricUsersGrouping() {
                                         onChange={(e) =>
                                           setTimeIntHourMinSecFirst((prev) => ({
                                             ...prev,
-                                            min: e.target.value,
+                                            min: e?.value,
                                           }))
                                         }
                                       >
@@ -3923,7 +3926,7 @@ function BiometricUsersGrouping() {
                               onChange={(e) => {
                                 setTimeIntHourMinSecFirst((prev) => ({
                                   ...prev,
-                                  second: e.target.value,
+                                  second: e?.value,
                                 }));
                               }}
                             />
@@ -3932,7 +3935,7 @@ function BiometricUsersGrouping() {
                                         onChange={(e) =>
                                           setTimeIntHourMinSecFirst((prev) => ({
                                             ...prev,
-                                            second: e.target.value,
+                                            second: e?.value,
                                           }))
                                         }
                                       >
@@ -4207,7 +4210,7 @@ function BiometricUsersGrouping() {
                                   onChange={(e) => {
                                     setTimeIntHourMinSecSecond((prev) => ({
                                       ...prev,
-                                      hour: e.target.value,
+                                      hour: e?.value,
                                     }));
                                   }}
                                 />
@@ -4216,7 +4219,7 @@ function BiometricUsersGrouping() {
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
                                         ...prev,
-                                        hour: e.target.value,
+                                        hour: e?.value,
                                       }))
                                     }
                                   >
@@ -4258,7 +4261,7 @@ function BiometricUsersGrouping() {
                                   onChange={(e) => {
                                     setTimeIntHourMinSecSecond((prev) => ({
                                       ...prev,
-                                      min: e.target.value,
+                                      min: e?.value,
                                     }));
                                   }}
                                 />
@@ -4267,7 +4270,7 @@ function BiometricUsersGrouping() {
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
                                         ...prev,
-                                        min: e.target.value,
+                                        min: e?.value,
                                       }))
                                     }
                                   >
@@ -4309,7 +4312,7 @@ function BiometricUsersGrouping() {
                                   onChange={(e) => {
                                     setTimeIntHourMinSecSecond((prev) => ({
                                       ...prev,
-                                      second: e.target.value,
+                                      second: e?.value,
                                     }));
                                   }}
                                 />
@@ -4318,7 +4321,7 @@ function BiometricUsersGrouping() {
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
                                         ...prev,
-                                        second: e.target.value,
+                                        second: e?.value,
                                       }))
                                     }
                                   >
@@ -4372,7 +4375,7 @@ function BiometricUsersGrouping() {
               <br />
               <br />
               <br />
-            </Grid>
+           
           </>
         </Box>
       )}
@@ -5707,7 +5710,7 @@ function BiometricUsersGrouping() {
                                 onChange={(e) => {
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    hour: e.target.value,
+                                    hour: e?.value,
                                   }));
                                 }}
                               />
@@ -5716,7 +5719,7 @@ function BiometricUsersGrouping() {
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    hour: e.target.value,
+                                    hour: e?.value,
                                   }))
                                 }
                               >
@@ -5758,7 +5761,7 @@ function BiometricUsersGrouping() {
                                 onChange={(e) => {
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    min: e.target.value,
+                                    min: e?.value,
                                   }));
                                 }}
                               />
@@ -5767,7 +5770,7 @@ function BiometricUsersGrouping() {
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    min: e.target.value,
+                                    min: e?.value,
                                   }))
                                 }
                               >
@@ -5809,7 +5812,7 @@ function BiometricUsersGrouping() {
                                 onChange={(e) => {
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    second: e.target.value,
+                                    second: e?.value,
                                   }));
                                 }}
                               />
@@ -5818,7 +5821,7 @@ function BiometricUsersGrouping() {
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    second: e.target.value,
+                                    second: e?.value,
                                   }))
                                 }
                               >
@@ -6117,7 +6120,7 @@ function BiometricUsersGrouping() {
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          hour: e.target.value,
+                                          hour: e?.value,
                                         })
                                       );
                                     }}
@@ -6128,7 +6131,7 @@ function BiometricUsersGrouping() {
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          hour: e.target.value,
+                                          hour: e?.value,
                                         })
                                       )
                                     }
@@ -6172,7 +6175,7 @@ function BiometricUsersGrouping() {
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          min: e.target.value,
+                                          min: e?.value,
                                         })
                                       );
                                     }}
@@ -6183,7 +6186,7 @@ function BiometricUsersGrouping() {
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          min: e.target.value,
+                                          min: e?.value,
                                         })
                                       )
                                     }
@@ -6227,7 +6230,7 @@ function BiometricUsersGrouping() {
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          second: e.target.value,
+                                          second: e?.value,
                                         })
                                       );
                                     }}
@@ -6238,7 +6241,7 @@ function BiometricUsersGrouping() {
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          second: e.target.value,
+                                          second: e?.value,
                                         })
                                       )
                                     }

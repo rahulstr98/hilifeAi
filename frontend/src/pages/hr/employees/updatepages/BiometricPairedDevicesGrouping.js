@@ -73,10 +73,10 @@ function BiometricPairedDevicesGrouping() {
   const [timeIntervalOne, setTimeIntervalOne] = useState(false);
   const [timeIntervalOneEdit, setTimeIntervalOneEdit] = useState(false);
   const hours = Array.from({ length: 24 }, (_, i) =>
-    String(i).padStart(2, "0")
+    String(i).padStart(2, "0"),
   );
   const minutesSeconds = Array.from({ length: 60 }, (_, i) =>
-    String(i).padStart(2, "0")
+    String(i).padStart(2, "0"),
   );
   const [timeIntervalTwo, setTimeIntervalTwo] = useState(false);
   const [timeIntervalTwoEdit, setTimeIntervalTwoEdit] = useState(false);
@@ -197,12 +197,12 @@ function BiometricPairedDevicesGrouping() {
     // FIRST group rules
     if (AttendanceInSwitchFirst) {
       return !["AttendanceInSwitchFirst", "AttendanceOutSwitchSecond"].includes(
-        switchName
+        switchName,
       );
     }
     if (AttendanceOutSwitchFirst) {
       return !["AttendanceOutSwitchFirst", "AttendanceInSwitchSecond"].includes(
-        switchName
+        switchName,
       );
     }
     if (AttendanceInOutSwitchFirst) {
@@ -212,12 +212,12 @@ function BiometricPairedDevicesGrouping() {
     // SECOND group rules
     if (AttendanceInSwitchSecond) {
       return !["AttendanceInSwitchSecond", "AttendanceOutSwitchFirst"].includes(
-        switchName
+        switchName,
       );
     }
     if (AttendanceOutSwitchSecond) {
       return !["AttendanceOutSwitchSecond", "AttendanceInSwitchFirst"].includes(
-        switchName
+        switchName,
       );
     }
     if (AttendanceInOutSwitchSecond) {
@@ -279,12 +279,12 @@ function BiometricPairedDevicesGrouping() {
     // FIRST group rules
     if (VisitorInSwitchFirst) {
       return !["VisitorInSwitchFirst", "VisitorOutSwitchSecond"].includes(
-        switchName
+        switchName,
       );
     }
     if (VisitorOutSwitchFirst) {
       return !["VisitorOutSwitchFirst", "VisitorInSwitchSecond"].includes(
-        switchName
+        switchName,
       );
     }
     if (VisitorInOutSwitchFirst) {
@@ -294,12 +294,12 @@ function BiometricPairedDevicesGrouping() {
     // SECOND group rules
     if (VisitorInSwitchSecond) {
       return !["VisitorInSwitchSecond", "VisitorOutSwitchFirst"].includes(
-        switchName
+        switchName,
       );
     }
     if (VisitorOutSwitchSecond) {
       return !["VisitorOutSwitchSecond", "VisitorInSwitchFirst"].includes(
-        switchName
+        switchName,
       );
     }
     if (VisitorInOutSwitchSecond) {
@@ -422,12 +422,12 @@ function BiometricPairedDevicesGrouping() {
     // FIRST group rules
     if (ExitInSwitchFirstEdit) {
       return !["ExitInSwitchFirstEdit", "ExitOutSwitchSecondEdit"].includes(
-        switchName
+        switchName,
       );
     }
     if (ExitOutSwitchFirstEdit) {
       return !["ExitOutSwitchFirstEdit", "ExitInSwitchSecondEdit"].includes(
-        switchName
+        switchName,
       );
     }
     if (ExitInOutSwitchFirstEdit) {
@@ -437,12 +437,12 @@ function BiometricPairedDevicesGrouping() {
     // SECOND group rules
     if (ExitInSwitchSecondEdit) {
       return !["ExitInSwitchSecondEdit", "ExitOutSwitchFirstEdit"].includes(
-        switchName
+        switchName,
       );
     }
     if (ExitOutSwitchSecondEdit) {
       return !["ExitOutSwitchSecondEdit", "ExitInSwitchFirstEdit"].includes(
-        switchName
+        switchName,
       );
     }
     if (ExitInOutSwitchSecondEdit) {
@@ -656,8 +656,8 @@ function BiometricPairedDevicesGrouping() {
       (access) =>
         access.company === area.company &&
         access.branch === area.branch &&
-        access.unit === area.unit
-    )
+        access.unit === area.unit,
+    ),
   );
 
   const { auth } = useContext(AuthContext);
@@ -691,7 +691,7 @@ function BiometricPairedDevicesGrouping() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-        }
+        },
       );
       console.log(response?.data, "response?.data");
       const answer =
@@ -725,7 +725,7 @@ function BiometricPairedDevicesGrouping() {
                 timeintervalTwo: item.timeintervalTwo?.toString(),
                 timeOne: `${item?.hourOne}:${item?.minOne}:${item?.secOne}`,
                 timeTwo: `${item?.hourTwo}:${item?.minTwo}:${item?.secTwo}`,
-              })
+              }),
             )
           : [];
       setLoader(false);
@@ -737,7 +737,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -763,7 +763,7 @@ function BiometricPairedDevicesGrouping() {
           unit: biometric?.unit,
           floor: biometric?.floor,
           area: area,
-        }
+        },
       );
       console.log(response?.data, "response?.data");
       const answer =
@@ -775,7 +775,7 @@ function BiometricPairedDevicesGrouping() {
                 pairedid: data?._id,
                 isVisitor:
                   index === 0 ? data?.isVisitorOne : data?.isVisitorTwo,
-              }))
+              })),
             )
           : [];
 
@@ -786,7 +786,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -804,7 +804,7 @@ function BiometricPairedDevicesGrouping() {
           unit: biometric?.unit,
           floor: biometric?.floor,
           area: area,
-        }
+        },
       );
       const answer =
         response?.data?.biodevices?.length > 0
@@ -815,7 +815,7 @@ function BiometricPairedDevicesGrouping() {
                 pairedid: data?._id,
                 isVisitor:
                   index === 0 ? data?.isVisitorOne : data?.isVisitorTwo,
-              }))
+              })),
             )
           : [];
       console.log(response?.data, answer, "response?.data");
@@ -825,7 +825,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -836,13 +836,13 @@ function BiometricPairedDevicesGrouping() {
     setValuePairedDevices(
       options.map((a, index) => {
         return a.value;
-      })
+      }),
     );
     setSelectedPairedDeviceOptions(options);
   };
   const customValueRendererPairedDevice = (
     valuePairedDevices,
-    _categoryname
+    _categoryname,
   ) => {
     return valuePairedDevices?.length
       ? valuePairedDevices.map(({ label }) => label)?.join(", ")
@@ -856,13 +856,13 @@ function BiometricPairedDevicesGrouping() {
     setValuePairedDevicesEdit(
       options.map((a, index) => {
         return a.value;
-      })
+      }),
     );
     setSelectedPairedDeviceOptionsEdit(options);
   };
   const customValueRendererPairedDeviceEdit = (
     valuePairedDevices,
-    _categoryname
+    _categoryname,
   ) => {
     return valuePairedDevices?.length
       ? valuePairedDevices.map(({ label }) => label)?.join(", ")
@@ -993,7 +993,7 @@ function BiometricPairedDevicesGrouping() {
   };
 
   const [columnVisibility, setColumnVisibility] = useState(
-    initialColumnVisibility
+    initialColumnVisibility,
   );
 
   // page refersh reload code
@@ -1013,7 +1013,7 @@ function BiometricPairedDevicesGrouping() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-        }
+        },
       );
       console.log(res?.data, "biometricpaireddevicesgrouping");
       setDeleteSource(res?.data?.sbiometricpaireddevicesgrouping);
@@ -1023,7 +1023,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1039,7 +1039,7 @@ function BiometricPairedDevicesGrouping() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-        }
+        },
       );
       setFilteredRowData([]);
       setFilteredChanges(null);
@@ -1055,7 +1055,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1070,7 +1070,7 @@ function BiometricPairedDevicesGrouping() {
             headers: {
               Authorization: `Bearer ${auth.APIToken}`,
             },
-          }
+          },
         );
       });
       // Wait for all delete requests to complete
@@ -1091,7 +1091,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1105,7 +1105,7 @@ function BiometricPairedDevicesGrouping() {
             Authorization: `Bearer ${auth.APIToken}`,
           },
           deviceData: deviceData,
-        }
+        },
       );
       return dup_data?.data;
     } catch (err) {
@@ -1113,7 +1113,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1185,7 +1185,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1350,12 +1350,13 @@ function BiometricPairedDevicesGrouping() {
         item.unit === pairedDeviceGroupingCreate.unit &&
         item.floor === pairedDeviceGroupingCreate.floor &&
         item.area === pairedDeviceGroupingCreate.area &&
-        item.paireddeviceone?.toLowerCase() === pairedDeviceGroupingCreate.paireddeviceone?.toLowerCase()
+        item.paireddeviceone?.toLowerCase() ===
+          pairedDeviceGroupingCreate.paireddeviceone?.toLowerCase(),
     );
     console.log(isNameMatch, "isNameMatch");
     const checkTimeInterval = validateTimeInterval(timeIntHourMinSecFirst);
     const checkTimeIntervalSecond = validateTimeInterval(
-      timeIntHourMinSecSecond
+      timeIntHourMinSecSecond,
     );
     const Switches =
       !AttendanceInOutSwitchFirst &&
@@ -1563,7 +1564,7 @@ function BiometricPairedDevicesGrouping() {
   };
 
   const [pairedDevicesDuplicateEdit, setPairedDevicesDuplicateEdit] = useState(
-    []
+    [],
   );
   //get single row to edit....
   const getCode = async (e, name) => {
@@ -1575,10 +1576,10 @@ function BiometricPairedDevicesGrouping() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-        }
+        },
       );
       setPairedDevicesDuplicateEdit(
-        pairingDevicesArray?.filter((item) => item?._id !== e)
+        pairingDevicesArray?.filter((item) => item?.id !== e),
       );
       setSourceEdit(res?.data?.sbiometricpaireddevicesgrouping);
       setPairedDeviceGroupingEdit(res?.data?.sbiometricpaireddevicesgrouping);
@@ -1647,18 +1648,18 @@ function BiometricPairedDevicesGrouping() {
 
       fetchDeviceNamesBasedOnAreaEdit(
         res?.data?.sbiometricpaireddevicesgrouping,
-        res?.data?.sbiometricpaireddevicesgrouping?.area
+        res?.data?.sbiometricpaireddevicesgrouping?.area,
       );
       setSelectedPairedDeviceOptionsEdit(
         res?.data?.sbiometricpaireddevicesgrouping?.pairdevices?.map(
           (data) => ({
             label: data,
             value: data,
-          })
-        )
+          }),
+        ),
       );
       setValuePairedDevicesEdit(
-        res?.data?.sbiometricpaireddevicesgrouping?.pairdevices
+        res?.data?.sbiometricpaireddevicesgrouping?.pairdevices,
       );
       handleClickOpenEdit();
     } catch (err) {
@@ -1666,7 +1667,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1681,7 +1682,7 @@ function BiometricPairedDevicesGrouping() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-        }
+        },
       );
       setSourceEdit(res?.data?.sbiometricpaireddevicesgrouping);
       handleClickOpenview();
@@ -1690,7 +1691,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1704,7 +1705,7 @@ function BiometricPairedDevicesGrouping() {
           headers: {
             Authorization: `Bearer ${auth.APIToken}`,
           },
-        }
+        },
       );
       setSourceEdit(res?.data?.sbiometricpaireddevicesgrouping);
       handleClickOpeninfo();
@@ -1713,7 +1714,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1778,7 +1779,7 @@ function BiometricPairedDevicesGrouping() {
               date: String(new Date()),
             },
           ],
-        }
+        },
       );
       setFilteredRowData([]);
       setFilteredChanges(null);
@@ -1792,7 +1793,7 @@ function BiometricPairedDevicesGrouping() {
         err,
         setPopupContentMalert,
         setPopupSeverityMalert,
-        handleClickOpenPopupMalert
+        handleClickOpenPopupMalert,
       );
     }
   };
@@ -1806,13 +1807,14 @@ function BiometricPairedDevicesGrouping() {
         item.unit === pairedDeviceGroupingEdit.unit &&
         item.floor === pairedDeviceGroupingEdit.floor &&
         item.area === pairedDeviceGroupingEdit.area &&
-        item.paireddeviceone?.toLowerCase() === pairedDeviceGroupingEdit.paireddeviceone?.toLowerCase() 
+        item.paireddeviceone?.toLowerCase() ===
+          pairedDeviceGroupingEdit.paireddeviceone?.toLowerCase(),
     );
 
-    console.log(isNameMatch, valuePairedDevices, "isNameMatch");
+    console.log(pairedDevicesDuplicateEdit,isNameMatch, valuePairedDevices, "isNameMatch");
     const checkTimeInterval = validateTimeInterval(timeIntHourMinSecFirstEdit);
     const checkTimeIntervalSecond = validateTimeInterval(
-      timeIntHourMinSecSecondEdit
+      timeIntHourMinSecSecondEdit,
     );
     const Switches =
       !AttendanceInOutSwitchFirstEdit &&
@@ -1919,35 +1921,6 @@ function BiometricPairedDevicesGrouping() {
     }
   };
 
-  const [
-    acpointCalculationArrayForExport,
-    setAcpointCalculationArrayForExport,
-  ] = useState([]);
-
-  const fetchAcpointcalculation = async () => {
-    setPageName(!pageName);
-    try {
-      let res_vendor = await axios.get(SERVICE.ALL_BIOMETRICDEVICESPAIRING, {
-        headers: {
-          Authorization: `Bearer ${auth.APIToken}`,
-        },
-      });
-      setSourcecheck(true);
-      setAcpointCalculationArrayForExport(res_vendor?.data?.devicespairing);
-    } catch (err) {
-      setSourcecheck(true);
-      handleApiError(
-        err,
-        setPopupContentMalert,
-        setPopupSeverityMalert,
-        handleClickOpenPopupMalert
-      );
-    }
-  };
-
-  useEffect(() => {
-    fetchAcpointcalculation();
-  }, [isFilterOpen]);
 
   const [overallFilterdata, setOverallFilterdata] = useState([]);
   const [overallFilterdataAllData, setOverallFilterdataAllData] = useState([]);
@@ -1991,14 +1964,14 @@ function BiometricPairedDevicesGrouping() {
       return advancedFilter
         .map((filter, index) => {
           let showname = columnDataTable.find(
-            (col) => col.field === filter.column
+            (col) => col.field === filter.column,
           )?.headerName;
           return `${showname} ${filter.condition} "${filter.value}"`;
         })
         .join(
           " " +
             (advancedFilter.length > 1 ? advancedFilter[1].condition : "") +
-            " "
+            " ",
         );
     }
     return searchQuery;
@@ -2076,13 +2049,13 @@ function BiometricPairedDevicesGrouping() {
   // Modify the filtering logic to check each term
   const filteredDatas = items?.filter((item) => {
     return searchTerms.every((term) =>
-      Object.values(item).join(" ").toLowerCase().includes(term)
+      Object.values(item).join(" ").toLowerCase().includes(term),
     );
   });
 
   const filteredData = filteredDatas.slice(
     (page - 1) * pageSize,
-    page * pageSize
+    page * pageSize,
   );
 
   const totalPages = Math.ceil(filteredDatas.length / pageSize);
@@ -2092,7 +2065,7 @@ function BiometricPairedDevicesGrouping() {
   const firstVisiblePage = Math.max(1, page - 1);
   const lastVisiblePage = Math.min(
     firstVisiblePage + visiblePages - 1,
-    totalPages
+    totalPages,
   );
 
   const pageNumbers = [];
@@ -2252,7 +2225,7 @@ function BiometricPairedDevicesGrouping() {
     (data) =>
       data.field !== "checkbox" &&
       data.field !== "actions" &&
-      data.field !== "serialNumber"
+      data.field !== "serialNumber",
   );
 
   const rowDataTable = filteredData.map((item, index) => {
@@ -2303,7 +2276,7 @@ function BiometricPairedDevicesGrouping() {
 
   // // Function to filter columns based on search query
   const filteredColumns = columnDataTable.filter((column) =>
-    column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase())
+    column.headerName.toLowerCase().includes(searchQueryManage.toLowerCase()),
   );
 
   // Manage Columns functionality
@@ -2447,7 +2420,7 @@ function BiometricPairedDevicesGrouping() {
                               self.findIndex(
                                 (i) =>
                                   i.label === item.label &&
-                                  i.value === item.value
+                                  i.value === item.value,
                               ) === index
                             );
                           })}
@@ -2486,7 +2459,7 @@ function BiometricPairedDevicesGrouping() {
                           ?.filter(
                             (comp) =>
                               comp.company ===
-                              pairedDeviceGroupingCreate?.company
+                              pairedDeviceGroupingCreate?.company,
                           )
                           .map((data) => ({
                             label: data.branch,
@@ -2498,7 +2471,7 @@ function BiometricPairedDevicesGrouping() {
                               self.findIndex(
                                 (i) =>
                                   i.label === item.label &&
-                                  i.value === item.value
+                                  i.value === item.value,
                               ) === index
                             );
                           })}
@@ -2537,7 +2510,8 @@ function BiometricPairedDevicesGrouping() {
                             (comp) =>
                               comp.company ===
                                 pairedDeviceGroupingCreate?.company &&
-                              comp.branch === pairedDeviceGroupingCreate?.branch
+                              comp.branch ===
+                                pairedDeviceGroupingCreate?.branch,
                           )
                           .map((data) => ({
                             label: data.unit,
@@ -2549,7 +2523,7 @@ function BiometricPairedDevicesGrouping() {
                               self.findIndex(
                                 (i) =>
                                   i.label === item.label &&
-                                  i.value === item.value
+                                  i.value === item.value,
                               ) === index
                             );
                           })}
@@ -2585,7 +2559,7 @@ function BiometricPairedDevicesGrouping() {
                         options={allfloor
                           ?.filter(
                             (u) =>
-                              pairedDeviceGroupingCreate?.branch === u.branch
+                              pairedDeviceGroupingCreate?.branch === u.branch,
                           )
                           .map((u) => ({
                             ...u,
@@ -2597,7 +2571,7 @@ function BiometricPairedDevicesGrouping() {
                               self.findIndex(
                                 (i) =>
                                   i.label === item.label &&
-                                  i.value === item.value
+                                  i.value === item.value,
                               ) === index
                             );
                           })}
@@ -2635,7 +2609,8 @@ function BiometricPairedDevicesGrouping() {
                             (item) =>
                               pairedDeviceGroupingCreate?.floor ===
                                 item.floor &&
-                              pairedDeviceGroupingCreate?.branch === item.branch
+                              pairedDeviceGroupingCreate?.branch ===
+                                item.branch,
                           )
                           .flatMap((item) => item.area)
                           .map((location) => ({
@@ -2656,7 +2631,7 @@ function BiometricPairedDevicesGrouping() {
                           });
                           fetchDeviceNamesBasedOnArea(
                             pairedDeviceGroupingCreate,
-                            e.value
+                            e.value,
                           );
                           setValuePairedDevices([]);
                           setSelectedPairedDeviceOptions([]);
@@ -2668,322 +2643,323 @@ function BiometricPairedDevicesGrouping() {
                     <br />
                   </Grid>
                 </>
-                <Grid container spacing={1}>
-                  <Grid item md={3} xs={12} sm={6}>
-                    <FormControl fullWidth size="small">
-                      <Typography>
-                        Pair Device 1<b style={{ color: "red" }}>*</b>
-                      </Typography>
-                      <Selects
-                        maxMenuHeight={300}
-                        options={PairedDeviceOptions}
-                        value={{
-                          label: pairedDeviceGroupingCreate.paireddeviceone,
-                          value: pairedDeviceGroupingCreate.paireddeviceone,
-                        }}
-                        onChange={(e) => {
-                          let secondDevice = PairedDeviceOptions?.find(
-                            (data) =>
-                              data?.pairedid == e.pairedid &&
-                              e.value !== data?.value
-                          );
-                          console.log(secondDevice, e);
-                          setPairedDeviceGroupingCreate({
-                            ...pairedDeviceGroupingCreate,
-                            paireddeviceone: e.value,
-                            paireddevicetwo: secondDevice
-                              ? secondDevice?.value
-                              : "",
-                            isVisitorOne: e.isVisitor,
-                            isVisitorTwo: secondDevice
-                              ? secondDevice?.isVisitor
-                              : false,
-                            pairedstatus: secondDevice ? true : false,
-                          });
-                          handleClearButtons();
-                        }}
-                      />
-                    </FormControl>
-                    <br />
-                    <br />
-                    <br />
-                  </Grid>
+              </Grid>
+              <Grid container spacing={1}>
+                <Grid item md={3} xs={12} sm={6}>
+                  <FormControl fullWidth size="small">
+                    <Typography>
+                      Pair Device 1<b style={{ color: "red" }}>*</b>
+                    </Typography>
+                    <Selects
+                      maxMenuHeight={300}
+                      options={PairedDeviceOptions}
+                      value={{
+                        label: pairedDeviceGroupingCreate.paireddeviceone,
+                        value: pairedDeviceGroupingCreate.paireddeviceone,
+                      }}
+                      onChange={(e) => {
+                        let secondDevice = PairedDeviceOptions?.find(
+                          (data) =>
+                            data?.pairedid == e.pairedid &&
+                            e.value !== data?.value,
+                        );
+                        console.log(secondDevice, e);
+                        setPairedDeviceGroupingCreate({
+                          ...pairedDeviceGroupingCreate,
+                          paireddeviceone: e.value,
+                          paireddevicetwo: secondDevice
+                            ? secondDevice?.value
+                            : "",
+                          isVisitorOne: e.isVisitor,
+                          isVisitorTwo: secondDevice
+                            ? secondDevice?.isVisitor
+                            : false,
+                          pairedstatus: secondDevice ? true : false,
+                        });
+                        handleClearButtons();
+                      }}
+                    />
+                  </FormControl>
+                  <br />
+                  <br />
+                  <br />
                 </Grid>
-                <Grid container spacing={2}>
-                  <Grid item md={1.5} sm={12} xs={12}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Attendance In"
-                        control={
-                          <Switch
-                            checked={AttendanceInSwitchFirst}
-                            onChange={(e) =>
-                              setAttendanceInSwitchFirst(e.target.checked)
-                            }
-                            disabled={isDisabled("AttendanceInSwitchFirst")}
-                          />
-                        }
-                      />
-                    </FormGroup>
-                  </Grid>
-                  <Grid item md={1.5} sm={12} xs={12}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Attendance Out"
-                        control={
-                          <Switch
-                            checked={AttendanceOutSwitchFirst}
-                            onChange={(e) =>
-                              setAttendanceOutSwitchFirst(e.target.checked)
-                            }
-                            disabled={isDisabled("AttendanceOutSwitchFirst")}
-                          />
-                        }
-                      />
-                    </FormGroup>
-                  </Grid>
-                  <Grid item md={1.5} sm={12} xs={12}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Attendance In/Out"
-                        control={
-                          <Switch
-                            checked={AttendanceInOutSwitchFirst}
-                            onChange={(e) =>
-                              setAttendanceInOutSwitchFirst(e.target.checked)
-                            }
-                            disabled={isDisabled("AttendanceInOutSwitchFirst")}
-                          />
-                        }
-                      />
-                    </FormGroup>
-                  </Grid>
-                  <Grid item md={1.5} sm={12} xs={12}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Exit In"
-                        control={
-                          <Switch
-                            checked={ExitInSwitchFirst}
-                            onChange={(e) =>
-                              setExitInSwitchFirst(e.target.checked)
-                            }
-                            disabled={isDisabledExit("ExitInSwitchFirst")}
-                          />
-                        }
-                      />
-                    </FormGroup>
-                  </Grid>
-                  <Grid item md={1.5} sm={12} xs={12}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Exit Out"
-                        control={
-                          <Switch
-                            checked={ExitOutSwitchFirst}
-                            onChange={(e) =>
-                              setExitOutSwitchFirst(e.target.checked)
-                            }
-                            disabled={isDisabledExit("ExitOutSwitchFirst")}
-                          />
-                        }
-                      />
-                    </FormGroup>
-                  </Grid>
-                  <Grid item md={1.5} sm={12} xs={12}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Exit In/Out"
-                        control={
-                          <Switch
-                            checked={ExitInOutSwitchFirst}
-                            onChange={(e) =>
-                              setExitInOutSwitchFirst(e.target.checked)
-                            }
-                            disabled={isDisabledExit("ExitInOutSwitchFirst")}
-                          />
-                        }
-                      />
-                    </FormGroup>
-                  </Grid>
-                  <Grid item md={1.5} sm={12} xs={12}>
-                    <FormGroup>
-                      <FormControlLabel
-                        label="Break"
-                        control={
-                          <Switch
-                            checked={BreakSwitchFirst}
-                            onChange={(e) =>
-                              setBreakSwitchFirst(e.target.checked)
-                            }
-                          />
-                        }
-                      />
-                    </FormGroup>
-                  </Grid>
-                  {pairedDeviceGroupingCreate?.isVisitorOne && (
-                    <>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Visitor In"
-                            control={
-                              <Switch
-                                checked={VisitorInSwitchFirst}
-                                onChange={(e) =>
-                                  setVisitorInSwitchFirst(e.target.checked)
-                                }
-                                disabled={isDisabledVisitor(
-                                  "VisitorInSwitchFirst"
-                                )}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Visitor Out"
-                            control={
-                              <Switch
-                                checked={VisitorOutSwitchFirst}
-                                onChange={(e) =>
-                                  setVisitorOutSwitchFirst(e.target.checked)
-                                }
-                                disabled={isDisabledVisitor(
-                                  "VisitorOutSwitchFirst"
-                                )}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Visitor In/Out"
-                            control={
-                              <Switch
-                                checked={VisitorInOutSwitchFirst}
-                                onChange={(e) =>
-                                  setVisitorInOutSwitchFirst(e.target.checked)
-                                }
-                                disabled={isDisabledVisitor(
-                                  "VisitorInOutSwitchFirst"
-                                )}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                    </>
-                  )}
-                  <Grid item md={3} sm={6} xs={12}>
-                    <FormControl fullWidth size="small">
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            sx={{
-                              "& .MuiSvgIcon-root": {
-                                fontSize: 40,
-                                marginTop: 1,
-                              },
-                            }}
-                            checked={timeIntervalOne}
-                            onChange={() => {
-                              setTimeIntervalOne((val) => !val);
-                              setTimeIntHourMinSecFirst({
-                                hour: "hh",
-                                min: "mm",
-                                second: "ss",
-                              });
-                            }}
-                            color="primary"
-                          />
-                        }
-                        label="Time Interval"
-                      />
-                    </FormControl>
-                  </Grid>
+              </Grid>
+              <Grid container spacing={2}>
+                <Grid item md={1.5} sm={12} xs={12}>
+                  <FormGroup>
+                    <FormControlLabel
+                      label="Attendance In"
+                      control={
+                        <Switch
+                          checked={AttendanceInSwitchFirst}
+                          onChange={(e) =>
+                            setAttendanceInSwitchFirst(e.target.checked)
+                          }
+                          disabled={isDisabled("AttendanceInSwitchFirst")}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </Grid>
+                <Grid item md={1.5} sm={12} xs={12}>
+                  <FormGroup>
+                    <FormControlLabel
+                      label="Attendance Out"
+                      control={
+                        <Switch
+                          checked={AttendanceOutSwitchFirst}
+                          onChange={(e) =>
+                            setAttendanceOutSwitchFirst(e.target.checked)
+                          }
+                          disabled={isDisabled("AttendanceOutSwitchFirst")}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </Grid>
+                <Grid item md={1.5} sm={12} xs={12}>
+                  <FormGroup>
+                    <FormControlLabel
+                      label="Attendance In/Out"
+                      control={
+                        <Switch
+                          checked={AttendanceInOutSwitchFirst}
+                          onChange={(e) =>
+                            setAttendanceInOutSwitchFirst(e.target.checked)
+                          }
+                          disabled={isDisabled("AttendanceInOutSwitchFirst")}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </Grid>
+                <Grid item md={1.5} sm={12} xs={12}>
+                  <FormGroup>
+                    <FormControlLabel
+                      label="Exit In"
+                      control={
+                        <Switch
+                          checked={ExitInSwitchFirst}
+                          onChange={(e) =>
+                            setExitInSwitchFirst(e.target.checked)
+                          }
+                          disabled={isDisabledExit("ExitInSwitchFirst")}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </Grid>
+                <Grid item md={1.5} sm={12} xs={12}>
+                  <FormGroup>
+                    <FormControlLabel
+                      label="Exit Out"
+                      control={
+                        <Switch
+                          checked={ExitOutSwitchFirst}
+                          onChange={(e) =>
+                            setExitOutSwitchFirst(e.target.checked)
+                          }
+                          disabled={isDisabledExit("ExitOutSwitchFirst")}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </Grid>
+                <Grid item md={1.5} sm={12} xs={12}>
+                  <FormGroup>
+                    <FormControlLabel
+                      label="Exit In/Out"
+                      control={
+                        <Switch
+                          checked={ExitInOutSwitchFirst}
+                          onChange={(e) =>
+                            setExitInOutSwitchFirst(e.target.checked)
+                          }
+                          disabled={isDisabledExit("ExitInOutSwitchFirst")}
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </Grid>
+                <Grid item md={1.5} sm={12} xs={12}>
+                  <FormGroup>
+                    <FormControlLabel
+                      label="Break"
+                      control={
+                        <Switch
+                          checked={BreakSwitchFirst}
+                          onChange={(e) =>
+                            setBreakSwitchFirst(e.target.checked)
+                          }
+                        />
+                      }
+                    />
+                  </FormGroup>
+                </Grid>
+                {pairedDeviceGroupingCreate?.isVisitorOne && (
+                  <>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Visitor In"
+                          control={
+                            <Switch
+                              checked={VisitorInSwitchFirst}
+                              onChange={(e) =>
+                                setVisitorInSwitchFirst(e.target.checked)
+                              }
+                              disabled={isDisabledVisitor(
+                                "VisitorInSwitchFirst",
+                              )}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Visitor Out"
+                          control={
+                            <Switch
+                              checked={VisitorOutSwitchFirst}
+                              onChange={(e) =>
+                                setVisitorOutSwitchFirst(e.target.checked)
+                              }
+                              disabled={isDisabledVisitor(
+                                "VisitorOutSwitchFirst",
+                              )}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Visitor In/Out"
+                          control={
+                            <Switch
+                              checked={VisitorInOutSwitchFirst}
+                              onChange={(e) =>
+                                setVisitorInOutSwitchFirst(e.target.checked)
+                              }
+                              disabled={isDisabledVisitor(
+                                "VisitorInOutSwitchFirst",
+                              )}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                  </>
+                )}
+                <Grid item md={3} sm={6} xs={12}>
+                  <FormControl fullWidth size="small">
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          sx={{
+                            "& .MuiSvgIcon-root": {
+                              fontSize: 40,
+                              marginTop: 1,
+                            },
+                          }}
+                          checked={timeIntervalOne}
+                          onChange={() => {
+                            setTimeIntervalOne((val) => !val);
+                            setTimeIntHourMinSecFirst({
+                              hour: "hh",
+                              min: "mm",
+                              second: "ss",
+                            });
+                          }}
+                          color="primary"
+                        />
+                      }
+                      label="Time Interval"
+                    />
+                  </FormControl>
+                </Grid>
 
-                  {timeIntervalOne && (
-                    <>
-                      <Grid item lg={3} md={3} sm={6} xs={12}>
-                        <Typography>
-                          Duration <b style={{ color: "red" }}>*</b>
-                        </Typography>
+                {timeIntervalOne && (
+                  <>
+                    <Grid item lg={3} md={3} sm={6} xs={12}>
+                      <Typography>
+                        Duration <b style={{ color: "red" }}>*</b>
+                      </Typography>
 
-                        <Grid container spacing={1}>
-                          {/* HOURS */}
-                          <Grid item xs={4}>
-                            <FormControl size="small" fullWidth>
-                              <Selects
-                                options={hours
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecFirst.hour,
-                                  value: timeIntHourMinSecFirst.hour,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecFirst((prev) => ({
-                                    ...prev,
-                                    hour: e.target.value,
-                                  }));
-                                }}
-                              />{" "}
-                            </FormControl>
-                          </Grid>
+                      <Grid container spacing={1}>
+                        {/* HOURS */}
+                        <Grid item xs={4}>
+                          <FormControl size="small" fullWidth>
+                            <Selects
+                              options={hours
+                                .map((data) => ({
+                                  label: data,
+                                  value: data,
+                                }))
+                                .filter((item, index, self) => {
+                                  return (
+                                    self.findIndex(
+                                      (i) =>
+                                        i.label === item.label &&
+                                        i.value === item.value,
+                                    ) === index
+                                  );
+                                })}
+                              styles={colourStyles}
+                              value={{
+                                label: timeIntHourMinSecFirst.hour,
+                                value: timeIntHourMinSecFirst.hour,
+                              }}
+                              onChange={(e) => {
+                                setTimeIntHourMinSecFirst((prev) => ({
+                                  ...prev,
+                                  hour: e?.value,
+                                }));
+                              }}
+                            />{" "}
+                          </FormControl>
+                        </Grid>
 
-                          {/* MINUTES */}
-                          <Grid item xs={4}>
-                            <FormControl size="small" fullWidth>
-                              <Selects
-                                options={minutesSeconds
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecFirst.min,
-                                  value: timeIntHourMinSecFirst.min,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecFirst((prev) => ({
-                                    ...prev,
-                                    min: e.target.value,
-                                  }));
-                                }}
-                              />
-                              {/* <Select
+                        {/* MINUTES */}
+                        <Grid item xs={4}>
+                          <FormControl size="small" fullWidth>
+                            <Selects
+                              options={minutesSeconds
+                                .map((data) => ({
+                                  label: data,
+                                  value: data,
+                                }))
+                                .filter((item, index, self) => {
+                                  return (
+                                    self.findIndex(
+                                      (i) =>
+                                        i.label === item.label &&
+                                        i.value === item.value,
+                                    ) === index
+                                  );
+                                })}
+                              styles={colourStyles}
+                              value={{
+                                label: timeIntHourMinSecFirst.min,
+                                value: timeIntHourMinSecFirst.min,
+                              }}
+                              onChange={(e) => {
+                                setTimeIntHourMinSecFirst((prev) => ({
+                                  ...prev,
+                                  min: e?.value,
+                                }));
+                              }}
+                            />
+                            {/* <Select
                                 value={timeIntHourMinSecFirst.min}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirst((prev) => ({
                                     ...prev,
-                                    min: e.target.value,
+                                    min: e?.value,
                                   }))
                                 }
                               >
@@ -2996,45 +2972,45 @@ function BiometricPairedDevicesGrouping() {
                                   </MenuItem>
                                 ))}
                               </Select> */}
-                            </FormControl>
-                          </Grid>
+                          </FormControl>
+                        </Grid>
 
-                          {/* SECONDS */}
-                          <Grid item xs={4}>
-                            <FormControl size="small" fullWidth>
-                              <Selects
-                                options={minutesSeconds
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecFirst.second,
-                                  value: timeIntHourMinSecFirst.second,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecFirst((prev) => ({
-                                    ...prev,
-                                    second: e.target.value,
-                                  }));
-                                }}
-                              />
-                              {/* <Select
+                        {/* SECONDS */}
+                        <Grid item xs={4}>
+                          <FormControl size="small" fullWidth>
+                            <Selects
+                              options={minutesSeconds
+                                .map((data) => ({
+                                  label: data,
+                                  value: data,
+                                }))
+                                .filter((item, index, self) => {
+                                  return (
+                                    self.findIndex(
+                                      (i) =>
+                                        i.label === item.label &&
+                                        i.value === item.value,
+                                    ) === index
+                                  );
+                                })}
+                              styles={colourStyles}
+                              value={{
+                                label: timeIntHourMinSecFirst.second,
+                                value: timeIntHourMinSecFirst.second,
+                              }}
+                              onChange={(e) => {
+                                setTimeIntHourMinSecFirst((prev) => ({
+                                  ...prev,
+                                  second: e?.value,
+                                }));
+                              }}
+                            />
+                            {/* <Select
                                 value={timeIntHourMinSecFirst.second}
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirst((prev) => ({
                                     ...prev,
-                                    second: e.target.value,
+                                    second: e?.value,
                                   }))
                                 }
                               >
@@ -3047,286 +3023,276 @@ function BiometricPairedDevicesGrouping() {
                                   </MenuItem>
                                 ))}
                               </Select> */}
-                            </FormControl>
-                          </Grid>
+                          </FormControl>
                         </Grid>
                       </Grid>
-                    </>
-                  )}
-                </Grid>
+                    </Grid>
+                  </>
+                )}
+              </Grid>
 
-                {pairedDeviceGroupingCreate?.pairedstatus && (
-                  <>
-                    <br />
-                    <br />
-                    <Grid item md={3} xs={12} sm={6}>
+              {pairedDeviceGroupingCreate?.pairedstatus && (
+                <>
+                  <br />
+                  <br />
+                  <Grid item md={3} xs={12} sm={6}>
+                    <FormControl fullWidth size="small">
+                      <Typography>
+                        Pair Device 2<b style={{ color: "red" }}>*</b>
+                      </Typography>
+                      <OutlinedInput
+                        id="component-outlined"
+                        type="text"
+                        placeholder="Please Enter Paired Device 2"
+                        value={pairedDeviceGroupingCreate.paireddevicetwo}
+                      />
+                    </FormControl>
+                  </Grid>
+                  <Grid container spacing={2}>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Attendance In"
+                          control={
+                            <Switch
+                              checked={AttendanceInSwitchSecond}
+                              onChange={(e) =>
+                                setAttendanceInSwitchSecond(e.target.checked)
+                              }
+                              disabled={isDisabled("AttendanceInSwitchSecond")}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Attendance Out"
+                          control={
+                            <Switch
+                              checked={AttendanceOutSwitchSecond}
+                              onChange={(e) =>
+                                setAttendanceOutSwitchSecond(e.target.checked)
+                              }
+                              disabled={isDisabled("AttendanceOutSwitchSecond")}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Attendance In/Out"
+                          control={
+                            <Switch
+                              checked={AttendanceInOutSwitchSecond}
+                              onChange={(e) =>
+                                setAttendanceInOutSwitchSecond(e.target.checked)
+                              }
+                              disabled={isDisabled(
+                                "AttendanceInOutSwitchSecond",
+                              )}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Exit In"
+                          control={
+                            <Switch
+                              checked={ExitInSwitchSecond}
+                              onChange={(e) =>
+                                setExitInSwitchSecond(e.target.checked)
+                              }
+                              disabled={isDisabledExit("ExitInSwitchSecond")}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Exit Out"
+                          control={
+                            <Switch
+                              checked={ExitOutSwitchSecond}
+                              onChange={(e) =>
+                                setExitOutSwitchSecond(e.target.checked)
+                              }
+                              disabled={isDisabledExit("ExitOutSwitchSecond")}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Exit In/Out"
+                          control={
+                            <Switch
+                              checked={ExitInOutSwitchSecond}
+                              onChange={(e) =>
+                                setExitInOutSwitchSecond(e.target.checked)
+                              }
+                              disabled={isDisabledExit("ExitInOutSwitchSecond")}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    <Grid item md={1.5} sm={12} xs={12}>
+                      <FormGroup>
+                        <FormControlLabel
+                          label="Break"
+                          control={
+                            <Switch
+                              checked={BreakSwitchSecond}
+                              onChange={(e) =>
+                                setBreakSwitchSecond(e.target.checked)
+                              }
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Grid>
+                    {pairedDeviceGroupingCreate?.isVisitorTwo && (
+                      <>
+                        <Grid item md={1.5} sm={12} xs={12}>
+                          <FormGroup>
+                            <FormControlLabel
+                              label="Visitor In"
+                              control={
+                                <Switch
+                                  checked={VisitorInSwitchSecond}
+                                  onChange={(e) =>
+                                    setVisitorInSwitchSecond(e.target.checked)
+                                  }
+                                  disabled={isDisabledVisitor(
+                                    "VisitorInSwitchSecond",
+                                  )}
+                                />
+                              }
+                            />
+                          </FormGroup>
+                        </Grid>
+                        <Grid item md={1.5} sm={12} xs={12}>
+                          <FormGroup>
+                            <FormControlLabel
+                              label="Visitor Out"
+                              control={
+                                <Switch
+                                  checked={VisitorOutSwitchSecond}
+                                  onChange={(e) =>
+                                    setVisitorOutSwitchSecond(e.target.checked)
+                                  }
+                                  disabled={isDisabledVisitor(
+                                    "VisitorOutSwitchSecond",
+                                  )}
+                                />
+                              }
+                            />
+                          </FormGroup>
+                        </Grid>
+                        <Grid item md={1.5} sm={12} xs={12}>
+                          <FormGroup>
+                            <FormControlLabel
+                              label="Visitor In/Out"
+                              control={
+                                <Switch
+                                  checked={VisitorInOutSwitchSecond}
+                                  onChange={(e) =>
+                                    setVisitorInOutSwitchSecond(
+                                      e.target.checked,
+                                    )
+                                  }
+                                  disabled={isDisabledVisitor(
+                                    "VisitorInOutSwitchSecond",
+                                  )}
+                                />
+                              }
+                            />
+                          </FormGroup>
+                        </Grid>
+                      </>
+                    )}
+                    <Grid item md={3} sm={6} xs={12}>
                       <FormControl fullWidth size="small">
-                        <Typography>
-                          Pair Device 2<b style={{ color: "red" }}>*</b>
-                        </Typography>
-                        <OutlinedInput
-                          id="component-outlined"
-                          type="text"
-                          placeholder="Please Enter Paired Device 2"
-                          value={pairedDeviceGroupingCreate.paireddevicetwo}
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              sx={{
+                                "& .MuiSvgIcon-root": {
+                                  fontSize: 40,
+                                  marginTop: 1,
+                                },
+                              }}
+                              checked={timeIntervalTwo}
+                              onChange={() => {
+                                setTimeIntervalTwo((val) => !val);
+                                setTimeIntHourMinSecSecond({
+                                  hour: "hh",
+                                  min: "mm",
+                                  second: "ss",
+                                });
+                              }}
+                              color="primary"
+                            />
+                          }
+                          label="Time Interval"
                         />
                       </FormControl>
                     </Grid>
-                    <Grid container spacing={2}>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Attendance In"
-                            control={
-                              <Switch
-                                checked={AttendanceInSwitchSecond}
-                                onChange={(e) =>
-                                  setAttendanceInSwitchSecond(e.target.checked)
-                                }
-                                disabled={isDisabled(
-                                  "AttendanceInSwitchSecond"
-                                )}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Attendance Out"
-                            control={
-                              <Switch
-                                checked={AttendanceOutSwitchSecond}
-                                onChange={(e) =>
-                                  setAttendanceOutSwitchSecond(e.target.checked)
-                                }
-                                disabled={isDisabled(
-                                  "AttendanceOutSwitchSecond"
-                                )}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Attendance In/Out"
-                            control={
-                              <Switch
-                                checked={AttendanceInOutSwitchSecond}
-                                onChange={(e) =>
-                                  setAttendanceInOutSwitchSecond(
-                                    e.target.checked
-                                  )
-                                }
-                                disabled={isDisabled(
-                                  "AttendanceInOutSwitchSecond"
-                                )}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Exit In"
-                            control={
-                              <Switch
-                                checked={ExitInSwitchSecond}
-                                onChange={(e) =>
-                                  setExitInSwitchSecond(e.target.checked)
-                                }
-                                disabled={isDisabledExit("ExitInSwitchSecond")}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Exit Out"
-                            control={
-                              <Switch
-                                checked={ExitOutSwitchSecond}
-                                onChange={(e) =>
-                                  setExitOutSwitchSecond(e.target.checked)
-                                }
-                                disabled={isDisabledExit("ExitOutSwitchSecond")}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Exit In/Out"
-                            control={
-                              <Switch
-                                checked={ExitInOutSwitchSecond}
-                                onChange={(e) =>
-                                  setExitInOutSwitchSecond(e.target.checked)
-                                }
-                                disabled={isDisabledExit(
-                                  "ExitInOutSwitchSecond"
-                                )}
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      <Grid item md={1.5} sm={12} xs={12}>
-                        <FormGroup>
-                          <FormControlLabel
-                            label="Break"
-                            control={
-                              <Switch
-                                checked={BreakSwitchSecond}
-                                onChange={(e) =>
-                                  setBreakSwitchSecond(e.target.checked)
-                                }
-                              />
-                            }
-                          />
-                        </FormGroup>
-                      </Grid>
-                      {pairedDeviceGroupingCreate?.isVisitorTwo && (
-                        <>
-                          <Grid item md={1.5} sm={12} xs={12}>
-                            <FormGroup>
-                              <FormControlLabel
-                                label="Visitor In"
-                                control={
-                                  <Switch
-                                    checked={VisitorInSwitchSecond}
-                                    onChange={(e) =>
-                                      setVisitorInSwitchSecond(e.target.checked)
-                                    }
-                                    disabled={isDisabledVisitor(
-                                      "VisitorInSwitchSecond"
-                                    )}
-                                  />
-                                }
-                              />
-                            </FormGroup>
-                          </Grid>
-                          <Grid item md={1.5} sm={12} xs={12}>
-                            <FormGroup>
-                              <FormControlLabel
-                                label="Visitor Out"
-                                control={
-                                  <Switch
-                                    checked={VisitorOutSwitchSecond}
-                                    onChange={(e) =>
-                                      setVisitorOutSwitchSecond(
-                                        e.target.checked
-                                      )
-                                    }
-                                    disabled={isDisabledVisitor(
-                                      "VisitorOutSwitchSecond"
-                                    )}
-                                  />
-                                }
-                              />
-                            </FormGroup>
-                          </Grid>
-                          <Grid item md={1.5} sm={12} xs={12}>
-                            <FormGroup>
-                              <FormControlLabel
-                                label="Visitor In/Out"
-                                control={
-                                  <Switch
-                                    checked={VisitorInOutSwitchSecond}
-                                    onChange={(e) =>
-                                      setVisitorInOutSwitchSecond(
-                                        e.target.checked
-                                      )
-                                    }
-                                    disabled={isDisabledVisitor(
-                                      "VisitorInOutSwitchSecond"
-                                    )}
-                                  />
-                                }
-                              />
-                            </FormGroup>
-                          </Grid>
-                        </>
-                      )}
-                      <Grid item md={3} sm={6} xs={12}>
-                        <FormControl fullWidth size="small">
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                sx={{
-                                  "& .MuiSvgIcon-root": {
-                                    fontSize: 40,
-                                    marginTop: 1,
-                                  },
-                                }}
-                                checked={timeIntervalTwo}
-                                onChange={() => {
-                                  setTimeIntervalTwo((val) => !val);
-                                  setTimeIntHourMinSecSecond({
-                                    hour: "hh",
-                                    min: "mm",
-                                    second: "ss",
-                                  });
-                                }}
-                                color="primary"
-                              />
-                            }
-                            label="Time Interval"
-                          />
-                        </FormControl>
-                      </Grid>
 
-                      {timeIntervalTwo && (
-                        <>
-                          <Grid item lg={3} md={3} sm={6} xs={12}>
-                            <Typography>
-                              Duration <b style={{ color: "red" }}>*</b>
-                            </Typography>
-                            <Grid container spacing={1}>
-                              {/* HOURS */}
-                              <Grid item xs={4}>
-                                <FormControl size="small" fullWidth>
-                                   <Selects
-                                options={hours
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecSecond.hour,
-                                  value: timeIntHourMinSecSecond.hour,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecSecond((prev) => ({
-                                    ...prev,
-                                    hour: e.target.value,
-                                  }));
-                                }}
-                              />
-                                  {/* <Select
+                    {timeIntervalTwo && (
+                      <>
+                        <Grid item lg={3} md={3} sm={6} xs={12}>
+                          <Typography>
+                            Duration <b style={{ color: "red" }}>*</b>
+                          </Typography>
+                          <Grid container spacing={1}>
+                            {/* HOURS */}
+                            <Grid item xs={4}>
+                              <FormControl size="small" fullWidth>
+                                <Selects
+                                  options={hours
+                                    .map((data) => ({
+                                      label: data,
+                                      value: data,
+                                    }))
+                                    .filter((item, index, self) => {
+                                      return (
+                                        self.findIndex(
+                                          (i) =>
+                                            i.label === item.label &&
+                                            i.value === item.value,
+                                        ) === index
+                                      );
+                                    })}
+                                  styles={colourStyles}
+                                  value={{
+                                    label: timeIntHourMinSecSecond.hour,
+                                    value: timeIntHourMinSecSecond.hour,
+                                  }}
+                                  onChange={(e) => {
+                                    setTimeIntHourMinSecSecond((prev) => ({
+                                      ...prev,
+                                      hour: e?.value,
+                                    }));
+                                  }}
+                                />
+                                {/* <Select
                                     value={timeIntHourMinSecSecond.hour}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
                                         ...prev,
-                                        hour: e.target.value,
+                                        hour: e?.value,
                                       }))
                                     }
                                   >
@@ -3339,45 +3305,45 @@ function BiometricPairedDevicesGrouping() {
                                       </MenuItem>
                                     ))}
                                   </Select> */}
-                                </FormControl>
-                              </Grid>
+                              </FormControl>
+                            </Grid>
 
-                              {/* MINUTES */}
-                              <Grid item xs={4}>
-                                <FormControl size="small" fullWidth>
-                                   <Selects
-                                options={minutesSeconds
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecSecond.min,
-                                  value: timeIntHourMinSecSecond.min,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecSecond((prev) => ({
-                                    ...prev,
-                                    min: e.target.value,
-                                  }));
-                                }}
-                              />
-                                  {/* <Select
+                            {/* MINUTES */}
+                            <Grid item xs={4}>
+                              <FormControl size="small" fullWidth>
+                                <Selects
+                                  options={minutesSeconds
+                                    .map((data) => ({
+                                      label: data,
+                                      value: data,
+                                    }))
+                                    .filter((item, index, self) => {
+                                      return (
+                                        self.findIndex(
+                                          (i) =>
+                                            i.label === item.label &&
+                                            i.value === item.value,
+                                        ) === index
+                                      );
+                                    })}
+                                  styles={colourStyles}
+                                  value={{
+                                    label: timeIntHourMinSecSecond.min,
+                                    value: timeIntHourMinSecSecond.min,
+                                  }}
+                                  onChange={(e) => {
+                                    setTimeIntHourMinSecSecond((prev) => ({
+                                      ...prev,
+                                      min: e?.value,
+                                    }));
+                                  }}
+                                />
+                                {/* <Select
                                     value={timeIntHourMinSecSecond.min}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
                                         ...prev,
-                                        min: e.target.value,
+                                        min: e?.value,
                                       }))
                                     }
                                   >
@@ -3390,45 +3356,45 @@ function BiometricPairedDevicesGrouping() {
                                       </MenuItem>
                                     ))}
                                   </Select> */}
-                                </FormControl>
-                              </Grid>
+                              </FormControl>
+                            </Grid>
 
-                              {/* SECONDS */}
-                              <Grid item xs={4}>
-                                <FormControl size="small" fullWidth>
-                                           <Selects
-                                options={minutesSeconds
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecSecond.second,
-                                  value: timeIntHourMinSecSecond.second,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecSecond((prev) => ({
-                                    ...prev,
-                                    second: e.target.value,
-                                  }));
-                                }}
-                              />
-                                  {/* <Select
+                            {/* SECONDS */}
+                            <Grid item xs={4}>
+                              <FormControl size="small" fullWidth>
+                                <Selects
+                                  options={minutesSeconds
+                                    .map((data) => ({
+                                      label: data,
+                                      value: data,
+                                    }))
+                                    .filter((item, index, self) => {
+                                      return (
+                                        self.findIndex(
+                                          (i) =>
+                                            i.label === item.label &&
+                                            i.value === item.value,
+                                        ) === index
+                                      );
+                                    })}
+                                  styles={colourStyles}
+                                  value={{
+                                    label: timeIntHourMinSecSecond.second,
+                                    value: timeIntHourMinSecSecond.second,
+                                  }}
+                                  onChange={(e) => {
+                                    setTimeIntHourMinSecSecond((prev) => ({
+                                      ...prev,
+                                      second: e.value,
+                                    }));
+                                  }}
+                                />
+                                {/* <Select
                                     value={timeIntHourMinSecSecond.second}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecond((prev) => ({
                                         ...prev,
-                                        second: e.target.value,
+                                        second: e?.value,
                                       }))
                                     }
                                   >
@@ -3441,37 +3407,36 @@ function BiometricPairedDevicesGrouping() {
                                       </MenuItem>
                                     ))}
                                   </Select> */}
-                                </FormControl>
-                              </Grid>
+                              </FormControl>
                             </Grid>
                           </Grid>
-                        </>
-                      )}
-                    </Grid>
-                  </>
-                )}
-                <br />
-                <Grid container spacing={2}>
-                  <Grid item md={3} sm={12} xs={12}>
-                    <Typography>&nbsp;</Typography>
-                    <Grid
-                      sx={{
-                        display: "flex",
+                        </Grid>
+                      </>
+                    )}
+                  </Grid>
+                </>
+              )}
+              <br />
+              <Grid container spacing={2}>
+                <Grid item md={3} sm={12} xs={12}>
+                  <Typography>&nbsp;</Typography>
+                  <Grid
+                    sx={{
+                      display: "flex",
 
-                        gap: "15px",
-                      }}
+                      gap: "15px",
+                    }}
+                  >
+                    <LoadingButton
+                      loading={btnUpload}
+                      sx={buttonStyles.buttonsubmit}
+                      onClick={handleSubmit}
                     >
-                      <LoadingButton
-                        loading={btnUpload}
-                        sx={buttonStyles.buttonsubmit}
-                        onClick={handleSubmit}
-                      >
-                        SAVE
-                      </LoadingButton>
-                      <Button sx={buttonStyles.btncancel} onClick={handleClear}>
-                        CLEAR
-                      </Button>
-                    </Grid>
+                      SAVE
+                    </LoadingButton>
+                    <Button sx={buttonStyles.btncancel} onClick={handleClear}>
+                      CLEAR
+                    </Button>
                   </Grid>
                 </Grid>
               </Grid>
@@ -3525,7 +3490,7 @@ function BiometricPairedDevicesGrouping() {
                                 self.findIndex(
                                   (i) =>
                                     i.label === item.label &&
-                                    i.value === item.value
+                                    i.value === item.value,
                                 ) === index
                               );
                             })}
@@ -3564,7 +3529,7 @@ function BiometricPairedDevicesGrouping() {
                             ?.filter(
                               (comp) =>
                                 comp.company ===
-                                pairedDeviceGroupingEdit?.company
+                                pairedDeviceGroupingEdit?.company,
                             )
                             .map((data) => ({
                               label: data.branch,
@@ -3576,7 +3541,7 @@ function BiometricPairedDevicesGrouping() {
                                 self.findIndex(
                                   (i) =>
                                     i.label === item.label &&
-                                    i.value === item.value
+                                    i.value === item.value,
                                 ) === index
                               );
                             })}
@@ -3615,7 +3580,8 @@ function BiometricPairedDevicesGrouping() {
                               (comp) =>
                                 comp.company ===
                                   pairedDeviceGroupingEdit?.company &&
-                                comp.branch === pairedDeviceGroupingEdit?.branch
+                                comp.branch ===
+                                  pairedDeviceGroupingEdit?.branch,
                             )
                             .map((data) => ({
                               label: data.unit,
@@ -3626,7 +3592,7 @@ function BiometricPairedDevicesGrouping() {
                                 self.findIndex(
                                   (i) =>
                                     i.label === item.label &&
-                                    i.value === item.value
+                                    i.value === item.value,
                                 ) === index
                               );
                             })}
@@ -3662,7 +3628,7 @@ function BiometricPairedDevicesGrouping() {
                           options={allfloor
                             ?.filter(
                               (u) =>
-                                pairedDeviceGroupingEdit?.branch === u.branch
+                                pairedDeviceGroupingEdit?.branch === u.branch,
                             )
                             .map((u) => ({
                               ...u,
@@ -3674,7 +3640,7 @@ function BiometricPairedDevicesGrouping() {
                                 self.findIndex(
                                   (i) =>
                                     i.label === item.label &&
-                                    i.value === item.value
+                                    i.value === item.value,
                                 ) === index
                               );
                             })}
@@ -3712,7 +3678,8 @@ function BiometricPairedDevicesGrouping() {
                               (item) =>
                                 pairedDeviceGroupingEdit?.floor ===
                                   item.floor &&
-                                pairedDeviceGroupingEdit?.branch === item.branch
+                                pairedDeviceGroupingEdit?.branch ===
+                                  item.branch,
                             )
                             .flatMap((item) => item.area)
                             .map((location) => ({
@@ -3736,7 +3703,7 @@ function BiometricPairedDevicesGrouping() {
                             handleClearButtonsEdit();
                             fetchDeviceNamesBasedOnAreaEdit(
                               pairedDeviceGroupingEdit,
-                              e.value
+                              e.value,
                             );
                           }}
                         />
@@ -3761,7 +3728,7 @@ function BiometricPairedDevicesGrouping() {
                           let secondDevice = PairedDeviceOptionsEdit?.find(
                             (data) =>
                               data?.pairedid == e.pairedid &&
-                              e.value !== data?.value
+                              e.value !== data?.value,
                           );
                           setPairedDeviceGroupingEdit({
                             ...pairedDeviceGroupingEdit,
@@ -3796,7 +3763,7 @@ function BiometricPairedDevicesGrouping() {
                               setAttendanceInSwitchFirstEdit(e.target.checked)
                             }
                             disabled={isDisabledEdit(
-                              "AttendanceInSwitchFirstEdit"
+                              "AttendanceInSwitchFirstEdit",
                             )}
                           />
                         }
@@ -3814,7 +3781,7 @@ function BiometricPairedDevicesGrouping() {
                               setAttendanceOutSwitchFirstEdit(e.target.checked)
                             }
                             disabled={isDisabledEdit(
-                              "AttendanceOutSwitchFirstEdit"
+                              "AttendanceOutSwitchFirstEdit",
                             )}
                           />
                         }
@@ -3830,11 +3797,11 @@ function BiometricPairedDevicesGrouping() {
                             checked={AttendanceInOutSwitchFirstEdit}
                             onChange={(e) =>
                               setAttendanceInOutSwitchFirstEdit(
-                                e.target.checked
+                                e.target.checked,
                               )
                             }
                             disabled={isDisabledEdit(
-                              "AttendanceInOutSwitchFirstEdit"
+                              "AttendanceInOutSwitchFirstEdit",
                             )}
                           />
                         }
@@ -3852,7 +3819,7 @@ function BiometricPairedDevicesGrouping() {
                               setExitInSwitchFirstEdit(e.target.checked)
                             }
                             disabled={isDisabledExitEdit(
-                              "ExitInSwitchFirstEdit"
+                              "ExitInSwitchFirstEdit",
                             )}
                           />
                         }
@@ -3870,7 +3837,7 @@ function BiometricPairedDevicesGrouping() {
                               setExitOutSwitchFirstEdit(e.target.checked)
                             }
                             disabled={isDisabledExitEdit(
-                              "ExitOutSwitchFirstEdit"
+                              "ExitOutSwitchFirstEdit",
                             )}
                           />
                         }
@@ -3888,7 +3855,7 @@ function BiometricPairedDevicesGrouping() {
                               setExitInOutSwitchFirstEdit(e.target.checked)
                             }
                             disabled={isDisabledExitEdit(
-                              "ExitInOutSwitchFirstEdit"
+                              "ExitInOutSwitchFirstEdit",
                             )}
                           />
                         }
@@ -3923,7 +3890,7 @@ function BiometricPairedDevicesGrouping() {
                                   setVisitorInSwitchFirstEdit(e.target.checked)
                                 }
                                 disabled={isDisabledVisitorEdit(
-                                  "VisitorInSwitchFirstEdit"
+                                  "VisitorInSwitchFirstEdit",
                                 )}
                               />
                             }
@@ -3941,7 +3908,7 @@ function BiometricPairedDevicesGrouping() {
                                   setVisitorOutSwitchFirstEdit(e.target.checked)
                                 }
                                 disabled={isDisabledVisitorEdit(
-                                  "VisitorOutSwitchFirstEdit"
+                                  "VisitorOutSwitchFirstEdit",
                                 )}
                               />
                             }
@@ -3957,11 +3924,11 @@ function BiometricPairedDevicesGrouping() {
                                 checked={VisitorInOutSwitchFirstEdit}
                                 onChange={(e) =>
                                   setVisitorInOutSwitchFirstEdit(
-                                    e.target.checked
+                                    e.target.checked,
                                   )
                                 }
                                 disabled={isDisabledVisitorEdit(
-                                  "VisitorInOutSwitchFirstEdit"
+                                  "VisitorInOutSwitchFirstEdit",
                                 )}
                               />
                             }
@@ -4020,7 +3987,7 @@ function BiometricPairedDevicesGrouping() {
                                       self.findIndex(
                                         (i) =>
                                           i.label === item.label &&
-                                          i.value === item.value
+                                          i.value === item.value,
                                       ) === index
                                     );
                                   })}
@@ -4032,7 +3999,7 @@ function BiometricPairedDevicesGrouping() {
                                 onChange={(e) => {
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    hour: e.target.value,
+                                    hour: e?.value,
                                   }));
                                 }}
                               />
@@ -4041,7 +4008,7 @@ function BiometricPairedDevicesGrouping() {
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    hour: e.target.value,
+                                    hour: e?.value,
                                   }))
                                 }
                               >
@@ -4060,7 +4027,7 @@ function BiometricPairedDevicesGrouping() {
                           {/* MINUTES */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                                    <Selects
+                              <Selects
                                 options={minutesSeconds
                                   .map((data) => ({
                                     label: data,
@@ -4071,7 +4038,7 @@ function BiometricPairedDevicesGrouping() {
                                       self.findIndex(
                                         (i) =>
                                           i.label === item.label &&
-                                          i.value === item.value
+                                          i.value === item.value,
                                       ) === index
                                     );
                                   })}
@@ -4083,7 +4050,7 @@ function BiometricPairedDevicesGrouping() {
                                 onChange={(e) => {
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    min: e.target.value,
+                                    min: e?.value,
                                   }));
                                 }}
                               />
@@ -4092,7 +4059,7 @@ function BiometricPairedDevicesGrouping() {
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    min: e.target.value,
+                                    min: e?.value,
                                   }))
                                 }
                               >
@@ -4111,7 +4078,7 @@ function BiometricPairedDevicesGrouping() {
                           {/* SECONDS */}
                           <Grid item xs={4}>
                             <FormControl size="small" fullWidth>
-                                   <Selects
+                              <Selects
                                 options={minutesSeconds
                                   .map((data) => ({
                                     label: data,
@@ -4122,7 +4089,7 @@ function BiometricPairedDevicesGrouping() {
                                       self.findIndex(
                                         (i) =>
                                           i.label === item.label &&
-                                          i.value === item.value
+                                          i.value === item.value,
                                       ) === index
                                     );
                                   })}
@@ -4134,7 +4101,7 @@ function BiometricPairedDevicesGrouping() {
                                 onChange={(e) => {
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    second: e.target.value,
+                                    second: e?.value,
                                   }));
                                 }}
                               />
@@ -4143,7 +4110,7 @@ function BiometricPairedDevicesGrouping() {
                                 onChange={(e) =>
                                   setTimeIntHourMinSecFirstEdit((prev) => ({
                                     ...prev,
-                                    second: e.target.value,
+                                    second: e?.value,
                                   }))
                                 }
                               >
@@ -4196,11 +4163,11 @@ function BiometricPairedDevicesGrouping() {
                                 checked={AttendanceInSwitchSecondEdit}
                                 onChange={(e) =>
                                   setAttendanceInSwitchSecondEdit(
-                                    e.target.checked
+                                    e.target.checked,
                                   )
                                 }
                                 disabled={isDisabledEdit(
-                                  "AttendanceInSwitchSecondEdit"
+                                  "AttendanceInSwitchSecondEdit",
                                 )}
                               />
                             }
@@ -4216,11 +4183,11 @@ function BiometricPairedDevicesGrouping() {
                                 checked={AttendanceOutSwitchSecondEdit}
                                 onChange={(e) =>
                                   setAttendanceOutSwitchSecondEdit(
-                                    e.target.checked
+                                    e.target.checked,
                                   )
                                 }
                                 disabled={isDisabledEdit(
-                                  "AttendanceOutSwitchSecondEdit"
+                                  "AttendanceOutSwitchSecondEdit",
                                 )}
                               />
                             }
@@ -4236,11 +4203,11 @@ function BiometricPairedDevicesGrouping() {
                                 checked={AttendanceInOutSwitchSecondEdit}
                                 onChange={(e) =>
                                   setAttendanceInOutSwitchSecondEdit(
-                                    e.target.checked
+                                    e.target.checked,
                                   )
                                 }
                                 disabled={isDisabledEdit(
-                                  "AttendanceInOutSwitchSecondEdit"
+                                  "AttendanceInOutSwitchSecondEdit",
                                 )}
                               />
                             }
@@ -4258,7 +4225,7 @@ function BiometricPairedDevicesGrouping() {
                                   setExitInSwitchSecondEdit(e.target.checked)
                                 }
                                 disabled={isDisabledExitEdit(
-                                  "ExitInSwitchSecondEdit"
+                                  "ExitInSwitchSecondEdit",
                                 )}
                               />
                             }
@@ -4276,7 +4243,7 @@ function BiometricPairedDevicesGrouping() {
                                   setExitOutSwitchSecondEdit(e.target.checked)
                                 }
                                 disabled={isDisabledExitEdit(
-                                  "ExitOutSwitchSecondEdit"
+                                  "ExitOutSwitchSecondEdit",
                                 )}
                               />
                             }
@@ -4294,7 +4261,7 @@ function BiometricPairedDevicesGrouping() {
                                   setExitInOutSwitchSecondEdit(e.target.checked)
                                 }
                                 disabled={isDisabledExitEdit(
-                                  "ExitInOutSwitchSecondEdit"
+                                  "ExitInOutSwitchSecondEdit",
                                 )}
                               />
                             }
@@ -4327,11 +4294,11 @@ function BiometricPairedDevicesGrouping() {
                                     checked={VisitorInSwitchSecondEdit}
                                     onChange={(e) =>
                                       setVisitorInSwitchSecondEdit(
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                     disabled={isDisabledVisitorEdit(
-                                      "VisitorInSwitchSecondEdit"
+                                      "VisitorInSwitchSecondEdit",
                                     )}
                                   />
                                 }
@@ -4347,11 +4314,11 @@ function BiometricPairedDevicesGrouping() {
                                     checked={VisitorOutSwitchSecondEdit}
                                     onChange={(e) =>
                                       setVisitorOutSwitchSecondEdit(
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                     disabled={isDisabledVisitorEdit(
-                                      "VisitorOutSwitchSecondEdit"
+                                      "VisitorOutSwitchSecondEdit",
                                     )}
                                   />
                                 }
@@ -4367,11 +4334,11 @@ function BiometricPairedDevicesGrouping() {
                                     checked={VisitorInOutSwitchSecondEdit}
                                     onChange={(e) =>
                                       setVisitorInOutSwitchSecondEdit(
-                                        e.target.checked
+                                        e.target.checked,
                                       )
                                     }
                                     disabled={isDisabledVisitorEdit(
-                                      "VisitorInOutSwitchSecondEdit"
+                                      "VisitorInOutSwitchSecondEdit",
                                     )}
                                   />
                                 }
@@ -4418,40 +4385,42 @@ function BiometricPairedDevicesGrouping() {
                               {/* HOURS */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                   <Selects
-                                options={hours
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecSecondEdit.hour,
-                                  value: timeIntHourMinSecSecondEdit.hour,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecSecondEdit((prev) => ({
-                                    ...prev,
-                                    hour: e.target.value,
-                                  }));
-                                }}
-                              />
+                                  <Selects
+                                    options={hours
+                                      .map((data) => ({
+                                        label: data,
+                                        value: data,
+                                      }))
+                                      .filter((item, index, self) => {
+                                        return (
+                                          self.findIndex(
+                                            (i) =>
+                                              i.label === item.label &&
+                                              i.value === item.value,
+                                          ) === index
+                                        );
+                                      })}
+                                    styles={colourStyles}
+                                    value={{
+                                      label: timeIntHourMinSecSecondEdit.hour,
+                                      value: timeIntHourMinSecSecondEdit.hour,
+                                    }}
+                                    onChange={(e) => {
+                                      setTimeIntHourMinSecSecondEdit(
+                                        (prev) => ({
+                                          ...prev,
+                                          hour: e?.value,
+                                        }),
+                                      );
+                                    }}
+                                  />
                                   {/* <Select
                                     value={timeIntHourMinSecSecondEdit.hour}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          hour: e.target.value,
+                                          hour: e?.value,
                                         })
                                       )
                                     }
@@ -4471,40 +4440,42 @@ function BiometricPairedDevicesGrouping() {
                               {/* MINUTES */}
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
-                                   <Selects
-                                options={minutesSeconds
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecSecondEdit.min,
-                                  value: timeIntHourMinSecSecondEdit.min,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecSecondEdit((prev) => ({
-                                    ...prev,
-                                    min: e.target.value,
-                                  }));
-                                }}
-                              />
+                                  <Selects
+                                    options={minutesSeconds
+                                      .map((data) => ({
+                                        label: data,
+                                        value: data,
+                                      }))
+                                      .filter((item, index, self) => {
+                                        return (
+                                          self.findIndex(
+                                            (i) =>
+                                              i.label === item.label &&
+                                              i.value === item.value,
+                                          ) === index
+                                        );
+                                      })}
+                                    styles={colourStyles}
+                                    value={{
+                                      label: timeIntHourMinSecSecondEdit.min,
+                                      value: timeIntHourMinSecSecondEdit.min,
+                                    }}
+                                    onChange={(e) => {
+                                      setTimeIntHourMinSecSecondEdit(
+                                        (prev) => ({
+                                          ...prev,
+                                          min: e?.value,
+                                        }),
+                                      );
+                                    }}
+                                  />
                                   {/* <Select
                                     value={timeIntHourMinSecSecondEdit.min}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          min: e.target.value,
+                                          min: e?.value,
                                         })
                                       )
                                     }
@@ -4525,39 +4496,41 @@ function BiometricPairedDevicesGrouping() {
                               <Grid item xs={4}>
                                 <FormControl size="small" fullWidth>
                                   <Selects
-                                options={minutesSeconds
-                                  .map((data) => ({
-                                    label: data,
-                                    value: data,
-                                  }))
-                                  .filter((item, index, self) => {
-                                    return (
-                                      self.findIndex(
-                                        (i) =>
-                                          i.label === item.label &&
-                                          i.value === item.value
-                                      ) === index
-                                    );
-                                  })}
-                                styles={colourStyles}
-                                value={{
-                                  label: timeIntHourMinSecSecondEdit.second,
-                                  value: timeIntHourMinSecSecondEdit.second,
-                                }}
-                                onChange={(e) => {
-                                  setTimeIntHourMinSecSecondEdit((prev) => ({
-                                    ...prev,
-                                    second: e.target.value,
-                                  }));
-                                }}
-                              />
+                                    options={minutesSeconds
+                                      .map((data) => ({
+                                        label: data,
+                                        value: data,
+                                      }))
+                                      .filter((item, index, self) => {
+                                        return (
+                                          self.findIndex(
+                                            (i) =>
+                                              i.label === item.label &&
+                                              i.value === item.value,
+                                          ) === index
+                                        );
+                                      })}
+                                    styles={colourStyles}
+                                    value={{
+                                      label: timeIntHourMinSecSecondEdit.second,
+                                      value: timeIntHourMinSecSecondEdit.second,
+                                    }}
+                                    onChange={(e) => {
+                                      setTimeIntHourMinSecSecondEdit(
+                                        (prev) => ({
+                                          ...prev,
+                                          second: e?.value,
+                                        }),
+                                      );
+                                    }}
+                                  />
                                   {/* <Select
                                     value={timeIntHourMinSecSecondEdit.second}
                                     onChange={(e) =>
                                       setTimeIntHourMinSecSecondEdit(
                                         (prev) => ({
                                           ...prev,
-                                          second: e.target.value,
+                                          second: e?.value,
                                         })
                                       )
                                     }
@@ -4657,13 +4630,12 @@ function BiometricPairedDevicesGrouping() {
               >
                 <Box>
                   {isUserRoleCompare?.includes(
-                    "excelbiometricpaireddevicesgrouping"
+                    "excelbiometricpaireddevicesgrouping",
                   ) && (
                     <>
                       <Button
                         onClick={(e) => {
                           setIsFilterOpen(true);
-                          fetchAcpointcalculation();
                           setFormat("xl");
                         }}
                         sx={userStyle.buttongrp}
@@ -4674,13 +4646,12 @@ function BiometricPairedDevicesGrouping() {
                     </>
                   )}
                   {isUserRoleCompare?.includes(
-                    "csvbiometricpaireddevicesgrouping"
+                    "csvbiometricpaireddevicesgrouping",
                   ) && (
                     <>
                       <Button
                         onClick={(e) => {
                           setIsFilterOpen(true);
-                          fetchAcpointcalculation();
                           setFormat("csv");
                         }}
                         sx={userStyle.buttongrp}
@@ -4691,7 +4662,7 @@ function BiometricPairedDevicesGrouping() {
                     </>
                   )}
                   {isUserRoleCompare?.includes(
-                    "printbiometricpaireddevicesgrouping"
+                    "printbiometricpaireddevicesgrouping",
                   ) && (
                     <>
                       <Button sx={userStyle.buttongrp} onClick={handleprint}>
@@ -4702,14 +4673,13 @@ function BiometricPairedDevicesGrouping() {
                     </>
                   )}
                   {isUserRoleCompare?.includes(
-                    "pdfbiometricpaireddevicesgrouping"
+                    "pdfbiometricpaireddevicesgrouping",
                   ) && (
                     <>
                       <Button
                         sx={userStyle.buttongrp}
                         onClick={() => {
                           setIsPdfFilterOpen(true);
-                          fetchAcpointcalculation();
                         }}
                       >
                         <FaFilePdf />
@@ -4718,16 +4688,15 @@ function BiometricPairedDevicesGrouping() {
                     </>
                   )}
                   {isUserRoleCompare?.includes(
-                    "imagebiometricpaireddevicesgrouping"
+                    "imagebiometricpaireddevicesgrouping",
                   ) && (
                     <Button
                       sx={userStyle.buttongrp}
                       onClick={handleCaptureImage}
                     >
                       {" "}
-                      <ImageIcon
-                        sx={{ fontSize: "15px" }}
-                      /> &ensp;Image&ensp;{" "}
+                      <ImageIcon sx={{ fontSize: "15px" }} />{" "}
+                      &ensp;Image&ensp;{" "}
                     </Button>
                   )}
                 </Box>
@@ -4757,7 +4726,7 @@ function BiometricPairedDevicesGrouping() {
             </Button>
             &ensp;
             {isUserRoleCompare?.includes(
-              "bdbiometricpaireddevicesgrouping"
+              "bdbiometricpaireddevicesgrouping",
             ) && (
               <Button
                 sx={buttonStyles.buttonbulkdelete}
@@ -5097,7 +5066,7 @@ function BiometricPairedDevicesGrouping() {
         filteredDataTwo={
           (filteredChanges !== null ? filteredRowData : rowDataTable) ?? []
         }
-        itemsTwo={acpointCalculationArrayForExport ?? []}
+        itemsTwo={items ?? []}
         filename={"Biometric Paired Devices Grouping"}
         exportColumnNames={exportColumnNames}
         exportRowValues={exportRowValues}

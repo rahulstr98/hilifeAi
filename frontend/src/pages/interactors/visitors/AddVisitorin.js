@@ -2561,7 +2561,8 @@ function AddVisitorin() {
               visitoremail: String(vendor.email),
               visitorcontactnumber: String(vendor.mobile),
               page:"Visitor In",
-              pagedetails:"Visitor Without QR"
+              pagedetails:"Visitor Without QR",
+              cardNum: ""
             });
       if (requestCheck && ticketid) {
         let res = await axios.put(`${SERVICE.RAISETICKET_SINGLE}/${ticketid}`, {
@@ -4116,7 +4117,7 @@ function AddVisitorin() {
               <Grid container spacing={2}>
                 <Grid item xs={8}>
                   {' '}
-                  <Typography sx={{ fontWeight: 'bold' }}>Add Visitors In</Typography>{' '}
+                  <Typography sx={{ fontWeight: 'bold' }}>Add Visitors InAdd Visitors In</Typography>{' '}
                 </Grid>
               </Grid>
               <br />

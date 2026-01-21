@@ -1,60 +1,93 @@
-import { makeStyles } from '@material-ui/core';
-import EastIcon from '@mui/icons-material/East';
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import WestIcon from '@mui/icons-material/West';
-import FormatColorFillIcon from '@mui/icons-material/FormatColorFill';
-import LoadingButton from '@mui/lab/LoadingButton';
-import { Backdrop, Box, Button, Checkbox, Dialog, DialogTitle, DialogActions, DialogContent, FormControl, FormControlLabel, FormGroup, GlobalStyles, Grid, MenuItem, OutlinedInput, Select, Typography } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import { documentTypeOption, followUpActionOption, sourceVisitorOptions } from '../components/Componentkeyword';
-import axios from '../axiosInstance';
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import * as faceapi from 'face-api.js';
-import 'jspdf-autotable';
-import React, { useEffect, useState } from 'react';
-import { FaTrash } from 'react-icons/fa';
-import { useNavigate, useParams } from 'react-router-dom';
-import Selects from 'react-select';
-import { v4 as uuidv4 } from 'uuid';
-import csvIcon from '../components/Assets/CSV.png';
-import excelIcon from '../components/Assets/excel-icon.png';
-import fileIcon from '../components/Assets/file-icons.png';
-import pdfIcon from '../components/Assets/pdf-icon.png';
-import wordIcon from '../components/Assets/word-icon.png';
-import Footer from '../components/footer/footer.js';
-import { SERVICE } from '../services/Baseservice';
-import ExistingProfileVisitor from './ExisitingprofileVisitorsregistration.js';
-import Webcamimage from './ExistingWebcamprofileVisitorregistration.js';
-import numberone from './images/one.png';
-import FullAddressCard from '../components/FullAddressCard.js';
-import numberonenew from './images/onenew.png';
-import MessageAlert from '../components/MessageAlert';
-import AlertDialog from '../components/Alert';
-import numberthree from './images/three.png';
-import numberthreenew from './images/threenew.png';
-import numbertwo from './images/two.png';
-import numbertwonew from './images/twonew.png';
-import wave from './images/waving.png';
-import uploadconfetti from './images/wired-flat-1103-confetti.gif';
-import './visitors.css';
-import { userStyle } from './visitorstyle.js';
-import { Country, State, City } from 'country-state-city';
-import { address_type, permanent_address_type, personal_prefix, landmark_and_positional_prefix } from '../components/Componentkeyword';
-import PincodeButton from '../components/PincodeButton.js';
-import DialogContentText from '@mui/material/DialogContentText';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import ErrorOutlineOutlinedIcon from '@mui/icons-material/ErrorOutlineOutlined';
-import BiometricVisitorAddition from '../components/BiometricVisitorAddition.js';
+import { makeStyles } from "@material-ui/core";
+import EastIcon from "@mui/icons-material/East";
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import WestIcon from "@mui/icons-material/West";
+import FormatColorFillIcon from "@mui/icons-material/FormatColorFill";
+import LoadingButton from "@mui/lab/LoadingButton";
+import {
+  Backdrop,
+  Box,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  DialogContent,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  GlobalStyles,
+  Grid,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Typography,
+} from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import {
+  documentTypeOption,
+  followUpActionOption,
+  sourceVisitorOptions,
+} from "../components/Componentkeyword";
+import axios from "../axiosInstance";
+import "bootstrap-icons/font/bootstrap-icons.css";
+import * as faceapi from "face-api.js";
+import "jspdf-autotable";
+import React, { useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
+import { useNavigate, useParams } from "react-router-dom";
+import Selects from "react-select";
+import { v4 as uuidv4 } from "uuid";
+import csvIcon from "../components/Assets/CSV.png";
+import excelIcon from "../components/Assets/excel-icon.png";
+import fileIcon from "../components/Assets/file-icons.png";
+import pdfIcon from "../components/Assets/pdf-icon.png";
+import wordIcon from "../components/Assets/word-icon.png";
+import Footer from "../components/footer/footer.js";
+import { SERVICE } from "../services/Baseservice";
+import ExistingProfileVisitor from "./ExisitingprofileVisitorsregistration.js";
+import Webcamimage from "./ExistingWebcamprofileVisitorregistration.js";
+import numberone from "./images/one.png";
+import FullAddressCard from "../components/FullAddressCard.js";
+import numberonenew from "./images/onenew.png";
+import MessageAlert from "../components/MessageAlert";
+import AlertDialog from "../components/Alert";
+import numberthree from "./images/three.png";
+import numberthreenew from "./images/threenew.png";
+import numbertwo from "./images/two.png";
+import numbertwonew from "./images/twonew.png";
+import wave from "./images/waving.png";
+import uploadconfetti from "./images/wired-flat-1103-confetti.gif";
+import "./visitors.css";
+import { userStyle } from "./visitorstyle.js";
+import { Country, State, City } from "country-state-city";
+import {
+  address_type,
+  permanent_address_type,
+  personal_prefix,
+  landmark_and_positional_prefix,
+} from "../components/Componentkeyword";
+import PincodeButton from "../components/PincodeButton.js";
+import DialogContentText from "@mui/material/DialogContentText";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import ErrorOutlineOutlinedIcon from "@mui/icons-material/ErrorOutlineOutlined";
+import BiometricVisitorAddition from "../components/BiometricVisitorAddition.js";
 
 const LoadingBackdrop = ({ open }) => {
   return (
-    <Backdrop sx={{ color: '#ffffff', zIndex: (theme) => theme.zIndex.drawer + 999 }} open={open}>
+    <Backdrop
+      sx={{ color: "#ffffff", zIndex: (theme) => theme.zIndex.drawer + 999 }}
+      open={open}
+    >
       <div className="pulsating-circle">
         <CircularProgress color="inherit" className="loading-spinner" />
       </div>
-      <Typography variant="h6" sx={{ marginLeft: 2, color: '#ffffff', fontWeight: 'bold' }}>
+      <Typography
+        variant="h6"
+        sx={{ marginLeft: 2, color: "#ffffff", fontWeight: "bold" }}
+      >
         please wait...
       </Typography>
     </Backdrop>
@@ -62,23 +95,33 @@ const LoadingBackdrop = ({ open }) => {
 };
 
 const severityIcons = {
-  success: <CheckCircleOutlineIcon style={{ fontSize: '3.5rem', color: 'green' }} />,
-  info: <InfoOutlinedIcon style={{ fontSize: '3.5rem', color: 'teal' }} />,
-  warning: <ErrorOutlineOutlinedIcon style={{ fontSize: '3.5rem', color: 'orange' }} />,
-  error: <ErrorOutlineOutlinedIcon style={{ fontSize: '3.5rem', color: 'red' }} />,
+  success: (
+    <CheckCircleOutlineIcon style={{ fontSize: "3.5rem", color: "green" }} />
+  ),
+  info: <InfoOutlinedIcon style={{ fontSize: "3.5rem", color: "teal" }} />,
+  warning: (
+    <ErrorOutlineOutlinedIcon style={{ fontSize: "3.5rem", color: "orange" }} />
+  ),
+  error: (
+    <ErrorOutlineOutlinedIcon style={{ fontSize: "3.5rem", color: "red" }} />
+  ),
 };
 
 // SELECT DROPDOWN STYLES
 const colourStyles = {
   menuList: (styles) => ({
     ...styles,
-    background: 'white',
+    background: "white",
   }),
   option: (styles, { isFocused, isSelected }) => ({
     ...styles,
     // color:'black',
-    color: isFocused ? 'rgb(255 255 255, 0.5)' : isSelected ? 'white' : 'black',
-    background: isFocused ? 'rgb(25 118 210, 0.7)' : isSelected ? 'rgb(25 118 210, 0.5)' : null,
+    color: isFocused ? "rgb(255 255 255, 0.5)" : isSelected ? "white" : "black",
+    background: isFocused
+      ? "rgb(25 118 210, 0.7)"
+      : isSelected
+        ? "rgb(25 118 210, 0.5)"
+        : null,
     zIndex: 1,
   }),
   menu: (base) => ({
@@ -100,20 +143,41 @@ function calculateLuminance(hex) {
 }
 
 function Visitorsregister() {
-  
   const [overallSettings, setOverAllsettingsCount] = useState({});
   const [newimageNew, setNewimageNew] = useState([]);
   const [colorDrag, setColorDrag] = useState([]);
   const [bgbtnDrag, setBgbtnDrag] = useState([]);
   const [capturedImage, setCapturedImage] = useState([]);
 
-  const [selectedCountryp, setSelectedCountryp] = useState(Country.getAllCountries().find((country) => country.name === 'India'));
-  const [selectedStatep, setSelectedStatep] = useState(State.getStatesOfCountry(selectedCountryp?.isoCode).find((state) => state.name === 'Tamil Nadu'));
-  const [selectedCityp, setSelectedCityp] = useState(City.getCitiesOfState(selectedStatep?.countryCode, selectedStatep?.isoCode).find((city) => city.name === 'Tiruchirappalli'));
+  const [selectedCountryp, setSelectedCountryp] = useState(
+    Country.getAllCountries().find((country) => country.name === "India"),
+  );
+  const [selectedStatep, setSelectedStatep] = useState(
+    State.getStatesOfCountry(selectedCountryp?.isoCode).find(
+      (state) => state.name === "Tamil Nadu",
+    ),
+  );
+  const [selectedCityp, setSelectedCityp] = useState(
+    City.getCitiesOfState(
+      selectedStatep?.countryCode,
+      selectedStatep?.isoCode,
+    ).find((city) => city.name === "Tiruchirappalli"),
+  );
   //current Address
-  const [selectedCountryc, setSelectedCountryc] = useState(Country.getAllCountries().find((country) => country.name === 'India'));
-  const [selectedStatec, setSelectedStatec] = useState(State.getStatesOfCountry(selectedCountryc?.isoCode).find((state) => state.name === 'Tamil Nadu'));
-  const [selectedCityc, setSelectedCityc] = useState(City.getCitiesOfState(selectedStatec?.countryCode, selectedStatec?.isoCode).find((city) => city.name === 'Tiruchirappalli'));
+  const [selectedCountryc, setSelectedCountryc] = useState(
+    Country.getAllCountries().find((country) => country.name === "India"),
+  );
+  const [selectedStatec, setSelectedStatec] = useState(
+    State.getStatesOfCountry(selectedCountryc?.isoCode).find(
+      (state) => state.name === "Tamil Nadu",
+    ),
+  );
+  const [selectedCityc, setSelectedCityc] = useState(
+    City.getCitiesOfState(
+      selectedStatec?.countryCode,
+      selectedStatec?.isoCode,
+    ).find((city) => city.name === "Tiruchirappalli"),
+  );
 
   const [overllsettings, setOverallsettings] = useState([]);
 
@@ -126,17 +190,23 @@ function Visitorsregister() {
       if (messages) {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>
+          </>,
         );
         handleClickOpenerr();
       } else {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{'something went wrong!'}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>
+              {"something went wrong!"}
+            </p>
+          </>,
         );
         handleClickOpenerr();
       }
@@ -150,7 +220,7 @@ function Visitorsregister() {
   const handlechangeppincode = (e) => {
     const regex = /^[0-9]+$/;
     const inputValue = e.target.value?.slice(0, 6);
-    if (regex.test(inputValue) || inputValue === '') {
+    if (regex.test(inputValue) || inputValue === "") {
       setVendor({ ...vendor, ppincode: inputValue });
     }
   };
@@ -159,7 +229,10 @@ function Visitorsregister() {
     const inputValue = e.target.value;
 
     // Only allow digits (0-9) and empty string, max 6 digits
-    if (inputValue === '' || (/^\d+$/.test(inputValue) && inputValue?.length <= 6)) {
+    if (
+      inputValue === "" ||
+      (/^\d+$/.test(inputValue) && inputValue?.length <= 6)
+    ) {
       setVendor({ ...vendor, cpincode: inputValue });
     }
   };
@@ -173,41 +246,41 @@ function Visitorsregister() {
   const [fromPinCodec, setFromPinCodec] = useState([]);
 
   const handleLocationSuccessp = (postOffices) => {
-    console.log('Success:', postOffices);
+    console.log("Success:", postOffices);
 
     // You can now use postOffices[0].name, .state, .country, etc.
     setFromPinCodep(postOffices);
     setSelectedStatep({
-      name: postOffices?.length > 0 ? postOffices[0]?.State : '',
-      countryCode: '',
-      isoCode: '',
+      name: postOffices?.length > 0 ? postOffices[0]?.State : "",
+      countryCode: "",
+      isoCode: "",
     });
-    setSelectedCityp('');
+    setSelectedCityp("");
     setVendor((prevSupplier) => ({
       ...prevSupplier,
-      pstate: postOffices?.length > 0 ? postOffices[0]?.State : '',
-      pdistrict: postOffices?.length > 0 ? postOffices[0]?.District : '',
-      pvillageorcity: '',
-      pcity: '',
+      pstate: postOffices?.length > 0 ? postOffices[0]?.State : "",
+      pdistrict: postOffices?.length > 0 ? postOffices[0]?.District : "",
+      pvillageorcity: "",
+      pcity: "",
     }));
   };
   const handleLocationSuccessc = (postOffices) => {
-    console.log('Success:', postOffices);
+    console.log("Success:", postOffices);
 
     // You can now use postOffices[0].name, .state, .country, etc.
     setFromPinCodec(postOffices);
     setSelectedStatec({
-      name: postOffices?.length > 0 ? postOffices[0]?.State : '',
-      countryCode: '',
-      isoCode: '',
+      name: postOffices?.length > 0 ? postOffices[0]?.State : "",
+      countryCode: "",
+      isoCode: "",
     });
-    setSelectedCityc('');
+    setSelectedCityc("");
     setVendor((prevSupplier) => ({
       ...prevSupplier,
-      cstate: postOffices?.length > 0 ? postOffices[0]?.State : '',
-      cdistrict: postOffices?.length > 0 ? postOffices[0]?.District : '',
-      cvillageorcity: '',
-      ccity: '',
+      cstate: postOffices?.length > 0 ? postOffices[0]?.State : "",
+      cdistrict: postOffices?.length > 0 ? postOffices[0]?.District : "",
+      cvillageorcity: "",
+      ccity: "",
     }));
   };
 
@@ -231,16 +304,16 @@ function Visitorsregister() {
 
   const renderFilePreviewMulter = async (file) => {
     const url = window.URL.createObjectURL(file);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    window.open(link, '_blank');
+    window.open(link, "_blank");
   };
 
   const path = window.location.pathname.slice(1);
 
   const [openPopupMalert, setOpenPopupMalert] = useState(false);
-  const [popupSeverityMalert, setPopupSeverityMalert] = useState('');
-  const [popupContentMalert, setPopupContentMalert] = useState('');
+  const [popupSeverityMalert, setPopupSeverityMalert] = useState("");
+  const [popupContentMalert, setPopupContentMalert] = useState("");
   const handleClickOpenPopupMalert = () => {
     setOpenPopupMalert(true);
   };
@@ -248,8 +321,8 @@ function Visitorsregister() {
     setOpenPopupMalert(false);
   };
   const [openPopup, setOpenPopup] = useState(false);
-  const [popupContent, setPopupContent] = useState('');
-  const [popupSeverity, setPopupSeverity] = useState('');
+  const [popupContent, setPopupContent] = useState("");
+  const [popupSeverity, setPopupSeverity] = useState("");
   const handleClickOpenPopup = () => {
     setOpenPopup(true);
   };
@@ -274,8 +347,10 @@ function Visitorsregister() {
 
     // If there are large files, show a single popup message
     if (largeFiles?.length > 0) {
-      setPopupContentMalert(`The following files are larger than 1MB and will not be uploaded:\n${largeFiles.join(', ')}`);
-      setPopupSeverityMalert('info');
+      setPopupContentMalert(
+        `The following files are larger than 1MB and will not be uploaded:\n${largeFiles.join(", ")}`,
+      );
+      setPopupSeverityMalert("info");
       handleClickOpenPopupMalert();
     }
 
@@ -293,7 +368,7 @@ function Visitorsregister() {
   const renderFilePreviewMulterUploaded = async (file) => {
     if (!file) return false;
     const imageUrl = `${SERVICE.VEIW_VISITOR_FILES}/${file.filename}`;
-    window.open(imageUrl, '_blank'); // Open image in a new tab
+    window.open(imageUrl, "_blank"); // Open image in a new tab
   };
 
   const [isLightColor, setIsLightColor] = useState([]);
@@ -326,28 +401,38 @@ function Visitorsregister() {
         //   Authorization: `Bearer ${auth.APIToken}`,
         // },
       });
-      let lastobj = res?.data?.overallsettings?.length > 0 ? res?.data?.overallsettings?.at(-1) : {};
+      let lastobj =
+        res?.data?.overallsettings?.length > 0
+          ? res?.data?.overallsettings?.at(-1)
+          : {};
       setOverallsettings(lastobj);
-      setColor([lastobj?.backgroundcolour || '#FFFFFF']);
-      setColorDrag([lastobj?.backgroundcolour || '#FFFFFF']);
+      setColor([lastobj?.backgroundcolour || "#FFFFFF"]);
+      setColorDrag([lastobj?.backgroundcolour || "#FFFFFF"]);
 
-      let lastObject = res?.data?.overallsettings[res?.data?.overallsettings?.length - 1];
+      let lastObject =
+        res?.data?.overallsettings[res?.data?.overallsettings?.length - 1];
     } catch (err) {
       const messages = err?.response?.data?.message;
       if (messages) {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>
+          </>,
         );
         handleClickOpenerr();
       } else {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{'something went wrong!'}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>
+              {"something went wrong!"}
+            </p>
+          </>,
         );
         handleClickOpenerr();
       }
@@ -361,12 +446,12 @@ function Visitorsregister() {
 
   const handleSubmitNew = async (index, from) => {
     if (index === undefined || index < 0) {
-      console.error('Invalid index provided.');
+      console.error("Invalid index provided.");
       return;
     }
-    console.log(index, image, 'indexcklsfj');
+    console.log(index, image, "indexcklsfj");
 
-    if (from === 'upload') {
+    if (from === "upload") {
       setBgbtn((prev) => {
         const newState = [...prev];
         newState[index] = true;
@@ -380,13 +465,15 @@ function Visitorsregister() {
       });
     }
 
-    const selectedImage = from === 'upload' ? image?.[index] : capturedImage?.[index];
-    const selectedColor = from === 'upload' ? color?.[index] : colorCaptured?.[index];
+    const selectedImage =
+      from === "upload" ? image?.[index] : capturedImage?.[index];
+    const selectedColor =
+      from === "upload" ? color?.[index] : colorCaptured?.[index];
 
     if (!selectedImage || !selectedColor) {
-      console.error('Image or color not provided.');
+      console.error("Image or color not provided.");
       // Reset the button states in case of an error.
-      if (from === 'upload') {
+      if (from === "upload") {
         setBgbtn((prev) => {
           const newState = [...prev];
           newState[index] = false;
@@ -403,15 +490,15 @@ function Visitorsregister() {
     }
 
     const formData = new FormData();
-    formData.append('image', selectedImage);
-    formData.append('color', selectedColor);
+    formData.append("image", selectedImage);
+    formData.append("color", selectedColor);
 
     try {
       const response = await axios.post(SERVICE.REMOVEBG, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      from === 'upload'
+      from === "upload"
         ? setRefImage((prev) => {
             let updated = [...prev];
             let currentObject = {
@@ -431,10 +518,10 @@ function Visitorsregister() {
             return updated;
           });
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
     } finally {
       // Reset button states after the operation, regardless of success or failure.
-      if (from === 'upload') {
+      if (from === "upload") {
         setBgbtn((prev) => {
           const newState = [...prev];
           newState[index] = false;
@@ -464,10 +551,10 @@ function Visitorsregister() {
 
   const handleSubmitDrag = async (index, from) => {
     if (index === undefined || index < 0) {
-      console.error('Invalid index provided.');
+      console.error("Invalid index provided.");
       return;
     }
-    console.log(index, image, 'indexcklsfj');
+    console.log(index, image, "indexcklsfj");
 
     setBgbtnDrag((prev) => {
       const newState = [...prev];
@@ -479,7 +566,7 @@ function Visitorsregister() {
     const selectedColor = colorDrag[index];
 
     if (!selectedImage || !selectedColor) {
-      console.error('Image or color not provided.');
+      console.error("Image or color not provided.");
       // Reset the button states in case of an error.
 
       setBgbtnDrag((prev) => {
@@ -492,12 +579,12 @@ function Visitorsregister() {
     }
 
     const formData = new FormData();
-    formData.append('image', selectedImage);
-    formData.append('color', selectedColor);
+    formData.append("image", selectedImage);
+    formData.append("color", selectedColor);
 
     try {
       const response = await axios.post(SERVICE.REMOVEBG, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       setRefImageDrag((prev) => {
@@ -515,7 +602,7 @@ function Visitorsregister() {
         return newState;
       });
     } catch (error) {
-      console.error('Error uploading image:', error);
+      console.error("Error uploading image:", error);
     } finally {
       // Reset button states after the operation, regardless of success or failure.
       setBgbtnDrag((prev) => {
@@ -538,85 +625,85 @@ function Visitorsregister() {
     });
   };
   const [vendor, setVendor] = useState({
-    company: 'Please Select Company',
-    branch: 'Please Select Branch',
-    unit: 'Please Select Unit',
-    visitortype: 'Please Select Visitor Type',
-    visitormode: 'Please Select Visitor Mode',
-    date: '',
-    prefix: 'Mr',
-    firstname: '',
-    lastname: '',
-    email: '',
-    mobile: '',
-    whatsapp: '',
-    hostname: 'Please Select HostName',
-    visitorname: '',
-    intime: '',
-    visitorpurpose: 'Please Select Visitor Purpose',
-    visitorcontactnumber: '',
-    visitoremail: '',
-    visitorcompnayname: '',
-    documenttype: 'Please Select Document Type',
-    documentnumber: '',
+    company: "Please Select Company",
+    branch: "Please Select Branch",
+    unit: "Please Select Unit",
+    visitortype: "Please Select Visitor Type",
+    visitormode: "Please Select Visitor Mode",
+    date: "",
+    prefix: "Mr",
+    firstname: "",
+    lastname: "",
+    email: "",
+    mobile: "",
+    whatsapp: "",
+    hostname: "Please Select HostName",
+    visitorname: "",
+    intime: "",
+    visitorpurpose: "Please Select Visitor Purpose",
+    visitorcontactnumber: "",
+    visitoremail: "",
+    visitorcompnayname: "",
+    documenttype: "Please Select Document Type",
+    documentnumber: "",
     meetingdetails: true,
-    meetingpersonemployeename: 'Please Select Employee Name',
-    meetinglocationarea: 'Please Select Area',
+    meetingpersonemployeename: "Please Select Employee Name",
+    meetinglocationarea: "Please Select Area",
     escortinformation: true,
-    escortdetails: '',
-    equipmentborrowed: '',
-    outtime: '',
-    remark: '',
+    escortdetails: "",
+    equipmentborrowed: "",
+    outtime: "",
+    remark: "",
     phonecheck: false,
-    followupaction: 'Please Select Follow Up Action',
-    followupdate: '',
-    followuptime: '',
-    visitorbadge: '',
-    visitorsurvey: '',
+    followupaction: "Please Select Follow Up Action",
+    followupdate: "",
+    followuptime: "",
+    visitorbadge: "",
+    visitorsurvey: "",
 
     //newdetails
-    addesstype: 'Home',
-    personalprefix: '',
-    referencename: '',
-    landmarkpositionprefix: '',
-    landmarkname: '',
-    houseflatnumber: '',
-    streetroadname: '',
-    localityareaname: '',
-    pbuildingapartmentname: '',
-    paddressone: '',
-    paddresstwo: '',
-    paddressthree: '',
-    caddressone: '',
-    caddresstwo: '',
-    caddressthree: '',
-    cbuildingapartmentname: '',
+    addesstype: "Home",
+    personalprefix: "",
+    referencename: "",
+    landmarkpositionprefix: "",
+    landmarkname: "",
+    houseflatnumber: "",
+    streetroadname: "",
+    localityareaname: "",
+    pbuildingapartmentname: "",
+    paddressone: "",
+    paddresstwo: "",
+    paddressthree: "",
+    caddressone: "",
+    caddresstwo: "",
+    caddressthree: "",
+    cbuildingapartmentname: "",
     pcountry: selectedCountryp?.name,
     pstate: selectedStatep?.name,
     pcity: selectedCityp?.name,
-    ppincode: '',
-    gpscoordinate: '',
+    ppincode: "",
+    gpscoordinate: "",
 
     pgenerateviapincode: true,
-    pvillageorcity: '',
-    pdistrict: '',
+    pvillageorcity: "",
+    pdistrict: "",
     cgenerateviapincode: true,
-    cvillageorcity: '',
-    cdistrict: '',
+    cvillageorcity: "",
+    cdistrict: "",
 
-    caddesstype: '',
-    cpersonalprefix: '',
-    creferencename: '',
-    clandmarkpositionprefix: '',
-    clandmarkname: '',
-    chouseflatnumber: '',
-    cstreetroadname: '',
-    clocalityareaname: '',
+    caddesstype: "",
+    cpersonalprefix: "",
+    creferencename: "",
+    clandmarkpositionprefix: "",
+    clandmarkname: "",
+    chouseflatnumber: "",
+    cstreetroadname: "",
+    clocalityareaname: "",
     ccountry: selectedCountryc?.name,
     cstate: selectedStatec?.name,
     ccity: selectedCityc?.name,
-    cpincode: '',
-    cgpscoordinate: '',
+    cpincode: "",
+    cgpscoordinate: "",
     samesprmnt: false,
   });
 
@@ -624,8 +711,8 @@ function Visitorsregister() {
     setIsExistVisitor(true);
     setRefImagePerImage(e?.files);
 
-    if (reason === 'webcam') {
-      console.log('Exisiting Visitor');
+    if (reason === "webcam") {
+      console.log("Exisiting Visitor");
     } else {
       setVendor({
         ...vendor,
@@ -634,14 +721,14 @@ function Visitorsregister() {
         unit: e.unit,
         visitortype: e.visitortype,
         visitormode: e.visitormode,
-        prefix: 'Mr',
+        prefix: "Mr",
         firstname: e.visitorfirstname || e.visitorname,
-        lastname: e.visitorlastname || '',
+        lastname: e.visitorlastname || "",
         email: e.visitoremail,
         mobile: e.visitorcontactnumber,
         visitorpurpose: e.visitorpurpose,
         hostname: e.meetingpersonemployeename,
-        whatsapp: e.visitorwhatsapp || '',
+        whatsapp: e.visitorwhatsapp || "",
         visitorid: e.visitorid,
         visitorcommonid: e.visitorcommonid,
         _id: e._id,
@@ -653,19 +740,22 @@ function Visitorsregister() {
       // fetchInteractorPurpose(e.visitortype);
     }
 
-    if (reason && reason === 'backdropClick') return;
+    if (reason && reason === "backdropClick") return;
     handleCloseerrpop();
 
-    let res = await axios.get(`${SERVICE.VISITORDETAILS_LOG_SINGLE}/${encodeURIComponent(e?.visitorid)}`, {
-      // headers: {
-      //   Authorization: `Bearer ${auth.APIToken}`,
-      // },
-    });
+    let res = await axios.get(
+      `${SERVICE.VISITORDETAILS_LOG_SINGLE}/${encodeURIComponent(e?.visitorid)}`,
+      {
+        // headers: {
+        //   Authorization: `Bearer ${auth.APIToken}`,
+        // },
+      },
+    );
 
     setVisitorLogData(res?.data?.svisitordetailslog);
 
     setTimeout(() => {
-      setNewimage('');
+      setNewimage("");
     }, 1000);
   };
 
@@ -685,14 +775,14 @@ function Visitorsregister() {
 
   const useStyles = makeStyles((theme) => ({
     inputs: {
-      display: 'none',
+      display: "none",
     },
     preview: {
-      display: 'flex',
-      alignItems: 'center',
-      flexWrap: 'wrap',
+      display: "flex",
+      alignItems: "center",
+      flexWrap: "wrap",
       marginTop: theme.spacing(2),
-      '& > *': {
+      "& > *": {
         margin: theme.spacing(1),
       },
     },
@@ -714,17 +804,17 @@ function Visitorsregister() {
   const classes = useStyles();
 
   const getFileIcon = (fileName) => {
-    const extension1 = fileName?.split('.').pop();
+    const extension1 = fileName?.split(".").pop();
     switch (extension1) {
-      case 'pdf':
+      case "pdf":
         return pdfIcon;
-      case 'doc':
-      case 'docx':
+      case "doc":
+      case "docx":
         return wordIcon;
-      case 'xls':
-      case 'xlsx':
+      case "xls":
+      case "xlsx":
         return excelIcon;
-      case 'csv':
+      case "csv":
         return csvIcon;
       default:
         return fileIcon;
@@ -734,7 +824,7 @@ function Visitorsregister() {
   const handleCloseModEditProfileCheck = async (e, reason) => {
     setIsExistVisitor(true);
     setImage([]);
-    if (reason && reason === 'backdropClick') return;
+    if (reason && reason === "backdropClick") return;
     let url = `${SERVICE.VISITORDETAILS_LOG_SINGLE_PROFILE}/${encodeURIComponent(e?.visitorid)}`;
     let resVisitor = await axios.get(url, {
       // headers: {
@@ -742,39 +832,43 @@ function Visitorsregister() {
       // },
     });
 
-    const file = resVisitor?.data?.svisitordetailslog?.slice(-1)[0]?.files || [];
+    const file =
+      resVisitor?.data?.svisitordetailslog?.slice(-1)[0]?.files || [];
     if (file?.length > 0) {
       // Create a Blob from the binary data
-      const base64Data = file[0].preview?.split(',')[1]; // Get base64 data (without the prefix)
+      const base64Data = file[0].preview?.split(",")[1]; // Get base64 data (without the prefix)
       const binaryData = atob(base64Data); // Decode base64 data
       const arrayBuffer = new ArrayBuffer(binaryData.length);
       const uint8Array = new Uint8Array(arrayBuffer);
       for (let i = 0; i < binaryData.length; i++) {
         uint8Array[i] = binaryData.charCodeAt(i);
       }
-      const blob = new Blob([uint8Array], { type: 'image/png' });
+      const blob = new Blob([uint8Array], { type: "image/png" });
       setImage((prev) => [...prev, blob]);
       setRefImage(newimageNew);
     } else {
-      const prof = e?.files || e?.uploadedimage?.some((item) => item?.preview === '') ? [] : e?.uploadedimage || newimage || [];
+      const prof =
+        e?.files || e?.uploadedimage?.some((item) => item?.preview === "")
+          ? []
+          : e?.uploadedimage || newimage || [];
 
       // Check if prof[0].preview exists and is a Blob URL
-      if (prof[0]?.preview && prof[0].preview.startsWith('blob:')) {
+      if (prof[0]?.preview && prof[0].preview.startsWith("blob:")) {
         // Fetch the Blob data from the URL
         fetch(prof[0].preview)
           .then((response) => response.blob()) // Convert the response to a Blob
           .then((blob) => {
             // Optionally, convert the Blob to a File object
-            const file = new File([blob], 'file.png', { type: blob.type });
+            const file = new File([blob], "file.png", { type: blob.type });
 
             // Update the state with the new File or Blob
             setImage((prev) => [...prev, file]); // or use `blob` if you don't need a File object
           })
           .catch((error) => {
-            console.error('Error fetching Blob data:', error);
+            console.error("Error fetching Blob data:", error);
           });
       } else {
-        console.error('Invalid or missing preview URL');
+        console.error("Invalid or missing preview URL");
       }
       setRefImage(newimageNew);
     }
@@ -786,16 +880,19 @@ function Visitorsregister() {
     handleCloseerrpopdragdrop();
     webcamClose();
 
-    let res = await axios.get(`${SERVICE.VISITORDETAILS_LOG_SINGLE}/${encodeURIComponent(e?.visitorid)}`, {
-      // headers: {
-      //   Authorization: `Bearer ${auth.APIToken}`,
-      // },
-    });
+    let res = await axios.get(
+      `${SERVICE.VISITORDETAILS_LOG_SINGLE}/${encodeURIComponent(e?.visitorid)}`,
+      {
+        // headers: {
+        //   Authorization: `Bearer ${auth.APIToken}`,
+        // },
+      },
+    );
 
     setVisitorLogData(res?.data?.svisitordetailslog);
 
     setTimeout(() => {
-      setNewimage('');
+      setNewimage("");
     }, 1000);
   };
 
@@ -806,10 +903,10 @@ function Visitorsregister() {
 
   const handleValidationfirstname = (e) => {
     let val = e.target.value;
-    let numbers = new RegExp('[0-9]');
+    let numbers = new RegExp("[0-9]");
     var regExSpecialChar = /[ `₹!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
     if (e.target.value.match(numbers)) {
-      setShowAlert('Please enter characters only! (A-Z or a-z)');
+      setShowAlert("Please enter characters only! (A-Z or a-z)");
       handleClickOpenerr();
       let num = val.length;
       let value = val.slice(0, num - 1);
@@ -817,7 +914,7 @@ function Visitorsregister() {
         return { ...prevState, firstname: value };
       });
     } else if (regExSpecialChar.test(e.target.value)) {
-      setShowAlert('Please enter characters only! (A-Z or a-z)');
+      setShowAlert("Please enter characters only! (A-Z or a-z)");
       handleClickOpenerr();
       let num = val.length;
       let value = val.slice(0, num - 1);
@@ -829,10 +926,10 @@ function Visitorsregister() {
 
   const handleValidationlastname = (e) => {
     let val = e.target.value;
-    let numbers = new RegExp('[0-9]');
+    let numbers = new RegExp("[0-9]");
     var regExSpecialChar = /[ `₹!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
     if (e.target.value.match(numbers)) {
-      setShowAlert('Please enter characters only! (A-Z or a-z)');
+      setShowAlert("Please enter characters only! (A-Z or a-z)");
       handleClickOpenerr();
       let num = val.length;
       let value = val.slice(0, num - 1);
@@ -840,7 +937,7 @@ function Visitorsregister() {
         return { ...prevState, lastname: value };
       });
     } else if (regExSpecialChar.test(e.target.value)) {
-      setShowAlert('Please enter characters only! (A-Z or a-z)');
+      setShowAlert("Please enter characters only! (A-Z or a-z)");
       handleClickOpenerr();
       let num = val.length;
       let value = val.slice(0, num - 1);
@@ -861,7 +958,7 @@ function Visitorsregister() {
     if (vendor.phonecheck) {
       setVendor({ ...vendor, whatsapp: vendor.mobile });
     } else {
-      setVendor({ ...vendor, whatsapp: '' });
+      setVendor({ ...vendor, whatsapp: "" });
     }
   };
 
@@ -874,12 +971,12 @@ function Visitorsregister() {
       };
       reader.readAsDataURL(xhr.response);
     };
-    xhr.open('GET', url);
-    xhr.responseType = 'blob';
+    xhr.open("GET", url);
+    xhr.responseType = "blob";
     xhr.send();
   }
 
-  const [file, setFile] = useState('');
+  const [file, setFile] = useState("");
 
   useEffect(() => {
     getPhoneNumber();
@@ -902,7 +999,7 @@ function Visitorsregister() {
     capturedImages.forEach((item) => {
       if (!item?.preview) return;
 
-      const base64Data = item.preview.split(',')[1]; // Extract base64 data
+      const base64Data = item.preview.split(",")[1]; // Extract base64 data
       const binaryData = atob(base64Data); // Decode base64 data
       const uint8Array = new Uint8Array(binaryData.length);
 
@@ -912,12 +1009,12 @@ function Visitorsregister() {
       }
 
       // Create a Blob from the binary data
-      const blob = new Blob([uint8Array], { type: 'image/png' });
+      const blob = new Blob([uint8Array], { type: "image/png" });
       newBlobs.push(blob);
 
       // Add default values for bgbtnCaptured and colors
       newBgbtnCaptured.push(false);
-      newColors.push('#ffffff');
+      newColors.push("#ffffff");
     });
 
     // Update states with the accumulated values
@@ -935,12 +1032,12 @@ function Visitorsregister() {
   };
   const webcamClose = () => {
     setIsWebcamOpen(false);
-    setGetImg('');
+    setGetImg("");
   };
   const webcamDataStore = () => {
     setIsWebcamCapture(true);
     webcamClose();
-    setGetImg('');
+    setGetImg("");
   };
   const showWebcam = () => {
     webcamOpen();
@@ -952,7 +1049,7 @@ function Visitorsregister() {
   };
   const handleUploadPopupClose = () => {
     setUploadPopupOpen(false);
-    setGetImg('');
+    setGetImg("");
     setRefImage([]);
     setPreviewURL(null);
     setRefImageDrag([]);
@@ -966,21 +1063,21 @@ function Visitorsregister() {
   const backPage = useNavigate();
 
   const [educationDetails, setEducationDetails] = useState({
-    school: '',
-    department: '',
-    degree: '',
-    fromduration: '',
-    toduration: '',
+    school: "",
+    department: "",
+    degree: "",
+    fromduration: "",
+    toduration: "",
     pursuing: false,
   });
   const [educationtodo, setEducationtodo] = useState([]);
 
   const [experienceDetails, setExperienceDetails] = useState({
-    occupation: '',
-    company: '',
-    summary: '',
-    fromduration: '',
-    toduration: '',
+    occupation: "",
+    company: "",
+    summary: "",
+    fromduration: "",
+    toduration: "",
     currentlyworkhere: false,
   });
   const [experiencetodo, setExperiencetodo] = useState([]);
@@ -995,8 +1092,8 @@ function Visitorsregister() {
 
   const formatDateString = (date) => {
     const d = new Date(date);
-    const day = d.getDate().toString().padStart(2, '0');
-    const month = (d.getMonth() + 1).toString().padStart(2, '0');
+    const day = d.getDate().toString().padStart(2, "0");
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
     const year = d.getFullYear();
     return `${day}-${month}-${year}`;
   };
@@ -1028,7 +1125,7 @@ function Visitorsregister() {
   };
   const handleCloseerr = () => {
     setIsErrorOpen(false);
-    setShowAlert('');
+    setShowAlert("");
     setloadingdeloverall(false);
   };
 
@@ -1044,24 +1141,30 @@ function Visitorsregister() {
           ...t,
           label: t.interactorstype,
           value: t.interactorstype,
-        }))
+        })),
       );
     } catch (err) {
       const messages = err?.response?.data?.message;
       if (messages) {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>
+          </>,
         );
         handleClickOpenerr();
       } else {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{'something1 went wrong!'}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>
+              {"something1 went wrong!"}
+            </p>
+          </>,
         );
         handleClickOpenerr();
       }
@@ -1092,24 +1195,30 @@ function Visitorsregister() {
           ...d,
           label: d,
           value: d,
-        }))
+        })),
       );
     } catch (err) {
       const messages = err?.response?.data?.message;
       if (messages) {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon style={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              style={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>
+          </>,
         );
         handleClickOpenerr();
       } else {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon style={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{'something2  went wrong!'}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              style={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>
+              {"something2  went wrong!"}
+            </p>
+          </>,
         );
         handleClickOpenerr();
       }
@@ -1124,16 +1233,19 @@ function Visitorsregister() {
 
   const fetchallEmployee = async (type) => {
     try {
-      if (type.toLowerCase().includes('interview') && !type.toLowerCase().includes(' ')) {
+      if (
+        type.toLowerCase().includes("interview") &&
+        !type.toLowerCase().includes(" ")
+      ) {
         let res = await axios.post(SERVICE.ASSIGN_INTERVIEWER_VISITOR, {
-          type: 'Interviewer',
+          type: "Interviewer",
           fromcompany: company,
           frombranch: branch,
         });
 
         let filteruser = res.data.assigninterview.map((item) => ({
-          employee: item.employee ? item.employee?.toString() : '',
-          unit: item.fromunit ? item.fromunit?.toString() : '',
+          employee: item.employee ? item.employee?.toString() : "",
+          unit: item.fromunit ? item.fromunit?.toString() : "",
         }));
 
         filteruser = filteruser.map((d) => ({
@@ -1144,10 +1256,10 @@ function Visitorsregister() {
         }));
 
         setFilteredEmployee([...new Set(filteruser)]);
-      } else if (type.toLowerCase().includes('hiring manager')) {
+      } else if (type.toLowerCase().includes("hiring manager")) {
         // console.log(type.toLowerCase().includes("hiring manager"), "check")
         let res = await axios.post(SERVICE.ASSIGN_INTERVIEWER_VISITOR, {
-          type: 'Hiring Manager',
+          type: "Hiring Manager",
           fromcompany: company,
           frombranch: branch,
         });
@@ -1181,7 +1293,7 @@ function Visitorsregister() {
         setFilteredEmployee([...new Set(filteruser)]);
       }
     } catch (err) {
-      console.log(err, 'error');
+      console.log(err, "error");
     }
   };
 
@@ -1197,14 +1309,17 @@ function Visitorsregister() {
       setCatCode(res_vendor?.data?.visitors);
       // setVendorArray(res_vendor?.data?.visitors);
     } catch (err) {
-      console.log(err, 'err015');
+      console.log(err, "err015");
       const messages = err?.response?.data?.message;
       if (messages) {
         setShowAlert(
           <>
-            {' '}
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} /> <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>{' '}
-          </>
+            {" "}
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />{" "}
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>{" "}
+          </>,
         );
         handleClickOpenerr();
       } else {
@@ -1213,25 +1328,25 @@ function Visitorsregister() {
     }
   };
   useEffect(() => {
-    fetchallEmployee('host');
+    fetchallEmployee("host");
     fetchVendor();
   }, []);
 
-  let name = 'create';
-  let nameedit = 'edit';
+  let name = "create";
+  let nameedit = "edit";
   let allUploadedFiles = [];
 
-  let newval = 'VISIT#0001';
+  let newval = "VISIT#0001";
 
   let today = new Date();
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0');
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0");
   var yyyy = today.getFullYear();
 
   const formattedToday = `${yyyy}-${mm}-${dd}`;
   let now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
   let currtime = `${hours}:${minutes}`;
 
   const [allvisitor, setAllVisitor] = useState([]);
@@ -1254,9 +1369,12 @@ function Visitorsregister() {
       if (messages) {
         setShowAlert(
           <>
-            {' '}
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} /> <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>{' '}
-          </>
+            {" "}
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />{" "}
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>{" "}
+          </>,
         );
         handleClickOpenerr();
       } else {
@@ -1278,9 +1396,12 @@ function Visitorsregister() {
       if (messages) {
         setShowAlert(
           <>
-            {' '}
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} /> <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>{' '}
-          </>
+            {" "}
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />{" "}
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>{" "}
+          </>,
         );
         handleClickOpenerr();
       } else {
@@ -1298,17 +1419,23 @@ function Visitorsregister() {
       if (messages) {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>
+          </>,
         );
         handleClickOpenerr();
       } else {
         setShowAlert(
           <>
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} />
-            <p style={{ fontSize: '20px', fontWeight: 900 }}>{'something went wrong!'}</p>
-          </>
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>
+              {"something went wrong!"}
+            </p>
+          </>,
         );
         handleClickOpenerr();
       }
@@ -1316,7 +1443,9 @@ function Visitorsregister() {
   };
 
   useEffect(() => {
-    const matchedUnits = units.filter((unit) => unit.company === company && unit.branch === branch).map((unit) => unit.name);
+    const matchedUnits = units
+      .filter((unit) => unit.company === company && unit.branch === branch)
+      .map((unit) => unit.name);
 
     setFilteredUnits(matchedUnits);
   }, [filteredUnits]);
@@ -1327,7 +1456,7 @@ function Visitorsregister() {
     fetchUnits();
   }, []);
 
-  const [visitorCode, setVisitorCode] = useState('VISIT#0001');
+  const [visitorCode, setVisitorCode] = useState("VISIT#0001");
 
   const fetchLastindexVendor = async () => {
     try {
@@ -1337,46 +1466,51 @@ function Visitorsregister() {
         // },
       });
       let refNo = res_vendor?.data?.visitor?.visitorid;
-      let codenum = refNo.split('#');
+      let codenum = refNo.split("#");
       let prefixLength = Number(codenum[1]) + 1;
       let prefixString = String(prefixLength);
       let postfixLength =
         prefixString.length == 1
           ? `000${prefixString}`
           : prefixString.length == 2
-          ? `00${prefixString}`
-          : prefixString.length == 3
-          ? `0${prefixString}`
-          : prefixString.length == 4
-          ? `0${prefixString}`
-          : prefixString.length == 5
-          ? `0${prefixString}`
-          : prefixString.length == 6
-          ? `0${prefixString}`
-          : prefixString.length == 7
-          ? `0${prefixString}`
-          : prefixString.length == 8
-          ? `0${prefixString}`
-          : prefixString.length == 9
-          ? `0${prefixString}`
-          : prefixString.length == 10
-          ? `0${prefixString}`
-          : prefixString;
+            ? `00${prefixString}`
+            : prefixString.length == 3
+              ? `0${prefixString}`
+              : prefixString.length == 4
+                ? `0${prefixString}`
+                : prefixString.length == 5
+                  ? `0${prefixString}`
+                  : prefixString.length == 6
+                    ? `0${prefixString}`
+                    : prefixString.length == 7
+                      ? `0${prefixString}`
+                      : prefixString.length == 8
+                        ? `0${prefixString}`
+                        : prefixString.length == 9
+                          ? `0${prefixString}`
+                          : prefixString.length == 10
+                            ? `0${prefixString}`
+                            : prefixString;
 
-      let newval = 'VISIT#' + postfixLength;
+      let newval = "VISIT#" + postfixLength;
       setVisitorCode(newval);
 
       return newval;
     } catch (err) {
-      if (err?.response?.data?.message === 'Data not found!') {
+      if (err?.response?.data?.message === "Data not found!") {
       } else {
         const messages = err?.response?.data?.message;
         if (messages) {
           setShowAlert(
             <>
-              {' '}
-              <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} /> <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>{' '}
-            </>
+              {" "}
+              <ErrorOutlineOutlinedIcon
+                sx={{ fontSize: "100px", color: "orange" }}
+              />{" "}
+              <p style={{ fontSize: "20px", fontWeight: 900 }}>
+                {messages}
+              </p>{" "}
+            </>,
           );
           handleClickOpenerr();
         } else {
@@ -1397,7 +1531,7 @@ function Visitorsregister() {
 
       if (uploadBills?.length > 0) {
         uploadBills.forEach((item) => {
-          formData.append('visitordocument', item.file); // `files` is the key for multiple files
+          formData.append("visitordocument", item.file); // `files` is the key for multiple files
         });
       }
       const uniqueid = uuidv4();
@@ -1411,16 +1545,22 @@ function Visitorsregister() {
         visitorid: String(newval),
         visitorcommonid: isExistVisitor ? vendor?.visitorcommonid : uniqueid,
         visitortype: String(vendor.visitortype),
-        visitormode: 'Walk-In',
+        visitormode: "Walk-In",
 
         //Newvalue
         //Newvalue
         pgenerateviapincode: Boolean(vendor?.pgenerateviapincode || false),
-        pvillageorcity: String(vendor?.pvillageorcity || ''),
-        pdistrict: String(vendor?.pdistrict || ''),
-        cgenerateviapincode: !vendor.samesprmnt ? Boolean(vendor?.cgenerateviapincode || false) : Boolean(vendor?.pgenerateviapincode || false),
-        cvillageorcity: !vendor.samesprmnt ? String(vendor?.cvillageorcity || '') : String(vendor?.pvillageorcity || ''),
-        cdistrict: !vendor.samesprmnt ? String(vendor?.cdistrict || '') : String(vendor?.pdistrict || ''),
+        pvillageorcity: String(vendor?.pvillageorcity || ""),
+        pdistrict: String(vendor?.pdistrict || ""),
+        cgenerateviapincode: !vendor.samesprmnt
+          ? Boolean(vendor?.cgenerateviapincode || false)
+          : Boolean(vendor?.pgenerateviapincode || false),
+        cvillageorcity: !vendor.samesprmnt
+          ? String(vendor?.cvillageorcity || "")
+          : String(vendor?.pvillageorcity || ""),
+        cdistrict: !vendor.samesprmnt
+          ? String(vendor?.cdistrict || "")
+          : String(vendor?.pdistrict || ""),
 
         addesstype: String(vendor.addesstype),
         personalprefix: String(vendor.personalprefix),
@@ -1430,40 +1570,88 @@ function Visitorsregister() {
         houseflatnumber: String(vendor.houseflatnumber),
         streetroadname: String(vendor.streetroadname),
         localityareaname: String(vendor.localityareaname),
-        pcountry: String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
-        pstate: String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
-        pcity: String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
+        pcountry: String(
+          selectedCountryp?.name == undefined ? "" : selectedCountryp?.name,
+        ),
+        pstate: String(
+          selectedStatep?.name == undefined ? "" : selectedStatep?.name,
+        ),
+        pcity: String(
+          selectedCityp?.name == undefined ? "" : selectedCityp?.name,
+        ),
         ppincode: String(vendor.ppincode),
         gpscoordinate: String(vendor.gpscoordinate),
 
         samesprmnt: Boolean(vendor.samesprmnt),
         //current Address
-        caddesstype: !vendor.samesprmnt ? String(vendor.caddesstype) : String(vendor.addesstype),
-        cpersonalprefix: !vendor.samesprmnt ? String(vendor.cpersonalprefix) : String(vendor.personalprefix),
-        creferencename: !vendor.samesprmnt ? String(vendor.creferencename) : String(vendor.referencename),
-        clandmarkpositionprefix: !vendor.samesprmnt ? String(vendor.clandmarkpositionprefix) : String(vendor.landmarkpositionprefix),
-        clandmarkname: !vendor.samesprmnt ? String(vendor.clandmarkname) : String(vendor.landmarkname),
-        chouseflatnumber: !vendor.samesprmnt ? String(vendor.chouseflatnumber) : String(vendor.houseflatnumber),
-        cstreetroadname: !vendor.samesprmnt ? String(vendor.cstreetroadname) : String(vendor.streetroadname),
-        clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
-        ccountry: !vendor.samesprmnt ? String(selectedCountryc?.name == undefined ? '' : selectedCountryc?.name) : String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
-        cstate: !vendor.samesprmnt ? String(selectedStatec?.name == undefined ? '' : selectedStatec?.name) : String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
-        ccity: !vendor.samesprmnt ? String(selectedCityc?.name == undefined ? '' : selectedCityc?.name) : String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
-        cpincode: !vendor.samesprmnt ? String(vendor.cpincode) : String(vendor.ppincode),
-        cgpscoordinate: !vendor.samesprmnt ? String(vendor.cgpscoordinate) : String(vendor.gpscoordinate),
-        pbuildingapartmentname: String(vendor?.pbuildingapartmentname || ''),
-        paddressone: String(vendor?.paddressone || ''),
-        paddresstwo: String(vendor?.paddresstwo || ''),
-        paddressthree: String(vendor?.paddressthree || ''),
+        caddesstype: !vendor.samesprmnt
+          ? String(vendor.caddesstype)
+          : String(vendor.addesstype),
+        cpersonalprefix: !vendor.samesprmnt
+          ? String(vendor.cpersonalprefix)
+          : String(vendor.personalprefix),
+        creferencename: !vendor.samesprmnt
+          ? String(vendor.creferencename)
+          : String(vendor.referencename),
+        clandmarkpositionprefix: !vendor.samesprmnt
+          ? String(vendor.clandmarkpositionprefix)
+          : String(vendor.landmarkpositionprefix),
+        clandmarkname: !vendor.samesprmnt
+          ? String(vendor.clandmarkname)
+          : String(vendor.landmarkname),
+        chouseflatnumber: !vendor.samesprmnt
+          ? String(vendor.chouseflatnumber)
+          : String(vendor.houseflatnumber),
+        cstreetroadname: !vendor.samesprmnt
+          ? String(vendor.cstreetroadname)
+          : String(vendor.streetroadname),
+        clocalityareaname: !vendor.samesprmnt
+          ? String(vendor.clocalityareaname)
+          : String(vendor.localityareaname),
+        ccountry: !vendor.samesprmnt
+          ? String(
+              selectedCountryc?.name == undefined ? "" : selectedCountryc?.name,
+            )
+          : String(
+              selectedCountryp?.name == undefined ? "" : selectedCountryp?.name,
+            ),
+        cstate: !vendor.samesprmnt
+          ? String(
+              selectedStatec?.name == undefined ? "" : selectedStatec?.name,
+            )
+          : String(
+              selectedStatep?.name == undefined ? "" : selectedStatep?.name,
+            ),
+        ccity: !vendor.samesprmnt
+          ? String(selectedCityc?.name == undefined ? "" : selectedCityc?.name)
+          : String(selectedCityp?.name == undefined ? "" : selectedCityp?.name),
+        cpincode: !vendor.samesprmnt
+          ? String(vendor.cpincode)
+          : String(vendor.ppincode),
+        cgpscoordinate: !vendor.samesprmnt
+          ? String(vendor.cgpscoordinate)
+          : String(vendor.gpscoordinate),
+        pbuildingapartmentname: String(vendor?.pbuildingapartmentname || ""),
+        paddressone: String(vendor?.paddressone || ""),
+        paddresstwo: String(vendor?.paddresstwo || ""),
+        paddressthree: String(vendor?.paddressthree || ""),
 
-        caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
-        caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
-        caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
-        cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
+        caddressone: !vendor.samesprmnt
+          ? String(vendor?.caddressone || "")
+          : String(vendor?.paddressone || ""),
+        caddresstwo: !vendor.samesprmnt
+          ? String(vendor?.caddresstwo || "")
+          : String(vendor?.paddresstwo || ""),
+        caddressthree: !vendor.samesprmnt
+          ? String(vendor?.caddressthree || "")
+          : String(vendor?.paddressthree || ""),
+        cbuildingapartmentname: !vendor.samesprmnt
+          ? String(vendor?.cbuildingapartmentname || "")
+          : String(vendor?.pbuildingapartmentname || ""),
         addcandidate: true,
         date: String(formattedToday),
         prefix: String(vendor.prefix),
-        visitorname: String(vendor.firstname + ' ' + vendor.lastname),
+        visitorname: String(vendor.firstname + " " + vendor.lastname),
         visitorfirstname: String(vendor.firstname),
         visitorlastname: String(vendor.lastname),
         visitorwhatsapp: String(vendor.whatsapp),
@@ -1472,43 +1660,52 @@ function Visitorsregister() {
         visitorpurpose: String(vendor.visitorpurpose),
         visitorcontactnumber: String(vendor.mobile),
         visitoremail: String(vendor.email),
-        visitorcompnayname: '',
-        documenttype: '',
+        visitorcompnayname: "",
+        documenttype: "",
         addvisitorin: Boolean(true),
-        faceDescriptor: vendor?.faceDescriptor?.length > 0 ? vendor?.faceDescriptor : [],
-        documentnumber: '',
+        faceDescriptor:
+          vendor?.faceDescriptor?.length > 0 ? vendor?.faceDescriptor : [],
+        documentnumber: "",
         meetingdetails: true,
         meetingpersoncompany: String(company),
         meetingpersonbranch: branch,
         meetingpersonunit: vendor.unit,
-        meetingpersondepartment: '',
-        meetingpersonteam: '',
-        meetingpersonemployeename: '',
+        meetingpersondepartment: "",
+        meetingpersonteam: "",
+        meetingpersonemployeename: "",
         meetinglocationcompany: company,
         meetinglocationbranch: branch,
         meetinglocationunit: vendor.unit,
-        meetinglocationfloor: '',
-        meetinglocationarea: '',
+        meetinglocationfloor: "",
+        meetinglocationarea: "",
         escortinformation: true,
-        escortdetails: '',
-        equipmentborrowed: '',
-        outtime: '',
-        remark: '',
-        followupaction: '',
-        followupdate: '',
-        followuptime: '',
-        visitorbadge: '',
-        visitorsurvey: '',
-        detailsaddedy: String('Self /' + vendor.firstname + ' ' + vendor.lastname),
+        escortdetails: "",
+        equipmentborrowed: "",
+        outtime: "",
+        remark: "",
+        followupaction: "",
+        followupdate: "",
+        followuptime: "",
+        visitorbadge: "",
+        visitorsurvey: "",
+        detailsaddedy: String(
+          "Self /" + vendor.firstname + " " + vendor.lastname,
+        ),
         files: allUploadedFiles.concat(refImage, refImageDrag, capturedImages),
         followuparray: [
           {
             pgenerateviapincode: Boolean(vendor?.pgenerateviapincode || false),
-            pvillageorcity: String(vendor?.pvillageorcity || ''),
-            pdistrict: String(vendor?.pdistrict || ''),
-            cgenerateviapincode: !vendor.samesprmnt ? Boolean(vendor?.cgenerateviapincode || false) : Boolean(vendor?.pgenerateviapincode || false),
-            cvillageorcity: !vendor.samesprmnt ? String(vendor?.cvillageorcity || '') : String(vendor?.pvillageorcity || ''),
-            cdistrict: !vendor.samesprmnt ? String(vendor?.cdistrict || '') : String(vendor?.pdistrict || ''),
+            pvillageorcity: String(vendor?.pvillageorcity || ""),
+            pdistrict: String(vendor?.pdistrict || ""),
+            cgenerateviapincode: !vendor.samesprmnt
+              ? Boolean(vendor?.cgenerateviapincode || false)
+              : Boolean(vendor?.pgenerateviapincode || false),
+            cvillageorcity: !vendor.samesprmnt
+              ? String(vendor?.cvillageorcity || "")
+              : String(vendor?.pvillageorcity || ""),
+            cdistrict: !vendor.samesprmnt
+              ? String(vendor?.cdistrict || "")
+              : String(vendor?.pdistrict || ""),
             //Newvalue
             addesstype: String(vendor.addesstype),
             personalprefix: String(vendor.personalprefix),
@@ -1518,107 +1715,185 @@ function Visitorsregister() {
             houseflatnumber: String(vendor.houseflatnumber),
             streetroadname: String(vendor.streetroadname),
             localityareaname: String(vendor.localityareaname),
-            pcountry: String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
-            pstate: String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
-            pcity: String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
+            pcountry: String(
+              selectedCountryp?.name == undefined ? "" : selectedCountryp?.name,
+            ),
+            pstate: String(
+              selectedStatep?.name == undefined ? "" : selectedStatep?.name,
+            ),
+            pcity: String(
+              selectedCityp?.name == undefined ? "" : selectedCityp?.name,
+            ),
             ppincode: String(vendor.ppincode),
             gpscoordinate: String(vendor.gpscoordinate),
 
             samesprmnt: Boolean(vendor.samesprmnt),
             //current Address
-            caddesstype: !vendor.samesprmnt ? String(vendor.caddesstype) : String(vendor.addesstype),
-            cpersonalprefix: !vendor.samesprmnt ? String(vendor.cpersonalprefix) : String(vendor.personalprefix),
-            creferencename: !vendor.samesprmnt ? String(vendor.creferencename) : String(vendor.referencename),
-            clandmarkpositionprefix: !vendor.samesprmnt ? String(vendor.clandmarkpositionprefix) : String(vendor.landmarkpositionprefix),
-            clandmarkname: !vendor.samesprmnt ? String(vendor.clandmarkname) : String(vendor.landmarkname),
-            chouseflatnumber: !vendor.samesprmnt ? String(vendor.chouseflatnumber) : String(vendor.houseflatnumber),
-            cstreetroadname: !vendor.samesprmnt ? String(vendor.cstreetroadname) : String(vendor.streetroadname),
-            clocalityareaname: !vendor.samesprmnt ? String(vendor.clocalityareaname) : String(vendor.localityareaname),
-            ccountry: !vendor.samesprmnt ? String(selectedCountryc?.name == undefined ? '' : selectedCountryc?.name) : String(selectedCountryp?.name == undefined ? '' : selectedCountryp?.name),
-            cstate: !vendor.samesprmnt ? String(selectedStatec?.name == undefined ? '' : selectedStatec?.name) : String(selectedStatep?.name == undefined ? '' : selectedStatep?.name),
-            ccity: !vendor.samesprmnt ? String(selectedCityc?.name == undefined ? '' : selectedCityc?.name) : String(selectedCityp?.name == undefined ? '' : selectedCityp?.name),
-            cpincode: !vendor.samesprmnt ? String(vendor.cpincode) : String(vendor.ppincode),
-            cgpscoordinate: !vendor.samesprmnt ? String(vendor.cgpscoordinate) : String(vendor.gpscoordinate),
+            caddesstype: !vendor.samesprmnt
+              ? String(vendor.caddesstype)
+              : String(vendor.addesstype),
+            cpersonalprefix: !vendor.samesprmnt
+              ? String(vendor.cpersonalprefix)
+              : String(vendor.personalprefix),
+            creferencename: !vendor.samesprmnt
+              ? String(vendor.creferencename)
+              : String(vendor.referencename),
+            clandmarkpositionprefix: !vendor.samesprmnt
+              ? String(vendor.clandmarkpositionprefix)
+              : String(vendor.landmarkpositionprefix),
+            clandmarkname: !vendor.samesprmnt
+              ? String(vendor.clandmarkname)
+              : String(vendor.landmarkname),
+            chouseflatnumber: !vendor.samesprmnt
+              ? String(vendor.chouseflatnumber)
+              : String(vendor.houseflatnumber),
+            cstreetroadname: !vendor.samesprmnt
+              ? String(vendor.cstreetroadname)
+              : String(vendor.streetroadname),
+            clocalityareaname: !vendor.samesprmnt
+              ? String(vendor.clocalityareaname)
+              : String(vendor.localityareaname),
+            ccountry: !vendor.samesprmnt
+              ? String(
+                  selectedCountryc?.name == undefined
+                    ? ""
+                    : selectedCountryc?.name,
+                )
+              : String(
+                  selectedCountryp?.name == undefined
+                    ? ""
+                    : selectedCountryp?.name,
+                ),
+            cstate: !vendor.samesprmnt
+              ? String(
+                  selectedStatec?.name == undefined ? "" : selectedStatec?.name,
+                )
+              : String(
+                  selectedStatep?.name == undefined ? "" : selectedStatep?.name,
+                ),
+            ccity: !vendor.samesprmnt
+              ? String(
+                  selectedCityc?.name == undefined ? "" : selectedCityc?.name,
+                )
+              : String(
+                  selectedCityp?.name == undefined ? "" : selectedCityp?.name,
+                ),
+            cpincode: !vendor.samesprmnt
+              ? String(vendor.cpincode)
+              : String(vendor.ppincode),
+            cgpscoordinate: !vendor.samesprmnt
+              ? String(vendor.cgpscoordinate)
+              : String(vendor.gpscoordinate),
             visitortype: String(vendor.visitortype),
-            visitormode: 'Walk-In',
+            visitormode: "Walk-In",
             visitorpurpose: String(vendor.visitorpurpose),
             meetingdetails: true,
             intime: String(currtime),
-            pbuildingapartmentname: String(vendor?.pbuildingapartmentname || ''),
-            paddressone: String(vendor?.paddressone || ''),
-            paddresstwo: String(vendor?.paddresstwo || ''),
-            paddressthree: String(vendor?.paddressthree || ''),
+            pbuildingapartmentname: String(
+              vendor?.pbuildingapartmentname || "",
+            ),
+            paddressone: String(vendor?.paddressone || ""),
+            paddresstwo: String(vendor?.paddresstwo || ""),
+            paddressthree: String(vendor?.paddressthree || ""),
 
-            caddressone: !vendor.samesprmnt ? String(vendor?.caddressone || '') : String(vendor?.paddressone || ''),
-            caddresstwo: !vendor.samesprmnt ? String(vendor?.caddresstwo || '') : String(vendor?.paddresstwo || ''),
-            caddressthree: !vendor.samesprmnt ? String(vendor?.caddressthree || '') : String(vendor?.paddressthree || ''),
-            cbuildingapartmentname: !vendor.samesprmnt ? String(vendor?.cbuildingapartmentname || '') : String(vendor?.pbuildingapartmentname || ''),
+            caddressone: !vendor.samesprmnt
+              ? String(vendor?.caddressone || "")
+              : String(vendor?.paddressone || ""),
+            caddresstwo: !vendor.samesprmnt
+              ? String(vendor?.caddresstwo || "")
+              : String(vendor?.paddresstwo || ""),
+            caddressthree: !vendor.samesprmnt
+              ? String(vendor?.caddressthree || "")
+              : String(vendor?.paddressthree || ""),
+            cbuildingapartmentname: !vendor.samesprmnt
+              ? String(vendor?.cbuildingapartmentname || "")
+              : String(vendor?.pbuildingapartmentname || ""),
             meetingpersoncompany: String(company),
             meetingpersonbranch: String(branch),
             meetingpersonunit: vendor.unit,
-            meetingpersondepartment: '',
-            meetingpersonteam: '',
-            meetingpersonemployeename: '',
+            meetingpersondepartment: "",
+            meetingpersonteam: "",
+            meetingpersonemployeename: "",
 
             meetinglocationcompany: String(company),
             meetinglocationbranch: String(branch),
             meetinglocationunit: vendor.unit,
-            meetinglocationfloor: '',
-            meetinglocationarea: '',
+            meetinglocationfloor: "",
+            meetinglocationarea: "",
             escortinformation: true,
-            escortdetails: '',
-            equipmentborrowed: '',
-            outtime: '',
-            remark: '',
-            followupaction: '',
-            followupdate: '',
-            followuptime: '',
-            visitorbadge: '',
-            visitorsurvey: '',
+            escortdetails: "",
+            equipmentborrowed: "",
+            outtime: "",
+            remark: "",
+            followupaction: "",
+            followupdate: "",
+            followuptime: "",
+            visitorbadge: "",
+            visitorsurvey: "",
           },
         ],
-        interactorstatus: String('visitor'),
+        interactorstatus: String("visitor"),
         addedby: [{ name: String(vendor.firstname), date: String(new Date()) }],
       };
 
-      formData.append('jsonData', JSON.stringify(jsonData));
-      let addVendorDetails = await axios.post(SERVICE.CREATE_VISITORS, formData, {});
-      const filesImages = allUploadedFiles.concat(refImage, refImageDrag, capturedImages);
+      formData.append("jsonData", JSON.stringify(jsonData));
+      let addVendorDetails = await axios.post(
+        SERVICE.CREATE_VISITORS,
+        formData,
+        {},
+      );
+      const filesImages = allUploadedFiles.concat(
+        refImage,
+        refImageDrag,
+        capturedImages,
+      );
       const visitorInfoDetails = await BiometricVisitorAddition({
         company: [String(company)],
         branch: [String(branch)],
-        unit :[],
-        floor :[],
-        area :[],
-        visitorid:newval,
-        name: String(vendor.firstname + '' + vendor.lastname),
+        unit: [],
+        floor: [],
+        area: [],
+        visitorid: newval,
+        name: String(vendor.firstname + "" + vendor.lastname),
         photo: filesImages[0]?.base64,
-        date: Boolean(vendor.isinterviewnow) ? formattedToday : vendor.interviewpreferedate ? vendor.interviewpreferedate : formattedToday,
+        date: Boolean(vendor.isinterviewnow)
+          ? formattedToday
+          : vendor.interviewpreferedate
+            ? vendor.interviewpreferedate
+            : formattedToday,
         intime: String(currtime),
         visitoremail: String(vendor.email),
         visitorcontactnumber: String(vendor.mobile),
-                              page:"Visitor Link",
-              pagedetails:"Visitor With QR"
+        page: "Visitor Link",
+        pagedetails: "Visitor With QR",
+        cardNum: "",
       });
-      const resdata = (await fetchLastindexVendor()) || 'VISIT#0001';
+      const resdata = (await fetchLastindexVendor()) || "VISIT#0001";
 
-      let addVisitorProfileDetail = await axios.post(SERVICE.VISITORDETAILS_LOG_CREATE, {
-        // headers: {
-        //   Authorization: `Bearer ${auth.APIToken}`,
-        // },
-        visitorname: String(vendor.firstname + ' ' + vendor.lastname),
-        visitorcontactnumber: String(vendor.mobile),
-        visitoremail: String(vendor.email),
-        materialcarrying: [],
-        visitorcommonid: isExistVisitor ? vendor?.visitorcommonid : uniqueid,
-        files: allUploadedFiles.concat(refImage, refImageDrag, capturedImages),
-        addedby: [
-          {
-            name: String(vendor.firstname),
-            date: String(new Date()),
-          },
-        ],
-      });
+      let addVisitorProfileDetail = await axios.post(
+        SERVICE.VISITORDETAILS_LOG_CREATE,
+        {
+          // headers: {
+          //   Authorization: `Bearer ${auth.APIToken}`,
+          // },
+          visitorname: String(vendor.firstname + " " + vendor.lastname),
+          visitorcontactnumber: String(vendor.mobile),
+          visitoremail: String(vendor.email),
+          materialcarrying: [],
+          visitorcommonid: isExistVisitor ? vendor?.visitorcommonid : uniqueid,
+          files: allUploadedFiles.concat(
+            refImage,
+            refImageDrag,
+            capturedImages,
+          ),
+          addedby: [
+            {
+              name: String(vendor.firstname),
+              date: String(new Date()),
+            },
+          ],
+        },
+      );
       if (checkCandTrue) {
         fetchAssignedBy();
         backPage(`/addcandidates/${idfinal}`);
@@ -1634,22 +1909,22 @@ function Visitorsregister() {
       // }
       setVendor({
         ...vendor,
-        visitorname: '',
-        intime: '',
-        visitorcontactnumber: '',
-        visitoremail: '',
-        visitorcompnayname: '',
-        documentnumber: '',
+        visitorname: "",
+        intime: "",
+        visitorcontactnumber: "",
+        visitoremail: "",
+        visitorcompnayname: "",
+        documentnumber: "",
         meetingdetails: true,
         escortinformation: true,
-        escortdetails: '',
-        equipmentborrowed: '',
-        outtime: '',
-        remark: '',
-        followupdate: '',
-        followuptime: '',
-        visitorbadge: '',
-        visitorsurvey: '',
+        escortdetails: "",
+        equipmentborrowed: "",
+        outtime: "",
+        remark: "",
+        followupdate: "",
+        followuptime: "",
+        visitorbadge: "",
+        visitorsurvey: "",
       });
       setloadingdeloverall(false);
       setVisitorLogData([]);
@@ -1667,15 +1942,18 @@ function Visitorsregister() {
       // );
       // handleClickOpenerr();
     } catch (err) {
-      console.log(err, '588');
+      console.log(err, "588");
       setButtonLoad(false);
       const messages = err?.response?.data?.message;
       if (messages) {
         setShowAlert(
           <>
-            {' '}
-            <ErrorOutlineOutlinedIcon sx={{ fontSize: '100px', color: 'orange' }} /> <p style={{ fontSize: '20px', fontWeight: 900 }}>{messages}</p>{' '}
-          </>
+            {" "}
+            <ErrorOutlineOutlinedIcon
+              sx={{ fontSize: "100px", color: "orange" }}
+            />{" "}
+            <p style={{ fontSize: "20px", fontWeight: 900 }}>{messages}</p>{" "}
+          </>,
         );
         handleClickOpenerr();
       } else {
@@ -1698,51 +1976,60 @@ function Visitorsregister() {
     //   // setPopupSeverityMalert("info");
     //   // handleClickOpenPopupMalert();
     // }
-    if (vendor.firstname == '') {
-      setShowAlert('Please Enter First Name');
+    if (vendor.firstname == "") {
+      setShowAlert("Please Enter First Name");
       handleClickOpenerr();
-    } else if (!isExistVisitor && vendor.lastname == '') {
-      setShowAlert('Please Enter Last Name');
+    } else if (!isExistVisitor && vendor.lastname == "") {
+      setShowAlert("Please Enter Last Name");
       handleClickOpenerr();
-    } else if (vendor.email == '') {
-      setShowAlert('Please Enter Email');
+    } else if (vendor.email == "") {
+      setShowAlert("Please Enter Email");
       handleClickOpenerr();
-    } else if (!isValidEmail(vendor.email) && vendor.email != '') {
+    } else if (!isValidEmail(vendor.email) && vendor.email != "") {
       setShowAlert(
         <>
-          <p style={{ fontSize: '20px', fontWeight: 900 }}>{'Please Enter  Valid Email'}</p>
-        </>
+          <p style={{ fontSize: "20px", fontWeight: 900 }}>
+            {"Please Enter  Valid Email"}
+          </p>
+        </>,
       );
       handleClickOpenerr();
-    } else if (vendor.documenttype === '' || vendor.documenttype === 'Please Select Document Type' || !vendor.documenttype) {
-      setShowAlert('Please Select Document Type');
+    } else if (
+      vendor.documenttype === "" ||
+      vendor.documenttype === "Please Select Document Type" ||
+      !vendor.documenttype
+    ) {
+      setShowAlert("Please Select Document Type");
       handleClickOpenerr();
-    } else if (vendor.documentnumber === '' || !vendor.documentnumber) {
-      setShowAlert('Please Enter Document Number');
+    } else if (vendor.documentnumber === "" || !vendor.documentnumber) {
+      setShowAlert("Please Enter Document Number");
       handleClickOpenerr();
     } else if (uploadBills?.length === 0 && billUploadedFiles?.length === 0) {
-      setShowAlert('Please Upload Document');
+      setShowAlert("Please Upload Document");
       handleClickOpenerr();
-    } else if (vendor.mobile == '') {
-      setShowAlert('Please Enter Mobile Number');
+    } else if (vendor.mobile == "") {
+      setShowAlert("Please Enter Mobile Number");
       handleClickOpenerr();
     } else if (vendor.mobile.length != 10) {
-      setShowAlert('Please Enter Valid Mobile No!');
+      setShowAlert("Please Enter Valid Mobile No!");
       handleClickOpenerr();
-    } else if (vendor.whatsapp == '') {
-      setShowAlert('Please Enter Whatsapp Number');
+    } else if (vendor.whatsapp == "") {
+      setShowAlert("Please Enter Whatsapp Number");
       handleClickOpenerr();
     } else if (vendor.whatsapp.length != 10) {
-      setShowAlert('Please Enter Valid Whatsapp No !');
+      setShowAlert("Please Enter Valid Whatsapp No !");
       handleClickOpenerr();
-    } else if (vendor.visitortype === 'Please Select Visitor Type') {
-      setShowAlert('Please Select Visitor Type');
+    } else if (vendor.visitortype === "Please Select Visitor Type") {
+      setShowAlert("Please Select Visitor Type");
       handleClickOpenerr();
-    } else if (vendor.visitorpurpose === 'Please Select Visitor Purpose') {
-      setShowAlert('Please Select Visitor Purpose');
+    } else if (vendor.visitorpurpose === "Please Select Visitor Purpose") {
+      setShowAlert("Please Select Visitor Purpose");
       handleClickOpenerr();
-    } else if (vendor.hostname === 'Please Select HostName' || vendor.hostname === '') {
-      setShowAlert('Please Select HostName');
+    } else if (
+      vendor.hostname === "Please Select HostName" ||
+      vendor.hostname === ""
+    ) {
+      setShowAlert("Please Select HostName");
       handleClickOpenerr();
     } else {
       nextStep();
@@ -1755,7 +2042,7 @@ function Visitorsregister() {
     //   handleClickOpenerr();
     // }
     if (refImage?.length === 0) {
-      setShowAlert('Please Upload Photograph');
+      setShowAlert("Please Upload Photograph");
       handleClickOpenerr();
       // setPopupContentMalert("Please Upload Photograph!");
       // setPopupSeverityMalert("info");
@@ -1829,18 +2116,18 @@ function Visitorsregister() {
   }, []);
 
   const resizeImageKeepFormat = (base64, targetWidth, targetHeight) => {
-    console.log(targetWidth, targetHeight, 'targetWidth, targetHeight');
+    console.log(targetWidth, targetHeight, "targetWidth, targetHeight");
     return new Promise((resolve, reject) => {
       const img = new Image();
-      img.crossOrigin = 'Anonymous';
+      img.crossOrigin = "Anonymous";
       img.onload = () => {
         const width = targetWidth || img.width;
         const height = targetHeight || img.height;
 
-        const canvas = document.createElement('canvas');
+        const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
 
         const scale = Math.min(width / img.width, height / img.height);
         const x = width / 2 - (img.width * scale) / 2;
@@ -1848,7 +2135,10 @@ function Visitorsregister() {
         ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
 
         // keep same format as original base64
-        const mimeType = base64.substring(base64.indexOf(':') + 1, base64.indexOf(';'));
+        const mimeType = base64.substring(
+          base64.indexOf(":") + 1,
+          base64.indexOf(";"),
+        );
 
         canvas.toBlob((blob) => {
           const reader = new FileReader();
@@ -1857,7 +2147,7 @@ function Visitorsregister() {
           reader.readAsDataURL(blob);
         }, mimeType);
       };
-      img.onerror = () => reject(new Error('Invalid image file'));
+      img.onerror = () => reject(new Error("Invalid image file"));
       img.src = base64;
     });
   };
@@ -1867,7 +2157,7 @@ function Visitorsregister() {
     setBtnUpload(true);
 
     const maxFileSize = overllsettings?.filesize || 1; // MB
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']; // ✅ whitelist extensions
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"]; // ✅ whitelist extensions
 
     const files = Array.from(e.target.files).filter((file) => {
       const sizeInMB = file.size / (1024 * 1024);
@@ -1875,14 +2165,16 @@ function Visitorsregister() {
       // ✅ Accept only allowed type + under max size
       if (!allowedTypes.includes(file.type)) {
         setPopupContentMalert(`"${file.name}" is not a supported format!`);
-        setPopupSeverityMalert('info');
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
         return false;
       }
 
       if (sizeInMB >= maxFileSize) {
-        setPopupContentMalert(`"${file.name}" exceeds ${maxFileSize} MB limit!`);
-        setPopupSeverityMalert('info');
+        setPopupContentMalert(
+          `"${file.name}" exceeds ${maxFileSize} MB limit!`,
+        );
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
         return false;
       }
@@ -1907,7 +2199,10 @@ function Visitorsregister() {
         image.onload = async () => {
           try {
             // ✅ Face detection
-            const detections = await faceapi.detectAllFaces(image, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
+            const detections = await faceapi
+              .detectAllFaces(image, new faceapi.TinyFaceDetectorOptions())
+              .withFaceLandmarks()
+              .withFaceDescriptors();
 
             if (detections.length > 0) {
               const faceDescriptor = detections[0].descriptor;
@@ -1915,7 +2210,7 @@ function Visitorsregister() {
               // ✅ Duplicate check API
               const response = await axios.post(
                 `${SERVICE.DUPLICATECANDIDATEFACEDETECTVISITOR}`,
-                { faceDescriptor: Array.from(faceDescriptor) }
+                { faceDescriptor: Array.from(faceDescriptor) },
                 // { headers: { Authorization: `Bearer ${auth.APIToken}` } }
               );
 
@@ -1935,7 +2230,11 @@ function Visitorsregister() {
                 let base64Data = reader.result;
 
                 if (overllsettings?.dimensionswidth || overllsettings?.height) {
-                  base64Data = await resizeImageKeepFormat(reader.result, overllsettings?.dimensionswidth || image.width, overllsettings?.height || image.height);
+                  base64Data = await resizeImageKeepFormat(
+                    reader.result,
+                    overllsettings?.dimensionswidth || image.width,
+                    overllsettings?.height || image.height,
+                  );
                 }
 
                 // ✅ Push resized/original image
@@ -1944,12 +2243,12 @@ function Visitorsregister() {
                   size: file.size,
                   type: file.type,
                   preview: base64Data,
-                  base64: base64Data.split(',')[1],
+                  base64: base64Data.split(",")[1],
                 });
                 setRefImage([...newSelectedFiles]);
 
                 // ✅ Blob conversion
-                const binaryData = atob(base64Data.split(',')[1]);
+                const binaryData = atob(base64Data.split(",")[1]);
                 const uint8Array = new Uint8Array(binaryData.length);
                 for (let i = 0; i < binaryData.length; i++) {
                   uint8Array[i] = binaryData.charCodeAt(i);
@@ -1960,7 +2259,10 @@ function Visitorsregister() {
                 // ✅ Default states for bg/color
                 setBgbtn((prev) => [...prev, false]);
                 setColor((prev) => {
-                  const updated = [...prev, overllsettings?.backgroundcolour || '#FFFFFF'];
+                  const updated = [
+                    ...prev,
+                    overllsettings?.backgroundcolour || "#FFFFFF",
+                  ];
                   setIsLightColor(updated.map((c) => calculateLuminance(c)));
                   return updated;
                 });
@@ -1979,14 +2281,14 @@ function Visitorsregister() {
               reader.readAsDataURL(file);
             } else {
               setPopupContentMalert(`No face detected in "${file.name}"`);
-              setPopupSeverityMalert('info');
+              setPopupSeverityMalert("info");
               handleClickOpenPopupMalert();
               resolve();
             }
           } catch (error) {
             console.error(error);
             setPopupContentMalert(`Error processing "${file.name}"`);
-            setPopupSeverityMalert('info');
+            setPopupSeverityMalert("info");
             handleClickOpenPopupMalert();
             resolve();
           }
@@ -1994,7 +2296,7 @@ function Visitorsregister() {
 
         image.onerror = () => {
           setPopupContentMalert(`Error loading "${file.name}"`);
-          setPopupSeverityMalert('info');
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           resolve();
         };
@@ -2010,7 +2312,7 @@ function Visitorsregister() {
     setBtnUpload([]);
 
     const maxFileSize = overllsettings?.filesize || 1; // MB
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg']; // ✅ whitelist extensions
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"]; // ✅ whitelist extensions
 
     const files = Array.from(e.dataTransfer.files).filter((file) => {
       const sizeInMB = file.size / (1024 * 1024);
@@ -2018,14 +2320,16 @@ function Visitorsregister() {
       // ✅ Accept only allowed type + under max size
       if (!allowedTypes.includes(file.type)) {
         setPopupContentMalert(`"${file.name}" is not a supported format!`);
-        setPopupSeverityMalert('info');
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
         return false;
       }
 
       if (sizeInMB >= maxFileSize) {
-        setPopupContentMalert(`"${file.name}" exceeds ${maxFileSize} MB limit!`);
-        setPopupSeverityMalert('info');
+        setPopupContentMalert(
+          `"${file.name}" exceeds ${maxFileSize} MB limit!`,
+        );
+        setPopupSeverityMalert("info");
         handleClickOpenPopupMalert();
         return false;
       }
@@ -2050,7 +2354,10 @@ function Visitorsregister() {
         image.onload = async () => {
           try {
             // ✅ Face detection
-            const detections = await faceapi.detectAllFaces(image, new faceapi.TinyFaceDetectorOptions()).withFaceLandmarks().withFaceDescriptors();
+            const detections = await faceapi
+              .detectAllFaces(image, new faceapi.TinyFaceDetectorOptions())
+              .withFaceLandmarks()
+              .withFaceDescriptors();
 
             if (detections.length > 0) {
               const faceDescriptor = detections[0].descriptor;
@@ -2058,7 +2365,7 @@ function Visitorsregister() {
               // ✅ Duplicate check API
               const response = await axios.post(
                 `${SERVICE.DUPLICATECANDIDATEFACEDETECTVISITOR}`,
-                { faceDescriptor: Array.from(faceDescriptor) }
+                { faceDescriptor: Array.from(faceDescriptor) },
                 // { headers: { Authorization: `Bearer ${auth.APIToken}` } }
               );
 
@@ -2078,7 +2385,11 @@ function Visitorsregister() {
                 let base64Data = reader.result;
 
                 if (overllsettings?.dimensionswidth || overllsettings?.height) {
-                  base64Data = await resizeImageKeepFormat(reader.result, overllsettings?.dimensionswidth || image.width, overllsettings?.height || image.height);
+                  base64Data = await resizeImageKeepFormat(
+                    reader.result,
+                    overllsettings?.dimensionswidth || image.width,
+                    overllsettings?.height || image.height,
+                  );
                 }
 
                 // ✅ Push resized/original image
@@ -2087,12 +2398,12 @@ function Visitorsregister() {
                   size: file.size,
                   type: file.type,
                   preview: base64Data,
-                  base64: base64Data.split(',')[1],
+                  base64: base64Data.split(",")[1],
                 });
                 setRefImageDrag([...newSelectedFiles]);
 
                 // ✅ Blob conversion
-                const binaryData = atob(base64Data.split(',')[1]);
+                const binaryData = atob(base64Data.split(",")[1]);
                 const uint8Array = new Uint8Array(binaryData.length);
                 for (let i = 0; i < binaryData.length; i++) {
                   uint8Array[i] = binaryData.charCodeAt(i);
@@ -2103,7 +2414,10 @@ function Visitorsregister() {
                 // ✅ Default states for bg/color
                 setBgbtnDrag((prev) => [...prev, false]);
                 setColorDrag((prev) => {
-                  const updated = [...prev, overllsettings?.backgroundcolour || '#FFFFFF'];
+                  const updated = [
+                    ...prev,
+                    overllsettings?.backgroundcolour || "#FFFFFF",
+                  ];
                   setIsLightColor(updated.map((c) => calculateLuminance(c)));
                   return updated;
                 });
@@ -2122,14 +2436,14 @@ function Visitorsregister() {
               reader.readAsDataURL(file);
             } else {
               setPopupContentMalert(`No face detected in "${file.name}"`);
-              setPopupSeverityMalert('info');
+              setPopupSeverityMalert("info");
               handleClickOpenPopupMalert();
               resolve();
             }
           } catch (error) {
             console.error(error);
             setPopupContentMalert(`Error processing "${file.name}"`);
-            setPopupSeverityMalert('info');
+            setPopupSeverityMalert("info");
             handleClickOpenPopupMalert();
             resolve();
           }
@@ -2137,7 +2451,7 @@ function Visitorsregister() {
 
         image.onerror = () => {
           setPopupContentMalert(`Error loading "${file.name}"`);
-          setPopupSeverityMalert('info');
+          setPopupSeverityMalert("info");
           handleClickOpenPopupMalert();
           resolve();
         };
@@ -2157,8 +2471,8 @@ function Visitorsregister() {
       };
       reader.readAsDataURL(xhr.response);
     };
-    xhr.open('GET', url);
-    xhr.responseType = 'blob';
+    xhr.open("GET", url);
+    xhr.responseType = "blob";
     xhr.send();
   }
 
@@ -2177,13 +2491,13 @@ function Visitorsregister() {
     setColor(colorArray);
   };
   const renderFilePreview = async (file, index) => {
-    console.log(index, 'indes');
+    console.log(index, "indes");
     const response = await fetch(file.preview);
     const blob = await response.blob();
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = url;
-    window.open(link, '_blank');
+    window.open(link, "_blank");
   };
   const removeCapturedImage = (index) => {
     const newCapturedImages = [...capturedImages];
@@ -2191,7 +2505,7 @@ function Visitorsregister() {
     setCapturedImages(newCapturedImages);
   };
   const resetImage = () => {
-    setGetImg('');
+    setGetImg("");
     setRefImage([]);
     setImage([]);
     setPreviewURL(null);
@@ -2216,9 +2530,9 @@ function Visitorsregister() {
     event.preventDefault();
     const clipboardItems = event.clipboardData.items;
     for (let item of clipboardItems) {
-      if (item.type.startsWith('image')) {
+      if (item.type.startsWith("image")) {
         const file = item.getAsFile();
-        console.log(file, 'file');
+        console.log(file, "file");
         if (file) {
           previewFile(file); // Preview the image
           await handleChangeImageDrag({ dataTransfer: { files: [file] } }); // Process the image
@@ -2254,8 +2568,17 @@ function Visitorsregister() {
     return (
       <>
         <Box>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Typography sx={{ color: '#171A1C', fontWeight: 700, fontFamily: 'JostMedium', fontSize: { md: '25px', sm: '25px', xs: '22px' } }}>Visitor Registration</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography
+              sx={{
+                color: "#171A1C",
+                fontWeight: 700,
+                fontFamily: "JostMedium",
+                fontSize: { md: "25px", sm: "25px", xs: "22px" },
+              }}
+            >
+              Visitor Registration
+            </Typography>
           </Box>
           <br />
           <Grid container spacing={2}>
@@ -2449,13 +2772,13 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
-                {' '}
-                <b>First Name</b> <b style={{ color: 'red' }}>*</b>:
+                {" "}
+                <b>First Name</b> <b style={{ color: "red" }}>*</b>:
               </Typography>
               <Grid container>
                 <Grid item md={3} sm={3} xs={3}>
@@ -2468,7 +2791,7 @@ function Visitorsregister() {
                       }}
                       disabled={isExistVisitor}
                       sx={{
-                        backgroundColor: '#E3E3E3',
+                        backgroundColor: "#E3E3E3",
                       }}
                     >
                       <MenuItem value="Mr">Mr</MenuItem>
@@ -2484,7 +2807,7 @@ function Visitorsregister() {
                       id="component-outlined"
                       type="text"
                       style={{
-                        backgroundColor: '#E3E3E3', // Background color
+                        backgroundColor: "#E3E3E3", // Background color
                       }}
                       disabled={isExistVisitor}
                       value={vendor.firstname}
@@ -2504,19 +2827,19 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
-                {' '}
+                {" "}
                 <b>Last Name</b>
-                <b style={{ color: 'red' }}>*</b>:&emsp;
+                <b style={{ color: "red" }}>*</b>:&emsp;
               </Typography>
               <FormControl size="small" fullWidth>
                 <OutlinedInput
                   style={{
-                    backgroundColor: '#E3E3E3', // Background color
+                    backgroundColor: "#E3E3E3", // Background color
                   }}
                   disabled={isExistVisitor}
                   id="component-outlined"
@@ -2536,18 +2859,18 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
-                {' '}
-                <b> Email</b> <b style={{ color: 'red' }}>*</b>:&emsp;
+                {" "}
+                <b> Email</b> <b style={{ color: "red" }}>*</b>:&emsp;
               </Typography>
               <FormControl size="small" fullWidth>
                 <OutlinedInput
                   style={{
-                    backgroundColor: '#E3E3E3', // Background color
+                    backgroundColor: "#E3E3E3", // Background color
                   }}
                   id="component-outlined"
                   type="email"
@@ -2566,9 +2889,9 @@ function Visitorsregister() {
             <Grid item md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
                 <b>Visitor ID / Document Details</b>
@@ -2577,7 +2900,7 @@ function Visitorsregister() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Document Type<b style={{ color: 'red' }}>*</b>
+                  Document Type<b style={{ color: "red" }}>*</b>
                 </Typography>
                 <Selects
                   maxMenuHeight={300}
@@ -2599,27 +2922,27 @@ function Visitorsregister() {
             <Grid item md={4} xs={12} sm={12}>
               <FormControl fullWidth size="small">
                 <Typography>
-                  Document Number<b style={{ color: 'red' }}>*</b>
+                  Document Number<b style={{ color: "red" }}>*</b>
                 </Typography>
                 <OutlinedInput
                   id="component-outlined"
                   type="text"
                   style={{
-                    backgroundColor: '#E3E3E3', // Background color
+                    backgroundColor: "#E3E3E3", // Background color
                   }}
                   value={vendor.documentnumber}
                   // placeholder="Please Enter Document Number"
                   onChange={(e) => {
-                    if (vendor.documenttype === 'Aadhar Card') {
+                    if (vendor.documenttype === "Aadhar Card") {
                       const regex = /^[0-9]+$/; // Only allows positive integers
                       const inputValue = e.target.value?.slice(0, 12);
-                      if (regex.test(inputValue) || inputValue === '') {
+                      if (regex.test(inputValue) || inputValue === "") {
                         setVendor({
                           ...vendor,
                           documentnumber: inputValue,
                         });
                       }
-                    } else if (vendor.documenttype === 'Pan Card') {
+                    } else if (vendor.documenttype === "Pan Card") {
                       if (e.target.value?.length < 11) {
                         setVendor({
                           ...vendor,
@@ -2638,7 +2961,7 @@ function Visitorsregister() {
             </Grid>
             <Grid item md={4} sm={12} xs={12}>
               <Typography>
-                Upload Document<b style={{ color: 'red' }}>*</b>
+                Upload Document<b style={{ color: "red" }}>*</b>
               </Typography>
               <Grid>
                 <Grid item md={2} sm={12} xs={12}>
@@ -2647,7 +2970,9 @@ function Visitorsregister() {
                     variant="outlined"
                     component="label"
                     sx={{
-                      '@media only screen and (max-width:550px)': { marginY: '5px' },
+                      "@media only screen and (max-width:550px)": {
+                        marginY: "5px",
+                      },
                       //  ...buttonStyles?.buttonsubmit
                     }}
                   >
@@ -2675,12 +3000,17 @@ function Visitorsregister() {
                       <Grid item md={2} sm={2} xs={2}>
                         <Box
                           style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          <img className={classes.preview} src={getFileIcon(data.name || data.file.name)} height="25" alt="file icon" />
+                          <img
+                            className={classes.preview}
+                            src={getFileIcon(data.name || data.file.name)}
+                            height="25"
+                            alt="file icon"
+                          />
                           {/* )} */}
                         </Box>
                       </Grid>
@@ -2690,28 +3020,30 @@ function Visitorsregister() {
                         sm={8}
                         xs={8}
                         style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
                       >
-                        <Typography variant="subtitle2">{data.name || data.file.name} </Typography>
+                        <Typography variant="subtitle2">
+                          {data.name || data.file.name}{" "}
+                        </Typography>
                       </Grid>
                       <Grid item md={2} sm={2} xs={2}>
                         <Button
                           sx={{
-                            padding: '14px 14px',
-                            minWidth: '40px !important',
-                            borderRadius: '50% !important',
-                            ':hover': {
-                              backgroundColor: '#80808036', // theme.palette.primary.main
+                            padding: "14px 14px",
+                            minWidth: "40px !important",
+                            borderRadius: "50% !important",
+                            ":hover": {
+                              backgroundColor: "#80808036", // theme.palette.primary.main
                             },
                           }}
                         >
                           <VisibilityOutlinedIcon
                             style={{
-                              fontsize: 'large',
-                              color: '#357AE8',
+                              fontsize: "large",
+                              color: "#357AE8",
                             }}
                             onClick={() => renderFilePreviewMulter(data.file)}
                           />
@@ -2719,19 +3051,19 @@ function Visitorsregister() {
 
                         <Button
                           sx={{
-                            padding: '14px 14px',
-                            minWidth: '40px !important',
-                            borderRadius: '50% !important',
-                            ':hover': {
-                              backgroundColor: '#80808036', // theme.palette.primary.main
+                            padding: "14px 14px",
+                            minWidth: "40px !important",
+                            borderRadius: "50% !important",
+                            ":hover": {
+                              backgroundColor: "#80808036", // theme.palette.primary.main
                             },
                           }}
                           onClick={() => handleDeleteFileDocumentEdit(index)}
                         >
                           <FaTrash
                             style={{
-                              fontSize: 'medium',
-                              color: '#a73131',
+                              fontSize: "medium",
+                              color: "#a73131",
                             }}
                           />
                         </Button>
@@ -2746,12 +3078,17 @@ function Visitorsregister() {
                       <Grid item md={2} sm={2} xs={2}>
                         <Box
                           style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          <img className={classes.preview} src={getFileIcon(data.name || data.file.name)} height="25" alt="file icon" />
+                          <img
+                            className={classes.preview}
+                            src={getFileIcon(data.name || data.file.name)}
+                            height="25"
+                            alt="file icon"
+                          />
                           {/* )} */}
                         </Box>
                       </Grid>
@@ -2761,48 +3098,52 @@ function Visitorsregister() {
                         sm={8}
                         xs={8}
                         style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
                       >
-                        <Typography variant="subtitle2">{data.name || data.file.name} </Typography>
+                        <Typography variant="subtitle2">
+                          {data.name || data.file.name}{" "}
+                        </Typography>
                       </Grid>
                       <Grid item md={2} sm={2} xs={2}>
                         <Button
                           sx={{
-                            padding: '14px 14px',
-                            minWidth: '40px !important',
-                            borderRadius: '50% !important',
-                            ':hover': {
-                              backgroundColor: '#80808036', // theme.palette.primary.main
+                            padding: "14px 14px",
+                            minWidth: "40px !important",
+                            borderRadius: "50% !important",
+                            ":hover": {
+                              backgroundColor: "#80808036", // theme.palette.primary.main
                             },
                           }}
                         >
                           <VisibilityOutlinedIcon
                             style={{
-                              fontsize: 'large',
-                              color: '#357AE8',
+                              fontsize: "large",
+                              color: "#357AE8",
                             }}
-                            onClick={() => renderFilePreviewMulterUploaded(data)}
+                            onClick={() =>
+                              renderFilePreviewMulterUploaded(data)
+                            }
                           />
                         </Button>
 
                         <Button
                           sx={{
-                            padding: '14px 14px',
-                            minWidth: '40px !important',
-                            borderRadius: '50% !important',
-                            ':hover': {
-                              backgroundColor: '#80808036', // theme.palette.primary.main
+                            padding: "14px 14px",
+                            minWidth: "40px !important",
+                            borderRadius: "50% !important",
+                            ":hover": {
+                              backgroundColor: "#80808036", // theme.palette.primary.main
                             },
                           }}
                           onClick={() => handleDeleteUploadedBills(index)}
                         >
                           <FaTrash
                             style={{
-                              fontSize: 'medium',
-                              color: '#a73131',
+                              fontSize: "medium",
+                              color: "#a73131",
                             }}
                           />
                         </Button>
@@ -2815,12 +3156,12 @@ function Visitorsregister() {
               <Box>
                 <Typography
                   sx={{
-                    color: 'black',
-                    fontFamily: ' League Spartan, sans-serif',
-                    fontsize: '30px',
+                    color: "black",
+                    fontFamily: " League Spartan, sans-serif",
+                    fontsize: "30px",
                   }}
                 >
-                  {' '}
+                  {" "}
                   <b>Permanent Address</b>
                 </Typography>
                 <br />
@@ -2833,8 +3174,14 @@ function Visitorsregister() {
                           maxMenuHeight={300}
                           options={permanent_address_type}
                           value={{
-                            label: vendor.addesstype === '' ? 'Please Select Address Type' : vendor.addesstype,
-                            value: vendor.addesstype === '' ? 'Please Select Address Type' : vendor.addesstype,
+                            label:
+                              vendor.addesstype === ""
+                                ? "Please Select Address Type"
+                                : vendor.addesstype,
+                            value:
+                              vendor.addesstype === ""
+                                ? "Please Select Address Type"
+                                : vendor.addesstype,
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -2852,8 +3199,14 @@ function Visitorsregister() {
                           maxMenuHeight={300}
                           options={personal_prefix}
                           value={{
-                            label: vendor.personalprefix === '' ? 'Please Select Personal Prefix' : vendor.personalprefix,
-                            value: vendor.personalprefix === '' ? 'Please Select Personal Prefix' : vendor.personalprefix,
+                            label:
+                              vendor.personalprefix === ""
+                                ? "Please Select Personal Prefix"
+                                : vendor.personalprefix,
+                            value:
+                              vendor.personalprefix === ""
+                                ? "Please Select Personal Prefix"
+                                : vendor.personalprefix,
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -2871,7 +3224,7 @@ function Visitorsregister() {
                           id="component-outlined"
                           type="text"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           value={vendor.referencename}
                           // placeholder="Please Enter Reference Name"
@@ -2890,31 +3243,31 @@ function Visitorsregister() {
                         <Selects
                           options={Country.getAllCountries()}
                           getOptionLabel={(options) => {
-                            return options['name'];
+                            return options["name"];
                           }}
                           getOptionValue={(options) => {
-                            return options['name'];
+                            return options["name"];
                           }}
                           // styles={colourStyles}
                           value={selectedCountryp}
                           onChange={(item) => {
                             setSelectedCountryp(item);
-                            setSelectedStatep('');
-                            setSelectedCityp('');
+                            setSelectedStatep("");
+                            setSelectedCityp("");
                             setVendor((prevSupplier) => ({
                               ...prevSupplier,
-                              pcountry: item?.name || '',
-                              pstate: '',
-                              pcity: '',
+                              pcountry: item?.name || "",
+                              pstate: "",
+                              pcity: "",
 
                               pgenerateviapincode: false,
-                              pvillageorcity: '',
-                              pdistrict: '',
+                              pvillageorcity: "",
+                              pdistrict: "",
                             }));
                           }}
                         />
                       </FormControl>
-                      {selectedCountryp?.name === 'India' && (
+                      {selectedCountryp?.name === "India" && (
                         <FormControlLabel
                           control={
                             <Checkbox
@@ -2923,13 +3276,13 @@ function Visitorsregister() {
                                 setVendor((prevSupplier) => ({
                                   ...prevSupplier,
                                   pgenerateviapincode: e.target.checked,
-                                  pvillageorcity: '',
-                                  pdistrict: '',
-                                  pstate: '',
-                                  pcity: '',
+                                  pvillageorcity: "",
+                                  pdistrict: "",
+                                  pstate: "",
+                                  pcity: "",
                                 }));
-                                setSelectedStatep('');
-                                setSelectedCityp('');
+                                setSelectedStatep("");
+                                setSelectedCityp("");
                               }}
                             />
                           }
@@ -2937,31 +3290,35 @@ function Visitorsregister() {
                         />
                       )}
                     </Grid>
-                    {selectedCountryp?.name === 'India' && vendor?.pgenerateviapincode && (
-                      <>
-                        <Grid item md={4} sm={4} xs={12}>
-                          <FormControl fullWidth size="small">
-                            <Typography>Pincode</Typography>
+                    {selectedCountryp?.name === "India" &&
+                      vendor?.pgenerateviapincode && (
+                        <>
+                          <Grid item md={4} sm={4} xs={12}>
+                            <FormControl fullWidth size="small">
+                              <Typography>Pincode</Typography>
 
-                            <Box display="flex" alignItems="center" gap={1}>
-                              <OutlinedInput
-                                id="component-outlined"
-                                type="number"
-                                style={{
-                                  backgroundColor: '#E3E3E3', // Background color
-                                }}
-                                value={vendor.ppincode}
-                                onChange={(e) => {
-                                  handlechangeppincode(e);
-                                }}
-                                sx={userStyle.input}
-                              />
-                              <PincodeButton pincode={vendor?.ppincode || ''} onSuccess={handleLocationSuccessp} />
-                            </Box>
-                          </FormControl>
-                        </Grid>
-                      </>
-                    )}
+                              <Box display="flex" alignItems="center" gap={1}>
+                                <OutlinedInput
+                                  id="component-outlined"
+                                  type="number"
+                                  style={{
+                                    backgroundColor: "#E3E3E3", // Background color
+                                  }}
+                                  value={vendor.ppincode}
+                                  onChange={(e) => {
+                                    handlechangeppincode(e);
+                                  }}
+                                  sx={userStyle.input}
+                                />
+                                <PincodeButton
+                                  pincode={vendor?.ppincode || ""}
+                                  onSuccess={handleLocationSuccessp}
+                                />
+                              </Box>
+                            </FormControl>
+                          </Grid>
+                        </>
+                      )}
                     {!vendor?.pgenerateviapincode && (
                       <Grid item md={3} sm={4} xs={12}>
                         <FormControl fullWidth size="small">
@@ -2988,29 +3345,35 @@ function Visitorsregister() {
                       <FormControl fullWidth size="small">
                         <Typography>State</Typography>
                         <Selects
-                          options={State?.getStatesOfCountry(selectedCountryp?.isoCode)}
+                          options={State?.getStatesOfCountry(
+                            selectedCountryp?.isoCode,
+                          )}
                           getOptionLabel={(options) => {
-                            return options['name'];
+                            return options["name"];
                           }}
                           getOptionValue={(options) => {
-                            return options['name'];
+                            return options["name"];
                           }}
                           value={selectedStatep}
                           // styles={colourStyles}
                           onChange={(item) => {
                             setSelectedStatep(item);
-                            setSelectedCityp('');
+                            setSelectedCityp("");
                             setVendor((prevSupplier) => ({
                               ...prevSupplier,
-                              pstate: item?.name || '',
-                              pcity: '',
+                              pstate: item?.name || "",
+                              pcity: "",
                             }));
                           }}
-                          isDisabled={selectedCountryp?.name === 'India' && vendor?.pgenerateviapincode}
+                          isDisabled={
+                            selectedCountryp?.name === "India" &&
+                            vendor?.pgenerateviapincode
+                          }
                         />
                       </FormControl>
                     </Grid>
-                    {selectedCountryp?.name === 'India' && vendor?.pgenerateviapincode ? (
+                    {selectedCountryp?.name === "India" &&
+                    vendor?.pgenerateviapincode ? (
                       <>
                         <Grid item md={4} sm={12} xs={12}>
                           <FormControl fullWidth size="small">
@@ -3018,10 +3381,10 @@ function Visitorsregister() {
                             <OutlinedInput
                               id="component-outlined"
                               style={{
-                                backgroundColor: '#E3E3E3', // Background color
+                                backgroundColor: "#E3E3E3", // Background color
                               }}
                               type="text"
-                              value={vendor?.pdistrict || ''}
+                              value={vendor?.pdistrict || ""}
                               readOnly
                               sx={userStyle.input}
                             />
@@ -3030,14 +3393,20 @@ function Visitorsregister() {
                         <Grid item md={4} sm={6} xs={12}>
                           <FormControl fullWidth size="small">
                             <Typography> Village/City </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
                               <Box sx={{ flexGrow: 1 }}>
                                 {switchValues?.pvillageorcity ? (
                                   <OutlinedInput
                                     id="component-outlined"
                                     type="text"
                                     style={{
-                                      backgroundColor: '#E3E3E3', // Background color
+                                      backgroundColor: "#E3E3E3", // Background color
                                     }}
                                     value={vendor?.pvillageorcity}
                                     placeholder="Village/City"
@@ -3050,19 +3419,27 @@ function Visitorsregister() {
                                   />
                                 ) : (
                                   <Selects
-                                    options={fromPinCodep?.length > 0 ? fromPinCodep : []}
+                                    options={
+                                      fromPinCodep?.length > 0
+                                        ? fromPinCodep
+                                        : []
+                                    }
                                     getOptionLabel={(options) => {
-                                      return options['name'];
+                                      return options["name"];
                                     }}
                                     getOptionValue={(options) => {
-                                      return options['name'];
+                                      return options["name"];
                                     }}
-                                    value={vendor?.pvillageorcity !== '' ? { name: vendor?.pvillageorcity } : ''}
+                                    value={
+                                      vendor?.pvillageorcity !== ""
+                                        ? { name: vendor?.pvillageorcity }
+                                        : ""
+                                    }
                                     // styles={colourStyles}
                                     onChange={(item) => {
                                       setVendor((prevSupplier) => ({
                                         ...prevSupplier,
-                                        pvillageorcity: item?.name || '',
+                                        pvillageorcity: item?.name || "",
                                       }));
                                     }}
                                   />
@@ -3071,20 +3448,27 @@ function Visitorsregister() {
 
                               <FormGroup>
                                 <Button
-                                  variant={switchValues?.pvillageorcity ? 'contained' : 'outlined'}
+                                  variant={
+                                    switchValues?.pvillageorcity
+                                      ? "contained"
+                                      : "outlined"
+                                  }
                                   onClick={() => {
                                     setSwicthValues((prev) => ({
                                       ...prev,
-                                      pvillageorcity: !switchValues?.pvillageorcity,
+                                      pvillageorcity:
+                                        !switchValues?.pvillageorcity,
                                     }));
                                     setVendor((prevSupplier) => ({
                                       ...prevSupplier,
-                                      pvillageorcity: '',
+                                      pvillageorcity: "",
                                     }));
                                   }}
                                   size="small"
                                 >
-                                  {switchValues?.pvillageorcity ? 'Exist' : 'New'}
+                                  {switchValues?.pvillageorcity
+                                    ? "Exist"
+                                    : "New"}
                                 </Button>
                               </FormGroup>
                             </Box>
@@ -3096,12 +3480,15 @@ function Visitorsregister() {
                         <FormControl fullWidth size="small">
                           <Typography>City</Typography>
                           <Selects
-                            options={City.getCitiesOfState(selectedStatep?.countryCode, selectedStatep?.isoCode)}
+                            options={City.getCitiesOfState(
+                              selectedStatep?.countryCode,
+                              selectedStatep?.isoCode,
+                            )}
                             getOptionLabel={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             getOptionValue={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             value={selectedCityp}
                             // styles={colourStyles}
@@ -3109,7 +3496,7 @@ function Visitorsregister() {
                               setSelectedCityp(item);
                               setVendor((prevSupplier) => ({
                                 ...prevSupplier,
-                                pcity: item?.name || '',
+                                pcity: item?.name || "",
                               }));
                             }}
                           />
@@ -3123,7 +3510,7 @@ function Visitorsregister() {
                           id="component-outlined"
                           type="text"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           value={vendor.gpscoordinate}
                           // placeholder="Please Enter GPS Coordinate"
@@ -3143,8 +3530,14 @@ function Visitorsregister() {
                           maxMenuHeight={300}
                           options={landmark_and_positional_prefix}
                           value={{
-                            label: vendor.landmarkpositionprefix === '' ? 'Please Select Landmark and Positional  Prefix' : vendor.landmarkpositionprefix,
-                            value: vendor.landmarkpositionprefix === '' ? 'Please Select Landmark and Positional  Prefix' : vendor.landmarkpositionprefix,
+                            label:
+                              vendor.landmarkpositionprefix === ""
+                                ? "Please Select Landmark and Positional  Prefix"
+                                : vendor.landmarkpositionprefix,
+                            value:
+                              vendor.landmarkpositionprefix === ""
+                                ? "Please Select Landmark and Positional  Prefix"
+                                : vendor.landmarkpositionprefix,
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -3162,7 +3555,7 @@ function Visitorsregister() {
                           id="component-outlined"
                           type="text"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           value={vendor.landmarkname}
                           // placeholder="Please Enter Landmark Name"
@@ -3184,7 +3577,7 @@ function Visitorsregister() {
                           value={vendor.houseflatnumber}
                           // placeholder="Please Enter House/Flat Number"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -3204,7 +3597,7 @@ function Visitorsregister() {
                           value={vendor.streetroadname}
                           // placeholder="Please Enter Street/Road Name"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -3224,7 +3617,7 @@ function Visitorsregister() {
                           value={vendor.localityareaname}
                           // placeholder="Please Enter Locality/Area Name"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -3245,7 +3638,7 @@ function Visitorsregister() {
                           value={vendor.pbuildingapartmentname}
                           // placeholder="Please Enter Building/Apartment Name"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -3265,7 +3658,7 @@ function Visitorsregister() {
                           value={vendor.paddressone}
                           // placeholder="Please Enter Address 1"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -3285,7 +3678,7 @@ function Visitorsregister() {
                           value={vendor.paddresstwo}
                           // placeholder="Please Enter Address 2"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -3305,7 +3698,7 @@ function Visitorsregister() {
                           value={vendor.paddressthree}
                           // placeholder="Please Enter Address 3"
                           style={{
-                            backgroundColor: '#E3E3E3', // Background color
+                            backgroundColor: "#E3E3E3", // Background color
                           }}
                           onChange={(e) => {
                             setVendor({
@@ -3323,23 +3716,25 @@ function Visitorsregister() {
                         // ...vendor,
                         ppersonalprefix: vendor?.personalprefix,
                         presourcename: vendor?.referencename,
-                        plandmarkandpositionalprefix: vendor?.landmarkpositionprefix,
+                        plandmarkandpositionalprefix:
+                          vendor?.landmarkpositionprefix,
                         plandmark: vendor?.landmarkname,
                         pdoorno: vendor?.houseflatnumber,
                         pstreet: vendor?.streetroadname,
                         parea: vendor?.localityareaname,
                         pcity: selectedCityp?.name,
-                        pvillageorcity: vendor?.pvillageorcity || '',
-                        pdistrict: vendor?.pdistrict || '',
+                        pvillageorcity: vendor?.pvillageorcity || "",
+                        pdistrict: vendor?.pdistrict || "",
                         pstate: selectedStatep?.name,
                         pcountry: selectedCountryp?.name,
                         ppincode: vendor?.ppincode,
                         pgpscoordination: vendor?.gpscoordinate,
 
-                        pbuildingapartmentname: vendor?.pbuildingapartmentname || '',
-                        paddressone: vendor?.paddressone || '',
-                        paddresstwo: vendor?.paddresstwo || '',
-                        paddressthree: vendor?.paddressthree || '',
+                        pbuildingapartmentname:
+                          vendor?.pbuildingapartmentname || "",
+                        paddressone: vendor?.paddressone || "",
+                        paddresstwo: vendor?.paddresstwo || "",
+                        paddressthree: vendor?.paddressthree || "",
                       }}
                     />
                   </Grid>
@@ -3350,9 +3745,9 @@ function Visitorsregister() {
                   <Grid item xs={4}>
                     <Typography
                       sx={{
-                        color: 'black',
-                        fontFamily: ' League Spartan, sans-serif',
-                        fontsize: '30px',
+                        color: "black",
+                        fontFamily: " League Spartan, sans-serif",
+                        fontsize: "30px",
                       }}
                     >
                       <b> Current Address</b>
@@ -3387,8 +3782,14 @@ function Visitorsregister() {
                             options={address_type}
                             styles={colourStyles}
                             value={{
-                              label: vendor?.caddesstype === '' ? 'Please Select Address Type' : vendor?.caddesstype,
-                              value: vendor?.caddesstype === '' ? 'Please Select Address Type' : vendor?.caddesstype,
+                              label:
+                                vendor?.caddesstype === ""
+                                  ? "Please Select Address Type"
+                                  : vendor?.caddesstype,
+                              value:
+                                vendor?.caddesstype === ""
+                                  ? "Please Select Address Type"
+                                  : vendor?.caddesstype,
                             }}
                             onChange={(e) => {
                               setVendor({ ...vendor, caddesstype: e.value });
@@ -3403,11 +3804,20 @@ function Visitorsregister() {
                             options={personal_prefix}
                             styles={colourStyles}
                             value={{
-                              label: vendor?.cpersonalprefix === '' ? 'Please Select Personal Prefix' : vendor?.cpersonalprefix,
-                              value: vendor?.cpersonalprefix === '' ? 'Please Select Personal Prefix' : vendor?.cpersonalprefix,
+                              label:
+                                vendor?.cpersonalprefix === ""
+                                  ? "Please Select Personal Prefix"
+                                  : vendor?.cpersonalprefix,
+                              value:
+                                vendor?.cpersonalprefix === ""
+                                  ? "Please Select Personal Prefix"
+                                  : vendor?.cpersonalprefix,
                             }}
                             onChange={(e) => {
-                              setVendor({ ...vendor, cpersonalprefix: e.value });
+                              setVendor({
+                                ...vendor,
+                                cpersonalprefix: e.value,
+                              });
                             }}
                           />
                         </FormControl>
@@ -3420,11 +3830,14 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Reference Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor?.creferencename}
                             onChange={(e) => {
-                              setVendor({ ...vendor, creferencename: e.target.value });
+                              setVendor({
+                                ...vendor,
+                                creferencename: e.target.value,
+                              });
                             }}
                           />
                         </FormControl>
@@ -3435,31 +3848,31 @@ function Visitorsregister() {
                           <Selects
                             options={Country.getAllCountries()}
                             getOptionLabel={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             getOptionValue={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             value={selectedCountryc}
                             styles={colourStyles}
                             onChange={(item) => {
                               setSelectedCountryc(item);
-                              setSelectedStatec('');
-                              setSelectedCityc('');
+                              setSelectedStatec("");
+                              setSelectedCityc("");
                               setVendor((prevSupplier) => ({
                                 ...prevSupplier,
-                                ccountry: item?.name || '',
+                                ccountry: item?.name || "",
 
                                 cgenerateviapincode: false,
-                                cvillageorcity: '',
-                                cdistrict: '',
-                                cstate: '',
-                                ccity: '',
+                                cvillageorcity: "",
+                                cdistrict: "",
+                                cstate: "",
+                                ccity: "",
                               }));
                             }}
                           />
                         </FormControl>
-                        {selectedCountryc?.name === 'India' && (
+                        {selectedCountryc?.name === "India" && (
                           <FormControlLabel
                             control={
                               <Checkbox
@@ -3468,13 +3881,13 @@ function Visitorsregister() {
                                   setVendor((prevSupplier) => ({
                                     ...prevSupplier,
                                     cgenerateviapincode: e.target.checked,
-                                    cvillageorcity: '',
-                                    cdistrict: '',
-                                    cstate: '',
-                                    ccity: '',
+                                    cvillageorcity: "",
+                                    cdistrict: "",
+                                    cstate: "",
+                                    ccity: "",
                                   }));
-                                  setSelectedStatec('');
-                                  setSelectedCityc('');
+                                  setSelectedStatec("");
+                                  setSelectedCityc("");
                                 }}
                               />
                             }
@@ -3482,31 +3895,35 @@ function Visitorsregister() {
                           />
                         )}
                       </Grid>
-                      {selectedCountryc?.name === 'India' && vendor?.cgenerateviapincode && (
-                        <>
-                          <Grid item md={4} sm={4} xs={12}>
-                            <FormControl fullWidth size="small">
-                              <Typography>Pincode</Typography>
+                      {selectedCountryc?.name === "India" &&
+                        vendor?.cgenerateviapincode && (
+                          <>
+                            <Grid item md={4} sm={4} xs={12}>
+                              <FormControl fullWidth size="small">
+                                <Typography>Pincode</Typography>
 
-                              <Box display="flex" alignItems="center" gap={1}>
-                                <OutlinedInput
-                                  id="component-outlined"
-                                  type="number"
-                                  style={{
-                                    backgroundColor: '#E3E3E3', // Background color
-                                  }}
-                                  value={vendor.cpincode}
-                                  onChange={(e) => {
-                                    handlechangecpincode(e);
-                                  }}
-                                  sx={userStyle.input}
-                                />
-                                <PincodeButton pincode={vendor?.cpincode || ''} onSuccess={handleLocationSuccessc} />
-                              </Box>
-                            </FormControl>
-                          </Grid>
-                        </>
-                      )}
+                                <Box display="flex" alignItems="center" gap={1}>
+                                  <OutlinedInput
+                                    id="component-outlined"
+                                    type="number"
+                                    style={{
+                                      backgroundColor: "#E3E3E3", // Background color
+                                    }}
+                                    value={vendor.cpincode}
+                                    onChange={(e) => {
+                                      handlechangecpincode(e);
+                                    }}
+                                    sx={userStyle.input}
+                                  />
+                                  <PincodeButton
+                                    pincode={vendor?.cpincode || ""}
+                                    onSuccess={handleLocationSuccessc}
+                                  />
+                                </Box>
+                              </FormControl>
+                            </Grid>
+                          </>
+                        )}
                       {!vendor?.cgenerateviapincode && (
                         <Grid item md={4} sm={12} xs={12}>
                           <FormControl size="small" fullWidth>
@@ -3517,7 +3934,7 @@ function Visitorsregister() {
                               sx={userStyle.input}
                               // placeholder="Pincode"
                               style={{
-                                backgroundColor: '#E3E3E3', // Background color
+                                backgroundColor: "#E3E3E3", // Background color
                               }}
                               value={vendor.cpincode}
                               onChange={(e) => {
@@ -3531,39 +3948,57 @@ function Visitorsregister() {
                         <FormControl fullWidth size="small">
                           <Typography>State</Typography>
                           <Selects
-                            options={State?.getStatesOfCountry(selectedCountryc?.isoCode)}
+                            options={State?.getStatesOfCountry(
+                              selectedCountryc?.isoCode,
+                            )}
                             getOptionLabel={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             getOptionValue={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             value={selectedStatec}
                             styles={colourStyles}
                             onChange={(item) => {
                               setSelectedStatec(item);
-                              setSelectedCityc('');
+                              setSelectedCityc("");
                               setVendor((prevSupplier) => ({
                                 ...prevSupplier,
-                                cstate: item?.name || '',
+                                cstate: item?.name || "",
                               }));
                             }}
-                            isDisabled={selectedCountryc?.name === 'India' && vendor?.cgenerateviapincode}
+                            isDisabled={
+                              selectedCountryc?.name === "India" &&
+                              vendor?.cgenerateviapincode
+                            }
                           />
                         </FormControl>
                       </Grid>
-                      {selectedCountryc?.name === 'India' && vendor?.cgenerateviapincode ? (
+                      {selectedCountryc?.name === "India" &&
+                      vendor?.cgenerateviapincode ? (
                         <>
                           <Grid item md={4} sm={12} xs={12}>
                             <FormControl fullWidth size="small">
                               <Typography>District</Typography>
-                              <OutlinedInput id="component-outlined" type="text" value={vendor?.cdistrict || ''} readOnly sx={userStyle.input} />
+                              <OutlinedInput
+                                id="component-outlined"
+                                type="text"
+                                value={vendor?.cdistrict || ""}
+                                readOnly
+                                sx={userStyle.input}
+                              />
                             </FormControl>
                           </Grid>
                           <Grid item md={4} sm={6} xs={12}>
                             <FormControl fullWidth size="small">
                               <Typography> Village/City </Typography>
-                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
                                 <Box sx={{ flexGrow: 1 }}>
                                   {switchValues?.cvillageorcity ? (
                                     <OutlinedInput
@@ -3572,7 +4007,7 @@ function Visitorsregister() {
                                       value={vendor?.cvillageorcity}
                                       // placeholder="Village/City"
                                       style={{
-                                        backgroundColor: '#E3E3E3', // Background color
+                                        backgroundColor: "#E3E3E3", // Background color
                                       }}
                                       onChange={(e) =>
                                         setVendor((prevSupplier) => ({
@@ -3583,19 +4018,27 @@ function Visitorsregister() {
                                     />
                                   ) : (
                                     <Selects
-                                      options={fromPinCodec?.length > 0 ? fromPinCodec : []}
+                                      options={
+                                        fromPinCodec?.length > 0
+                                          ? fromPinCodec
+                                          : []
+                                      }
                                       getOptionLabel={(options) => {
-                                        return options['name'];
+                                        return options["name"];
                                       }}
                                       getOptionValue={(options) => {
-                                        return options['name'];
+                                        return options["name"];
                                       }}
-                                      value={vendor?.cvillageorcity !== '' ? { name: vendor?.cvillageorcity } : ''}
+                                      value={
+                                        vendor?.cvillageorcity !== ""
+                                          ? { name: vendor?.cvillageorcity }
+                                          : ""
+                                      }
                                       // styles={colourStyles}
                                       onChange={(item) => {
                                         setVendor((prevSupplier) => ({
                                           ...prevSupplier,
-                                          cvillageorcity: item?.name || '',
+                                          cvillageorcity: item?.name || "",
                                         }));
                                       }}
                                     />
@@ -3604,20 +4047,27 @@ function Visitorsregister() {
 
                                 <FormGroup>
                                   <Button
-                                    variant={switchValues?.cvillageorcity ? 'contained' : 'outlined'}
+                                    variant={
+                                      switchValues?.cvillageorcity
+                                        ? "contained"
+                                        : "outlined"
+                                    }
                                     onClick={() => {
                                       setSwicthValues((prev) => ({
                                         ...prev,
-                                        cvillageorcity: !switchValues?.cvillageorcity,
+                                        cvillageorcity:
+                                          !switchValues?.cvillageorcity,
                                       }));
                                       setVendor((prevSupplier) => ({
                                         ...prevSupplier,
-                                        cvillageorcity: '',
+                                        cvillageorcity: "",
                                       }));
                                     }}
                                     size="small"
                                   >
-                                    {switchValues?.cvillageorcity ? 'Exist' : 'New'}
+                                    {switchValues?.cvillageorcity
+                                      ? "Exist"
+                                      : "New"}
                                   </Button>
                                 </FormGroup>
                               </Box>
@@ -3629,12 +4079,15 @@ function Visitorsregister() {
                           <FormControl fullWidth size="small">
                             <Typography>City</Typography>
                             <Selects
-                              options={City.getCitiesOfState(selectedStatec?.countryCode, selectedStatec?.isoCode)}
+                              options={City.getCitiesOfState(
+                                selectedStatec?.countryCode,
+                                selectedStatec?.isoCode,
+                              )}
                               getOptionLabel={(options) => {
-                                return options['name'];
+                                return options["name"];
                               }}
                               getOptionValue={(options) => {
-                                return options['name'];
+                                return options["name"];
                               }}
                               value={selectedCityc}
                               styles={colourStyles}
@@ -3642,7 +4095,7 @@ function Visitorsregister() {
                                 setSelectedCityc(item);
                                 setVendor((prevSupplier) => ({
                                   ...prevSupplier,
-                                  ccity: item?.name || '',
+                                  ccity: item?.name || "",
                                 }));
                               }}
                             />
@@ -3658,7 +4111,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Landmark  Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.cgpscoordinate}
                             onChange={(e) => {
@@ -3677,11 +4130,20 @@ function Visitorsregister() {
                             options={landmark_and_positional_prefix}
                             styles={colourStyles}
                             value={{
-                              label: vendor?.clandmarkpositionprefix === '' ? 'Please Select Landmark and Positional  Prefix' : vendor?.clandmarkpositionprefix,
-                              value: vendor?.clandmarkpositionprefix === '' ? 'Please Select Landmark and Positional  Prefix' : vendor?.clandmarkpositionprefix,
+                              label:
+                                vendor?.clandmarkpositionprefix === ""
+                                  ? "Please Select Landmark and Positional  Prefix"
+                                  : vendor?.clandmarkpositionprefix,
+                              value:
+                                vendor?.clandmarkpositionprefix === ""
+                                  ? "Please Select Landmark and Positional  Prefix"
+                                  : vendor?.clandmarkpositionprefix,
                             }}
                             onChange={(e) => {
-                              setVendor({ ...vendor, clandmarkpositionprefix: e.value });
+                              setVendor({
+                                ...vendor,
+                                clandmarkpositionprefix: e.value,
+                              });
                             }}
                           />
                         </FormControl>
@@ -3694,7 +4156,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Landmark  Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.clandmarkname}
                             onChange={(e) => {
@@ -3714,7 +4176,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="House/Flat No"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.chouseflatnumber}
                             onChange={(e) => {
@@ -3734,7 +4196,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Street/Road Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.cstreetroadname}
                             onChange={(e) => {
@@ -3754,11 +4216,14 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Locality/Area Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.clocalityareaname}
                             onChange={(e) => {
-                              setVendor({ ...vendor, clocalityareaname: e.target.value });
+                              setVendor({
+                                ...vendor,
+                                clocalityareaname: e.target.value,
+                              });
                             }}
                           />
                         </FormControl>
@@ -3773,7 +4238,7 @@ function Visitorsregister() {
                             value={vendor.cbuildingapartmentname}
                             // placeholder="Please Enter Building/Apartment Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             onChange={(e) => {
                               setVendor({
@@ -3793,7 +4258,7 @@ function Visitorsregister() {
                             value={vendor.caddressone}
                             // placeholder="Please Enter Address 1"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             onChange={(e) => {
                               setVendor({
@@ -3813,7 +4278,7 @@ function Visitorsregister() {
                             value={vendor.caddresstwo}
                             // placeholder="Please Enter Address 2"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             onChange={(e) => {
                               setVendor({
@@ -3833,7 +4298,7 @@ function Visitorsregister() {
                             value={vendor.caddressthree}
                             // placeholder="Please Enter Address 3"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             onChange={(e) => {
                               setVendor({
@@ -3858,7 +4323,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Address Type"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor?.addesstype}
                             readOnly
@@ -3873,7 +4338,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Personal Prefix"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor?.personalprefix}
                             readOnly
@@ -3888,7 +4353,7 @@ function Visitorsregister() {
                             type="text"
                             //  placeholder="Reference Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor?.referencename}
                             readOnly
@@ -3901,17 +4366,28 @@ function Visitorsregister() {
                           <Selects
                             options={Country.getAllCountries()}
                             getOptionLabel={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             getOptionValue={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             value={selectedCountryp}
                             styles={colourStyles}
                             isDisabled={true}
                           />
                         </FormControl>
-                        {selectedCountryp?.name === 'India' && <FormControlLabel control={<Checkbox checked={vendor?.pgenerateviapincode} readOnly disabled={true} />} label="Generate Via Pincode" />}
+                        {selectedCountryp?.name === "India" && (
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                checked={vendor?.pgenerateviapincode}
+                                readOnly
+                                disabled={true}
+                              />
+                            }
+                            label="Generate Via Pincode"
+                          />
+                        )}
                       </Grid>
                       <Grid item md={4} sm={12} xs={12}>
                         <FormControl size="small" fullWidth>
@@ -3921,7 +4397,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Pincode"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.ppincode}
                             readOnly
@@ -3932,12 +4408,14 @@ function Visitorsregister() {
                         <FormControl fullWidth size="small">
                           <Typography>State</Typography>
                           <Selects
-                            options={State?.getStatesOfCountry(selectedCountryp?.isoCode)}
+                            options={State?.getStatesOfCountry(
+                              selectedCountryp?.isoCode,
+                            )}
                             getOptionLabel={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             getOptionValue={(options) => {
-                              return options['name'];
+                              return options["name"];
                             }}
                             value={selectedStatep}
                             styles={colourStyles}
@@ -3948,7 +4426,8 @@ function Visitorsregister() {
                           />
                         </FormControl>
                       </Grid>
-                      {vendor?.pgenerateviapincode && selectedCountryp?.name === 'India' ? (
+                      {vendor?.pgenerateviapincode &&
+                      selectedCountryp?.name === "India" ? (
                         <>
                           <Grid item md={4} sm={12} xs={12}>
                             <FormControl size="small" fullWidth>
@@ -3958,9 +4437,9 @@ function Visitorsregister() {
                                 type="text"
                                 //  placeholder="District"
                                 style={{
-                                  backgroundColor: '#E3E3E3', // Background color
+                                  backgroundColor: "#E3E3E3", // Background color
                                 }}
-                                value={vendor.pdistrict || ''}
+                                value={vendor.pdistrict || ""}
                                 readOnly
                               />
                             </FormControl>
@@ -3973,9 +4452,9 @@ function Visitorsregister() {
                                 type="text"
                                 // placeholder="Village/City"
                                 style={{
-                                  backgroundColor: '#E3E3E3', // Background color
+                                  backgroundColor: "#E3E3E3", // Background color
                                 }}
-                                value={vendor.pvillageorcity || ''}
+                                value={vendor.pvillageorcity || ""}
                                 readOnly
                               />
                             </FormControl>
@@ -3986,12 +4465,15 @@ function Visitorsregister() {
                           <FormControl fullWidth size="small">
                             <Typography>City</Typography>
                             <Selects
-                              options={City.getCitiesOfState(selectedStatep?.countryCode, selectedStatep?.isoCode)}
+                              options={City.getCitiesOfState(
+                                selectedStatep?.countryCode,
+                                selectedStatep?.isoCode,
+                              )}
                               getOptionLabel={(options) => {
-                                return options['name'];
+                                return options["name"];
                               }}
                               getOptionValue={(options) => {
-                                return options['name'];
+                                return options["name"];
                               }}
                               value={selectedCityp}
                               styles={colourStyles}
@@ -4012,7 +4494,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="GPS Coordination"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor?.gpscoordinate}
                             readOnly
@@ -4022,13 +4504,16 @@ function Visitorsregister() {
 
                       <Grid item md={4} sm={12} xs={12}>
                         <FormControl fullWidth size="small">
-                          <Typography> Landmark & Positional Prefix </Typography>
+                          <Typography>
+                            {" "}
+                            Landmark & Positional Prefix{" "}
+                          </Typography>
                           <OutlinedInput
                             id="component-outlined"
                             type="text"
                             // placeholder="Landmark & Positional Prefix"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor?.landmarkpositionprefix}
                             readOnly
@@ -4043,7 +4528,7 @@ function Visitorsregister() {
                             type="text"
                             //  placeholder="Landmark  Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.landmarkname}
                             readOnly
@@ -4058,7 +4543,7 @@ function Visitorsregister() {
                             type="text"
                             //  placeholder="House/Flat No"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.houseflatnumber}
                             readOnly
@@ -4073,7 +4558,7 @@ function Visitorsregister() {
                             type="text"
                             // placeholder="Street/Road Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.streetroadname}
                             readOnly
@@ -4088,7 +4573,7 @@ function Visitorsregister() {
                             type="text"
                             //  placeholder="Locality/Area Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
                             value={vendor.localityareaname}
                             readOnly
@@ -4104,9 +4589,9 @@ function Visitorsregister() {
                             type="text"
                             //  placeholder="Building/Apartment Name"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
-                            value={vendor?.pbuildingapartmentname || ''}
+                            value={vendor?.pbuildingapartmentname || ""}
                             readOnly
                           />
                         </FormControl>
@@ -4119,9 +4604,9 @@ function Visitorsregister() {
                             type="text"
                             placeholder="Address 1"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
-                            value={vendor?.paddressone || ''}
+                            value={vendor?.paddressone || ""}
                             readOnly
                           />
                         </FormControl>
@@ -4134,9 +4619,9 @@ function Visitorsregister() {
                             type="text"
                             placeholder="Address 2"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
-                            value={vendor?.paddresstwo || ''}
+                            value={vendor?.paddresstwo || ""}
                             readOnly
                           />
                         </FormControl>
@@ -4149,9 +4634,9 @@ function Visitorsregister() {
                             type="text"
                             placeholder="Address 3"
                             style={{
-                              backgroundColor: '#E3E3E3', // Background color
+                              backgroundColor: "#E3E3E3", // Background color
                             }}
-                            value={vendor?.paddressthree || ''}
+                            value={vendor?.paddressthree || ""}
                             readOnly
                           />
                         </FormControl>
@@ -4165,18 +4650,18 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
-                {' '}
-                <b> Mobile</b> <b style={{ color: 'red' }}>*</b>:&emsp;
+                {" "}
+                <b> Mobile</b> <b style={{ color: "red" }}>*</b>:&emsp;
               </Typography>
               <FormControl size="small" fullWidth>
                 <OutlinedInput
                   style={{
-                    backgroundColor: '#E3E3E3', // Background color
+                    backgroundColor: "#E3E3E3", // Background color
                   }}
                   id="component-outlined"
                   type="number"
@@ -4192,7 +4677,14 @@ function Visitorsregister() {
               </FormControl>
             </Grid>
 
-            <Grid item lg={12} md={12} xs={12} sm={12} sx={{ marginRight: '40px' }}>
+            <Grid
+              item
+              lg={12}
+              md={12}
+              xs={12}
+              sm={12}
+              sx={{ marginRight: "40px" }}
+            >
               <FormGroup>
                 <FormControlLabel
                   control={
@@ -4209,10 +4701,10 @@ function Visitorsregister() {
                   }
                   label="Same as Whatsapp number"
                   sx={{
-                    '& .MuiFormControlLabel-label': {
-                      fontFamily: ' League Spartan, sans-serif',
-                      color: 'black',
-                      fontsize: '30px', // Change this value to adjust the font size
+                    "& .MuiFormControlLabel-label": {
+                      fontFamily: " League Spartan, sans-serif",
+                      color: "black",
+                      fontsize: "30px", // Change this value to adjust the font size
                     },
                   }}
                 />
@@ -4222,18 +4714,18 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
-                {' '}
-                <b> Whatsapp</b> <b style={{ color: 'red' }}>*</b>:&emsp;
+                {" "}
+                <b> Whatsapp</b> <b style={{ color: "red" }}>*</b>:&emsp;
               </Typography>
               <FormControl size="small" fullWidth>
                 <OutlinedInput
                   style={{
-                    backgroundColor: '#E3E3E3', // Background color
+                    backgroundColor: "#E3E3E3", // Background color
                   }}
                   id="component-outlined"
                   type="number"
@@ -4252,21 +4744,21 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
-                {' '}
+                {" "}
                 <b>Visitor Type</b>
-                <b style={{ color: 'red' }}>*</b>:&emsp;
+                <b style={{ color: "red" }}>*</b>:&emsp;
               </Typography>
               <FormControl fullWidth size="small">
                 <Typography></Typography>
                 <Selects
                   maxMenuHeight={300}
                   style={{
-                    backgroundColor: '#E3E3E3', // Background color
+                    backgroundColor: "#E3E3E3", // Background color
                   }}
                   options={visitorsTypeOption}
                   placeholder="Please Select Visitor Type"
@@ -4278,8 +4770,8 @@ function Visitorsregister() {
                     setVendor({
                       ...vendor,
                       visitortype: e.value,
-                      visitorpurpose: 'Please Select Visitor Purpose',
-                      hostname: 'Please Select HostName',
+                      visitorpurpose: "Please Select Visitor Purpose",
+                      hostname: "Please Select HostName",
                     });
                     fetchInteractorPurpose(e.value);
                     fetchallEmployee(e.value);
@@ -4291,13 +4783,13 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
                 <b>Visitor Purpose</b>
-                <b style={{ color: 'red' }}>*</b>:&emsp;
+                <b style={{ color: "red" }}>*</b>:&emsp;
               </Typography>
               <FormControl fullWidth size="small">
                 <Typography></Typography>
@@ -4322,13 +4814,13 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} xs={12} sm={12}>
               <Typography
                 sx={{
-                  color: 'black',
-                  fontFamily: ' League Spartan, sans-serif',
-                  fontsize: '30px',
+                  color: "black",
+                  fontFamily: " League Spartan, sans-serif",
+                  fontsize: "30px",
                 }}
               >
-                {' '}
-                <b> Host Name</b> <b style={{ color: 'red' }}>*</b>:&emsp;
+                {" "}
+                <b> Host Name</b> <b style={{ color: "red" }}>*</b>:&emsp;
               </Typography>
               <FormControl fullWidth size="small">
                 <Selects
@@ -4350,12 +4842,19 @@ function Visitorsregister() {
             </Grid>
 
             <br />
-            <Grid item lg={12} md={12} xs={12} sm={12} sx={{ display: 'flex', justifyContent: 'end' }}>
+            <Grid
+              item
+              lg={12}
+              md={12}
+              xs={12}
+              sm={12}
+              sx={{ display: "flex", justifyContent: "end" }}
+            >
               <Button
                 className="next"
                 size="small"
                 variant="contained"
-                sx={{ ...userStyle.nextbutton, width: '100px', marginRight: 0 }}
+                sx={{ ...userStyle.nextbutton, width: "100px", marginRight: 0 }}
                 onClick={() => {
                   stepOne();
                 }}
@@ -4363,8 +4862,8 @@ function Visitorsregister() {
                 <b>Next</b> &emsp;
                 <EastIcon
                   sx={{
-                    '@media only screen and (max-width: 900px)': {
-                      fontSize: 'medium',
+                    "@media only screen and (max-width: 900px)": {
+                      fontSize: "medium",
                     },
                   }}
                 />
@@ -4383,8 +4882,18 @@ function Visitorsregister() {
     return (
       <>
         <Box>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Typography sx={{ color: '#171A1C', fontWeight: 700, fontFamily: 'JostMedium', fontSize: { md: '25px', sm: '25px', xs: '22px' } }}> Photographic Verification</Typography>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Typography
+              sx={{
+                color: "#171A1C",
+                fontWeight: 700,
+                fontFamily: "JostMedium",
+                fontSize: { md: "25px", sm: "25px", xs: "22px" },
+              }}
+            >
+              {" "}
+              Photographic Verification
+            </Typography>
           </Box>
           <br />
           <Grid container>
@@ -4420,13 +4929,17 @@ function Visitorsregister() {
               </Box>
             </Grid>
             <br /> */}
-            <Grid item md={12} xs={12} sm={12} sx={{ display: 'flex' }}>
+            <Grid item md={12} xs={12} sm={12} sx={{ display: "flex" }}>
               <Grid item md={3} sm={12} xs={12}>
                 <Typography>
-                  Photograph <b style={{ color: 'red' }}>*</b>
+                  Photograph <b style={{ color: "red" }}>*</b>
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'left' }}>
-                  <Button variant="contained" color="primary" onClick={handleClickUploadPopupOpen}>
+                <Box sx={{ display: "flex", justifyContent: "left" }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleClickUploadPopupOpen}
+                  >
                     Upload
                   </Button>
                 </Box>
@@ -4441,12 +4954,15 @@ function Visitorsregister() {
                           src={file.preview}
                           alt={file.name}
                           style={{
-                            maxWidth: '70px',
-                            maxHeight: '70px',
-                            marginTop: '10px',
+                            maxWidth: "70px",
+                            maxHeight: "70px",
+                            marginTop: "10px",
                           }}
                         />
-                        <Button onClick={() => handleRemoveFile(index)} style={{ marginTop: '0px', color: 'red' }}>
+                        <Button
+                          onClick={() => handleRemoveFile(index)}
+                          style={{ marginTop: "0px", color: "red" }}
+                        >
                           X
                         </Button>
                       </>
@@ -4463,13 +4979,18 @@ function Visitorsregister() {
                         <Grid item md={2} sm={2} xs={12}>
                           <Box
                             style={{
-                              isplay: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              marginLeft: '37px',
+                              isplay: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              marginLeft: "37px",
                             }}
                           >
-                            <img src={image.preview} alt={image.name} height={50} style={{ maxWidth: '-webkit-fill-available' }} />
+                            <img
+                              src={image.preview}
+                              alt={image.name}
+                              height={50}
+                              style={{ maxWidth: "-webkit-fill-available" }}
+                            />
                           </Box>
                         </Grid>
                         <Grid
@@ -4478,52 +4999,55 @@ function Visitorsregister() {
                           sm={7}
                           xs={12}
                           sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
                           }}
                         >
-                          <Typography variant="subtitle2"> {image.name} </Typography>
+                          <Typography variant="subtitle2">
+                            {" "}
+                            {image.name}{" "}
+                          </Typography>
                         </Grid>
                         <Grid item md={1} sm={1} xs={12}>
-                          <Grid sx={{ display: 'flex' }}>
+                          <Grid sx={{ display: "flex" }}>
                             <Button
                               sx={{
-                                marginTop: '15px !important',
-                                padding: '14px 14px',
-                                minWidth: '40px !important',
-                                borderRadius: '50% !important',
-                                ':hover': {
-                                  backgroundColor: '#80808036', // theme.palette.primary.main
+                                marginTop: "15px !important",
+                                padding: "14px 14px",
+                                minWidth: "40px !important",
+                                borderRadius: "50% !important",
+                                ":hover": {
+                                  backgroundColor: "#80808036", // theme.palette.primary.main
                                 },
                               }}
                               onClick={() => renderFilePreview(image)}
                             >
                               <VisibilityOutlinedIcon
                                 style={{
-                                  fontsize: '12px',
-                                  color: '#357AE8',
-                                  marginTop: '35px !important',
+                                  fontsize: "12px",
+                                  color: "#357AE8",
+                                  marginTop: "35px !important",
                                 }}
                               />
                             </Button>
                             <Button
                               sx={{
-                                marginTop: '15px !important',
-                                padding: '14px 14px',
-                                minWidth: '40px !important',
-                                borderRadius: '50% !important',
-                                ':hover': {
-                                  backgroundColor: '#80808036',
+                                marginTop: "15px !important",
+                                padding: "14px 14px",
+                                minWidth: "40px !important",
+                                borderRadius: "50% !important",
+                                ":hover": {
+                                  backgroundColor: "#80808036",
                                 },
                               }}
                               onClick={() => removeCapturedImage(index)}
                             >
                               <FaTrash
                                 style={{
-                                  color: '#a73131',
-                                  fontSize: '12px',
-                                  marginTop: '35px !important',
+                                  color: "#a73131",
+                                  fontSize: "12px",
+                                  marginTop: "35px !important",
                                 }}
                               />
                             </Button>
@@ -4539,22 +5063,27 @@ function Visitorsregister() {
                     <Grid item md={2} sm={2} xs={2}>
                       <Box
                         style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
                         }}
                       >
-                        {file?.type?.includes('image/') ? (
+                        {file?.type?.includes("image/") ? (
                           <img
                             src={file.preview}
                             alt={file.name}
                             height={50}
                             style={{
-                              maxWidth: '-webkit-fill-available',
+                              maxWidth: "-webkit-fill-available",
                             }}
                           />
                         ) : (
-                          <img className={classes.preview} src={getFileIcon(file.name)} height="10" alt="file icon" />
+                          <img
+                            className={classes.preview}
+                            src={getFileIcon(file.name)}
+                            height="10"
+                            alt="file icon"
+                          />
                         )}
                       </Box>
                     </Grid>
@@ -4564,40 +5093,44 @@ function Visitorsregister() {
                       sm={7}
                       xs={7}
                       sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
                       <Typography variant="subtitle2"> {file.name} </Typography>
                     </Grid>
                     <Grid item md={1} sm={1} xs={1}>
-                      <Grid sx={{ display: 'flex' }}>
+                      <Grid sx={{ display: "flex" }}>
                         <Button
                           sx={{
-                            padding: '14px 14px',
-                            minWidth: '40px !important',
-                            borderRadius: '50% !important',
-                            ':hover': {
-                              backgroundColor: '#80808036', // theme.palette.primary.main
+                            padding: "14px 14px",
+                            minWidth: "40px !important",
+                            borderRadius: "50% !important",
+                            ":hover": {
+                              backgroundColor: "#80808036", // theme.palette.primary.main
                             },
                           }}
                           onClick={() => renderFilePreview(file)}
                         >
-                          <VisibilityOutlinedIcon style={{ fontsize: '12px', color: '#357AE8' }} />
+                          <VisibilityOutlinedIcon
+                            style={{ fontsize: "12px", color: "#357AE8" }}
+                          />
                         </Button>
                         <Button
                           sx={{
-                            padding: '14px 14px',
-                            minWidth: '40px !important',
-                            borderRadius: '50% !important',
-                            ':hover': {
-                              backgroundColor: '#80808036', // theme.palette.primary.main
+                            padding: "14px 14px",
+                            minWidth: "40px !important",
+                            borderRadius: "50% !important",
+                            ":hover": {
+                              backgroundColor: "#80808036", // theme.palette.primary.main
                             },
                           }}
                           onClick={() => handleDeleteFile(index)}
                         >
-                          <FaTrash style={{ color: '#a73131', fontSize: '12px' }} />
+                          <FaTrash
+                            style={{ color: "#a73131", fontSize: "12px" }}
+                          />
                         </Button>
                       </Grid>
                     </Grid>
@@ -4606,20 +5139,34 @@ function Visitorsregister() {
               </Grid>
             </Grid>
             <br /> <br /> <br /> <br /> <br /> <br />
-            <Grid item lg={12} md={12} xs={12} sm={12} marginTop={2} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Grid
+              item
+              lg={12}
+              md={12}
+              xs={12}
+              sm={12}
+              marginTop={2}
+              sx={{ display: "flex", justifyContent: "space-between" }}
+            >
               <Button variant="contained" type="submit" onClick={prevStep}>
-                {' '}
+                {" "}
                 <WestIcon
                   sx={{
-                    '@media only screen and (max-width: 900px)': {
-                      fontSize: 'medium',
+                    "@media only screen and (max-width: 900px)": {
+                      fontSize: "medium",
                     },
                   }}
                 />
                 &emsp; <b>Previous</b>
               </Button>
 
-              <LoadingButton onClick={handlesubmit} loading={loadingdeloverall} color="primary" loadingPosition="end" variant="contained">
+              <LoadingButton
+                onClick={handlesubmit}
+                loading={loadingdeloverall}
+                color="primary"
+                loadingPosition="end"
+                variant="contained"
+              >
                 Submit
               </LoadingButton>
             </Grid>
@@ -4647,10 +5194,10 @@ function Visitorsregister() {
                     <Box>
                       <Typography
                         sx={{
-                          fontWeight: 'bold',
-                          fontSize: '40px',
-                          color: 'black',
-                          fontFamily: ' League Spartan, sans-serif',
+                          fontWeight: "bold",
+                          fontSize: "40px",
+                          color: "black",
+                          fontFamily: " League Spartan, sans-serif",
                         }}
                       >
                         Welcome :
@@ -4660,33 +5207,33 @@ function Visitorsregister() {
 
                     <Box
                       sx={{
-                        borderRadius: '10px',
-                        justifyContent: 'center',
-                        padding: '20px',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
+                        borderRadius: "10px",
+                        justifyContent: "center",
+                        padding: "20px",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
                         // height: "180px",
                       }}
                     >
                       <Box>
                         <img
                           style={{
-                            height: '300px',
-                            width: '300px',
+                            height: "300px",
+                            width: "300px",
                           }}
                           src={uploadconfetti}
                           alt=""
-                        />{' '}
+                        />{" "}
                       </Box>
 
                       <Box>
                         <Typography
                           sx={{
-                            fontWeight: 'bold',
-                            fontSize: '50px',
-                            color: 'black',
-                            fontFamily: ' League Spartan, sans-serif',
+                            fontWeight: "bold",
+                            fontSize: "50px",
+                            color: "black",
+                            fontFamily: " League Spartan, sans-serif",
                           }}
                         >
                           Check In Successfully
@@ -4717,9 +5264,9 @@ function Visitorsregister() {
       setSteperDisplay(window.innerWidth <= 900);
     };
     handleResize(); // Call the handleResize function once to set the initial state
-    window.addEventListener('resize', handleResize); // Listen for window resize events
+    window.addEventListener("resize", handleResize); // Listen for window resize events
     return () => {
-      window.removeEventListener('resize', handleResize); // Clean up the event listener on component unmount
+      window.removeEventListener("resize", handleResize); // Clean up the event listener on component unmount
     };
   }, []);
 
@@ -4737,57 +5284,72 @@ function Visitorsregister() {
                 xs={12}
                 className="indicatorvertical"
                 sx={{
-                  height: '100%',
-                  position: 'relative',
-                  top: '0',
-                  flexDirection: 'column',
+                  height: "100%",
+                  position: "relative",
+                  top: "0",
+                  flexDirection: "column",
                 }}
               >
-                <Grid item sx={{ marginTop: '50px' }}></Grid>
-                <Grid item style={{ display: 'flex', justifyContent: 'center' }}>
+                <Grid item sx={{ marginTop: "50px" }}></Grid>
+                <Grid
+                  item
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
                   <img
                     style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '80px',
-                      width: '80px',
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "80px",
+                      width: "80px",
                     }}
                     // src={hilife}
                     src={overallSettings?.companylogo}
                   />
                 </Grid>
-                <Grid item sx={{ marginTop: '10px' }}></Grid>
+                <Grid item sx={{ marginTop: "10px" }}></Grid>
 
-                <Grid item style={{ display: 'flex', justifyContent: 'center' }}>
+                <Grid
+                  item
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
                   <Typography
                     sx={{
-                      color: 'white',
-                      fontFamily: ' League Spartan, sans-serif',
-                      fontsize: '32px',
+                      color: "white",
+                      fontFamily: " League Spartan, sans-serif",
+                      fontsize: "32px",
                     }}
                   >
-                    {' '}
-                    Visitor Registration{' '}
+                    {" "}
+                    Visitor Registration{" "}
                   </Typography>
                 </Grid>
-                <Grid item sx={{ marginTop: '30px' }}></Grid>
+                <Grid item sx={{ marginTop: "30px" }}></Grid>
 
-                <Grid item style={{ display: 'flex', justifyContent: 'center' }}>
-                  <ul style={{ marginLeft: '45px' }}>
+                <Grid
+                  item
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <ul style={{ marginLeft: "45px" }}>
                     <li
                     //  className={step === 1 ? "active" : null}
                     >
-                      <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'Row' }}>
-                        <Grid item>{step === 1 ? <img src={numberonenew} /> : null}</Grid>
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{ display: "flex", flexDirection: "Row" }}
+                      >
+                        <Grid item>
+                          {step === 1 ? <img src={numberonenew} /> : null}
+                        </Grid>
                         <Grid item>
                           {step === 1 ? (
                             <Typography
                               sx={{
-                                fontFamily: ' League Spartan, sans-serif',
-                                fontsize: '32px',
+                                fontFamily: " League Spartan, sans-serif",
+                                fontsize: "32px",
                               }}
                             >
-                              {' '}
+                              {" "}
                               Visitor Information
                             </Typography>
                           ) : null}
@@ -4801,33 +5363,45 @@ function Visitorsregister() {
                           height: "70px",
                         }}
                       ></Grid> */}
-                      <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'Row' }}>
-                        <Grid item>{step === 2 ? <img src={numbertwonew} /> : null}</Grid>
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{ display: "flex", flexDirection: "Row" }}
+                      >
+                        <Grid item>
+                          {step === 2 ? <img src={numbertwonew} /> : null}
+                        </Grid>
                         <Grid item>
                           {step === 2 ? (
                             <Typography
                               sx={{
-                                fontFamily: ' League Spartan, sans-serif',
-                                fontsize: '32px',
+                                fontFamily: " League Spartan, sans-serif",
+                                fontsize: "32px",
                               }}
                             >
-                              {' '}
+                              {" "}
                               Photographic Verification
                             </Typography>
                           ) : null}
                         </Grid>
                       </Grid>
-                      <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'Row' }}>
-                        <Grid item>{step === 3 ? <img src={numberthreenew} /> : null}</Grid>
+                      <Grid
+                        container
+                        spacing={2}
+                        sx={{ display: "flex", flexDirection: "Row" }}
+                      >
+                        <Grid item>
+                          {step === 3 ? <img src={numberthreenew} /> : null}
+                        </Grid>
                         <Grid item>
                           {step === 3 ? (
                             <Typography
                               sx={{
-                                fontFamily: ' League Spartan, sans-serif',
-                                fontsize: '32px',
+                                fontFamily: " League Spartan, sans-serif",
+                                fontsize: "32px",
                               }}
                             >
-                              {' '}
+                              {" "}
                               Check In Details
                             </Typography>
                           ) : null}
@@ -4837,7 +5411,21 @@ function Visitorsregister() {
                   </ul>
                 </Grid>
               </Grid>
-              <Grid item lg={9} md={9} sm={12} xs={12} sx={{ padding: { lg: '20px 150px !important', md: '20px 150px !important', sm: '20px 80px !important', xs: '20px 50px !important' } }}>
+              <Grid
+                item
+                lg={9}
+                md={9}
+                sm={12}
+                xs={12}
+                sx={{
+                  padding: {
+                    lg: "20px 150px !important",
+                    md: "20px 150px !important",
+                    sm: "20px 80px !important",
+                    xs: "20px 50px !important",
+                  },
+                }}
+              >
                 {step === 1 ? renderStepOne() : null}
                 {step === 2 ? renderStepTwo() : null}
                 {step === 3 ? renderStepThree() : null}
@@ -4855,43 +5443,52 @@ function Visitorsregister() {
                 xs={12}
                 className="indicatorwebsite"
                 sx={{
-                  position: 'sticky',
-                  height: '100%',
-                  top: '0',
-                  flexDirection: 'column',
+                  position: "sticky",
+                  height: "100%",
+                  top: "0",
+                  flexDirection: "column",
                 }}
               >
-                <Grid item sx={{ marginTop: '50px' }}></Grid>
-                <Grid item style={{ display: 'flex', justifyContent: 'center' }}>
+                <Grid item sx={{ marginTop: "50px" }}></Grid>
+                <Grid
+                  item
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
                   <img
                     style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      height: '158px',
-                      width: '158px',
+                      justifyContent: "center",
+                      alignItems: "center",
+                      height: "158px",
+                      width: "158px",
                     }}
                     // src={hilife}
                     src={overallSettings?.companylogo}
                   />
                 </Grid>
-                <Grid item sx={{ marginTop: '30px' }}></Grid>
+                <Grid item sx={{ marginTop: "30px" }}></Grid>
 
-                <Grid item style={{ display: 'flex', justifyContent: 'center' }}>
+                <Grid
+                  item
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
                   <Typography
                     sx={{
-                      color: 'white',
-                      fontFamily: ' League Spartan, sans-serif',
-                      fontsize: '30px',
+                      color: "white",
+                      fontFamily: " League Spartan, sans-serif",
+                      fontsize: "30px",
                     }}
                   >
-                    {' '}
-                    Visitor Registration{' '}
+                    {" "}
+                    Visitor Registration{" "}
                   </Typography>
                 </Grid>
-                <Grid item sx={{ marginTop: '70px' }}></Grid>
+                <Grid item sx={{ marginTop: "70px" }}></Grid>
 
-                <Grid item style={{ display: 'flex', justifyContent: 'center' }}>
-                  <ul style={{ marginLeft: '45px' }}>
+                <Grid
+                  item
+                  style={{ display: "flex", justifyContent: "center" }}
+                >
+                  <ul style={{ marginLeft: "45px" }}>
                     <li
                     //  className={step === 1 ? "active" : null}
                     >
@@ -4899,22 +5496,28 @@ function Visitorsregister() {
                         container
                         spacing={2}
                         sx={{
-                          display: 'flex',
-                          flexDirection: 'Row',
-                          '@media only screen and (max-width: 1215px)': {
-                            flexDirection: 'Row',
+                          display: "flex",
+                          flexDirection: "Row",
+                          "@media only screen and (max-width: 1215px)": {
+                            flexDirection: "Row",
                           },
                         }}
                       >
-                        <Grid item>{step === 1 ? <img src={numberonenew} /> : <img src={numberone} />}</Grid>
+                        <Grid item>
+                          {step === 1 ? (
+                            <img src={numberonenew} />
+                          ) : (
+                            <img src={numberone} />
+                          )}
+                        </Grid>
                         <Grid item>
                           <Typography
                             sx={{
-                              fontFamily: ' League Spartan, sans-serif',
-                              fontsize: '32px',
+                              fontFamily: " League Spartan, sans-serif",
+                              fontsize: "32px",
                             }}
                           >
-                            {' '}
+                            {" "}
                             visitor Information
                           </Typography>
                         </Grid>
@@ -4923,31 +5526,37 @@ function Visitorsregister() {
                       <Grid
                         item
                         style={{
-                          borderLeft: '2px dashed',
-                          marginLeft: '16px',
-                          height: '70px',
+                          borderLeft: "2px dashed",
+                          marginLeft: "16px",
+                          height: "70px",
                         }}
                       ></Grid>
                       <Grid
                         container
                         spacing={2}
                         sx={{
-                          display: 'flex',
-                          flexDirection: 'Row',
-                          '@media only screen and (max-width: 1215px)': {
-                            flexDirection: 'Row',
+                          display: "flex",
+                          flexDirection: "Row",
+                          "@media only screen and (max-width: 1215px)": {
+                            flexDirection: "Row",
                           },
                         }}
                       >
-                        <Grid item>{step === 2 ? <img src={numbertwonew} /> : <img src={numbertwo} />}</Grid>
+                        <Grid item>
+                          {step === 2 ? (
+                            <img src={numbertwonew} />
+                          ) : (
+                            <img src={numbertwo} />
+                          )}
+                        </Grid>
                         <Grid item>
                           <Typography
                             sx={{
-                              fontFamily: ' League Spartan, sans-serif',
-                              fontsize: '32px',
+                              fontFamily: " League Spartan, sans-serif",
+                              fontsize: "32px",
                             }}
                           >
-                            {' '}
+                            {" "}
                             Photographic Verification
                           </Typography>
                         </Grid>
@@ -4956,31 +5565,37 @@ function Visitorsregister() {
                       <Grid
                         item
                         style={{
-                          borderLeft: '2px dashed',
-                          marginLeft: '16px',
-                          height: '70px',
+                          borderLeft: "2px dashed",
+                          marginLeft: "16px",
+                          height: "70px",
                         }}
                       ></Grid>
                       <Grid
                         container
                         spacing={2}
                         sx={{
-                          display: 'flex',
-                          flexDirection: 'Row',
-                          '@media only screen and (max-width: 1215px)': {
-                            flexDirection: 'Row',
+                          display: "flex",
+                          flexDirection: "Row",
+                          "@media only screen and (max-width: 1215px)": {
+                            flexDirection: "Row",
                           },
                         }}
                       >
-                        <Grid item>{step === 3 ? <img src={numberthreenew} /> : <img src={numberthree} />}</Grid>
+                        <Grid item>
+                          {step === 3 ? (
+                            <img src={numberthreenew} />
+                          ) : (
+                            <img src={numberthree} />
+                          )}
+                        </Grid>
                         <Grid item>
                           <Typography
                             sx={{
-                              fontFamily: ' League Spartan, sans-serif',
-                              fontsize: '32px',
+                              fontFamily: " League Spartan, sans-serif",
+                              fontsize: "32px",
                             }}
                           >
-                            {' '}
+                            {" "}
                             check In Details
                           </Typography>
                         </Grid>
@@ -4990,7 +5605,21 @@ function Visitorsregister() {
                 </Grid>
               </Grid>
 
-              <Grid item lg={9} md={9} sm={12} xs={12} sx={{ padding: { lg: '20px 150px !important', md: '20px 150px', sm: '20px 80px', xs: '20px 50px' } }}>
+              <Grid
+                item
+                lg={9}
+                md={9}
+                sm={12}
+                xs={12}
+                sx={{
+                  padding: {
+                    lg: "20px 150px !important",
+                    md: "20px 150px",
+                    sm: "20px 80px",
+                    xs: "20px 50px",
+                  },
+                }}
+              >
                 {step === 1 ? renderStepOne() : null}
                 {step === 2 ? renderStepTwo() : null}
                 {step === 3 ? renderStepThree() : null}
@@ -5014,9 +5643,10 @@ function Visitorsregister() {
     <>
       <GlobalStyles
         styles={{
-          '@import': "url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap')",
+          "@import":
+            "url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@100..900&display=swap')",
           body: {
-            fontFamily: 'League Spartan, sans-serif',
+            fontFamily: "League Spartan, sans-serif",
           },
         }}
       />
@@ -5026,18 +5656,24 @@ function Visitorsregister() {
 
       {/* ALERT DIALOG */}
 
-      <Dialog open={openviewed} onClose={handleClickOpenviewed} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="sm">
+      <Dialog
+        open={openviewed}
+        onClose={handleClickOpenviewed}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="sm"
+      >
         {/* <Box sx={{ padding: "20px" }}> */}
         <Grid container spacing={2}>
           <Grid item lg={12} md={12}>
             <Typography
               sx={{
-                fontWeight: 'bold',
-                fontSize: '50px',
-                color: 'black',
-                textAlign: 'center',
-                alignitems: 'center',
-                fontFamily: ' League Spartan, sans-serif',
+                fontWeight: "bold",
+                fontSize: "50px",
+                color: "black",
+                textAlign: "center",
+                alignitems: "center",
+                fontFamily: " League Spartan, sans-serif",
               }}
             >
               Check Out Details
@@ -5047,55 +5683,66 @@ function Visitorsregister() {
           <Grid item lg={12} md={12}>
             <Typography
               sx={{
-                fontWeight: 'bold',
-                fontSize: '40px',
-                color: 'black',
-                fontFamily: ' League Spartan, sans-serif',
-                marginLeft: '15px',
+                fontWeight: "bold",
+                fontSize: "40px",
+                color: "black",
+                fontFamily: " League Spartan, sans-serif",
+                marginLeft: "15px",
               }}
             >
-              Bye{' '}
+              Bye{" "}
               <img
                 style={{
-                  marginRight: '3px',
-                  height: '40px',
-                  width: '40px',
+                  marginRight: "3px",
+                  height: "40px",
+                  width: "40px",
                 }}
                 src={wave}
-              />{' '}
+              />{" "}
               !
             </Typography>
           </Grid>
           <br />
-          <Grid item lg={12} md={12} sx={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Grid
+            item
+            lg={12}
+            md={12}
+            sx={{ justifyContent: "center", alignItems: "center" }}
+          >
             <Box
               sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <img
                 style={{
-                  height: '200px',
-                  width: '200px',
-                  textAlign: 'center',
+                  height: "200px",
+                  width: "200px",
+                  textAlign: "center",
                 }}
                 src={uploadconfetti}
                 alt=""
-              />{' '}
+              />{" "}
             </Box>
           </Grid>
           <Grid item lg={1} md={1}></Grid>
-          <Grid item lg={12} md={12} sm={12} sx={{ justifyContent: 'center', alignItems: 'center' }}>
+          <Grid
+            item
+            lg={12}
+            md={12}
+            sm={12}
+            sx={{ justifyContent: "center", alignItems: "center" }}
+          >
             <Typography
               sx={{
-                fontWeight: 'bold',
-                fontSize: '30px',
-                color: 'black',
-                textAlign: 'center',
-                alignitems: 'center',
-                fontFamily: ' League Spartan, sans-serif',
+                fontWeight: "bold",
+                fontSize: "30px",
+                color: "black",
+                textAlign: "center",
+                alignitems: "center",
+                fontFamily: " League Spartan, sans-serif",
               }}
             >
               Check Out Successfully
@@ -5115,27 +5762,47 @@ function Visitorsregister() {
       {/* Table For Duplicate Profile Upload */}
       <Box>
         {/* Edit DIALOG */}
-        <Dialog open={isErrorOpenpop} onClose={handleCloseerrpop} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg" fullWidth={true} sx={{ marginTop: '80px' }}>
+        <Dialog
+          open={isErrorOpenpop}
+          onClose={handleCloseerrpop}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          maxWidth="lg"
+          fullWidth={true}
+          sx={{ marginTop: "80px" }}
+        >
           <Box sx={userStyle.dialogbox}>
             <>
               <Typography sx={userStyle.HeaderText}>
-                {' '}
+                {" "}
                 <b>Existing Profile List</b>
               </Typography>
               <Grid item md={6} sm={12} xs={12}>
                 {showDupProfileVIsitor && showDupProfileVIsitor.length > 0 ? (
-                  <ExistingProfileVisitor ExistingProfileVisitors={showDupProfileVIsitor} handleCloseModEdit={handleCloseModEdit} />
+                  <ExistingProfileVisitor
+                    ExistingProfileVisitors={showDupProfileVIsitor}
+                    handleCloseModEdit={handleCloseModEdit}
+                  />
                 ) : (
-                  <Typography sx={{ ...userStyle.HeaderText, marginLeft: '28px', display: 'flex', justifyContent: 'center' }}>There is No Profile</Typography>
+                  <Typography
+                    sx={{
+                      ...userStyle.HeaderText,
+                      marginLeft: "28px",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    There is No Profile
+                  </Typography>
                 )}
               </Grid>
               <br />
               <Grid item md={12} sm={12} xs={12}>
                 <Grid
                   sx={{
-                    display: 'flex',
-                    justifyContent: 'flex-start',
-                    gap: '15px',
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    gap: "15px",
                   }}
                 >
                   {/* <Button
@@ -5163,10 +5830,18 @@ function Visitorsregister() {
       </Box>
 
       {/* UPLOAD IMAGE DIALOG */}
-      <Dialog open={uploadPopupOpen} onClose={handleUploadPopupClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="md" fullWidth={true} sx={{ marginTop: '80px' }}>
+      <Dialog
+        open={uploadPopupOpen}
+        onClose={handleUploadPopupClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="md"
+        fullWidth={true}
+        sx={{ marginTop: "80px" }}
+      >
         <DialogTitle
           id="customized-dialog-title1"
-          sx={{ backgroundColor: '#e0e0e0', color: '#000', display: 'flex' }}
+          sx={{ backgroundColor: "#e0e0e0", color: "#000", display: "flex" }}
           onClick={() => {
             console.log(refImage);
             console.log(isLightColor);
@@ -5174,14 +5849,18 @@ function Visitorsregister() {
         >
           Upload Image
         </DialogTitle>
-        <DialogContent sx={{ minWidth: '750px', height: '850px' }}>
+        <DialogContent sx={{ minWidth: "750px", height: "850px" }}>
           <Grid container spacing={2}>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <Typography variant="body2" style={{ marginTop: '5px' }}>
+              <Typography variant="body2" style={{ marginTop: "5px" }}>
                 {/* Max File size: 5MB */}
               </Typography>
               {/* {showDragField ? ( */}
-              <div onDragOver={handleDragOver} onDrop={handleDrop} onPaste={handlePaste}>
+              <div
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onPaste={handlePaste}
+              >
                 {previewURL && refImageDrag.length > 0 ? (
                   <>
                     {refImageDrag.map((file, index) => (
@@ -5190,22 +5869,31 @@ function Visitorsregister() {
                           src={file.preview}
                           alt={file.name}
                           style={{
-                            maxWidth: '70px',
-                            maxHeight: '70px',
-                            marginTop: '10px',
+                            maxWidth: "70px",
+                            maxHeight: "70px",
+                            marginTop: "10px",
                           }}
                         />
-                        <Button onClick={() => handleRemoveFile(index)} style={{ marginTop: '0px', color: 'red' }}>
+                        <Button
+                          onClick={() => handleRemoveFile(index)}
+                          style={{ marginTop: "0px", color: "red" }}
+                        >
                           X
                         </Button>
-                        <div style={{ display: 'flex', gap: '10px' }}>
+                        <div style={{ display: "flex", gap: "10px" }}>
                           {/* Color Picker */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                            }}
+                          >
                             <Typography
                               variant="body1"
                               style={{
-                                color: '#555',
-                                fontSize: '10px',
+                                color: "#555",
+                                fontSize: "10px",
                               }}
                             >
                               BG Color
@@ -5217,11 +5905,11 @@ function Visitorsregister() {
                                 handleColorChangeDrag(e, index);
                               }}
                               style={{
-                                width: '30px',
-                                height: '30px',
-                                border: 'none',
-                                cursor: 'pointer',
-                                borderRadius: '5px',
+                                width: "30px",
+                                height: "30px",
+                                border: "none",
+                                cursor: "pointer",
+                                borderRadius: "5px",
                               }}
                             />
                           </div>
@@ -5235,19 +5923,19 @@ function Visitorsregister() {
                             color="primary"
                             endIcon={<FormatColorFillIcon />}
                             sx={{
-                              padding: '10px 10px',
-                              fontSize: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              borderRadius: '5px',
+                              padding: "10px 10px",
+                              fontSize: "8px",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              borderRadius: "5px",
                               // color: isLightColorDrag ? 'black' : 'white',
-                              fontWeight: '600',
+                              fontWeight: "600",
                               // backgroundColor: colorDrag, // Dynamically set the background color
                               // '&:hover': {
                               //   backgroundColor: `${colorDrag}90`, // Slightly transparent on hover for a nice effect
                               // },
-                              border: '1px solid  black',
+                              border: "1px solid  black",
                             }}
                           ></LoadingButton>
                         </div>
@@ -5257,19 +5945,20 @@ function Visitorsregister() {
                 ) : (
                   <div
                     style={{
-                      marginTop: '10px',
-                      marginLeft: '0px',
-                      border: '1px dashed #ccc',
-                      padding: '0px',
-                      width: '100%',
-                      height: '150px',
-                      display: 'flex',
-                      alignContent: 'center',
-                      textAlign: 'center',
+                      marginTop: "10px",
+                      marginLeft: "0px",
+                      border: "1px dashed #ccc",
+                      padding: "0px",
+                      width: "100%",
+                      height: "150px",
+                      display: "flex",
+                      alignContent: "center",
+                      textAlign: "center",
                     }}
                   >
-                    <div style={{ display: 'flex', margin: '50px auto' }}>
-                      <ContentCopyIcon /> {'Drag and drop or Paste here (ctrl+v)'}
+                    <div style={{ display: "flex", margin: "50px auto" }}>
+                      <ContentCopyIcon />{" "}
+                      {"Drag and drop or Paste here (ctrl+v)"}
                     </div>
                   </div>
                 )}
@@ -5280,14 +5969,25 @@ function Visitorsregister() {
             <Grid item lg={12} md={12} sm={12} xs={12}>
               <br />
               <FormControl size="small" fullWidth>
-                <Grid sx={{ display: 'flex' }}>
+                <Grid sx={{ display: "flex" }}>
                   {/* {showUploadBtn ? ( */}
                   <Button variant="contained" component="label" color="primary">
                     Upload
-                    <input type="file" multiple id="productimage" accept="image/*" hidden onChange={handleChangeImage} />
+                    <input
+                      type="file"
+                      multiple
+                      id="productimage"
+                      accept="image/*"
+                      hidden
+                      onChange={handleChangeImage}
+                    />
                   </Button>
                   &ensp;
-                  <Button variant="contained" onClick={showWebcam} sx={userStyle.uploadbtn}>
+                  <Button
+                    variant="contained"
+                    onClick={showWebcam}
+                    sx={userStyle.uploadbtn}
+                  >
                     Webcam
                   </Button>
                 </Grid>
@@ -5300,13 +6000,18 @@ function Visitorsregister() {
                     <Grid item md={2} sm={2} xs={12}>
                       <Box
                         style={{
-                          isplay: 'flex',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          marginLeft: '37px',
+                          isplay: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          marginLeft: "37px",
                         }}
                       >
-                        <img src={image.preview} alt={image.name} height={50} style={{ maxWidth: '-webkit-fill-available' }} />
+                        <img
+                          src={image.preview}
+                          alt={image.name}
+                          height={50}
+                          style={{ maxWidth: "-webkit-fill-available" }}
+                        />
                       </Box>
                     </Grid>
                     <Grid
@@ -5315,63 +6020,78 @@ function Visitorsregister() {
                       sm={7}
                       xs={12}
                       sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
-                      <Typography variant="subtitle2"> {image.name} </Typography>
+                      <Typography variant="subtitle2">
+                        {" "}
+                        {image.name}{" "}
+                      </Typography>
                     </Grid>
                     <Grid item md={1} sm={1} xs={12}>
-                      <Grid sx={{ display: 'flex' }}>
+                      <Grid sx={{ display: "flex" }}>
                         <Button
                           sx={{
-                            marginTop: '15px !important',
-                            padding: '14px 14px',
-                            minWidth: '40px !important',
-                            borderRadius: '50% !important',
-                            ':hover': {
-                              backgroundColor: '#80808036', // theme.palette.primary.main
+                            marginTop: "15px !important",
+                            padding: "14px 14px",
+                            minWidth: "40px !important",
+                            borderRadius: "50% !important",
+                            ":hover": {
+                              backgroundColor: "#80808036", // theme.palette.primary.main
                             },
                           }}
                           onClick={() => renderFilePreview(image, index)}
                         >
                           <VisibilityOutlinedIcon
                             style={{
-                              fontsize: '12px',
-                              color: '#357AE8',
-                              marginTop: '35px !important',
+                              fontsize: "12px",
+                              color: "#357AE8",
+                              marginTop: "35px !important",
                             }}
                           />
                         </Button>
                         <Button
                           sx={{
-                            marginTop: '15px !important',
-                            padding: '14px 14px',
-                            minWidth: '40px !important',
-                            borderRadius: '50% !important',
-                            ':hover': {
-                              backgroundColor: '#80808036',
+                            marginTop: "15px !important",
+                            padding: "14px 14px",
+                            minWidth: "40px !important",
+                            borderRadius: "50% !important",
+                            ":hover": {
+                              backgroundColor: "#80808036",
                             },
                           }}
                           onClick={() => removeCapturedImage(index)}
                         >
                           <FaTrash
                             style={{
-                              color: '#a73131',
-                              fontSize: '12px',
-                              marginTop: '35px !important',
+                              color: "#a73131",
+                              fontSize: "12px",
+                              marginTop: "35px !important",
                             }}
                           />
                         </Button>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "10px",
+                          }}
+                        >
                           {/* Color Picker */}
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "5px",
+                            }}
+                          >
                             <Typography
                               variant="body1"
                               style={{
-                                color: '#555',
-                                fontSize: '10px',
+                                color: "#555",
+                                fontSize: "10px",
                               }}
                             >
                               BG Color
@@ -5383,11 +6103,11 @@ function Visitorsregister() {
                                 handleColorChangeCaptured(e, index);
                               }}
                               style={{
-                                width: '30px',
-                                height: '30px',
-                                border: 'none',
-                                cursor: 'pointer',
-                                borderRadius: '5px',
+                                width: "30px",
+                                height: "30px",
+                                border: "none",
+                                cursor: "pointer",
+                                borderRadius: "5px",
                               }}
                             />
                           </div>
@@ -5395,26 +6115,26 @@ function Visitorsregister() {
                           {/* Submit Button */}
                           <LoadingButton
                             onClick={(e) => {
-                              handleSubmitNew(index, 'captured');
+                              handleSubmitNew(index, "captured");
                             }}
                             loading={bgbtnCaptured[index]}
                             variant="contained"
                             color="primary"
                             endIcon={<FormatColorFillIcon />}
                             sx={{
-                              padding: '10px 10px',
-                              fontSize: '8px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              borderRadius: '5px',
+                              padding: "10px 10px",
+                              fontSize: "8px",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
+                              borderRadius: "5px",
                               // color: isLightColorCaptured[index] ? 'black' : 'white',
-                              fontWeight: '600',
+                              fontWeight: "600",
                               // backgroundColor: colorCaptured[index], // Dynamically set the background color
                               // '&:hover': {
                               //   backgroundColor: `${colorCaptured[index]}90`, // Slightly transparent on hover for a nice effect
                               // },
-                              border: '1px solid  black',
+                              border: "1px solid  black",
                             }}
                           ></LoadingButton>
                         </div>
@@ -5427,22 +6147,27 @@ function Visitorsregister() {
                   <Grid item md={2} sm={2} xs={2}>
                     <Box
                       style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                       }}
                     >
-                      {file.type.includes('image/') ? (
+                      {file.type.includes("image/") ? (
                         <img
                           src={file.preview}
                           alt={file.name}
                           height={50}
                           style={{
-                            maxWidth: '-webkit-fill-available',
+                            maxWidth: "-webkit-fill-available",
                           }}
                         />
                       ) : (
-                        <img className={classes.preview} src={getFileIcon(file.name)} height="10" alt="file icon" />
+                        <img
+                          className={classes.preview}
+                          src={getFileIcon(file.name)}
+                          height="10"
+                          alt="file icon"
+                        />
                       )}
                     </Box>
                   </Grid>
@@ -5452,49 +6177,65 @@ function Visitorsregister() {
                     sm={7}
                     xs={7}
                     sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
                     }}
                   >
                     <Typography variant="subtitle2"> {file.name} </Typography>
                   </Grid>
                   <Grid item md={1} sm={1} xs={1}>
-                    <Grid sx={{ display: 'flex' }}>
+                    <Grid sx={{ display: "flex" }}>
                       <Button
                         sx={{
-                          padding: '14px 14px',
-                          minWidth: '40px !important',
-                          borderRadius: '50% !important',
-                          ':hover': {
-                            backgroundColor: '#80808036', // theme.palette.primary.main
+                          padding: "14px 14px",
+                          minWidth: "40px !important",
+                          borderRadius: "50% !important",
+                          ":hover": {
+                            backgroundColor: "#80808036", // theme.palette.primary.main
                           },
                         }}
                         onClick={() => renderFilePreview(file, index)}
                       >
-                        <VisibilityOutlinedIcon style={{ fontsize: '12px', color: '#357AE8' }} />
+                        <VisibilityOutlinedIcon
+                          style={{ fontsize: "12px", color: "#357AE8" }}
+                        />
                       </Button>
                       <Button
                         sx={{
-                          padding: '14px 14px',
-                          minWidth: '40px !important',
-                          borderRadius: '50% !important',
-                          ':hover': {
-                            backgroundColor: '#80808036', // theme.palette.primary.main
+                          padding: "14px 14px",
+                          minWidth: "40px !important",
+                          borderRadius: "50% !important",
+                          ":hover": {
+                            backgroundColor: "#80808036", // theme.palette.primary.main
                           },
                         }}
                         onClick={() => handleDeleteFile(index)}
                       >
-                        <FaTrash style={{ color: '#a73131', fontSize: '12px' }} />
+                        <FaTrash
+                          style={{ color: "#a73131", fontSize: "12px" }}
+                        />
                       </Button>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "10px",
+                        }}
+                      >
                         {/* Color Picker */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "5px",
+                          }}
+                        >
                           <Typography
                             variant="body1"
                             style={{
-                              color: '#555',
-                              fontSize: '10px',
+                              color: "#555",
+                              fontSize: "10px",
                             }}
                           >
                             BG Color
@@ -5506,11 +6247,11 @@ function Visitorsregister() {
                               handleColorChange(e, index);
                             }}
                             style={{
-                              width: '30px',
-                              height: '30px',
-                              border: 'none',
-                              cursor: 'pointer',
-                              borderRadius: '5px',
+                              width: "30px",
+                              height: "30px",
+                              border: "none",
+                              cursor: "pointer",
+                              borderRadius: "5px",
                             }}
                           />
                         </div>
@@ -5518,26 +6259,26 @@ function Visitorsregister() {
                         {/* Submit Button */}
                         <LoadingButton
                           onClick={(e) => {
-                            handleSubmitNew(index, 'upload');
+                            handleSubmitNew(index, "upload");
                           }}
                           loading={bgbtn[index]}
                           variant="contained"
                           color="primary"
                           endIcon={<FormatColorFillIcon />}
                           sx={{
-                            padding: '10px 10px',
-                            fontSize: '8px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px',
-                            borderRadius: '5px',
+                            padding: "10px 10px",
+                            fontSize: "8px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            borderRadius: "5px",
                             // color: isLightColor[index] ? 'black' : 'white',
-                            fontWeight: '600',
+                            fontWeight: "600",
                             // backgroundColor: color[index], // Dynamically set the background color
                             // '&:hover': {
                             //   backgroundColor: `${color[index]}90`, // Slightly transparent on hover for a nice effect
                             // },
-                            border: '1px solid  black',
+                            border: "1px solid  black",
                           }}
                         ></LoadingButton>
                       </div>
@@ -5562,13 +6303,20 @@ function Visitorsregister() {
       </Dialog>
 
       {/* webcam alert start */}
-      <Dialog open={isWebcamOpen} onClose={webcamClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="sm" fullWidth={true}>
+      <Dialog
+        open={isWebcamOpen}
+        onClose={webcamClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="sm"
+        fullWidth={true}
+      >
         <DialogContent
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            textAlign: 'center',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+            alignItems: "center",
           }}
         >
           <Webcamimage
@@ -5607,27 +6355,47 @@ function Visitorsregister() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={isErrorOpenpopdragdrop} onClose={handleCloseerrpopdragdrop} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description" maxWidth="lg" fullWidth={true} sx={{ marginTop: '80px' }}>
+      <Dialog
+        open={isErrorOpenpopdragdrop}
+        onClose={handleCloseerrpopdragdrop}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="lg"
+        fullWidth={true}
+        sx={{ marginTop: "80px" }}
+      >
         <Box sx={userStyle.dialogbox}>
           <>
             <Typography sx={userStyle.HeaderText}>
-              {' '}
+              {" "}
               <b>Existing Profile List</b>
             </Typography>
             <Grid item md={6} sm={12} xs={12}>
               {showAlertpopdragdrop && showAlertpopdragdrop.length > 0 ? (
-                <ExistingProfileVisitor ExistingProfileVisitors={showAlertpopdragdrop} handleCloseModEdit={handleCloseModEditProfileCheck} />
+                <ExistingProfileVisitor
+                  ExistingProfileVisitors={showAlertpopdragdrop}
+                  handleCloseModEdit={handleCloseModEditProfileCheck}
+                />
               ) : (
-                <Typography sx={{ ...userStyle.HeaderText, marginLeft: '28px', display: 'flex', justifyContent: 'center' }}>There is No Profile</Typography>
+                <Typography
+                  sx={{
+                    ...userStyle.HeaderText,
+                    marginLeft: "28px",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  There is No Profile
+                </Typography>
               )}
             </Grid>
             <br />
             <Grid item md={12} sm={12} xs={12}>
               <Grid
                 sx={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  gap: '15px',
+                  display: "flex",
+                  justifyContent: "center",
+                  gap: "15px",
                 }}
               >
                 {/* <Button
@@ -5644,7 +6412,11 @@ function Visitorsregister() {
                   >
                     Upload With Duplicate
                   </Button> */}
-                <Button variant="contained" color="primary" onClick={handleCloseerrpopdragdrop}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleCloseerrpopdragdrop}
+                >
                   Cancel
                 </Button>
               </Grid>
@@ -5652,38 +6424,61 @@ function Visitorsregister() {
           </>
         </Box>
       </Dialog>
-      <MessageAlert openPopup={openPopupMalert} handleClosePopup={handleClosePopupMalert} popupContent={popupContentMalert} popupSeverity={popupSeverityMalert} />
+      <MessageAlert
+        openPopup={openPopupMalert}
+        handleClosePopup={handleClosePopupMalert}
+        popupContent={popupContentMalert}
+        popupSeverity={popupSeverityMalert}
+      />
       {/* SUCCESS */}
-      <AlertDialog openPopup={openPopup} handleClosePopup={handleClosePopup} popupContent={popupContent} popupSeverity={popupSeverity} />
-      <Dialog open={isErrorOpen} onClose={handleCloseerr} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+      <AlertDialog
+        openPopup={openPopup}
+        handleClosePopup={handleClosePopup}
+        popupContent={popupContent}
+        popupSeverity={popupSeverity}
+      />
+      <Dialog
+        open={isErrorOpen}
+        onClose={handleCloseerr}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
         {/* <DialogContent sx={{ width: '350px', textAlign: 'center', alignItems: 'center' }}>
           <ErrorOutlineOutlinedIcon sx={{ fontSize: '80px', color: 'tomato' }} />
           <Typography variant="h6" sx={{ fontFamily: 'JostMedium', fontWeight: 'bold' }}>
             {showAlert}
           </Typography>
         </DialogContent> */}
-        <Box sx={{ width: '350px' }}>
+        <Box sx={{ width: "350px" }}>
           {/* <DialogTitle id="alert-dialog-title">{popupTitle}</DialogTitle> */}
           <DialogContent>
             <DialogContentText
               id="alert-dialog-description"
               sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'center',
-                gap: '20px',
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "20px",
               }}
             >
-              {severityIcons['warning']}
-              <Typography sx={{ fontSize: '1.4rem', fontWeight: '600', color: 'black' }}>{showAlert}</Typography>
+              {severityIcons["warning"]}
+              <Typography
+                sx={{ fontSize: "1.4rem", fontWeight: "600", color: "black" }}
+              >
+                {showAlert}
+              </Typography>
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             {/* <Button variant="outlined" color="error" sx={{ color: 'tomato' }} onClick={handleCloseerr}>
               ok
             </Button> */}
-            <Button onClick={handleCloseerr} variant="contained" color="primary">
+            <Button
+              onClick={handleCloseerr}
+              variant="contained"
+              color="primary"
+            >
               Close
             </Button>
           </DialogActions>

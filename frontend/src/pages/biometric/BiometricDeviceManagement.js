@@ -109,7 +109,10 @@ function BiometricDeviceManagement() {
     // { label: "Bio-OpenApi", value: "Bio-OpenApi" },
     { label: "Bowee-Witzee", value: "Bowee-Witzee" },
     { label: "Bowee-Chandichan", value: "Bowee-Chandichan" },
-    { label: "Bowee-Standard", value: "Bowee-Standard" },
+    { label: "Bowee", value: "Bowee" },
+  ];
+  const ModelNamesDefault = [
+    { label: "Face-Recognition", value: "Face-Recognition" },
   ];
   const [commonNameLinked, setCommonNameLinked] = useState(null);
   const [commonCloudIdcLinked, setCommonCloudIdcLinked] = useState(null);
@@ -192,7 +195,7 @@ function BiometricDeviceManagement() {
   //attachments start
   const classes = useStyles();
   const renderFilePreview = async (file) => {
-    console.log(file, "file");
+    // console.log(file, "file");
     if (file?.path) {
       const url = `${BASE_URL}/${file?.path}`; // Construct the URL based on your server setup
       window.open(url, "_blank");
@@ -400,11 +403,13 @@ function BiometricDeviceManagement() {
       setPopupContentMalert("Please Enter RFID Number");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (filesImages?.length < 1) {
-      setPopupContentMalert("Please Upload RFID Images");
-      setPopupSeverityMalert("warning");
-      handleClickOpenPopupMalert();
-    } else if (isRfidDuplicate) {
+    } 
+    // else if (filesImages?.length < 1) {
+    //   setPopupContentMalert("Please Upload RFID Images");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // }
+     else if (isRfidDuplicate) {
       setPopupContentMalert("Please Enter Different RFID Number");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -618,11 +623,13 @@ function BiometricDeviceManagement() {
       setPopupContentMalert("Please Enter RFID Number");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (filesImages?.length < 1) {
-      setPopupContentMalert("Please Upload RFID Images");
-      setPopupSeverityMalert("warning");
-      handleClickOpenPopupMalert();
-    } else if (isRfidDuplicate) {
+    } 
+    // else if (filesImages?.length < 1) {
+    //   setPopupContentMalert("Please Upload RFID Images");
+    //   setPopupSeverityMalert("warning");
+    //   handleClickOpenPopupMalert();
+    // } 
+    else if (isRfidDuplicate) {
       setPopupContentMalert("Please Enter Different RFID Number");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -833,7 +840,7 @@ function BiometricDeviceManagement() {
         });
     }
   };
-  console.log(todoscheckSignature, "refImage");
+  // console.log(todoscheckSignature, "refImage");
   const handleSelectionChange = (newSelection) => {
     setSelectedRows(newSelection.selectionModel);
   };
@@ -926,10 +933,14 @@ function BiometricDeviceManagement() {
         // biometricDeviceManagement?.biometricserialno?.slice(-3) + "_" +
         (biometricDeviceManagement?.brand === "Bowee-Chandichan"
           ? "00"
-          : biometricDeviceManagement?.biometricassignedip?.split(".")?.pop()) +
+          : biometricDeviceManagement?.biometricassignedip?.split(".")?.pop())
         +"#" +
         postfixLength;
-
+console.log((biometricDeviceManagement?.brand === "Bowee-Chandichan"
+          ? "00"
+          : biometricDeviceManagement?.biometricassignedip?.split(".")?.pop()) +
+        + "#" +
+        postfixLength)
       return newval;
     } catch (err) {
       handleApiError(
@@ -1496,7 +1507,7 @@ function BiometricDeviceManagement() {
       setPopupContentMalert("Please Enter Biometric Assigned IP");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
-    } else if (biometricDeviceManagement.biometricassignedurl === "") {
+    } else if (biometricDeviceManagement.brand === "Bowee-Chandichan" && biometricDeviceManagement.biometricassignedurl === "") {
       setPopupContentMalert("Please Enter Biometric Assigned URL");
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
@@ -1523,6 +1534,10 @@ function BiometricDeviceManagement() {
       setPopupSeverityMalert("warning");
       handleClickOpenPopupMalert();
     } else {
+          const commonname = await fetchBiometricLastIndexCode(
+      biometricDeviceManagement?.area
+    );
+    console.log(commonname , "commonname")
       sendRequest();
     }
   };
@@ -1649,7 +1664,7 @@ function BiometricDeviceManagement() {
       const mapPagesCloudIDC = Object.keys(pagesDataCloudIDC).map(
         (key) => keyNameMap[key] || key
       );
-      console.log(res?.data, mapPages, mapPagesCloudIDC);
+      // console.log(res?.data, mapPages, mapPagesCloudIDC);
       setCommonNameLinked(mapPages?.length ? mapPages : null);
       setCommonCloudIdcLinked(
         mapPagesCloudIDC?.length ? mapPagesCloudIDC : null
@@ -1690,8 +1705,8 @@ function BiometricDeviceManagement() {
             }))
           : [];
 
-      setBrandOptions([...brandNamesDefault, ...brandnames]);
-      setModelOptions(modelnames);
+      setBrandOptions([...new Set([...brandNamesDefault, ...brandnames])]);
+      setModelOptions([...new Set([...ModelNamesDefault , ...modelnames])]);
     } catch (err) {
       console.log(err, "err");
       handleApiError(
@@ -1860,11 +1875,11 @@ function BiometricDeviceManagement() {
   let updateby = sourceEdit?.updatedby;
   let addedby = sourceEdit?.addedby;
   let subprojectsid = sourceEdit?._id;
-  console.log(todoscheckSignatureEdit, "todoscheckSignatureEdit");
+  // console.log(todoscheckSignatureEdit, "todoscheckSignatureEdit");
   //editing the single data...
   const sendEditRequest = async (commonname) => {
     setPageName(!pageName);
-
+console.log("Hitted Submit")
     try {
       const formData = new FormData();
 
@@ -2129,6 +2144,7 @@ function BiometricDeviceManagement() {
       sourceEdit?.biometricserialno !==
       biometricDeviceManagementEdit.biometricserialno
     ) {
+      console.log("2139");
       // setPopupContentMalert();
       // setPopupSeverityMalert("warning");
       // handleClickOpenPopupMalert();
@@ -2149,6 +2165,7 @@ function BiometricDeviceManagement() {
       // setPopupContentMalert(commonNameLinked ? `Device Common Name is linked in ${commonNameLinked?.toString()} pages`: null);
       // setPopupSeverityMalert("warning");
       // handleClickOpenPopupMalert();
+      console.log(sourceEdit?.biometriccommonname , commonname , "2160");
       setShowAlertpop(
         <>
           <ErrorOutlineOutlinedIcon
@@ -2164,6 +2181,7 @@ function BiometricDeviceManagement() {
       handleClickOpenerrpop();
       // handleClickOpenerrpop();
     } else {
+      console.log("Hitted")
       sendEditRequest(commonname);
     }
   };
@@ -3416,7 +3434,7 @@ function BiometricDeviceManagement() {
                           </FormControl>
                         </Grid>
                         <Grid item md={3} xs={12} sm={12}>
-                          <Typography>RFID Images</Typography>
+                          <Typography>RFID Images </Typography>
                           <Box sx={{ display: "flex", justifyContent: "left" }}>
                             <Button
                               variant="contained"

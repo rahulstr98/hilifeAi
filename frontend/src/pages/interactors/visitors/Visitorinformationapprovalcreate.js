@@ -3224,7 +3224,8 @@ function VisitorInformationApprovalCreate() {
         visitoremail: String(vendor.email),
         visitorcontactnumber: String(vendor.mobile),
          page:"Visitor Information Approval",
-         pagedetails:  vendor.rfiddetails === true ? "Visitor With RFID" : "Visitor Without QR"
+         pagedetails:  vendor.rfiddetails === true ? "Visitor With RFID" : "Visitor Without QR",
+         cardNum: vendor.rfidnumber
       });
 
       if (requestCheck && ticketid) {
